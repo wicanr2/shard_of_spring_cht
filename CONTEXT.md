@@ -182,6 +182,7 @@
 | [`72-e-file-formats-from-readers.md`](docs/re/72-e-file-formats-from-readers.md) | 三個規則資料表的格式 | 從讀取端的元素大小與迴圈上界解出;三個檔大小零誤差 |
 | [`73-monster-columns-to-combat-array.md`](docs/re/73-monster-columns-to-combat-array.md) | 怪物欄 → 戰鬥單位屬性 | 位移全是 15 的倍數,證實 15 欄二維陣列 |
 | [`74-spell-and-item-columns.md`](docs/re/74-spell-and-item-columns.md) | 法術/物品欄位語意 | 物品的法術編號與點數搬進施法流程同一組變數;28+6 是兩個 100% 規則 |
+| [`75-character-record-equipment.md`](docs/re/75-character-record-equipment.md) | 角色記錄的裝備欄(D×E×J)| 裝備欄存背包格號不是物品編號;哨兵 99/60/59 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

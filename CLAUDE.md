@@ -118,9 +118,9 @@
 ### 3.1 環境
 
 ```
-基底 image：ida-pro-9.4-ver2:latest（本機 dist 在 /home/anr2/ida_94_official/dist）
-本專案用：  自建的 py312 修正版（見 §3.2），Dockerfile 進 docker/
-headless：  idat（ida 是 GUI）
+本專案用：ida-pro-9.4-idapython:py312-v1（見 §3.2，Dockerfile 在 kb）
+基底 image：ida-pro-9.4-ver3:latest（本機 dist 在 /home/anr2/ida_94_official/dist）
+headless： idat（ida 是 GUI）
 ```
 
 包成 `tools/ida.sh`，樣板抄 `~/cht/大時代的故事/tools/ida.sh`
@@ -133,34 +133,33 @@ tools/ida.sh query tools/ida_xref.py TOWN.EXE.i64 <符號>
 
 ### 3.2 ⭐ IDAPython 可用 —— 但要用修正過的 image
 
-`~/.claude/knowledge-base/retro/ida-pro-9.4.md` 寫著「IDAPython 實測無輸出 → 一律寫 IDC」。
-**那句話的範圍是未修正的基底 image。** `~/cht/civ1` 已經修好並實際用 IDAPython
-產出全套匯出腳本（`civ1/tools/ida/` 底下三十幾支 `export_*.py`）。
-
-根因與修法（`civ1/docker/ida-pro-9.4-civ1.Dockerfile`）：
-基底 image 只有 Python 3.12 的 interpreter 與 stdlib，**沒有 `libpython3.12.so`**，
-而且它的 `ida.reg` 留著主機 Python 3.14 的絕對路徑（指向不存在的 uv 目錄）。
-
-```dockerfile
-FROM ida-pro-9.4-ver2:latest
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpython3.12 \
-    && rm -rf /var/lib/apt/lists/* \
-    && /opt/ida-pro-9.4/idapyswitch --force-path \
-        /usr/lib/x86_64-linux-gnu/libpython3.12.so.1.0
+```
+ida-pro-9.4-idapython:py312-v1
 ```
 
-**本專案沿用這個修法自建 image，不要臨時掛載主機 Python。**
+Dockerfile 保存在 `~/.claude/knowledge-base/retro/assets/ida-pro-9.4-idapython.Dockerfile`，
+完整原理與實測矩陣見 `~/.claude/knowledge-base/retro/ida-pro-9.4.md`。
+**本專案沿用這顆,不要臨時掛載主機 Python,也不要另建功能重複的 image。**
+
+要點三條：
+
+1. **基底 image 的 IDAPython 是靜默失敗** —— 零輸出、零錯誤訊息，
+   而且 exit code 在不同 image 上分別回 0 與 1。**唯一可信的訊號是輸出檔本身。**
+2. 修法有**兩個獨立根因**：缺 `libpython3.12t64`、以及 `idapyswitch` 的選擇寫進
+   `$HOME/.idapro`（所以要以最終執行身分跑，不能用 root）。只修一個等於沒修。
+3. 上面那顆在**加不加 `-u $(id -u)` 都能動**，且不留 root-owned 檔案。
 
 | 能力 | 狀態 |
 |---|---|
-| IDAPython（修正版 image） | ✅ 可用，**優先用這個** |
+| IDAPython（上面那顆 image） | ✅ 可用，**優先用這個** |
 | IDC 腳本 | ✅ 可用，當退路 |
 | Hex-Rays 反編譯 | ❌ 16-bit real mode 不支援 → **只有組語，沒有 C** |
 | 產 `.asm` / `.i64` | ✅ |
 
 **「只有組語」對本專案是好消息**：daemon_winter 有三次錯誤斷言來自
 「反編譯器對含跳表的函式靜默捏造控制流」。這裡沒有反編譯器可信，也就沒有這個坑。
+
+匯出腳本的形狀抄 `~/cht/civ1/tools/ida/export_*.py`（三十幾支現成的）。
 
 ### 3.3 四條會反覆咬人的規則
 
@@ -421,7 +420,6 @@ shard_of_spring/
 ├── original/              ← archive.org 原始封裝（gitignore）
 ├── game/sharspri/         ← 解壓後的原版（唯讀，gitignore）
 ├── workplace/             ← 分析用的複本、IDA 工作目錄（gitignore）
-├── docker/                ← ida-pro-9.4-sos.Dockerfile（IDAPython 修正版）
 ├── tools/
 │   ├── ida.sh             ← headless 包裝
 │   └── ida/               ← IDAPython 匯出腳本
@@ -452,7 +450,7 @@ https://github.com/wicanr2/shard_of_spring_cht
 按順序，不要跳：
 
 1. ~~建 git repo、`.gitignore`、`docs/re/00-inputs.md`~~ ✅ 完成
-2. 建 `docker/ida-pro-9.4-sos.Dockerfile`（照 §3.2 的修法），驗 IDAPython 真的能動
+2. ~~建 IDAPython 可用的 image~~ ✅ 完成：`ida-pro-9.4-idapython:py312-v1`，已用探針驗過
 3. 從 `~/cht/大時代的故事/tools/` 抄 `ida.sh`、從 `~/cht/civ1/tools/ida/` 抄
    `export_inventory.py` 過來改
 4. **RE-01**（§5.1）：十三支執行檔全部建 DB，產出初始清冊

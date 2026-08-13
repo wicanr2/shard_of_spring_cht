@@ -176,7 +176,8 @@
 | [`66-userlib-slot-semantics.md`](docs/re/66-userlib-slot-semantics.md) | **子系統 C = RE-DONE** | 槽 34 = 存檔、33 = 狀態列、17 = 死亡、21 = 結局、35 = 訊息框、15 = 視窗框 |
 | [`67-a-closure-module-handoff.md`](docs/re/67-a-closure-module-handoff.md) | **子系統 A = RE-DONE** | 轉交是 `retf` 進 `節區:0x30`(`bm` 為 `0x3A`);`ds:0A28h` 指向檔名緩衝區 |
 | [`68-b-closure-dispatch-capacity.md`](docs/re/68-b-closure-dispatch-capacity.md) | **子系統 B = RE-DONE** | 表容量 105/165/≤204;`3E:A5` 必然等於 `3F:00` |
-| [`69-movement-keys.md`](docs/re/69-movement-keys.md) | 移動鍵(K) | `C P S Q 1 2 3 4` 三角驗證;程式碼側連結未找到 |
+| [`69-movement-keys.md`](docs/re/69-movement-keys.md) | 移動鍵(K) | `C P S Q 1 2 3 4` 三角驗證;§2 已被 `70` 推翻 |
+| [`70-key-chains-all-modules.md`](docs/re/70-key-chains-all-modules.md) | 小鍵盤轉譯層 + 七支模組比對鏈 | 描述子 = 文字 −4;`1北 2東` 從程式碼確認 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -281,6 +282,8 @@ linear   = 0x10180 + 段內位移
 | `+0x0A` 的值與 `+0x16` 相同(十一支皆然) | **`MENU.EXE` 不成立**(`0x3D3` vs `0x462`)。`+0x0A` 是**最後一段的起點**;十支剛好只有六段才看起來相同。**十一分之十的巧合被讀成了規則** —— `MENU` 有 7 段這件事在 `docs/re/01` 的清冊裡一直寫著。`docs/re/09` §3 |
 | `INT 3Eh` 索引 `0xA5` 是線性掃描造出的假指令(`docs/re/07` §3 第一版) | **不成立**。保守得多的流程追蹤同樣產生它。實際成立的只有「兩張表相鄰」這個觀察,而**相鄰只約束位置不約束長度**。判準:一個推論若只在某一種測量方法下成立,先換一種方法再下結論。`docs/re/08` §3 |
 | `docs/re/06` §4 的「`3D` far 形式」欄位(合計 346) | **一個都不成立**。那是線性掃描的中間計數,最終資料庫裡解碼成 `int 3Dh` 的是 **0** 個 —— 遊戲模組不用 `INT 3Dh`。**中間產物不是結論**。`docs/re/07` §2 |
+| `docs/re/69` §2 | 「移動鍵找不到程式碼側連結」 | 連結在 `0x105E3`;`imm_range.py` 只掃 IDA 判成程式碼的 40%,回 0 不等於不存在 | `70` §6 |
+| `docs/re/58` §2 | 「描述子位址 = 文字位址 +2」 | 實為 **−4**;單字元字串間距 6 讓兩條規則無法區分,要找長度改變的邊界(`'CAMP'`)| `70` §2 |
 | `bz` 標頭有 `+0x32` / `+0x34` / `+0x54` 三個欄位 | 那三個位移屬於 **`BRUN30` 的控制區塊**(`ds:0CACh`),不是模組標頭。錯在沒注意 `sub_14BDD` 中途換過 `es` 的基底。`docs/re/03` §1 |
 | `ds:0A28h` 存的 `0x0B06` 是「模組本體的進入點位移」 | 是**檔名字串的指標**。`sub_14CB8` 拿它去 `INT 21h AH=3Dh` 開檔。**常數是位址還是指標,要看使用端怎麼用,不能從值的樣子猜**。`docs/re/04` §4 |
 | kb 寫的「IDAPython 實測無輸出,一律寫 IDC」 | 可用,但要修正過的 image(`ida-pro-9.4-idapython:py312-v1`)。兩個獨立根因見 `~/.claude/knowledge-base/retro/ida-pro-9.4.md` |

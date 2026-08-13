@@ -195,6 +195,7 @@
 | [`85-scanner-conflated-zero-with-unknown.md`](docs/re/85-scanner-conflated-zero-with-unknown.md) | 掃描器失敗值撞號 | 31% 的失敗被讀成「屬性 0」,而那正是我去看它的原因 |
 | [`86-scanner-fixed-conclusion-restored.md`](docs/re/86-scanner-fixed-conclusion-restored.md) | 修好工具後重判 | 結論沒變、證據全換;結論正確不等於推理正確 |
 | [`87-class-race-and-attribute-17.md`](docs/re/87-class-race-and-attribute-17.md) | 職業/種族碼、屬性 17 | 位移 15 = 職業(程式碼比 `'1'`)、14 = 種族;屬性 17 是條件式減傷 |
+| [`88-races-and-classes.md`](docs/re/88-races-and-classes.md) | 種族/職業碼表 | `H`uman `T`roll `D`warf `E`lf `G`nome;職業是 **`Hero`** 不是「戰士」|
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -342,6 +343,7 @@ linear   = 0x10180 + 段內位移
 | 「`CHARS.DAT` 位移 41 → 戰鬥屬性 1」(`docs/re/81`)| **可疑**:屬性 0/1 是戰場座標,不該存在存檔裡;而那一筆的配對距離 33 bytes 是 12 筆裡唯一的離群值(`84` §3)| **機械配對的離群值要當成待查,不是雜訊** —— 錨點證明規則大體正確,不證明每一筆正確 |
 | 「屬性 0 / 1 = 戰場座標」(`docs/re/84` §2)| 屬性 0 那一半來自掃描器的預設值 —— 找不到 `add` 就當 `imm=0`,317 處裡有 97 處(31%)如此。屬性 1 降為假設 | **掃描器的預設值不能和它的某個有效輸出撞號** —— 失敗值撞號會讓失敗看起來像訊號,而且是最強的那個 |
 | 「壞掃描器只會多出一堆假的屬性 0」(`docs/re/85` §1 的影響表)| **還會掏空其他類**:`0x13F48` 是屬性 18、`0x14097` 是屬性 10,都被記成屬性 0(`86` §3)| **把失敗吞進某類的分類器會同時灌水那一類、掏空其他類** —— 凡引用過「次數」的結論都要重看 |
+| 差點把玩家職業 `'1'` 寫成「戰士 / Fighter」(`docs/re/87` 起草時)| 遊戲自己的用詞是 **`Hero`**;而 `Fighter` 在本作是**怪物名**(`Lvl 1 Fighter`)| **專有名詞不從語意猜,只從遊戲自己的字串取** —— 中文化的譯名一旦定錯,整份對照表要重來 |
 
 ## 7. 每一輪都要做
 

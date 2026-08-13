@@ -89,16 +89,16 @@
 
 | 子系統 | 主要輸入 | 狀態 |
 |---|---|---|
-| A. 執行檔架構與模組轉交 | `START/MENU/TOWN/CMBT/CAMP/MAZEMOVE/WRLDMOVE/CHARUTIL.EXE` | 進行中(`docs/re/01`–`06`:模組本體已解鎖至 40.8%;模組轉交仍未解)|
-| B. 執行期模組的呼叫介面 | `BRUN30.EXE` | 進行中(`docs/re/06`:INT ABI 已確認;三張派工表未解)|
+| A. 執行檔架構與模組轉交 | `START/MENU/TOWN/CMBT/CAMP/MAZEMOVE/WRLDMOVE/CHARUTIL.EXE` | 進行中(`docs/re/01`–`06`:模組本體已解鎖至 40.8%;`43`:COMMON 區與私有變數已分開;模組轉交仍未解)|
+| B. 執行期模組的呼叫介面 | `BRUN30.EXE` | 進行中(`06` INT ABI 已確認、`40` 認出 MS BASIC 5.60、`41` **DS 基底已解**、`44` **`3Dh` 909 處**、`45` `3Dh` 族;三張表的語意仍多半未解)|
 | C. 原生輔助程式庫 | **`USERLIB.EXE`**(另三支已改歸 A) | 進行中(`docs/re/30`:`bm` 族、114 個重定位項;內容未解)|
-| D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 進行中(`docs/re/27`:`CHARS.DAT` 25 槽×94B 定案、技能旗標對上 20 項;`GROUPS.DAT` 未解)|
+| D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 進行中(`27`:`CHARS.DAT` 25 槽×94B 定案;`43`:**記憶體側已定位** —— 主陣列 `ds:6822`(15×≥20 word)、隊伍人數 `ds:34F8`(上限 5)、隊員名字 `ds:34E0`;欄位語意與檔案對應未解)|
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 進行中(`docs/re/16`:三張表格式定案,兩個欄位語意有交叉印證;讀取端未解)|
 | F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`docs/re/19`:**103 × 121 定案**;圖塊語意未解)|
 | G. 地城與迷宮 | `DG*MAZE.SQZ`（壓縮法未知）、`MAZEDATA.BIN`、`DT*TEXT.DAT` | 未開始 |
 | H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | 進行中(`docs/re/19`–`21`:BSAVE 容器 52/52、CGA 2bpp、**圖塊 17×17 九檔驗證**;`MONST`/`PICT` 待驗)|
 | I. 法術效果表 | `DE*EFF.BIN` / `DE*EFF.MST`、`FIRESTRM/HAILSTRM/WINDSTRM.BIN` | 進行中(`docs/re/29`:`BIN`/`MST` 資料相同、只差標頭;內容未解,可能該歸到 G)|
-| J. 戰鬥規則 | `CMBT.EXE`、`FASTCMBT.BIN`、`RNDMONST.BIN` | 進行中(`docs/re/31`:`w9` 解為魔法相關、`w8` 訂正;公式仍純程式碼側)|
+| J. 戰鬥規則 | `CMBT.EXE`、`FASTCMBT.BIN`、`RNDMONST.BIN` | 進行中(`31`:`w9` 解為魔法相關;`43`:戰鬥迴圈跑主陣列第 9–13 列 = 隊伍;公式未解)|
 | K. 輸入語意（**不含 BIOS 層**） | 哪些鍵在哪個畫面有效、對應什麼動作 | 進行中(`docs/re/28`:`X)字` 慣例、五個畫面的鍵表;提示與實作是否一致未驗)|
 | L. 中文化落點盤點 | 全部（見 §7） | 未開始 |
 

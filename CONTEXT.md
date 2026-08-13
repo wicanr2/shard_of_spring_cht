@@ -45,6 +45,7 @@
 | **模組轉交的檔名來源** | `docs/re/15`,`BRUN30:0x10C25` 把字串描述子抄進 `ds:0B06h` |
 | **規則資料表(子系統 E)** | `docs/re/16`,`MONSTERS` 36B×74、`SPELLS`/`ITEMS` CSV;`w5`=怪物圖、欄1=符文系別 |
 | **BSAVE 容器 + 地圖尺寸(H/F)** | `docs/re/19`,52/52 是 BSAVE;世界地圖 **103×121** 定案 |
+| **CGA 像素佈局(H)** | `docs/re/20`,320×200 2bpp、掃描線兩區交錯,畫面結構連貫 |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
 | **世界地圖與地城(F/G)** | `docs/re/17`,`WRLDMAP` 每格 2 bytes、12,467 格 35 種圖塊;六個 `.SQZ` 一律 82 列 |
 
@@ -95,6 +96,7 @@
 | [`17-world-and-maze.md`](docs/re/17-world-and-maze.md) | 地圖與地城 | `WRLDMAP` 每格 2 bytes;`.SQZ` 逐列編碼、六檔皆 82 列 |
 | [`18-text-inventory.md`](docs/re/18-text-inventory.md) | 中文化落點 | 兩層 ≈35,800 字元;資料檔 61% 不必等程式碼分析 |
 | [`19-bsave-container.md`](docs/re/19-bsave-container.md) | BSAVE 容器 | 52/52;`STARTUP.BIN` 是 `0xB800` CGA 整頁;地圖 103×121 |
+| [`20-cga-layout.md`](docs/re/20-cga-layout.md) | CGA 佈局 | 320×200 2bpp 交錯;素材尺寸的裁決方式已寫明 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

@@ -49,6 +49,7 @@
 | **圖塊格式(H)** | `docs/re/21`,BASIC `GET` 陣列 17×17,**九個檔各自畫出自己的名字** |
 | **`PICT*` 定案 / `MONST*` 未解** | `docs/re/22`,`PICT` 153×153 算式零誤差;`MONST` 讀法不成立 |
 | **模組↔資料檔對照** | `docs/re/23`,每個子系統的讀取端已縮到模組層級 |
+| **工具衝突已記錄** | `docs/re/24`,`trace_module` 會洗掉 `unlock_module`;掃描前先看分母 |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
 | **世界地圖與地城(F/G)** | `docs/re/17`,`WRLDMAP` 每格 2 bytes、12,467 格 35 種圖塊;六個 `.SQZ` 一律 82 列 |
 
@@ -103,6 +104,7 @@
 | [`21-tile-format.md`](docs/re/21-tile-format.md) | 圖塊格式 | `GET`/`PUT` 陣列 17×17;磚牆/拱門/四角星各自成立 |
 | [`22-pict-and-monst.md`](docs/re/22-pict-and-monst.md) | 大圖與怪物圖 | `PICT` 153×153;`MONST` 未解,格式不通用 |
 | [`23-module-datafile-map.md`](docs/re/23-module-datafile-map.md) | 模組↔資料檔 | 哪支模組讀哪個檔;`CHARUTIL` 是角色資料專職 |
+| [`24-tooling-conflict.md`](docs/re/24-tooling-conflict.md) | 工具衝突 | `trace` 會覆蓋 `unlock`;`BLOAD` 不留位址常數 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -147,6 +149,13 @@ linear   = 0x10180 + 段內位移
 
 `far_call_targets` 在十二支上都是 0 —— 那是「沒被分析」的後果,不是「沒有跨段呼叫」。
 下任何「不存在」的結論前先做正對照(`~/diagnosis-notes/docs/02-query-returned-empty/`)。
+
+### ⚠ 掃描前先看「掃了幾條指令」
+
+`trace_module.py` 會 `del_items` 整段,洗掉 `unlock_module.py` 的成果。
+之後任何掃描都只看得到 12% 的程式碼,**而輸出看起來完全正常**。
+**工具回報的分母比分子重要** —— 命中 0 處可能是真的沒有,
+也可能是掃描範圍被前一個工具改小了。(`docs/re/24`)
 
 ### 掃二進位樣式不要用正規表示式
 

@@ -82,8 +82,8 @@
 
 | 子系統 | 主要輸入 | 狀態 |
 |---|---|---|
-| A. 執行檔架構與模組轉交 | `START/MENU/TOWN/CMBT/CAMP/MAZEMOVE/WRLDMOVE/CHARUTIL.EXE` | 進行中(`docs/re/01`:清冊完成,遊戲本體尚未反組譯)|
-| B. 執行期模組的呼叫介面 | `BRUN30.EXE` | 未開始 |
+| A. 執行檔架構與模組轉交 | `START/MENU/TOWN/CMBT/CAMP/MAZEMOVE/WRLDMOVE/CHARUTIL.EXE` | 進行中(`docs/re/01`–`06`:模組本體已解鎖至 40.8%;模組轉交仍未解)|
+| B. 執行期模組的呼叫介面 | `BRUN30.EXE` | 進行中(`docs/re/06`:INT ABI 已確認;三張派工表未解)|
 | C. 原生輔助程式庫 | `USERLIB.EXE`、`MIO2.EXE`、`WSIO.EXE`、`MTEST.EXE` | 未開始 |
 | D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 未開始 |
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 未開始 |

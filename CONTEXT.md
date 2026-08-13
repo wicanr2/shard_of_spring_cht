@@ -194,6 +194,7 @@
 | [`84-pursuit-not-initiative.md`](docs/re/84-pursuit-not-initiative.md) | 追擊移動(不是先攻)| ⚠ §2 已被 `85` 推翻 |
 | [`85-scanner-conflated-zero-with-unknown.md`](docs/re/85-scanner-conflated-zero-with-unknown.md) | 掃描器失敗值撞號 | 31% 的失敗被讀成「屬性 0」,而那正是我去看它的原因 |
 | [`86-scanner-fixed-conclusion-restored.md`](docs/re/86-scanner-fixed-conclusion-restored.md) | 修好工具後重判 | 結論沒變、證據全換;結論正確不等於推理正確 |
+| [`87-class-race-and-attribute-17.md`](docs/re/87-class-race-and-attribute-17.md) | 職業/種族碼、屬性 17 | 位移 15 = 職業(程式碼比 `'1'`)、14 = 種族;屬性 17 是條件式減傷 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

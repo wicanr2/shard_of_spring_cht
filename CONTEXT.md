@@ -160,6 +160,7 @@
 | [`55-sqz-decoder-from-code.md`](docs/re/55-sqz-decoder-from-code.md) | **`.SQZ` 解碼器** | 規則從程式碼讀出;`_` 與 `*` 是同一值;20 列殘差是我多加的約束 |
 | [`56-maze-tile-classes-and-mazedata-columns.md`](docs/re/56-maze-tile-classes-and-mazedata-columns.md) | 迷宮格值 + `MAZEDATA` 欄位 | 5–10 阻擋;欄 7 = 文字記錄數−1(13/13);欄 4 未解 |
 | [`57-g-closure.md`](docs/re/57-g-closure.md) | **子系統 G = RE-DONE** | `MAZEDATA` 在 `ds:365C`;欄 4 = 朝向 1北2東3南4西;`MAZEITEM` 行 k = 圖塊 k |
+| [`58-key-dispatch-mechanism.md`](docs/re/58-key-dispatch-mechanism.md) | 按鍵派工機制(K) | 單字元字串常數 + 字串比對;`CAMP` 主選單 10/10 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

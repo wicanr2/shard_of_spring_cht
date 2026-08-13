@@ -60,7 +60,7 @@
 | **DOSBox oracle 可用** | `docs/re/32`,原版跑得起來,但**停在開機查表關卡**;要往下需持有原版者依手冊作答 |
 | **題庫驗證資料欄位(E/J)** | `docs/re/33`,`ITEMS` 欄2=價格、欄3=型別相依主數值 |
 | **API 索引(B)** | `docs/re/36`,模組實際用 125 個索引/6,429 次;**前十個佔 75%** |
-| **兩個高頻 API 已讀(B)** | `docs/re/37`,`3E:83` 存 SP+`retf`、`3E:79` 是三道閘門的條件式鉤子 |
+| **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
 | **派工表是薄包裝(B)** | `docs/re/35`,5 支共用實作;`sub_199CC` 的參數是 **4×3 網格**;派工表有進入點直接落在 trampoline 呼叫端上(`3E:44` 已閉環)|
 | **五個種族 + 角色欄位名(D)** | `docs/re/34`,Humans/Trolls/Dwarfs/Elf/Gnomes;五個屬性。修正表**已排除三種存放形式** |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
@@ -131,6 +131,7 @@
 | [`35-shared-impl-wrappers.md`](docs/re/35-shared-impl-wrappers.md) | 派工表結構 | 約 16% 是薄包裝;共用實作分兩類 |
 | [`36-api-index.md`](docs/re/36-api-index.md) | API 索引 | 實際用到 125 個;前十佔 75% 的呼叫 |
 | [`37-api-3e79-3e83.md`](docs/re/37-api-3e79-3e83.md) | 兩個高頻 API | `mov ds:0A08h, sp` 是 API 的共同開場白 |
+| [`38-api-are-basic-primitives.md`](docs/re/38-api-are-basic-primitives.md) | API 的性質 | 高頻端是語言基本操作;**方向改往低頻** |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

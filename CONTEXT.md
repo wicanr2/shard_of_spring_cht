@@ -61,6 +61,7 @@
 | **題庫驗證資料欄位(E/J)** | `docs/re/33`,`ITEMS` 欄2=價格、欄3=型別相依主數值 |
 | **API 索引(B)** | `docs/re/36`,模組實際用 125 個索引/6,429 次;**前十個佔 75%** |
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
+| **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不知 DS 基底 → xref 空/假。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
 | **派工表是薄包裝(B)** | `docs/re/35`,5 支共用實作;`sub_199CC` 的參數是 **4×3 網格**;派工表有進入點直接落在 trampoline 呼叫端上(`3E:44` 已閉環)|
 | **五個種族 + 角色欄位名(D)** | `docs/re/34`,Humans/Trolls/Dwarfs/Elf/Gnomes;五個屬性。修正表**已排除三種存放形式** |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
@@ -132,6 +133,7 @@
 | [`36-api-index.md`](docs/re/36-api-index.md) | API 索引 | 實際用到 125 個;前十佔 75% 的呼叫 |
 | [`37-api-3e79-3e83.md`](docs/re/37-api-3e79-3e83.md) | 兩個高頻 API | `mov ds:0A08h, sp` 是 API 的共同開場白 |
 | [`38-api-are-basic-primitives.md`](docs/re/38-api-are-basic-primitives.md) | API 的性質 | 高頻端是語言基本操作;**方向改往低頻** |
+| [`39-ds0a3a-and-xref-blind-spot.md`](docs/re/39-ds0a3a-and-xref-blind-spot.md) | `ds:0A3Ah` + xref 盲點 | **xref 看不到 DS 相對存取**;`ds:0A3Ah` 是目前物件指標 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -244,6 +246,13 @@ linear   = 0x10180 + 段內位移
 > 不是在正文加註解(`rulebook/63`)。
 
 ---
+
+### 新增(本輪)
+
+| 原斷言 | 實際 | 錯誤形狀 |
+|---|---|---|
+| 「`ds:0A3Ah` 只有 3 支 API 在動」 | 62 處存取 | **用錯的工具查 → 空結果讀成「沒有」**(`docs/re/39` §1) |
+| 「`0x0BE8` 是鉤子常式的位址」 | 是哨兵值,與 `0` 並列在跳過條件裡 | 看到數值像位址就去 dump,沒先確認它被當位址用過 |
 
 ## 7. 每一輪都要做
 

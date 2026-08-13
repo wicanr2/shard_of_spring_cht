@@ -196,6 +196,7 @@
 | [`86-scanner-fixed-conclusion-restored.md`](docs/re/86-scanner-fixed-conclusion-restored.md) | 修好工具後重判 | 結論沒變、證據全換;結論正確不等於推理正確 |
 | [`87-class-race-and-attribute-17.md`](docs/re/87-class-race-and-attribute-17.md) | 職業/種族碼、屬性 17 | 位移 15 = 職業(程式碼比 `'1'`)、14 = 種族;屬性 17 是條件式減傷 |
 | [`88-races-and-classes.md`](docs/re/88-races-and-classes.md) | 種族/職業碼表 | `H`uman `T`roll `D`warf `E`lf `G`nome;職業是 **`Hero`** 不是「戰士」|
+| [`89-record-offset-census.md`](docs/re/89-record-offset-census.md) | 記錄位移清點 | 39 個位移、8 個有語意;共用變數會混兩個檔 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

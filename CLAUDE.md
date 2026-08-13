@@ -95,7 +95,7 @@
 | C. 原生輔助程式庫 | **`USERLIB.EXE`**(另三支已改歸 A) | 進行中(`docs/re/30`:`bm` 族、114 個重定位項;內容未解)|
 | D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 進行中(`27`:`CHARS.DAT` 25 槽×94B 定案;`43`:**記憶體側已定位** —— 主陣列 `ds:6822`(15×≥20 word)、隊伍人數 `ds:34F8`(上限 5)、隊員名字 `ds:34E0`;欄位語意與檔案對應未解)|
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 進行中(`docs/re/16`:三張表格式定案,兩個欄位語意有交叉印證;讀取端未解)|
-| F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`19`/`51`/`52`:103×121、格子是 word、索引 `y×103+x`、**讀取端已讀(條件 1 ✅)**、圖塊 24/25/27/28 = 地城入口、圖塊 1–9 的圖形位址;缺其餘圖塊語意與 `TOWNDATA.BIN`)|
+| F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`19`/`51`/`52`/`53`:103×121 word、索引 `y×103+x`、讀取端 ✅、`FASTWRLD` 9 張地形、**`TOWNDATA` 13 城鎮三重驗證**、入口/海岸/城鎮圖塊已定。**唯一缺口:`WRLDITEM.PIC` 段索引 ↔ 圖塊值**,不卡外部條件)|
 | G. 地城與迷宮 | `DG*MAZE.SQZ`、`MAZEDATA.BIN`、`DT*TEXT.DAT` | 進行中(`50`:`.SQZ` 是文字+跑長 81×51;`51`:**`MAZEDATA` 是 13×8 關卡表(3 欄定案)、`DT*TEXT` 已確認**;缺符號語意、欄 2/3/4/7、讀取端)|
 | H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | ✅ **RE-DONE**(`19`–`22`、`48`、`49`:圖塊 17×17、`PICT` 153×153、`MONST` 8×17×17 交錯、`WRLDMAP` 103×121、`.PIC` 是 `DRAW` 巨集、調色盤 `0x3D8=0x0E`。四項條件逐條核對見 `49` §4)|
 | I. 法術效果表 | `DE*EFF.BIN` / `DE*EFF.MST`、`FIRESTRM/HAILSTRM/WINDSTRM.BIN` | 進行中(`docs/re/29`:`BIN`/`MST` 資料相同、只差標頭;內容未解,可能該歸到 G)|

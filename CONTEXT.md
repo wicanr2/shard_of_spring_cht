@@ -153,6 +153,7 @@
 | [`50-sqz-maze-format.md`](docs/re/50-sqz-maze-format.md) | **`.SQZ` 已解** | 不是壓縮,是文字 + 跑長;81×51,六檔一致 |
 | [`51-mazedata-and-world-entrances.md`](docs/re/51-mazedata-and-world-entrances.md) | **關卡表 + 世界地圖索引** | `MAZEDATA` 13×8;圖塊 24/25/27/28 = 入口(11 處零誤差);`DT*TEXT` 已確認 |
 | [`52-world-map-reader-and-shared-grid.md`](docs/re/52-world-map-reader-and-shared-grid.md) | **F 的讀取端** | `(y×103+x)×2+0x6822` 逐字對上資料側;`ds:6822` 是「當前地圖」,世界 103／戰鬥 15 |
+| [`53-world-tiles-towns-and-draw-renderer.md`](docs/re/53-world-tiles-towns-and-draw-renderer.md) | **地形 + 城鎮 + DRAW 渲染器** | `FASTWRLD` 9 張;`TOWNDATA` 13 城鎮(13/13、74/74 兩重驗證);`tools/draw_pic.py` |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

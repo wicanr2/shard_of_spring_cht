@@ -176,6 +176,7 @@
 | [`66-userlib-slot-semantics.md`](docs/re/66-userlib-slot-semantics.md) | **子系統 C = RE-DONE** | 槽 34 = 存檔、33 = 狀態列、17 = 死亡、21 = 結局、35 = 訊息框、15 = 視窗框 |
 | [`67-a-closure-module-handoff.md`](docs/re/67-a-closure-module-handoff.md) | **子系統 A = RE-DONE** | 轉交是 `retf` 進 `節區:0x30`(`bm` 為 `0x3A`);`ds:0A28h` 指向檔名緩衝區 |
 | [`68-b-closure-dispatch-capacity.md`](docs/re/68-b-closure-dispatch-capacity.md) | **子系統 B = RE-DONE** | 表容量 105/165/≤204;`3E:A5` 必然等於 `3F:00` |
+| [`69-movement-keys.md`](docs/re/69-movement-keys.md) | 移動鍵(K) | `C P S Q 1 2 3 4` 三角驗證;程式碼側連結未找到 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

@@ -91,7 +91,7 @@
 | G. 地城與迷宮 | `DG*MAZE.SQZ`（壓縮法未知）、`MAZEDATA.BIN`、`DT*TEXT.DAT` | 未開始 |
 | H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | 進行中(`docs/re/19`–`21`:BSAVE 容器 52/52、CGA 2bpp、**圖塊 17×17 九檔驗證**;`MONST`/`PICT` 待驗)|
 | I. 法術效果表 | `DE*EFF.BIN` / `DE*EFF.MST`、`FIRESTRM/HAILSTRM/WINDSTRM.BIN` | 進行中(`docs/re/29`:`BIN`/`MST` 資料相同、只差標頭;內容未解,可能該歸到 G)|
-| J. 戰鬥規則 | `CMBT.EXE`、`FASTCMBT.BIN`、`RNDMONST.BIN` | 未開始 |
+| J. 戰鬥規則 | `CMBT.EXE`、`FASTCMBT.BIN`、`RNDMONST.BIN` | 進行中(`docs/re/31`:`w9` 解為魔法相關、`w8` 訂正;公式仍純程式碼側)|
 | K. 輸入語意（**不含 BIOS 層**） | 哪些鍵在哪個畫面有效、對應什麼動作 | 進行中(`docs/re/28`:`X)字` 慣例、五個畫面的鍵表;提示與實作是否一致未驗)|
 | L. 中文化落點盤點 | 全部（見 §7） | 未開始 |
 

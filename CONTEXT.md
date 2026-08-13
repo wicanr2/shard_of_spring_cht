@@ -198,6 +198,7 @@
 | [`88-races-and-classes.md`](docs/re/88-races-and-classes.md) | 種族/職業碼表 | `H`uman `T`roll `D`warf `E`lf `G`nome;職業是 **`Hero`** 不是「戰士」|
 | [`89-record-offset-census.md`](docs/re/89-record-offset-census.md) | 記錄位移清點 | 39 個位移、8 個有語意;共用變數會混兩個檔 |
 | [`90-monster-column-9-is-a-tier.md`](docs/re/90-monster-column-9-is-a-tier.md) | 怪物欄9 = 難度階級 | 三組碰撞否證「等級」;判別點是單射性不是大小 |
+| [`91-e-closure.md`](docs/re/91-e-closure.md) | **子系統 E = RE-DONE** | 物品欄6 雙重身分;法術負值只出現在四個類別 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

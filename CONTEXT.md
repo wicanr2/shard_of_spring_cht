@@ -156,6 +156,7 @@
 | [`52-world-map-reader-and-shared-grid.md`](docs/re/52-world-map-reader-and-shared-grid.md) | **F 的讀取端** | `(y×103+x)×2+0x6822` 逐字對上資料側;`ds:6822` 是「當前地圖」,世界 103／戰鬥 15 |
 | [`53-world-tiles-towns-and-draw-renderer.md`](docs/re/53-world-tiles-towns-and-draw-renderer.md) | **地形 + 城鎮 + DRAW 渲染器** | `FASTWRLD` 9 張;`TOWNDATA` 13 城鎮(13/13、74/74 兩重驗證);`tools/draw_pic.py` |
 | [`54-f-closure.md`](docs/re/54-f-closure.md) | **子系統 F = RE-DONE** | `WRLDITEM.PIC` 行 k = 圖塊 k+10(7/7 + 20/20 零不合)|
+| [`55-sqz-decoder-from-code.md`](docs/re/55-sqz-decoder-from-code.md) | **`.SQZ` 解碼器** | 規則從程式碼讀出;`_` 與 `*` 是同一值;20 列殘差是我多加的約束 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -282,6 +283,7 @@ linear   = 0x10180 + 段內位移
 | 「遊戲模組不使用 `INT 3Dh`」(`docs/re/07` §2,標**已確認**)| **推翻**:909 處、24 個索引 | **過濾器用助憶碼,而 IDA 把 `CD 3D` 叫 `wait`** —— 同一節裡 227 與「0 個起點」自相矛盾卻沒察覺 |
 | 「`06` §4 的 346 是掃描雜訊」(`docs/re/07` §2 的撤回)| **撤錯了**,346 = `3D:00`,兩種方法同值 | **撤回一個結論也需要證據**,只有推論不夠 |
 | 「`ds:6822` 是 15 列 × 20 欄的主狀態陣列」(`docs/re/43` §1)| 15 是**寬度**;它是「當前地圖」陣列,`WRLDMOVE` 用 103 欄 | **算術對、標籤反了** —— 只看一支模組就替陣列命名 |
+| 「`.SQZ` 的 20 列短 1 格是未解殘差」(`docs/re/50` §4)| 解碼器沒有欄數檢查,50 格合法 | **把「所有列等長」當成必然 —— 從自己的期待推規格** |
 | 「`.SQZ` 是壓縮格式,壓縮法未知」(`docs/re/01`)| 是**純文字** + 跑長編碼 | **拿副檔名當證據**,清單階段沒看內容 |
 | 「`MONST*.BIN` 的資料是連續的」(`docs/re/22` §2 的所有嘗試)| 是**交錯**的(8 word 一組) | **算術對不上時只想到「寬度猜錯」,沒想到「資料不連續」** |
 | 「模組程式碼掃不到陣列索引」(`docs/re/23` §5)| **推翻**:掃錯指紋。word 陣列用 `add`+`shl` 不用 `mul`;改掃 `[reg+disp]` 後 CMBT 有 558 處 | **拿一個不會出現的樣式去掃,把 0 命中讀成「不存在」** |

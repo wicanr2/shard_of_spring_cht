@@ -20,6 +20,8 @@ def main():
 
     seen, work, funcs = set(), [ENTRY], {ENTRY}
     ints, bad = {}, 0
+    breaks = []          # 追蹤斷點:(位址, 原因, 前一個 thunk 的索引與距離)
+    last_thunk = [None]
 
     while work:
         ea = work.pop()
@@ -32,12 +34,18 @@ def main():
                 ida_bytes.create_data(ea + 2, ida_bytes.FF_BYTE, 1, 0)
                 k = f"{ida_bytes.get_byte(ea+1):02X}:{ida_bytes.get_byte(ea+2):02X}"
                 ints[k] = ints.get(k, 0) + 1
+                last_thunk[0] = (ea, k)
                 seen.add(ea + 1); seen.add(ea + 2)
                 ea += 3
                 continue
             n = ida_ua.create_insn(ea)
             if n <= 0:
                 bad += 1
+                lt = last_thunk[0]
+                breaks.append({"ea": f"0x{ea:X}", "why": "解不開",
+                               "thunk": lt[1] if lt else None,
+                               "dist": (ea - lt[0]) if lt else None,
+                               "bytes": ida_bytes.get_bytes(ea, 6).hex(" ")})
                 break
             for i in range(1, n):
                 seen.add(ea + i)
@@ -50,6 +58,11 @@ def main():
                     if mnem == "call":
                         funcs.add(t)
             if mnem in STOP or mnem == "jmp":
+                lt = last_thunk[0]
+                breaks.append({"ea": f"0x{ea:X}", "why": mnem,
+                               "thunk": lt[1] if lt else None,
+                               "dist": (ea - lt[0]) if lt else None,
+                               "bytes": ida_bytes.get_bytes(ea, 6).hex(" ")})
                 break
             ea += n
 
@@ -64,7 +77,7 @@ def main():
         "region": hi - lo, "reached_bytes": len(seen),
         "code_bytes": code, "code_ratio": round(code / max(1, hi - lo), 3),
         "funcs": len(got), "undecodable": bad,
-        "int_calls": ints,
+        "int_calls": ints, "breaks": breaks[:400],
     }, open(sys.argv[1], "w"), indent=1)
     ida_pro.qexit(0)
 

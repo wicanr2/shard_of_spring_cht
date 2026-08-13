@@ -61,7 +61,9 @@
 | **題庫驗證資料欄位(E/J)** | `docs/re/33`,`ITEMS` 欄2=價格、欄3=型別相依主數值 |
 | **API 索引(B)** | `docs/re/36`,模組實際用 125 個索引/6,429 次;**前十個佔 75%** |
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
-| **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不知 DS 基底 → xref 空/假。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
+| **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不建 o_mem 的資料參考 → xref 空。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
+| **`BRUN30` = MS BASIC Compiler Runtime 5.60(B)** | `docs/re/40`:讀自它自己的字串。可當 §2.1 條件 3 的獨立對照來源 |
+| **`BRUN30` 的 DS 基底已解(B)** | `docs/re/41`:`DS = seg002`,`ds:XXXX` = 線性 `0x1FE00 + XXXX`。**所有 `ds:` 全域現在都有確定的檔案位移** |
 | **派工表是薄包裝(B)** | `docs/re/35`,5 支共用實作;`sub_199CC` 的參數是 **4×3 網格**;派工表有進入點直接落在 trampoline 呼叫端上(`3E:44` 已閉環)|
 | **五個種族 + 角色欄位名(D)** | `docs/re/34`,Humans/Trolls/Dwarfs/Elf/Gnomes;五個屬性。修正表**已排除三種存放形式** |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
@@ -134,6 +136,8 @@
 | [`37-api-3e79-3e83.md`](docs/re/37-api-3e79-3e83.md) | 兩個高頻 API | `mov ds:0A08h, sp` 是 API 的共同開場白 |
 | [`38-api-are-basic-primitives.md`](docs/re/38-api-are-basic-primitives.md) | API 的性質 | 高頻端是語言基本操作;**方向改往低頻** |
 | [`39-ds0a3a-and-xref-blind-spot.md`](docs/re/39-ds0a3a-and-xref-blind-spot.md) | `ds:0A3Ah` + xref 盲點 | **xref 看不到 DS 相對存取**;`ds:0A3Ah` 是目前物件指標 |
+| [`40-brun30-identity-and-ds-base.md`](docs/re/40-brun30-identity-and-ds-base.md) | 執行期的身分 | **MS BASIC Compiler Runtime 5.60** |
+| [`41-ds-base-solved.md`](docs/re/41-ds-base-solved.md) | **DS 基底** | `ds:XXXX` = 線性 `0x1FE00 + XXXX`;判準是位移分布的上界 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -253,6 +257,9 @@ linear   = 0x10180 + 段內位移
 |---|---|---|
 | 「`ds:0A3Ah` 只有 3 支 API 在動」 | 62 處存取 | **用錯的工具查 → 空結果讀成「沒有」**(`docs/re/39` §1) |
 | 「`0x0BE8` 是鉤子常式的位址」 | 是哨兵值,與 `0` 並列在跳過條件裡 | 看到數值像位址就去 dump,沒先確認它被當位址用過 |
+| 「xref 為空是因為位址算錯」 | 位址是對的,IDA 根本不為 `o_mem` 建資料參考 | 結論對、理由錯 —— 沒實測就寫成因果 |
+| 「`DS = CS`(`docs/re/40` §2)」 | 只對「單獨執行 BRUN30」的錯誤路徑成立 | **把單一情境的證據當成全域結論** |
+| 「三個常數落在字串中段 → 不是結構指標」 | 用錯基底算的,反證作廢 | 拿未定案的基底去做反證 |
 
 ## 7. 每一輪都要做
 

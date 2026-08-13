@@ -40,7 +40,7 @@ SSI《Shard of Spring》(1986/1987, MS-DOS 版由 Digital Illusions 移植) 的
 | `.BIN` 容器 | BASIC `BSAVE`(`0xFD` + seg + off + len + 資料 + `0x1A`),**52/52** |
 | 顯示 | CGA 320×200 2bpp,掃描線兩區交錯 |
 | 圖塊 ×9 | BASIC `GET` 陣列 **17×17**,九個檔**各自畫出自己的名字** |
-| `PICT*.BIN` ×5 | **153×153**,算式零誤差 |
+| `PICT*.BIN` ×5 | **153×153**,算式零誤差 + 渲染驗證 |
 | `WRLDMAP.BIN` | 每格 2 bytes,**103 × 121** |
 | `MONSTERS.DAT` | **74 筆 × 36 bytes**;`w5` = 怪物圖索引、`w9` = 魔法相關 |
 | `SPELLS.DAT` | 34 筆 × 6 欄;欄 1 = 符文系別(**5/5 對上 EXE 字串,順序相同**) |

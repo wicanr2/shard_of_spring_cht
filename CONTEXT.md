@@ -57,6 +57,7 @@
 | **`DE*EFF` 成對檔(I)** | `docs/re/29`,`BIN`/`MST` 資料逐位元組相同,只差 BSAVE 標頭 |
 | **`USERLIB` 自成一族(C)** | `docs/re/30`,`bm` 簽章 + 114 個重定位項;另三支是一般 `bz` 模組 |
 | **戰鬥欄位(J)** | `docs/re/31`,等級序列當對照組;`w9` = 魔法相關,`w8` 訂正 |
+| **DOSBox oracle 可用** | `docs/re/32`,原版跑得起來;開機有手冊查表關卡 |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
 | **世界地圖與地城(F/G)** | `docs/re/17`,`WRLDMAP` 每格 2 bytes、12,467 格 35 種圖塊;六個 `.SQZ` 一律 82 列 |
 
@@ -119,6 +120,7 @@
 | [`29-de-eff-pairs.md`](docs/re/29-de-eff-pairs.md) | `DE*EFF` 成對檔 | 資料相同只差標頭;否證「母本/工作副本」 |
 | [`30-userlib-family.md`](docs/re/30-userlib-family.md) | `USERLIB` 分族 | `bm` 族只有一支;分類要按結構不按檔名語感 |
 | [`31-combat-fields.md`](docs/re/31-combat-fields.md) | 戰鬥欄位 | 等級序列當對照組;`w9` 魔法相關、`w8` 非等級 |
+| [`32-dosbox-oracle.md`](docs/re/32-dosbox-oracle.md) | DOSBox oracle | 環境可用;開機關卡洩漏了屬性加值表的存在 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

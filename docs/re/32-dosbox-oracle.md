@@ -1,0 +1,74 @@
+# 32 — DOSBox oracle 環境,與開機的手冊查表關卡
+
+日期:2026-08-13
+接續:[`31-combat-fields.md`](31-combat-fields.md)
+
+## 結論
+
+DOSBox 環境可用(`tools/dosbox_run.sh`),原版能跑起來。
+**開機第一關是手冊查表題** —— 遊戲問一個要對照手冊圖表才能回答的數值,
+答對才進得去。
+
+這件事有三層意義,其中兩層與防拷無關。
+
+## 1. 環境
+
+```sh
+tools/dosbox_run.sh "<timeline>" [cycles]
+#   wait:N / key:KEYSYM / type:STRING / shot:NAME
+```
+
+- 沿用本機既有的 DOSBox image,顯示模式固定 `cga`([`20`](20-cga-layout.md) 已確認)
+- **`cycles` 寫死 `fixed 4000`** —— `cycles=auto` 是可重現性的敵人
+  (`~/.claude/knowledge-base/retro/dosbox-game-configs.md`)
+- 原版從唯讀的 `game/sharspri/` 複製到 `workplace/dosbox/game/`(可寫,存檔測試要用)
+- 截圖進 `workplace/dosbox/shots/`(gitignore)
+
+⚠ 沿用的 image 其 entrypoint 寫死執行 `DEMON`,
+本專案用一個轉接批次檔導到 `START.EXE`。**這是借用別的專案 image 的代價,
+不是本專案的設計** —— 之後若要自建 image 就不需要這一層。
+
+## 2. 開機關卡
+
+標題畫面之後,遊戲直接問一道**要查手冊圖表才能回答的數值題**
+(題目本身指明了手冊頁碼)。
+
+### 對專案的三層意義
+
+**① 自動化 oracle 需要先過這一關。**
+之後每一次 DOSBox 觀察都要先答對,所以 timeline 的第一段是固定開銷。
+
+**② 題目本身洩漏了一條遊戲機制。**
+它問的是**某個屬性值對應的加值** —— 代表遊戲裡有一張屬性→加值的對照表。
+那正是 `CLAUDE.md` §2.2 **J. 戰鬥規則**要解的東西,
+也給了 [`31`](31-combat-fields.md) 那組未解的屬性欄位一個**外部對照來源**
+(手冊的圖表與程式裡的表應該一致)。
+
+**③ 它證實了 oracle 優先序的價值。**
+十秒鐘的實跑問出了「有開機關卡」「有屬性加值表」兩件事,
+而靜態分析到目前為止一次都沒碰到。
+`CLAUDE.md` 的 oracle 優先序把 DOSBox 實跑排在反組譯之上,這一次直接印證。
+
+## 3. 這條路解開了什麼
+
+[`23`](23-module-datafile-map.md) §5 剛記錄過:
+`CLAUDE.md` §2.1 的**條件 2(xref 確認讀寫端)不能靠掃模組程式碼達成**,
+因為 BASIC 模組的陣列索引由執行期代勞。當時列的兩條出路是
+「解派工表語意」或「DOSBox 動態觀察」。
+
+**第二條現在通了。** 之後可以用黑箱方式裁決的問題:
+
+| 問題 | 做法 |
+|---|---|
+| CGA 調色盤是哪四色([`20`](20-cga-layout.md) §3)| 截圖取色 |
+| `MONST*` 的實際外觀([`22`](22-pict-and-monst.md))| 遭遇怪物時截圖,與檔案內容對照 |
+| 輸入提示是否與實作一致([`28`](28-input-semantics.md))| 送提示裡沒寫的鍵,看有沒有反應 |
+| 戰鬥欄位語意([`31`](31-combat-fields.md))| 固定條件下觀察數值變化 |
+
+## 4. 尚未解開
+
+| 項目 | 狀態 |
+|---|---|
+| 屬性→加值對照表的實際內容 | 未解 —— 屬於 **J. 戰鬥規則** |
+| 開機關卡的題庫從哪來 | 未解 |
+| 自建 DOSBox image(去掉轉接批次檔) | 待做 |

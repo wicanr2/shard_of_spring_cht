@@ -87,7 +87,7 @@
 | C. 原生輔助程式庫 | `USERLIB.EXE`、`MIO2.EXE`、`WSIO.EXE`、`MTEST.EXE` | 未開始 |
 | D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 未開始 |
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 進行中(`docs/re/16`:三張表格式定案,兩個欄位語意有交叉印證;讀取端未解)|
-| F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 未開始 |
+| F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`docs/re/17`:未壓縮、38 種圖塊;寬度未定)|
 | G. 地城與迷宮 | `DG*MAZE.SQZ`（壓縮法未知）、`MAZEDATA.BIN`、`DT*TEXT.DAT` | 未開始 |
 | H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | 未開始 |
 | I. 法術效果表 | `DE*EFF.BIN` / `DE*EFF.MST`、`FIRESTRM/HAILSTRM/WINDSTRM.BIN` | 未開始 |

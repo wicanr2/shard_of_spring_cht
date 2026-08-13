@@ -1,0 +1,362 @@
+[
+ {
+  "off": 1646,
+  "len": 1,
+  "ds": 16003,
+  "text": "8"
+ },
+ {
+  "off": 1780,
+  "len": 2,
+  "ds": 16003,
+  "text": ":5"
+ },
+ {
+  "off": 1796,
+  "len": 1,
+  "ds": 46241,
+  "text": "5"
+ },
+ {
+  "off": 2053,
+  "len": 1,
+  "ds": 21153,
+  "text": "0"
+ },
+ {
+  "off": 3688,
+  "len": 1,
+  "ds": 16077,
+  "text": "5"
+ },
+ {
+  "off": 4872,
+  "len": 1,
+  "ds": 16077,
+  "text": "("
+ },
+ {
+  "off": 5732,
+  "len": 1,
+  "ds": 12516,
+  "text": "0"
+ },
+ {
+  "off": 5738,
+  "len": 1,
+  "ds": 12522,
+  "text": "9"
+ },
+ {
+  "off": 5744,
+  "len": 2,
+  "ds": 12528,
+  "text": "  "
+ },
+ {
+  "off": 5750,
+  "len": 1,
+  "ds": 12534,
+  "text": "-"
+ },
+ {
+  "off": 5760,
+  "len": 1,
+  "ds": 12544,
+  "text": " "
+ },
+ {
+  "off": 5770,
+  "len": 4,
+  "ds": 12554,
+  "text": "WRLD"
+ },
+ {
+  "off": 5778,
+  "len": 1,
+  "ds": 12562,
+  "text": "D"
+ },
+ {
+  "off": 5784,
+  "len": 12,
+  "ds": 12568,
+  "text": "  [Choice ?]"
+ },
+ {
+  "off": 5800,
+  "len": 1,
+  "ds": 12584,
+  "text": "A"
+ },
+ {
+  "off": 5806,
+  "len": 13,
+  "ds": 12590,
+  "text": "[Press ENTER]"
+ },
+ {
+  "off": 5824,
+  "len": 13,
+  "ds": 12608,
+  "text": "[Press a key]"
+ },
+ {
+  "off": 5842,
+  "len": 11,
+  "ds": 12626,
+  "text": "Party Saved"
+ },
+ {
+  "off": 5858,
+  "len": 9,
+  "ds": 12642,
+  "text": "CHARS.DAT"
+ },
+ {
+  "off": 5872,
+  "len": 10,
+  "ds": 12656,
+  "text": "GROUPS.DAT"
+ },
+ {
+  "off": 5886,
+  "len": 1,
+  "ds": 12670,
+  "text": "R"
+ },
+ {
+  "off": 5896,
+  "len": 5,
+  "ds": 12680,
+  "text": "Hour:"
+ },
+ {
+  "off": 5906,
+  "len": 5,
+  "ds": 12690,
+  "text": " Day:"
+ },
+ {
+  "off": 5916,
+  "len": 15,
+  "ds": 12700,
+  "text": "  In the Month "
+ },
+ {
+  "off": 5936,
+  "len": 3,
+  "ds": 12720,
+  "text": "of "
+ },
+ {
+  "off": 5948,
+  "len": 12,
+  "ds": 12732,
+  "text": "Visibility ="
+ },
+ {
+  "off": 5964,
+  "len": 16,
+  "ds": 12748,
+  "text": " Player's Clock:"
+ },
+ {
+  "off": 6000,
+  "len": 1,
+  "ds": 12784,
+  "text": ":"
+ },
+ {
+  "off": 6006,
+  "len": 3,
+  "ds": 12790,
+  "text": " PM"
+ },
+ {
+  "off": 6014,
+  "len": 3,
+  "ds": 12798,
+  "text": " AM"
+ },
+ {
+  "off": 6022,
+  "len": 6,
+  "ds": 12806,
+  "text": "Time> "
+ },
+ {
+  "off": 6032,
+  "len": 6,
+  "ds": 12816,
+  "text": "Date> "
+ },
+ {
+  "off": 6042,
+  "len": 13,
+  "ds": 12826,
+  "text": "[Press a key]"
+ },
+ {
+  "off": 6060,
+  "len": 1,
+  "ds": 12844,
+  "text": "/"
+ },
+ {
+  "off": 6066,
+  "len": 6,
+  "ds": 12850,
+  "text": "Facing"
+ },
+ {
+  "off": 6076,
+  "len": 15,
+  "ds": 12860,
+  "text": "Keypad Template"
+ },
+ {
+  "off": 6096,
+  "len": 5,
+  "ds": 12880,
+  "text": "][ ]["
+ },
+ {
+  "off": 6106,
+  "len": 4,
+  "ds": 12890,
+  "text": "Hour"
+ },
+ {
+  "off": 6114,
+  "len": 4,
+  "ds": 12898,
+  "text": "[S]["
+ },
+ {
+  "off": 6122,
+  "len": 4,
+  "ds": 12906,
+  "text": "][P]"
+ },
+ {
+  "off": 6130,
+  "len": 1,
+  "ds": 12914,
+  "text": "["
+ },
+ {
+  "off": 6136,
+  "len": 1,
+  "ds": 12920,
+  "text": "]"
+ },
+ {
+  "off": 6142,
+  "len": 4,
+  "ds": 12926,
+  "text": "[C]["
+ },
+ {
+  "off": 6150,
+  "len": 4,
+  "ds": 12934,
+  "text": "][Q]"
+ },
+ {
+  "off": 6158,
+  "len": 20,
+  "ds": 12942,
+  "text": "MB T50 O3 L8 ML DEFE"
+ },
+ {
+  "off": 6182,
+  "len": 18,
+  "ds": 12966,
+  "text": "MB T50 O3 L8 ML FE"
+ },
+ {
+  "off": 6204,
+  "len": 17,
+  "ds": 12988,
+  "text": "MB T50 O3 L4 ML D"
+ },
+ {
+  "off": 6226,
+  "len": 18,
+  "ds": 13010,
+  "text": "MB T50 O3 L4 ML FF"
+ },
+ {
+  "off": 6248,
+  "len": 18,
+  "ds": 13032,
+  "text": "MB T50 O3 L8 ML AG"
+ },
+ {
+  "off": 6270,
+  "len": 9,
+  "ds": 13054,
+  "text": "CHARS.DAT"
+ },
+ {
+  "off": 6284,
+  "len": 10,
+  "ds": 13068,
+  "text": "GROUPS.DAT"
+ },
+ {
+  "off": 6298,
+  "len": 9,
+  "ds": 13082,
+  "text": "PICT7.BIN"
+ },
+ {
+  "off": 6312,
+  "len": 161,
+  "ds": 13096,
+  "text": "You some how get the nasty feeling that this time, you really messed up.  Please organize a new party, as this one is irreversibly, totally,            D E A D !"
+ },
+ {
+  "off": 6478,
+  "len": 40,
+  "ds": 13262,
+  "text": "Please insert your BOOT disk in drive A:"
+ },
+ {
+  "off": 6522,
+  "len": 5,
+  "ds": 13306,
+  "text": ":menu"
+ },
+ {
+  "off": 6532,
+  "len": 44,
+  "ds": 13316,
+  "text": "Are you really sure you wish to Quit (Y/N) ?"
+ },
+ {
+  "off": 6580,
+  "len": 1,
+  "ds": 13364,
+  "text": "Y"
+ },
+ {
+  "off": 6586,
+  "len": 36,
+  "ds": 13370,
+  "text": "Do you wish to save the game (Y/N) ?"
+ },
+ {
+  "off": 6626,
+  "len": 66,
+  "ds": 13410,
+  "text": "Don, Leslie, and Martin thank you for playing the Shard of Spring."
+ },
+ {
+  "off": 30278,
+  "len": 7,
+  "ds": 17152,
+  "text": "LEARDIS"
+ }
+]

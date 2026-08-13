@@ -166,7 +166,8 @@
 | [`59-de-eff-event-table.md`](docs/re/59-de-eff-event-table.md) | **`DE*EFF` 是地城事件表** | 106×5:列/欄/方向/目標/目的欄;目標 ≥100 是 `DT` 文字編號 |
 | [`60-event-lookup-and-tile-19.md`](docs/re/60-event-lookup-and-tile-19.md) | **G 重新 RE-DONE** | 事件表在 `ds:0x88F0`;圖塊 19 = 隱形觸發格;負值 = 跨關卡樓梯(4/4)|
 | [`61-i-closure-unused-tiles.md`](docs/re/61-i-closure-unused-tiles.md) | **子系統 I = RE-DONE** | 九張圖塊只有 `MAZEWALL` 被載入;I 掛錯東西,重新歸位後無剩餘 |
-| [`62-l-localization-inventory.md`](docs/re/62-l-localization-inventory.md) | **子系統 L = RE-DONE** | 1,416 段 / 33,795 B;`TITLES.DAT` 是外置 UI 字串表 |
+| [`62-l-localization-inventory.md`](docs/re/62-l-localization-inventory.md) | **子系統 L = RE-DONE** | 1,476 段 / 34,499 B(經 `63` 訂正);`TITLES.DAT` 是外置 UI 字串表 |
+| [`63-userlib-strings-and-l-correction.md`](docs/re/63-userlib-strings-and-l-correction.md) | `USERLIB` 字串 + L 訂正 | 11/11 模組載入;單描述子格式;60 段存檔/時鐘/提示文字 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -292,6 +293,7 @@ linear   = 0x10180 + 段內位移
 | 「`0x66DC` 是 linker 保留的記號值」(`docs/re/03` §3)| 語意仍未解 | 「大於檔案大小」推不出「不是位址」|
 | 「遊戲模組不使用 `INT 3Dh`」(`docs/re/07` §2,標**已確認**)| **推翻**:909 處、24 個索引 | **過濾器用助憶碼,而 IDA 把 `CD 3D` 叫 `wait`** —— 同一節裡 227 與「0 個起點」自相矛盾卻沒察覺 |
 | 「`06` §4 的 346 是掃描雜訊」(`docs/re/07` §2 的撤回)| **撤錯了**,346 = `3D:00`,兩種方法同值 | **撤回一個結論也需要證據**,只有推論不夠 |
+| 「全遊戲文字 1,416 段 / 33,795 B」(`docs/re/62`)| 漏了 `USERLIB.EXE`,實際 1,476 段 / 34,499 B | **盤點範圍用「遊戲模組」這個角色分類定義,而不是「會不會被載入」** |
 | 「`MAZEITEM.PIC` 不是逐圖塊值索引」(`docs/re/55` §6)| 第 k 行**就是**圖塊值 k | **檢定條件漏了「用到但不繪製」** —— 檢定沒過先查條件 |
 | 「`ds:3518h`/`ds:351Ah` 是累加量」(`docs/re/43` §4)| 隊伍的世界座標 | 只看寫入的形狀,沒看讀取端在跟什麼比 |
 | 「`ds:6822` 是 15 列 × 20 欄的主狀態陣列」(`docs/re/43` §1)| 15 是**寬度**;它是「當前地圖」陣列,`WRLDMOVE` 用 103 欄 | **算術對、標籤反了** —— 只看一支模組就替陣列命名 |

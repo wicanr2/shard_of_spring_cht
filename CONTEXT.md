@@ -40,12 +40,13 @@
 | **`bz` 標頭是節區表** | `docs/re/09`,六個欄位 66/66 對上 IDA 段起點;程式碼只在 `[0, +0x24)` |
 | 執行期不 far call 進模組 | `docs/re/10`,13 處 far 轉移全在 `BRUN30` 內部 |
 | 追蹤乾淨終止,下界確定 | `docs/re/11`,靜態可達僅 1,973 bytes;模組區 0 處 far 轉移 |
-| **執行期 API 對照表第一列** | `docs/re/12`,`3F:61` = 四位元組描述子複製 |
+| **執行期 API 對照表(2/7 高頻)** | `docs/re/12`、`13`:`3F:61` 描述子複製、`3E:42` 緩衝區附加 |
 
 ### 進行中
 
 | 項目 | 卡在哪 |
 |---|---|
+| **對 `BRUN30` 自己做強制反組譯** | 未分析的 8% 擋住 API 對照(`3E:44` 的目標就在裡面)。套 `unlock_module.py` 的手法即可,且會順帶解開「誰在用 `INT 3Dh`」|
 | **找執行期回呼的進入點** | 兩個假設都已否證(`docs/re/10`、`11`)。追蹤乾淨終止、模組區 0 處 far 轉移,所以剩下唯一機制是模組把位址交給執行期由其呼叫回來。裁決方式:讀高頻 thunk 對應的執行期常式 |
 | **解出三張派工表的容量與語意** | 表位址已確認,容量至今沒被量到 |
 | 掃描擴到 `seg001`–`seg004` | 目前只掃 `seg000`;四支小模組大半內容沒掃到(`docs/re/06` §4)|
@@ -79,6 +80,7 @@
 | [`10-runtime-does-not-call-modules.md`](docs/re/10-runtime-does-not-call-modules.md) | 控制流方向 | 執行期不 far call 進模組;低涵蓋率另有原因 |
 | [`11-trace-terminates-cleanly.md`](docs/re/11-trace-terminates-cleanly.md) | 追蹤終止分析 | 追蹤乾淨跑完;內嵌參數假設否證;下界確定 |
 | [`12-api-3f61.md`](docs/re/12-api-3f61.md) | API 對照表 | `3F:61`(最高頻)= 描述子複製;表已開第一列 |
+| [`13-api-3e42.md`](docs/re/13-api-3e42.md) | API 對照(續) | `3E:42` = 緩衝區附加;`BRUN30` 未分析的 8% 擋住後續 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

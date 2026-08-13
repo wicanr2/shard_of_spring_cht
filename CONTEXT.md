@@ -63,6 +63,7 @@
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
 | **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不建 o_mem 的資料參考 → xref 空。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
 | **`BRUN30` = MS BASIC Compiler Runtime 5.60(B)** | `docs/re/40`:讀自它自己的字串。可當 §2.1 條件 3 的獨立對照來源 |
+| **子系統 F 已 RE-DONE(第二個)** | `docs/re/54` §4:世界地圖的五個檔案全解,兩條繪製路徑都讀過 |
 | **子系統 H 已 RE-DONE(第一個)** | `docs/re/49` §4:四項條件逐條核對。圖塊/PICT/MONST/WRLDMAP/`.PIC`/調色盤全解 |
 | **模組 ↔ 原始碼對應已知(A)** | `docs/re/47`:十一支的 `.BAS` 檔名 + `MASTER.INC`(八支共用)/`TOWNCAMP.INC`/`INSTALL.INC` |
 | **中文化規模已量(L)** | `docs/re/47` §5:模組內文字 952 段 / 15,738 B(清單 `generated-text-inventory.json`)|
@@ -154,6 +155,7 @@
 | [`51-mazedata-and-world-entrances.md`](docs/re/51-mazedata-and-world-entrances.md) | **關卡表 + 世界地圖索引** | `MAZEDATA` 13×8;圖塊 24/25/27/28 = 入口(11 處零誤差);`DT*TEXT` 已確認 |
 | [`52-world-map-reader-and-shared-grid.md`](docs/re/52-world-map-reader-and-shared-grid.md) | **F 的讀取端** | `(y×103+x)×2+0x6822` 逐字對上資料側;`ds:6822` 是「當前地圖」,世界 103／戰鬥 15 |
 | [`53-world-tiles-towns-and-draw-renderer.md`](docs/re/53-world-tiles-towns-and-draw-renderer.md) | **地形 + 城鎮 + DRAW 渲染器** | `FASTWRLD` 9 張;`TOWNDATA` 13 城鎮(13/13、74/74 兩重驗證);`tools/draw_pic.py` |
+| [`54-f-closure.md`](docs/re/54-f-closure.md) | **子系統 F = RE-DONE** | `WRLDITEM.PIC` 行 k = 圖塊 k+10(7/7 + 20/20 零不合)|
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

@@ -188,6 +188,7 @@
 | [`78-damage-sequence.md`](docs/re/78-damage-sequence.md) | 傷害運算序列 | 形狀確定、配對壓在未解的對齊問題上(保留已由 `79` 撤銷)|
 | [`79-alignment-resolved-damage-formula.md`](docs/re/79-alignment-resolved-damage-formula.md) | **傷害公式** | 三個假設全被否證,但否證過程證明配對成立 |
 | [`80-save-write-end.md`](docs/re/80-save-write-end.md) | 存檔寫入端(D)| 記錄長度 94/90 從 `OPEN` 直接讀出;`GROUPS.DAT` 15 個欄位位移 |
+| [`81-chars-record-to-combat-attributes.md`](docs/re/81-chars-record-to-combat-attributes.md) | 角色欄位 → 戰鬥屬性 | 機械配對 + 兩個已讀過的錨點驗證 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

@@ -43,6 +43,7 @@
 | **執行期 API 對照表(3/7 高頻)** | `docs/re/12`–`14`:`3F:61` 描述子複製、`3E:42`/`3E:44` 參數傳遞 |
 | `BRUN30` 補齊分析 | `docs/re/14`,34.9% → 44.0%,709 → 770 個函式 |
 | **模組轉交的檔名來源** | `docs/re/15`,`BRUN30:0x10C25` 把字串描述子抄進 `ds:0B06h` |
+| **規則資料表(子系統 E)** | `docs/re/16`,`MONSTERS` 36B×74、`SPELLS`/`ITEMS` CSV;`w5`=怪物圖、欄1=符文系別 |
 
 ### 進行中
 
@@ -61,7 +62,7 @@
 5.4%(流程追蹤,下界)與 42.8%(線性掃描,上界)之間,
 差距的成因是**模組被執行期呼叫**,從進入點追在結構上到不了大部分程式碼。
 找到那份清單會同時收斂涵蓋率、並解開 `docs/re/04` §5 掛著的控制轉移。
-子系統看板在 `CLAUDE.md` §2.2。
+子系統看板在 `CLAUDE.md` §2.2 —— **E 項(規則資料表)已推進**。
 
 ---
 
@@ -85,6 +86,7 @@
 | [`13-api-3e42.md`](docs/re/13-api-3e42.md) | API 對照(續) | `3E:42` = 緩衝區附加;`BRUN30` 未分析區擋住後續 |
 | [`14-brun-unlock-param-buffer.md`](docs/re/14-brun-unlock-param-buffer.md) | `BRUN30` 補齊 | 補到 44%;§3 結論已作廢 |
 | [`15-chain-filename-and-misalignment.md`](docs/re/15-chain-filename-and-misalignment.md) | 模組轉交 + 錯位教訓 | `ds:0B06h` 的寫入端找到;強制反組譯會錯位 |
+| [`16-rule-tables.md`](docs/re/16-rule-tables.md) | 規則資料表 | 怪物 36B×74、法術/道具 CSV;兩個欄位語意有 22/22 與 5/5 印證 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

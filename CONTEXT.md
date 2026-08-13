@@ -178,6 +178,7 @@
 | [`68-b-closure-dispatch-capacity.md`](docs/re/68-b-closure-dispatch-capacity.md) | **子系統 B = RE-DONE** | 表容量 105/165/≤204;`3E:A5` 必然等於 `3F:00` |
 | [`69-movement-keys.md`](docs/re/69-movement-keys.md) | 移動鍵(K) | `C P S Q 1 2 3 4` 三角驗證;§2 已被 `70` 推翻 |
 | [`70-key-chains-all-modules.md`](docs/re/70-key-chains-all-modules.md) | 小鍵盤轉譯層 + 七支模組比對鏈 | 描述子 = 文字 −4;`1北 2東` 從程式碼確認 |
+| [`71-k-closure.md`](docs/re/71-k-closure.md) | **子系統 K = RE-DONE** | `3Dh:00` 位移 ÷8 得槽號,五筆全整除;`S`=存檔確認 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -314,6 +315,7 @@ linear   = 0x10180 + 段內位移
 | 「`MONST*.BIN` 的資料是連續的」(`docs/re/22` §2 的所有嘗試)| 是**交錯**的(8 word 一組) | **算術對不上時只想到「寬度猜錯」,沒想到「資料不連續」** |
 | 「模組程式碼掃不到陣列索引」(`docs/re/23` §5)| **推翻**:掃錯指紋。word 陣列用 `add`+`shl` 不用 `mul`;改掃 `[reg+disp]` 後 CMBT 有 558 處 | **拿一個不會出現的樣式去掃,把 0 命中讀成「不存在」** |
 | 「`0x66DC` 是資料段的區域結束位址」(`docs/re/42` §2 第一版)| **否證**:`MENU` 門檻 `0x66E8` 卻有完全相同的存取範圍;而且門檻是段落、位移是位元組 | **兩個數字接近就當成有關係,沒先確認單位** —— 靠「找一個該值不同的樣本」抓到 |
+| 「`TOWN`/`MENU`/`MAZEMOVE` 有四個提示字母沒有對應的按鍵處理」(`docs/re/70` §5)| **三個是抽取器誤判** —— `([A-Za-z0-9])\)` 會吃掉 `(Y/N)?`、`(320K)`、`(B,G,V,R)` 的右括號前一字;第四個是收滿四字元才比一次的寶石謎題 | **抽取器的假陽性和假陰性一樣要當缺口處理** —— 「異常清單」要逐項回看原文,不要直接當待解項 |
 
 ## 7. 每一輪都要做
 

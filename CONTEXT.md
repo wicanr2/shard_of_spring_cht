@@ -32,12 +32,13 @@
 | 十三支執行檔清冊 | `docs/re/01`,含函式/段/字串/立即數統計 |
 | loader stub 全解 | `docs/re/02`,3,047 bytes,十一支共用 |
 | `bz` 模組標頭與重定位 | `docs/re/03`,`+0x16` 經 11/11 獨立印證 |
+| EXE 佈局與進入點算式 | `docs/re/04`,`+0x16` 三個獨立來源 11/11 一致 |
 
 ### 進行中
 
 | 項目 | 卡在哪 |
 |---|---|
-| **讓 IDA 分析模組本體** | 位置與長度已能精確算出(`docs/re/03` §4),**進入點未解**。要讀 `BRUN30.EXE:sub_14BDD` 的呼叫端 `0x1158B` |
+| **讓 IDA 分析模組本體** | 模組區的位置與長度已三重驗證(`docs/re/04` §2)。MZ 進入點指向 stub 而非模組本體,**執行期怎麼跳進模組本體仍未解** |
 
 ### 一句話現況
 
@@ -55,6 +56,7 @@
 | [`01-inventory.md`](docs/re/01-inventory.md) | 初始清冊 | IDA 只分析到 loader stub;UNK 段是明碼 8086 不是壓縮 |
 | [`02-loader-stub.md`](docs/re/02-loader-stub.md) | loader stub | 依 `PATH=` 載 `BRUN30.EXE`、依 `LIB=` 載 `USERLIB.EXE` |
 | [`03-bz-module-header.md`](docs/re/03-bz-module-header.md) | 模組標頭 | `+0x16` = 模組大小(paragraphs);重定位分兩類修補 |
+| [`04-module-layout-entry.md`](docs/re/04-module-layout-entry.md) | 佈局與進入點 | `[模組區][stub]`;MZ CS:IP 指向 stub;`sub_14CB8` 是通用 MZ 載入器 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -113,6 +115,7 @@ linear   = 0x10180 + 段內位移
 |---|---|
 | 十一支的 loader stub「逐位元組相同」 | **只有結構相同**(函式大小序列與段大小一致);位元組不同,差異來自重定位與嵌入的模組名。`docs/re/01` §2 |
 | `bz` 標頭有 `+0x32` / `+0x34` / `+0x54` 三個欄位 | 那三個位移屬於 **`BRUN30` 的控制區塊**(`ds:0CACh`),不是模組標頭。錯在沒注意 `sub_14BDD` 中途換過 `es` 的基底。`docs/re/03` §1 |
+| `ds:0A28h` 存的 `0x0B06` 是「模組本體的進入點位移」 | 是**檔名字串的指標**。`sub_14CB8` 拿它去 `INT 21h AH=3Dh` 開檔。**常數是位址還是指標,要看使用端怎麼用,不能從值的樣子猜**。`docs/re/04` §4 |
 | kb 寫的「IDAPython 實測無輸出,一律寫 IDC」 | 可用,但要修正過的 image(`ida-pro-9.4-idapython:py312-v1`)。兩個獨立根因見 `~/.claude/knowledge-base/retro/ida-pro-9.4.md` |
 
 > 這張表只增不減。**推翻一條斷言時,要同時把正文改寫成正確答案**,

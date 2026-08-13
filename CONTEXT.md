@@ -48,6 +48,7 @@
 | **CGA 像素佈局(H)** | `docs/re/20`,320×200 2bpp、掃描線兩區交錯 |
 | **圖塊格式(H)** | `docs/re/21`,BASIC `GET` 陣列 17×17,**九個檔各自畫出自己的名字** |
 | **`PICT*` 定案 / `MONST*` 未解** | `docs/re/22`,`PICT` 153×153 算式零誤差;`MONST` 讀法不成立 |
+| **模組↔資料檔對照** | `docs/re/23`,每個子系統的讀取端已縮到模組層級 |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
 | **世界地圖與地城(F/G)** | `docs/re/17`,`WRLDMAP` 每格 2 bytes、12,467 格 35 種圖塊;六個 `.SQZ` 一律 82 列 |
 
@@ -101,6 +102,7 @@
 | [`20-cga-layout.md`](docs/re/20-cga-layout.md) | CGA 佈局 | 320×200 2bpp 交錯 |
 | [`21-tile-format.md`](docs/re/21-tile-format.md) | 圖塊格式 | `GET`/`PUT` 陣列 17×17;磚牆/拱門/四角星各自成立 |
 | [`22-pict-and-monst.md`](docs/re/22-pict-and-monst.md) | 大圖與怪物圖 | `PICT` 153×153;`MONST` 未解,格式不通用 |
+| [`23-module-datafile-map.md`](docs/re/23-module-datafile-map.md) | 模組↔資料檔 | 哪支模組讀哪個檔;`CHARUTIL` 是角色資料專職 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

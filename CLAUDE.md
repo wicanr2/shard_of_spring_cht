@@ -85,7 +85,7 @@
 | A. 執行檔架構與模組轉交 | `START/MENU/TOWN/CMBT/CAMP/MAZEMOVE/WRLDMOVE/CHARUTIL.EXE` | 進行中(`docs/re/01`–`06`:模組本體已解鎖至 40.8%;模組轉交仍未解)|
 | B. 執行期模組的呼叫介面 | `BRUN30.EXE` | 進行中(`docs/re/06`:INT ABI 已確認;三張派工表未解)|
 | C. 原生輔助程式庫 | `USERLIB.EXE`、`MIO2.EXE`、`WSIO.EXE`、`MTEST.EXE` | 未開始 |
-| D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 未開始 |
+| D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 讀取端已定位(`docs/re/23`:`CHARUTIL.EXE` 專職,已解鎖 37.2%)|
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 進行中(`docs/re/16`:三張表格式定案,兩個欄位語意有交叉印證;讀取端未解)|
 | F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`docs/re/19`:**103 × 121 定案**;圖塊語意未解)|
 | G. 地城與迷宮 | `DG*MAZE.SQZ`（壓縮法未知）、`MAZEDATA.BIN`、`DT*TEXT.DAT` | 未開始 |

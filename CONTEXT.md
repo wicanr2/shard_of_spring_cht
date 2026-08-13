@@ -40,6 +40,7 @@
 | **`bz` 標頭是節區表** | `docs/re/09`,六個欄位 66/66 對上 IDA 段起點;程式碼只在 `[0, +0x24)` |
 | 執行期不 far call 進模組 | `docs/re/10`,13 處 far 轉移全在 `BRUN30` 內部 |
 | 追蹤乾淨終止,下界確定 | `docs/re/11`,靜態可達僅 1,973 bytes;模組區 0 處 far 轉移 |
+| **執行期 API 對照表第一列** | `docs/re/12`,`3F:61` = 四位元組描述子複製 |
 
 ### 進行中
 
@@ -77,6 +78,7 @@
 | [`09-bz-segment-map.md`](docs/re/09-bz-segment-map.md) | 節區表 | `bz` 標頭六個欄位是段邊界;資料段位置已知 |
 | [`10-runtime-does-not-call-modules.md`](docs/re/10-runtime-does-not-call-modules.md) | 控制流方向 | 執行期不 far call 進模組;低涵蓋率另有原因 |
 | [`11-trace-terminates-cleanly.md`](docs/re/11-trace-terminates-cleanly.md) | 追蹤終止分析 | 追蹤乾淨跑完;內嵌參數假設否證;下界確定 |
+| [`12-api-3f61.md`](docs/re/12-api-3f61.md) | API 對照表 | `3F:61`(最高頻)= 描述子複製;表已開第一列 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

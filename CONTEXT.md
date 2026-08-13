@@ -151,6 +151,7 @@
 | [`48-monst-deinterleave.md`](docs/re/48-monst-deinterleave.md) | **`MONST*.BIN` 已解** | 八張 17×17 動畫格,以 8 word 交錯;22/22 檔驗證 |
 | [`49-h-closure.md`](docs/re/49-h-closure.md) | **子系統 H = RE-DONE** | `MIO2.EXE` 是開發工具、給出讀取端;調色盤 `0x3D8=0x0E`;`.PIC` 是 `DRAW` 巨集 |
 | [`50-sqz-maze-format.md`](docs/re/50-sqz-maze-format.md) | **`.SQZ` 已解** | 不是壓縮,是文字 + 跑長;81×51,六檔一致 |
+| [`51-mazedata-and-world-entrances.md`](docs/re/51-mazedata-and-world-entrances.md) | **關卡表 + 世界地圖索引** | `MAZEDATA` 13×8;圖塊 24/25/27/28 = 入口(11 處零誤差);`DT*TEXT` 已確認 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

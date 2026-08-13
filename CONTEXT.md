@@ -189,6 +189,7 @@
 | [`79-alignment-resolved-damage-formula.md`](docs/re/79-alignment-resolved-damage-formula.md) | **傷害公式** | 三個假設全被否證,但否證過程證明配對成立 |
 | [`80-save-write-end.md`](docs/re/80-save-write-end.md) | 存檔寫入端(D)| 記錄長度 94/90 從 `OPEN` 直接讀出;`GROUPS.DAT` 15 個欄位位移 |
 | [`81-chars-record-to-combat-attributes.md`](docs/re/81-chars-record-to-combat-attributes.md) | 角色欄位 → 戰鬥屬性 | 機械配對 + 兩個已讀過的錨點驗證 |
+| [`82-monster-columns-semantics.md`](docs/re/82-monster-columns-semantics.md) | 怪物十欄語意 | 十欄定案七欄;法師/戰士 20/20 分群、兩條等級序列單調 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -331,6 +332,7 @@ linear   = 0x10180 + 段內位移
 | 「落單位元組的比例和普通指令的自然頻率相符,所以是普通指令」(`docs/re/79` 測量一)| **假象** —— 兩個族群疊在一起。拆成「後面接不接 `CD`」再看,`0x80` 是 10/10 全接,巧合率 1.6×10⁻⁷ | **一個分佈「看起來正常」可能是兩個族群疊出來的** —— 拆條件再看一次的成本很低 |
 | 「`INT 3Dh` 參數 < 0 會直接返回」讀成「遊戲會走這條路」(`docs/re/06` §3)| 處理常式支援,但**十一支模組裡沒有任何一個負參數** | **「機制存在」不等於「被使用」** —— 描述能力時要分開寫 |
 | 「D 的存檔寫入端只能靠 DOSBox 動態觀察,卡在開機手冊查詢」(多輪回報)| **推翻**:存檔是 `USERLIB` 槽 34,原生程式碼靜態就讀得到;記錄長度直接寫在 `OPEN` 的 `mov cx` 裡(`80`)| **本專案第三次「答案早在自己手上」** —— 前兩次漏查規則,這次漏查自己的成果。要說「做不到」之前先把已解出的過一遍 |
+| 「`MONSTERS.DAT` 欄8 形狀像圖號(33/33/38 落在 46 張圖內)」(`docs/re/73` §4)| **否證**:`Siriadne !` 的欄8 是 **5000**。欄8 = 生命值(兩條等級序列嚴格單調)| **從前 N 筆看出來的形狀,要拿全部 N 筆去否證不是去確認** —— 這次只要看最後一筆 |
 
 ## 7. 每一輪都要做
 

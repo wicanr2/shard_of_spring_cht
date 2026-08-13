@@ -19,7 +19,7 @@ def main():
         rows.append({
             "ea": f"0x{ea:X}", "name": ida_funcs.get_func_name(ea),
             "first": idc.GetDisasm(ea), "callers": len(callers),
-            "caller_list": [f"0x{c:X}" for c in callers[:20]],
+            "caller_list": [f"0x{c:X}" for c in callers],
         })
     rows.sort(key=lambda r: -r["callers"])
     json.dump(rows, open(sys.argv[1], "w", encoding="utf-8"), indent=1)

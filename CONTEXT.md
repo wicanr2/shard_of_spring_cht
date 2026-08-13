@@ -63,6 +63,7 @@
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
 | **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不建 o_mem 的資料參考 → xref 空。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
 | **`BRUN30` = MS BASIC Compiler Runtime 5.60(B)** | `docs/re/40`:讀自它自己的字串。可當 §2.1 條件 3 的獨立對照來源 |
+| **子系統 A 已 RE-DONE(第七個)** | `docs/re/67` §3:模組轉交、`bm` 入口 `0x3A`、`ds:0B06h` 由誰填三題一次關掉 |
 | **子系統 C 已 RE-DONE(第六個)** | `docs/re/66` §4:字串 → 引用點 → 槽號三步對應,呼叫者分布自洽 |
 | **子系統 L 已 RE-DONE(第五個)** | `docs/re/62` §5:中文化落點總表,46% 可變長 / 54% 等長 |
 | **子系統 I 已 RE-DONE(第四個)** | `docs/re/61` §4:掛錯的檔案重新歸位;八張圖塊遊戲從不載入(帶正對照)|
@@ -172,6 +173,7 @@
 | [`64-userlib-call-mechanism.md`](docs/re/64-userlib-call-mechanism.md) | **`USERLIB` 的呼叫機制** | `3D:00` 延遲繫結;匯出表在 `ds:0x0A1E`;19 個槽全部 ≡3 mod 8 |
 | [`65-userlib-export-table.md`](docs/re/65-userlib-export-table.md) | **完整匯出表** | 靠 MZ 重定位表找到(seg 1822、間距 8);63 槽;槽 35 呼叫槽 15 畫訊息框 |
 | [`66-userlib-slot-semantics.md`](docs/re/66-userlib-slot-semantics.md) | **子系統 C = RE-DONE** | 槽 34 = 存檔、33 = 狀態列、17 = 死亡、21 = 結局、35 = 訊息框、15 = 視窗框 |
+| [`67-a-closure-module-handoff.md`](docs/re/67-a-closure-module-handoff.md) | **子系統 A = RE-DONE** | 轉交是 `retf` 進 `節區:0x30`(`bm` 為 `0x3A`);`ds:0A28h` 指向檔名緩衝區 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

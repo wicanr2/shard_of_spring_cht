@@ -50,6 +50,7 @@
 | **`PICT*` 定案 / `MONST*` 未解** | `docs/re/22`,`PICT` 153×153 算式零誤差;`MONST` 讀法不成立 |
 | **模組↔資料檔對照** | `docs/re/23`,每個子系統的讀取端已縮到模組層級 |
 | **工具衝突已記錄** | `docs/re/24`,`trace_module` 會洗掉 `unlock_module`;掃描前先看分母 |
+| **字串存放形式(L)** | `docs/re/25`,長度+指標描述子;指標未重定位,靜態解不出 |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
 | **世界地圖與地城(F/G)** | `docs/re/17`,`WRLDMAP` 每格 2 bytes、12,467 格 35 種圖塊;六個 `.SQZ` 一律 82 列 |
 
@@ -105,6 +106,7 @@
 | [`22-pict-and-monst.md`](docs/re/22-pict-and-monst.md) | 大圖與怪物圖 | `PICT` 153×153;`MONST` 未解,格式不通用 |
 | [`23-module-datafile-map.md`](docs/re/23-module-datafile-map.md) | 模組↔資料檔 | 哪支模組讀哪個檔;`CHARUTIL` 是角色資料專職 |
 | [`24-tooling-conflict.md`](docs/re/24-tooling-conflict.md) | 工具衝突 | `trace` 會覆蓋 `unlock`;`BLOAD` 不留位址常數 |
+| [`25-string-storage.md`](docs/re/25-string-storage.md) | 字串存放 | 描述子形式已確認;指標要套重定位才解得開 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

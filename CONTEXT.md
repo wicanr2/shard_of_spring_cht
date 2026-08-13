@@ -168,6 +168,7 @@
 | [`61-i-closure-unused-tiles.md`](docs/re/61-i-closure-unused-tiles.md) | **子系統 I = RE-DONE** | 九張圖塊只有 `MAZEWALL` 被載入;I 掛錯東西,重新歸位後無剩餘 |
 | [`62-l-localization-inventory.md`](docs/re/62-l-localization-inventory.md) | **子系統 L = RE-DONE** | 1,476 段 / 34,499 B(經 `63` 訂正);`TITLES.DAT` 是外置 UI 字串表 |
 | [`63-userlib-strings-and-l-correction.md`](docs/re/63-userlib-strings-and-l-correction.md) | `USERLIB` 字串 + L 訂正 | 11/11 模組載入;單描述子格式;60 段存檔/時鐘/提示文字 |
+| [`64-userlib-call-mechanism.md`](docs/re/64-userlib-call-mechanism.md) | **`USERLIB` 的呼叫機制** | `3D:00` 延遲繫結;匯出表在 `ds:0x0A1E`;19 個槽全部 ≡3 mod 8 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

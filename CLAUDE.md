@@ -79,7 +79,7 @@
 
 | 子系統 | 主要輸入 | 狀態 |
 |---|---|---|
-| A. 執行檔架構與模組轉交 | `START/MENU/TOWN/CMBT/CAMP/MAZEMOVE/WRLDMOVE/CHARUTIL.EXE` | 未開始 |
+| A. 執行檔架構與模組轉交 | `START/MENU/TOWN/CMBT/CAMP/MAZEMOVE/WRLDMOVE/CHARUTIL.EXE` | 進行中(`docs/re/01`:清冊完成,遊戲本體尚未反組譯)|
 | B. 執行期模組的呼叫介面 | `BRUN30.EXE` | 未開始 |
 | C. 原生輔助程式庫 | `USERLIB.EXE`、`MIO2.EXE`、`WSIO.EXE`、`MTEST.EXE` | 未開始 |
 | D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 未開始 |
@@ -453,7 +453,8 @@ https://github.com/wicanr2/shard_of_spring_cht
 2. ~~建 IDAPython 可用的 image~~ ✅ 完成：`ida-pro-9.4-idapython:py312-v1`，已用探針驗過
 3. 從 `~/cht/大時代的故事/tools/` 抄 `ida.sh`、從 `~/cht/civ1/tools/ida/` 抄
    `export_inventory.py` 過來改
-4. **RE-01**（§5.1）：十三支執行檔全部建 DB，產出初始清冊
+4. ~~**RE-01**：十三支執行檔全部建 DB，產出初始清冊~~ ✅ 見 `docs/re/01-inventory.md`
+   → **接續**:讀 3,047-byte loader stub 的 `start_0`，讓 IDA 分析得到 `seg000`
 5. 建 DOSBox 環境，把原版跑起來當 oracle
 6. **RE-02**（§5.2）：模組間傳遞的狀態佈局
 7. 之後才輪到 §2.2 看板上其他子系統

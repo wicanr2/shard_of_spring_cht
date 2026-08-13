@@ -63,6 +63,7 @@
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
 | **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不建 o_mem 的資料參考 → xref 空。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
 | **`BRUN30` = MS BASIC Compiler Runtime 5.60(B)** | `docs/re/40`:讀自它自己的字串。可當 §2.1 條件 3 的獨立對照來源 |
+| **子系統 G 已 RE-DONE(第三個)** | `docs/re/57` §5:`.SQZ`/`MAZEDATA`/`DT*TEXT`/`MAZEITEM` 四組全解 |
 | **子系統 F 已 RE-DONE(第二個)** | `docs/re/54` §4:世界地圖的五個檔案全解,兩條繪製路徑都讀過 |
 | **子系統 H 已 RE-DONE(第一個)** | `docs/re/49` §4:四項條件逐條核對。圖塊/PICT/MONST/WRLDMAP/`.PIC`/調色盤全解 |
 | **模組 ↔ 原始碼對應已知(A)** | `docs/re/47`:十一支的 `.BAS` 檔名 + `MASTER.INC`(八支共用)/`TOWNCAMP.INC`/`INSTALL.INC` |
@@ -158,6 +159,7 @@
 | [`54-f-closure.md`](docs/re/54-f-closure.md) | **子系統 F = RE-DONE** | `WRLDITEM.PIC` 行 k = 圖塊 k+10(7/7 + 20/20 零不合)|
 | [`55-sqz-decoder-from-code.md`](docs/re/55-sqz-decoder-from-code.md) | **`.SQZ` 解碼器** | 規則從程式碼讀出;`_` 與 `*` 是同一值;20 列殘差是我多加的約束 |
 | [`56-maze-tile-classes-and-mazedata-columns.md`](docs/re/56-maze-tile-classes-and-mazedata-columns.md) | 迷宮格值 + `MAZEDATA` 欄位 | 5–10 阻擋;欄 7 = 文字記錄數−1(13/13);欄 4 未解 |
+| [`57-g-closure.md`](docs/re/57-g-closure.md) | **子系統 G = RE-DONE** | `MAZEDATA` 在 `ds:365C`;欄 4 = 朝向 1北2東3南4西;`MAZEITEM` 行 k = 圖塊 k |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -283,6 +285,8 @@ linear   = 0x10180 + 段內位移
 | 「`0x66DC` 是 linker 保留的記號值」(`docs/re/03` §3)| 語意仍未解 | 「大於檔案大小」推不出「不是位址」|
 | 「遊戲模組不使用 `INT 3Dh`」(`docs/re/07` §2,標**已確認**)| **推翻**:909 處、24 個索引 | **過濾器用助憶碼,而 IDA 把 `CD 3D` 叫 `wait`** —— 同一節裡 227 與「0 個起點」自相矛盾卻沒察覺 |
 | 「`06` §4 的 346 是掃描雜訊」(`docs/re/07` §2 的撤回)| **撤錯了**,346 = `3D:00`,兩種方法同值 | **撤回一個結論也需要證據**,只有推論不夠 |
+| 「`MAZEITEM.PIC` 不是逐圖塊值索引」(`docs/re/55` §6)| 第 k 行**就是**圖塊值 k | **檢定條件漏了「用到但不繪製」** —— 檢定沒過先查條件 |
+| 「`ds:3518h`/`ds:351Ah` 是累加量」(`docs/re/43` §4)| 隊伍的世界座標 | 只看寫入的形狀,沒看讀取端在跟什麼比 |
 | 「`ds:6822` 是 15 列 × 20 欄的主狀態陣列」(`docs/re/43` §1)| 15 是**寬度**;它是「當前地圖」陣列,`WRLDMOVE` 用 103 欄 | **算術對、標籤反了** —— 只看一支模組就替陣列命名 |
 | 「`.SQZ` 的 20 列短 1 格是未解殘差」(`docs/re/50` §4)| 解碼器沒有欄數檢查,50 格合法 | **把「所有列等長」當成必然 —— 從自己的期待推規格** |
 | 「`.SQZ` 是壓縮格式,壓縮法未知」(`docs/re/01`)| 是**純文字** + 跑長編碼 | **拿副檔名當證據**,清單階段沒看內容 |

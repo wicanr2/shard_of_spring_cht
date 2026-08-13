@@ -1,5 +1,8 @@
 # Shard of Spring（SSI 1986）— remake ＋ 繁體中文化
 
+> ⚡ **動手前先讀 [`CONTEXT.md`](./CONTEXT.md)** —— 那是全專案的單一入口:
+> 現況一覽、RE 知識庫索引、術語表、已被推翻的斷言。本檔只放目標、邊界、閘門與硬規則。
+>
 > 建立日期：2026-08-13。工作方式沿用 `~/cht/daemon_winter`（Demon's Winter）的做法，
 > 但**逆向工具一律用 IDA Pro**（見 §3），且**RE 閘門比 daemon_winter 更嚴**（見 §2）。
 

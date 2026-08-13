@@ -181,6 +181,7 @@
 | [`71-k-closure.md`](docs/re/71-k-closure.md) | **子系統 K = RE-DONE** | `3Dh:00` 位移 ÷8 得槽號,五筆全整除;`S`=存檔確認 |
 | [`72-e-file-formats-from-readers.md`](docs/re/72-e-file-formats-from-readers.md) | 三個規則資料表的格式 | 從讀取端的元素大小與迴圈上界解出;三個檔大小零誤差 |
 | [`73-monster-columns-to-combat-array.md`](docs/re/73-monster-columns-to-combat-array.md) | 怪物欄 → 戰鬥單位屬性 | 位移全是 15 的倍數,證實 15 欄二維陣列 |
+| [`74-spell-and-item-columns.md`](docs/re/74-spell-and-item-columns.md) | 法術/物品欄位語意 | 物品的法術編號與點數搬進施法流程同一組變數;28+6 是兩個 100% 規則 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -318,6 +319,7 @@ linear   = 0x10180 + 段內位移
 | 「模組程式碼掃不到陣列索引」(`docs/re/23` §5)| **推翻**:掃錯指紋。word 陣列用 `add`+`shl` 不用 `mul`;改掃 `[reg+disp]` 後 CMBT 有 558 處 | **拿一個不會出現的樣式去掃,把 0 命中讀成「不存在」** |
 | 「`0x66DC` 是資料段的區域結束位址」(`docs/re/42` §2 第一版)| **否證**:`MENU` 門檻 `0x66E8` 卻有完全相同的存取範圍;而且門檻是段落、位移是位元組 | **兩個數字接近就當成有關係,沒先確認單位** —— 靠「找一個該值不同的樣本」抓到 |
 | 「`TOWN`/`MENU`/`MAZEMOVE` 有四個提示字母沒有對應的按鍵處理」(`docs/re/70` §5)| **三個是抽取器誤判** —— `([A-Za-z0-9])\)` 會吃掉 `(Y/N)?`、`(320K)`、`(B,G,V,R)` 的右括號前一字;第四個是收滿四字元才比一次的寶石謎題 | **抽取器的假陽性和假陰性一樣要當缺口處理** —— 「異常清單」要逐項回看原文,不要直接當待解項 |
+| 「每個解除法術與它所解的法術同系別」(`docs/re/74` 起草時)| **否證**:`MELT`(系別 1 火)解的是 `FREEZE`(系別 4 冰) | **三筆裡兩筆符合就想立規則** —— 分群要看完整欄位,不是挑順眼的三筆 |
 
 ## 7. 每一輪都要做
 

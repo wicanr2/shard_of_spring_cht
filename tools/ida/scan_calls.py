@@ -15,11 +15,12 @@ def main():
     for head in idautils.Heads(ENTRY, limit):
         if not ida_bytes.is_code(ida_bytes.get_flags(head)):
             continue
-        if idc.print_insn_mnem(head) != "int":
+        # ⚠ 不能用 print_insn_mnem == "int" 過濾:IDA 把 CD 3D 標成 "wait"
+        # (浮點模擬器呼叫),那個過濾會漏掉全部 227 處。改直接看位元組。
+        b = ida_bytes.get_bytes(head, 2) or b""
+        if len(b) != 2 or b[0] != 0xCD or b[1] not in (0x3D, 0x3E, 0x3F):
             continue
-        vec = idc.get_operand_value(head, 0)
-        if vec not in (0x3D, 0x3E, 0x3F):
-            continue
+        vec = b[1]
         param = ida_bytes.get_byte(head + 2)
         key = f"{vec:02X}:{param:02X}"
         hits[key] = hits.get(key, 0) + 1

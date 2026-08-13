@@ -141,6 +141,7 @@
 | [`41-ds-base-solved.md`](docs/re/41-ds-base-solved.md) | **DS 基底** | `ds:XXXX` = 線性 `0x1FE00 + XXXX`;判準是位移分布的上界 |
 | [`42-module-ds-and-the-66dc-boundary.md`](docs/re/42-module-ds-and-the-66dc-boundary.md) | 模組的資料段 | 七支共用 `0x66C8`–`0x681A`;模組變數大半是 BSS,不在檔案裡 |
 | [`43-common-block-and-array-indexing.md`](docs/re/43-common-block-and-array-indexing.md) | **陣列索引 + COMMON 區** | `ds:6822` 是 15×≥20 的 word 陣列;`ds:34F8` = 隊伍人數(上限 5);`ds:34E0` = 隊員名字 |
+| [`44-int3d-is-used-after-all.md`](docs/re/44-int3d-is-used-after-all.md) | **`INT 3Dh` 推翻** | 模組有用,909 處;助憶碼過濾器造成的假結論 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -264,6 +265,8 @@ linear   = 0x10180 + 段內位移
 | 「`DS = CS`(`docs/re/40` §2)」 | 只對「單獨執行 BRUN30」的錯誤路徑成立 | **把單一情境的證據當成全域結論** |
 | 「三個常數落在字串中段 → 不是結構指標」 | 用錯基底算的,反證作廢 | 拿未定案的基底去做反證 |
 | 「`0x66DC` 是 linker 保留的記號值」(`docs/re/03` §3)| 語意仍未解 | 「大於檔案大小」推不出「不是位址」|
+| 「遊戲模組不使用 `INT 3Dh`」(`docs/re/07` §2,標**已確認**)| **推翻**:909 處、24 個索引 | **過濾器用助憶碼,而 IDA 把 `CD 3D` 叫 `wait`** —— 同一節裡 227 與「0 個起點」自相矛盾卻沒察覺 |
+| 「`06` §4 的 346 是掃描雜訊」(`docs/re/07` §2 的撤回)| **撤錯了**,346 = `3D:00`,兩種方法同值 | **撤回一個結論也需要證據**,只有推論不夠 |
 | 「模組程式碼掃不到陣列索引」(`docs/re/23` §5)| **推翻**:掃錯指紋。word 陣列用 `add`+`shl` 不用 `mul`;改掃 `[reg+disp]` 後 CMBT 有 558 處 | **拿一個不會出現的樣式去掃,把 0 命中讀成「不存在」** |
 | 「`0x66DC` 是資料段的區域結束位址」(`docs/re/42` §2 第一版)| **否證**:`MENU` 門檻 `0x66E8` 卻有完全相同的存取範圍;而且門檻是段落、位移是位元組 | **兩個數字接近就當成有關係,沒先確認單位** —— 靠「找一個該值不同的樣本」抓到 |
 

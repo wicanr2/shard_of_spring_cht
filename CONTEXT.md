@@ -191,7 +191,8 @@
 | [`81-chars-record-to-combat-attributes.md`](docs/re/81-chars-record-to-combat-attributes.md) | 角色欄位 → 戰鬥屬性 | 機械配對 + 兩個已讀過的錨點驗證 |
 | [`82-monster-columns-semantics.md`](docs/re/82-monster-columns-semantics.md) | 怪物十欄語意 | ⚠ 欄4/欄8 已被 `83` 推翻 |
 | [`83-hp-is-attribute-3.md`](docs/re/83-hp-is-attribute-3.md) | 生命值是屬性 3 | 傷害減在哪個欄位上那個欄位就是生命值;欄8 = 經驗值 |
-| [`84-pursuit-not-initiative.md`](docs/re/84-pursuit-not-initiative.md) | 追擊移動(不是先攻)| 屬性 0/1 = 戰場座標;`81` 的離群配對變可疑 |
+| [`84-pursuit-not-initiative.md`](docs/re/84-pursuit-not-initiative.md) | 追擊移動(不是先攻)| ⚠ §2 已被 `85` 推翻 |
+| [`85-scanner-conflated-zero-with-unknown.md`](docs/re/85-scanner-conflated-zero-with-unknown.md) | 掃描器失敗值撞號 | 31% 的失敗被讀成「屬性 0」,而那正是我去看它的原因 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -337,6 +338,7 @@ linear   = 0x10180 + 段內位移
 | 「`MONSTERS.DAT` 欄8 形狀像圖號(33/33/38 落在 46 張圖內)」(`docs/re/73` §4)| **否證**:`Siriadne !` 的欄8 是 **5000**。欄8 = 生命值(兩條等級序列嚴格單調)| **從前 N 筆看出來的形狀,要拿全部 N 筆去否證不是去確認** —— 這次只要看最後一筆 |
 | 「`MONSTERS.DAT` 欄8 = 生命值(已確認)」(`docs/re/82`)| **推翻**:生命值是**欄4**(→ 屬性 3,`sub [di+6822h], 傷害`);欄8 → 屬性 19 在 `CMBT` 只寫不讀,是**經驗值**(`83`)| **一個測試若對兩個候選答案都會通過,它就不是判別測試** —— 「隨等級單調」在 RPG 裡每個數值欄位都成立,拿它當證據等於沒測 |
 | 「`CHARS.DAT` 位移 41 → 戰鬥屬性 1」(`docs/re/81`)| **可疑**:屬性 0/1 是戰場座標,不該存在存檔裡;而那一筆的配對距離 33 bytes 是 12 筆裡唯一的離群值(`84` §3)| **機械配對的離群值要當成待查,不是雜訊** —— 錨點證明規則大體正確,不證明每一筆正確 |
+| 「屬性 0 / 1 = 戰場座標」(`docs/re/84` §2)| 屬性 0 那一半來自掃描器的預設值 —— 找不到 `add` 就當 `imm=0`,317 處裡有 97 處(31%)如此。屬性 1 降為假設 | **掃描器的預設值不能和它的某個有效輸出撞號** —— 失敗值撞號會讓失敗看起來像訊號,而且是最強的那個 |
 
 ## 7. 每一輪都要做
 

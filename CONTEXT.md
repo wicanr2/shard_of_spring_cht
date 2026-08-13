@@ -33,12 +33,13 @@
 | loader stub 全解 | `docs/re/02`,3,047 bytes,十一支共用 |
 | `bz` 模組標頭與重定位 | `docs/re/03`,`+0x16` 經 11/11 獨立印證 |
 | EXE 佈局與進入點算式 | `docs/re/04`,`+0x16` 三個獨立來源 11/11 一致 |
+| 模組程式碼起點 | `docs/re/05`,`bz+0x30`,11/11 皆為合法指令起點 |
 
 ### 進行中
 
 | 項目 | 卡在哪 |
 |---|---|
-| **讓 IDA 分析模組本體** | 模組區的位置與長度已三重驗證(`docs/re/04` §2)。MZ 進入點指向 stub 而非模組本體,**執行期怎麼跳進模組本體仍未解** |
+| **讓 IDA 分析模組本體** | 起點已定案(`bz+0x30`),但強制反組譯只到 **0.7% 涵蓋率**就散掉。指向 `INT 3Dh/3Eh/3Fh` 帶內嵌參數,IDA 把參數當 opcode。裁決方式見 `docs/re/05` §3 |
 
 ### 一句話現況
 
@@ -57,6 +58,7 @@
 | [`02-loader-stub.md`](docs/re/02-loader-stub.md) | loader stub | 依 `PATH=` 載 `BRUN30.EXE`、依 `LIB=` 載 `USERLIB.EXE` |
 | [`03-bz-module-header.md`](docs/re/03-bz-module-header.md) | 模組標頭 | `+0x16` = 模組大小(paragraphs);重定位分兩類修補 |
 | [`04-module-layout-entry.md`](docs/re/04-module-layout-entry.md) | 佈局與進入點 | `[模組區][stub]`;MZ CS:IP 指向 stub;`sub_14CB8` 是通用 MZ 載入器 |
+| [`05-module-code-start.md`](docs/re/05-module-code-start.md) | 程式碼起點 | `bz` 標頭長 `0x30`;強制反組譯只到 0.7%,卡在 `INT` 內嵌參數 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -101,6 +103,12 @@ linear   = 0x10180 + 段內位移
 
 `far_call_targets` 在十二支上都是 0 —— 那是「沒被分析」的後果,不是「沒有跨段呼叫」。
 下任何「不存在」的結論前先做正對照(`~/diagnosis-notes/docs/02-query-returned-empty/`)。
+
+### 掃二進位樣式不要用正規表示式
+
+`bytes([0xCD, 0x3F])` 是 `b'\xcd?'`,`?` 是量詞 —— 每個位置都命中。
+用 `bytes.find` 或 `re.escape`。**抓到它靠的是量級檢查:命中數不該接近檔案大小。**
+⚠ 同一次掃描裡只有一部分結果會壞(`0x3D`/`0x3E` 不是 metacharacter),更難察覺。
 
 ### 橫跨不同輸入卻不動的數字 = 查法壞了
 

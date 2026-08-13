@@ -63,6 +63,7 @@
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
 | **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不建 o_mem 的資料參考 → xref 空。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
 | **`BRUN30` = MS BASIC Compiler Runtime 5.60(B)** | `docs/re/40`:讀自它自己的字串。可當 §2.1 條件 3 的獨立對照來源 |
+| **子系統 L 已 RE-DONE(第五個)** | `docs/re/62` §5:中文化落點總表,46% 可變長 / 54% 等長 |
 | **子系統 I 已 RE-DONE(第四個)** | `docs/re/61` §4:掛錯的檔案重新歸位;八張圖塊遊戲從不載入(帶正對照)|
 | **子系統 G 已 RE-DONE(第三個)** | `docs/re/60` §5。⚠ 曾在 `57` 判定、`59` 因範圍擴大收回、`60` 重判 —— 過程留在紀錄裡 |
 | **子系統 F 已 RE-DONE(第二個)** | `docs/re/54` §4:世界地圖的五個檔案全解,兩條繪製路徑都讀過 |
@@ -165,6 +166,7 @@
 | [`59-de-eff-event-table.md`](docs/re/59-de-eff-event-table.md) | **`DE*EFF` 是地城事件表** | 106×5:列/欄/方向/目標/目的欄;目標 ≥100 是 `DT` 文字編號 |
 | [`60-event-lookup-and-tile-19.md`](docs/re/60-event-lookup-and-tile-19.md) | **G 重新 RE-DONE** | 事件表在 `ds:0x88F0`;圖塊 19 = 隱形觸發格;負值 = 跨關卡樓梯(4/4)|
 | [`61-i-closure-unused-tiles.md`](docs/re/61-i-closure-unused-tiles.md) | **子系統 I = RE-DONE** | 九張圖塊只有 `MAZEWALL` 被載入;I 掛錯東西,重新歸位後無剩餘 |
+| [`62-l-localization-inventory.md`](docs/re/62-l-localization-inventory.md) | **子系統 L = RE-DONE** | 1,416 段 / 33,795 B;`TITLES.DAT` 是外置 UI 字串表 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

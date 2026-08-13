@@ -179,6 +179,8 @@
 | [`69-movement-keys.md`](docs/re/69-movement-keys.md) | 移動鍵(K) | `C P S Q 1 2 3 4` 三角驗證;§2 已被 `70` 推翻 |
 | [`70-key-chains-all-modules.md`](docs/re/70-key-chains-all-modules.md) | 小鍵盤轉譯層 + 七支模組比對鏈 | 描述子 = 文字 −4;`1北 2東` 從程式碼確認 |
 | [`71-k-closure.md`](docs/re/71-k-closure.md) | **子系統 K = RE-DONE** | `3Dh:00` 位移 ÷8 得槽號,五筆全整除;`S`=存檔確認 |
+| [`72-e-file-formats-from-readers.md`](docs/re/72-e-file-formats-from-readers.md) | 三個規則資料表的格式 | 從讀取端的元素大小與迴圈上界解出;三個檔大小零誤差 |
+| [`73-monster-columns-to-combat-array.md`](docs/re/73-monster-columns-to-combat-array.md) | 怪物欄 → 戰鬥單位屬性 | 位移全是 15 的倍數,證實 15 欄二維陣列 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

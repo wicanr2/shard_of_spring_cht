@@ -96,7 +96,7 @@
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 進行中(`docs/re/16`:三張表格式定案,兩個欄位語意有交叉印證;讀取端未解)|
 | F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`docs/re/19`:**103 × 121 定案**;圖塊語意未解)|
 | G. 地城與迷宮 | `DG*MAZE.SQZ`（壓縮法未知）、`MAZEDATA.BIN`、`DT*TEXT.DAT` | 未開始 |
-| H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | 進行中(`docs/re/19`–`21`:BSAVE 容器 52/52、CGA 2bpp、**圖塊 17×17 九檔驗證**;`MONST`/`PICT` 待驗)|
+| H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | 進行中(`19`–`22`、`48`:BSAVE 52/52、CGA 2bpp、圖塊 17×17、`PICT` 153×153、**`MONST` 8×17×17 交錯 22/22**;只剩調色盤與 `.PIC`。**缺口:§2.1 條件 1 的讀取端佐證**)|
 | I. 法術效果表 | `DE*EFF.BIN` / `DE*EFF.MST`、`FIRESTRM/HAILSTRM/WINDSTRM.BIN` | 進行中(`docs/re/29`:`BIN`/`MST` 資料相同、只差標頭;內容未解,可能該歸到 G)|
 | J. 戰鬥規則 | `CMBT.EXE`、`FASTCMBT.BIN`、`RNDMONST.BIN` | 進行中(`31`:`w9` 解為魔法相關;`43`:戰鬥迴圈跑主陣列第 9–13 列 = 隊伍;公式未解)|
 | K. 輸入語意（**不含 BIOS 層**） | 哪些鍵在哪個畫面有效、對應什麼動作 | 進行中(`docs/re/28`:`X)字` 慣例、五個畫面的鍵表;提示與實作是否一致未驗)|

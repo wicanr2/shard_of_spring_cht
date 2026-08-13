@@ -1,5 +1,9 @@
 # 22 — `PICT*.BIN` 定案,`MONST*.BIN` 未解
 
+> ⚠ **`MONST*.BIN` 已於 [`48`](48-monst-deinterleave.md) 解開**:八張 17×17 的動畫格,
+> 資料以 8 個 word 為間隔**交錯**。本文所有失敗的嘗試都假設資料連續,
+> 所以全部注定失敗。下面保留原文是為了留下錯誤的形狀。
+
 日期:2026-08-13
 接續:[`21-tile-format.md`](21-tile-format.md)
 子系統:**H. 圖形格式**
@@ -115,7 +119,7 @@ BSAVE 標頭記著 22 個檔共用 segment `0x27FF`([`19`](19-bsave-container.md
 
 | 項目 | 狀態 |
 |---|---|
-| `MONST*.BIN` 的尺寸與格式 | **未解** —— 改從 `CMBT.EXE` 的讀取端找 |
-| `DE*EFF.BIN`(10 對) | 未驗(標頭值分散,疑似也不是 `GET` 陣列)|
+| ~~`MONST*.BIN` 的尺寸與格式~~ | **已解**:[`48`](48-monst-deinterleave.md),8 × 17×17 交錯 |
+| `DE*EFF.BIN`(10 對) | **不是圖形**([`48`](48-monst-deinterleave.md) §6):值都是 0–0x40 的小整數,應改當表格解 |
 | `PICT*` 逐張渲染確認 | 待做 |
 | CGA 調色盤 | 未解 |

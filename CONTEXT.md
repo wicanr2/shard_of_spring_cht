@@ -147,6 +147,7 @@
 | [`45-int3d-family.md`](docs/re/45-int3d-family.md) | `INT 3Dh` 這一族 | 字串/暫存值操作;`sub_1A08B` 是自由串列配置器 |
 | [`46-string-table-partial.md`](docs/re/46-string-table-partial.md) | 字串表(L) | 三描述子 + 文字;**等長替換現在可行**,改長度不行 |
 | [`47-source-filenames-and-master-inc.md`](docs/re/47-source-filenames-and-master-inc.md) | **原始碼檔名** | 十一支的 `.BAS`/`.INC` 都在;`MASTER.INC` 解釋 COMMON 區;文字總量 15,738 B |
+| [`48-monst-deinterleave.md`](docs/re/48-monst-deinterleave.md) | **`MONST*.BIN` 已解** | 八張 17×17 動畫格,以 8 word 交錯;22/22 檔驗證 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -272,6 +273,7 @@ linear   = 0x10180 + 段內位移
 | 「`0x66DC` 是 linker 保留的記號值」(`docs/re/03` §3)| 語意仍未解 | 「大於檔案大小」推不出「不是位址」|
 | 「遊戲模組不使用 `INT 3Dh`」(`docs/re/07` §2,標**已確認**)| **推翻**:909 處、24 個索引 | **過濾器用助憶碼,而 IDA 把 `CD 3D` 叫 `wait`** —— 同一節裡 227 與「0 個起點」自相矛盾卻沒察覺 |
 | 「`06` §4 的 346 是掃描雜訊」(`docs/re/07` §2 的撤回)| **撤錯了**,346 = `3D:00`,兩種方法同值 | **撤回一個結論也需要證據**,只有推論不夠 |
+| 「`MONST*.BIN` 的資料是連續的」(`docs/re/22` §2 的所有嘗試)| 是**交錯**的(8 word 一組) | **算術對不上時只想到「寬度猜錯」,沒想到「資料不連續」** |
 | 「模組程式碼掃不到陣列索引」(`docs/re/23` §5)| **推翻**:掃錯指紋。word 陣列用 `add`+`shl` 不用 `mul`;改掃 `[reg+disp]` 後 CMBT 有 558 處 | **拿一個不會出現的樣式去掃,把 0 命中讀成「不存在」** |
 | 「`0x66DC` 是資料段的區域結束位址」(`docs/re/42` §2 第一版)| **否證**:`MENU` 門檻 `0x66E8` 卻有完全相同的存取範圍;而且門檻是段落、位移是位元組 | **兩個數字接近就當成有關係,沒先確認單位** —— 靠「找一個該值不同的樣本」抓到 |
 

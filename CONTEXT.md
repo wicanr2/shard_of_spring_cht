@@ -63,7 +63,7 @@
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
 | **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不建 o_mem 的資料參考 → xref 空。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
 | **`BRUN30` = MS BASIC Compiler Runtime 5.60(B)** | `docs/re/40`:讀自它自己的字串。可當 §2.1 條件 3 的獨立對照來源 |
-| ⚠ **G 的 RE-DONE 已收回** | `docs/re/59`:`DE*EFF` 納入 G 的範圍後多出未解項。**範圍變了就要重判** |
+| **子系統 G 已 RE-DONE(第三個)** | `docs/re/60` §5。⚠ 曾在 `57` 判定、`59` 因範圍擴大收回、`60` 重判 —— 過程留在紀錄裡 |
 | **子系統 F 已 RE-DONE(第二個)** | `docs/re/54` §4:世界地圖的五個檔案全解,兩條繪製路徑都讀過 |
 | **子系統 H 已 RE-DONE(第一個)** | `docs/re/49` §4:四項條件逐條核對。圖塊/PICT/MONST/WRLDMAP/`.PIC`/調色盤全解 |
 | **模組 ↔ 原始碼對應已知(A)** | `docs/re/47`:十一支的 `.BAS` 檔名 + `MASTER.INC`(八支共用)/`TOWNCAMP.INC`/`INSTALL.INC` |
@@ -162,6 +162,7 @@
 | [`57-g-closure.md`](docs/re/57-g-closure.md) | **子系統 G = RE-DONE** | `MAZEDATA` 在 `ds:365C`;欄 4 = 朝向 1北2東3南4西;`MAZEITEM` 行 k = 圖塊 k |
 | [`58-key-dispatch-mechanism.md`](docs/re/58-key-dispatch-mechanism.md) | 按鍵派工機制(K) | 單字元字串常數 + 字串比對;`CAMP` 主選單 10/10 |
 | [`59-de-eff-event-table.md`](docs/re/59-de-eff-event-table.md) | **`DE*EFF` 是地城事件表** | 106×5:列/欄/方向/目標/目的欄;目標 ≥100 是 `DT` 文字編號 |
+| [`60-event-lookup-and-tile-19.md`](docs/re/60-event-lookup-and-tile-19.md) | **G 重新 RE-DONE** | 事件表在 `ds:0x88F0`;圖塊 19 = 隱形觸發格;負值 = 跨關卡樓梯(4/4)|
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

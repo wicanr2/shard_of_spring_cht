@@ -85,8 +85,8 @@
 
 ### 2.2 完成度看板（狀態的單一真相來源）
 
-> **H、F 已 RE-DONE**(`docs/re/49` §4、`docs/re/54` §4 逐條核對)。
-> **G 曾判定 RE-DONE(`docs/re/57` §5),但 `docs/re/59` 把 `DE*EFF` 納入其範圍,判定已收回** —— 範圍變了就要重判。
+> **H、F、G 已 RE-DONE**(`docs/re/49` §4、`54` §4、`60` §5 逐條核對)。
+> ⚠ G 曾在 `57` §5 判定、`59` §5 因範圍擴大而收回、`60` §5 重新判定 —— 過程留在紀錄裡。
 > 任何一列變成 RE-DONE 之前，對應的 remake 程式碼一行都不能寫。
 
 | 子系統 | 主要輸入 | 狀態 |
@@ -97,7 +97,7 @@
 | D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 進行中(`27`:`CHARS.DAT` 25 槽×94B 定案;`43`:**記憶體側已定位** —— 主陣列 `ds:6822`(15×≥20 word)、隊伍人數 `ds:34F8`(上限 5)、隊員名字 `ds:34E0`;欄位語意與檔案對應未解)|
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 進行中(`docs/re/16`:三張表格式定案,兩個欄位語意有交叉印證;讀取端未解)|
 | F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN`、`FASTWRLD.BIN`、`WRLDITEM.PIC` | ✅ **RE-DONE**(`19`/`51`/`52`/`53`/`54`:103×121 word、索引 `y×103+x`、取格與兩條派工路徑已讀、`FASTWRLD` 9 張地形、`TOWNDATA` 13 城鎮、`WRLDITEM.PIC` 行 k = 圖塊 k+10。四項條件核對見 `54` §4)|
-| G. 地城與迷宮 | `DG*MAZE.SQZ`、`MAZEDATA.BIN`、`DT*TEXT.DAT`、`MAZEITEM.PIC`、**`DE*EFF.BIN`** | 進行中(`50`/`51`/`55`/`56`/`57` 已達四項條件;**`59` 新增 `DE*EFF` 事件表進入範圍**,其中三個檔引用不存在的文字編號 → 未解)|
+| G. 地城與迷宮 | `DG*MAZE.SQZ`、`MAZEDATA.BIN`、`DT*TEXT.DAT`、`MAZEITEM.PIC`、`DE*EFF.BIN` | ✅ **RE-DONE**(`50`/`51`/`55`/`56`/`57`/`59`/`60`:跑長規則、`MAZEDATA` 八欄、事件表 106×5 與其查表迴圈、圖塊 19 = 隱形觸發格、負值 = 跨關卡樓梯。四項條件核對見 `60` §5)|
 | H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | ✅ **RE-DONE**(`19`–`22`、`48`、`49`:圖塊 17×17、`PICT` 153×153、`MONST` 8×17×17 交錯、`WRLDMAP` 103×121、`.PIC` 是 `DRAW` 巨集、調色盤 `0x3D8=0x0E`。四項條件逐條核對見 `49` §4)|
 | I. 法術效果表 | `FIRESTRM/HAILSTRM/WINDSTRM.BIN`(`DE*EFF` 已改歸 G)| 進行中(`59`:`DE*EFF` 不是法術效果,是地城事件表;三支 `*STRM.BIN` 是 98-byte 圖塊,格式已在 H 解過)|
 | J. 戰鬥規則 | `CMBT.EXE`、`FASTCMBT.BIN`、`RNDMONST.BIN` | 進行中(`31`:`w9` 解為魔法相關;`43`/`52`:**戰鬥格 = 15 欄的「當前地圖」陣列**,隊伍在第 9–13 欄;公式未解)|

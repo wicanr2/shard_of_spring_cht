@@ -52,6 +52,7 @@
 | **工具衝突已記錄** | `docs/re/24`,`trace_module` 會洗掉 `unlock_module`;掃描前先看分母 |
 | **字串存放形式(L)** | `docs/re/25`,長度+指標描述子;指標基底未解 |
 | **重定位表 11/11 印證節區欄位** | `docs/re/26`,只有 7 項,正好是 `09` 解出的七個欄位 |
+| **角色槽(D)** | `docs/re/27`,`CHARS.DAT` 25 槽×94B,兩串 0/1 = 20 技能旗標 |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
 | **世界地圖與地城(F/G)** | `docs/re/17`,`WRLDMAP` 每格 2 bytes、12,467 格 35 種圖塊;六個 `.SQZ` 一律 82 列 |
 
@@ -72,7 +73,7 @@
 5.4%(流程追蹤,下界)與 42.8%(線性掃描,上界)之間,
 差距的成因是**模組被執行期呼叫**,從進入點追在結構上到不了大部分程式碼。
 找到那份清單會同時收斂涵蓋率、並解開 `docs/re/04` §5 掛著的控制轉移。
-子系統看板在 `CLAUDE.md` §2.2 —— **A/B/E/F/G/H/L 七項進行中**。
+子系統看板在 `CLAUDE.md` §2.2 —— **A/B/D/E/F/G/H/L 八項進行中**。
 資料側的交叉印證可以不等程式碼涵蓋率收斂就推進格式,
 但語意定案仍需讀取端(§2.1 條件 1、2)。
 
@@ -109,6 +110,7 @@
 | [`24-tooling-conflict.md`](docs/re/24-tooling-conflict.md) | 工具衝突 | `trace` 會覆蓋 `unlock`;`BLOAD` 不留位址常數 |
 | [`25-string-storage.md`](docs/re/25-string-storage.md) | 字串存放 | 描述子形式已確認;指標基底未解 |
 | [`26-relocation-targets.md`](docs/re/26-relocation-targets.md) | 重定位目標 | 只有 7 項,11/11 對上節區欄位;否證 `25` 的解釋 |
+| [`27-chars-dat.md`](docs/re/27-chars-dat.md) | 角色槽 | 25 槽×94B;技能旗標 20 個對上 `TOWN.EXE` |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

@@ -184,6 +184,8 @@
 | [`74-spell-and-item-columns.md`](docs/re/74-spell-and-item-columns.md) | 法術/物品欄位語意 | 物品的法術編號與點數搬進施法流程同一組變數;28+6 是兩個 100% 規則 |
 | [`75-character-record-equipment.md`](docs/re/75-character-record-equipment.md) | 角色記錄的裝備欄(D×E×J)| 裝備欄存背包格號不是物品編號;哨兵 99/60/59 |
 | [`76-to-hit-formula.md`](docs/re/76-to-hit-formula.md) | 命中公式 + 物品欄的雙重身分 | 「這一欄是什麼」問錯了,要問「誰在讀它」|
+| [`77-runtime-arithmetic-api.md`](docs/re/77-runtime-arithmetic-api.md) | 執行期算術 API | MBF 浮點;加減乘除靠指數處理分辨 |
+| [`78-damage-sequence.md`](docs/re/78-damage-sequence.md) | 傷害運算序列 | 形狀確定、配對壓在未解的對齊問題上 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

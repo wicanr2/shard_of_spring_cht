@@ -1,0 +1,6602 @@
+{
+ "START.EXE": {
+  "descriptor": [
+   {
+    "file_off": 748,
+    "seg_off": 236,
+    "len": 72,
+    "ds": 20250,
+    "text": "Loading the Shard of Spring, (c) 1986-1987 by Strategic Simulations Inc."
+   },
+   {
+    "file_off": 832,
+    "seg_off": 320,
+    "len": 41,
+    "ds": 20326,
+    "text": "MS DOS version by Digital Illusions, Inc."
+   },
+   {
+    "file_off": 886,
+    "seg_off": 374,
+    "len": 4,
+    "ds": 20372,
+    "text": "MENU"
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 672,
+    "seg_off": 160,
+    "len": 9,
+    "text": "START.BAS"
+   },
+   {
+    "file_off": 3218,
+    "seg_off": 2706,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 3230,
+    "seg_off": 2718,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 3242,
+    "seg_off": 2730,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 3248,
+    "seg_off": 2736,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 3285,
+    "seg_off": 2773,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "MENU.EXE": {
+  "descriptor": [
+   {
+    "file_off": 10204,
+    "seg_off": 9692,
+    "len": 1,
+    "ds": 26336,
+    "text": "0"
+   },
+   {
+    "file_off": 10218,
+    "seg_off": 9706,
+    "len": 1,
+    "ds": 26342,
+    "text": "9"
+   },
+   {
+    "file_off": 10232,
+    "seg_off": 9720,
+    "len": 2,
+    "ds": 26614,
+    "text": "  "
+   },
+   {
+    "file_off": 10246,
+    "seg_off": 9734,
+    "len": 1,
+    "ds": 26630,
+    "text": "-"
+   },
+   {
+    "file_off": 10268,
+    "seg_off": 9756,
+    "len": 1,
+    "ds": 26656,
+    "text": " "
+   },
+   {
+    "file_off": 10282,
+    "seg_off": 9770,
+    "len": 10,
+    "ds": 27722,
+    "text": "config.sos"
+   },
+   {
+    "file_off": 10304,
+    "seg_off": 9792,
+    "len": 1,
+    "ds": 27736,
+    "text": ":"
+   },
+   {
+    "file_off": 10318,
+    "seg_off": 9806,
+    "len": 4,
+    "ds": 27746,
+    "text": "v1.0"
+   },
+   {
+    "file_off": 10334,
+    "seg_off": 9822,
+    "len": 4,
+    "ds": 27754,
+    "text": "UTIL"
+   },
+   {
+    "file_off": 10350,
+    "seg_off": 9838,
+    "len": 13,
+    "ds": 27762,
+    "text": "(Press a key)"
+   },
+   {
+    "file_off": 10376,
+    "seg_off": 9864,
+    "len": 13,
+    "ds": 27780,
+    "text": "             "
+   },
+   {
+    "file_off": 10402,
+    "seg_off": 9890,
+    "len": 17,
+    "ds": 27798,
+    "text": "    Main Menu    "
+   },
+   {
+    "file_off": 10432,
+    "seg_off": 9920,
+    "len": 17,
+    "ds": 27820,
+    "text": "                 "
+   },
+   {
+    "file_off": 10462,
+    "seg_off": 9950,
+    "len": 17,
+    "ds": 27842,
+    "text": "L)oad a Party.   "
+   },
+   {
+    "file_off": 10492,
+    "seg_off": 9980,
+    "len": 17,
+    "ds": 27864,
+    "text": "C)har Utilities. "
+   },
+   {
+    "file_off": 10522,
+    "seg_off": 10010,
+    "len": 17,
+    "ds": 27886,
+    "text": "R)estore Mazes.  "
+   },
+   {
+    "file_off": 10552,
+    "seg_off": 10040,
+    "len": 17,
+    "ds": 27908,
+    "text": "I)nstall Game.   "
+   },
+   {
+    "file_off": 10582,
+    "seg_off": 10070,
+    "len": 17,
+    "ds": 27930,
+    "text": "P)rogram Notes.  "
+   },
+   {
+    "file_off": 10612,
+    "seg_off": 10100,
+    "len": 17,
+    "ds": 27952,
+    "text": "Q)uit the Game.  "
+   },
+   {
+    "file_off": 10642,
+    "seg_off": 10130,
+    "len": 1,
+    "ds": 27986,
+    "text": "A"
+   },
+   {
+    "file_off": 10656,
+    "seg_off": 10144,
+    "len": 1,
+    "ds": 27996,
+    "text": "L"
+   },
+   {
+    "file_off": 10670,
+    "seg_off": 10158,
+    "len": 1,
+    "ds": 28002,
+    "text": "C"
+   },
+   {
+    "file_off": 10684,
+    "seg_off": 10172,
+    "len": 60,
+    "ds": 28008,
+    "text": "Please leave the GAME disk in place until you quit the game."
+   },
+   {
+    "file_off": 10756,
+    "seg_off": 10244,
+    "len": 48,
+    "ds": 28076,
+    "text": "Please replace the BOOT disk with the GAME disk."
+   },
+   {
+    "file_off": 10816,
+    "seg_off": 10304,
+    "len": 40,
+    "ds": 28140,
+    "text": "Please insert the GAME disk in drive B:."
+   },
+   {
+    "file_off": 10868,
+    "seg_off": 10356,
+    "len": 1,
+    "ds": 28192,
+    "text": "B"
+   },
+   {
+    "file_off": 10882,
+    "seg_off": 10370,
+    "len": 8,
+    "ds": 28202,
+    "text": "CHARUTIL"
+   },
+   {
+    "file_off": 10902,
+    "seg_off": 10390,
+    "len": 1,
+    "ds": 28214,
+    "text": "R"
+   },
+   {
+    "file_off": 10916,
+    "seg_off": 10404,
+    "len": 104,
+    "ds": 28224,
+    "text": "Please have your GAME and BOOT disks ready, you will be asked to swap disks several times. Ready (Y/N) ?"
+   },
+   {
+    "file_off": 11032,
+    "seg_off": 10520,
+    "len": 1,
+    "ds": 28340,
+    "text": "Y"
+   },
+   {
+    "file_off": 11046,
+    "seg_off": 10534,
+    "len": 2,
+    "ds": 28352,
+    "text": "51"
+   },
+   {
+    "file_off": 11060,
+    "seg_off": 10548,
+    "len": 27,
+    "ds": 28358,
+    "text": "Insert BOOT disk for file #"
+   },
+   {
+    "file_off": 11100,
+    "seg_off": 10588,
+    "len": 5,
+    "ds": 28390,
+    "text": " of 9"
+   },
+   {
+    "file_off": 11118,
+    "seg_off": 10606,
+    "len": 7,
+    "ds": 28408,
+    "text": "eff.mst"
+   },
+   {
+    "file_off": 11138,
+    "seg_off": 10626,
+    "len": 2,
+    "ds": 28420,
+    "text": "de"
+   },
+   {
+    "file_off": 11152,
+    "seg_off": 10640,
+    "len": 27,
+    "ds": 28426,
+    "text": "Insert GAME disk for file #"
+   },
+   {
+    "file_off": 11192,
+    "seg_off": 10680,
+    "len": 5,
+    "ds": 28458,
+    "text": " of 9"
+   },
+   {
+    "file_off": 11210,
+    "seg_off": 10698,
+    "len": 7,
+    "ds": 28476,
+    "text": "eff.bin"
+   },
+   {
+    "file_off": 11238,
+    "seg_off": 10726,
+    "len": 3,
+    "ds": 28492,
+    "text": ":de"
+   },
+   {
+    "file_off": 11254,
+    "seg_off": 10742,
+    "len": 51,
+    "ds": 28500,
+    "text": "Restoration complete!  Please insert the BOOT disk."
+   },
+   {
+    "file_off": 11318,
+    "seg_off": 10806,
+    "len": 73,
+    "ds": 28564,
+    "text": "Place your GAME disk in drive B: and your BOOT disk in A:.  Ready (Y/N) ?"
+   },
+   {
+    "file_off": 11404,
+    "seg_off": 10892,
+    "len": 7,
+    "ds": 28650,
+    "text": "eff.mst"
+   },
+   {
+    "file_off": 11424,
+    "seg_off": 10912,
+    "len": 6,
+    "ds": 28662,
+    "text": "File #"
+   },
+   {
+    "file_off": 11442,
+    "seg_off": 10930,
+    "len": 5,
+    "ds": 28672,
+    "text": " of 9"
+   },
+   {
+    "file_off": 11460,
+    "seg_off": 10948,
+    "len": 7,
+    "ds": 28682,
+    "text": "eff.bin"
+   },
+   {
+    "file_off": 11480,
+    "seg_off": 10968,
+    "len": 21,
+    "ds": 28694,
+    "text": "Restoration complete!"
+   },
+   {
+    "file_off": 11514,
+    "seg_off": 11002,
+    "len": 95,
+    "ds": 28728,
+    "text": "Your fixed disk files will be updated.  Please  insert your BOOT disk in drive A: Ready (Y/N) ?"
+   },
+   {
+    "file_off": 11622,
+    "seg_off": 11110,
+    "len": 7,
+    "ds": 28836,
+    "text": "eff.mst"
+   },
+   {
+    "file_off": 11642,
+    "seg_off": 11130,
+    "len": 4,
+    "ds": 28848,
+    "text": "A:de"
+   },
+   {
+    "file_off": 11658,
+    "seg_off": 11146,
+    "len": 6,
+    "ds": 28856,
+    "text": "File #"
+   },
+   {
+    "file_off": 11676,
+    "seg_off": 11164,
+    "len": 5,
+    "ds": 28866,
+    "text": " of 9"
+   },
+   {
+    "file_off": 11694,
+    "seg_off": 11182,
+    "len": 7,
+    "ds": 28876,
+    "text": "eff.bin"
+   },
+   {
+    "file_off": 11714,
+    "seg_off": 11202,
+    "len": 51,
+    "ds": 28888,
+    "text": "Restoration complete! You may remove the BOOT disk."
+   },
+   {
+    "file_off": 11778,
+    "seg_off": 11266,
+    "len": 1,
+    "ds": 28952,
+    "text": "I"
+   },
+   {
+    "file_off": 11792,
+    "seg_off": 11280,
+    "len": 1,
+    "ds": 28962,
+    "text": ","
+   },
+   {
+    "file_off": 11806,
+    "seg_off": 11294,
+    "len": 33,
+    "ds": 28972,
+    "text": "Shard of Spring Installation Menu"
+   },
+   {
+    "file_off": 11852,
+    "seg_off": 11340,
+    "len": 64,
+    "ds": 29010,
+    "text": "Please change those options you desire, press 'F' when finished."
+   },
+   {
+    "file_off": 11928,
+    "seg_off": 11416,
+    "len": 11,
+    "ds": 29078,
+    "text": "Currently: "
+   },
+   {
+    "file_off": 11952,
+    "seg_off": 11440,
+    "len": 17,
+    "ds": 29094,
+    "text": "0) Hard Disk     "
+   },
+   {
+    "file_off": 11982,
+    "seg_off": 11470,
+    "len": 17,
+    "ds": 29116,
+    "text": "1) One Floppy    "
+   },
+   {
+    "file_off": 12012,
+    "seg_off": 11500,
+    "len": 17,
+    "ds": 29138,
+    "text": "2) Two Floppies  "
+   },
+   {
+    "file_off": 12042,
+    "seg_off": 11530,
+    "len": 39,
+    "ds": 29160,
+    "text": "M) Monitor is LCD or EGA (in emulation)"
+   },
+   {
+    "file_off": 12094,
+    "seg_off": 11582,
+    "len": 20,
+    "ds": 29204,
+    "text": "T) Adjust Time Delay"
+   },
+   {
+    "file_off": 12126,
+    "seg_off": 11614,
+    "len": 12,
+    "ds": 29228,
+    "text": "E) Exit Game"
+   },
+   {
+    "file_off": 12150,
+    "seg_off": 11638,
+    "len": 11,
+    "ds": 29244,
+    "text": "F) Finished"
+   },
+   {
+    "file_off": 12174,
+    "seg_off": 11662,
+    "len": 11,
+    "ds": 29260,
+    "text": "Selection ?"
+   },
+   {
+    "file_off": 12198,
+    "seg_off": 11686,
+    "len": 1,
+    "ds": 29280,
+    "text": "E"
+   },
+   {
+    "file_off": 12212,
+    "seg_off": 11700,
+    "len": 63,
+    "ds": 29286,
+    "text": "To install the Shard of Spring on your hard disk, you will need"
+   },
+   {
+    "file_off": 12288,
+    "seg_off": 11776,
+    "len": 70,
+    "ds": 29354,
+    "text": "to create a subdirectory (if you don't know how, see your DOS manual)."
+   },
+   {
+    "file_off": 12370,
+    "seg_off": 11858,
+    "len": 66,
+    "ds": 29428,
+    "text": "Simply copy the contents of your BOOT disk and then your GAME disk"
+   },
+   {
+    "file_off": 12448,
+    "seg_off": 11936,
+    "len": 22,
+    "ds": 29498,
+    "text": "into the subdirectory."
+   },
+   {
+    "file_off": 12482,
+    "seg_off": 11970,
+    "len": 53,
+    "ds": 29524,
+    "text": " An example for a subdirectory called SHARD would be:"
+   },
+   {
+    "file_off": 12548,
+    "seg_off": 12036,
+    "len": 55,
+    "ds": 29582,
+    "text": "              C>copy A:*.* C:\\shard  FOR YOUR BOOT DISK"
+   },
+   {
+    "file_off": 12616,
+    "seg_off": 12104,
+    "len": 55,
+    "ds": 29642,
+    "text": "              C>copy A:*.* C:\\shard  FOR YOUR GAME DISK"
+   },
+   {
+    "file_off": 12684,
+    "seg_off": 12172,
+    "len": 52,
+    "ds": 29702,
+    "text": "Which hard disk drive are you going use (C/D/E...) ?"
+   },
+   {
+    "file_off": 12748,
+    "seg_off": 12236,
+    "len": 1,
+    "ds": 29758,
+    "text": "1"
+   },
+   {
+    "file_off": 12762,
+    "seg_off": 12250,
+    "len": 1,
+    "ds": 29764,
+    "text": "2"
+   },
+   {
+    "file_off": 12776,
+    "seg_off": 12264,
+    "len": 1,
+    "ds": 29770,
+    "text": "M"
+   },
+   {
+    "file_off": 12790,
+    "seg_off": 12278,
+    "len": 61,
+    "ds": 29776,
+    "text": "Do you have either a LCD or EGA (in emulation) monitor (Y/N) "
+   },
+   {
+    "file_off": 12864,
+    "seg_off": 12352,
+    "len": 1,
+    "ds": 29842,
+    "text": "F"
+   },
+   {
+    "file_off": 12878,
+    "seg_off": 12366,
+    "len": 10,
+    "ds": 29848,
+    "text": "CONFIG.SOS"
+   },
+   {
+    "file_off": 12900,
+    "seg_off": 12388,
+    "len": 1,
+    "ds": 29862,
+    "text": "T"
+   },
+   {
+    "file_off": 12914,
+    "seg_off": 12402,
+    "len": 52,
+    "ds": 29868,
+    "text": "To adjust the delay on messages so you can read them"
+   },
+   {
+    "file_off": 12978,
+    "seg_off": 12466,
+    "len": 53,
+    "ds": 29924,
+    "text": "enter a number between 1000 and 30000.  When you like"
+   },
+   {
+    "file_off": 13044,
+    "seg_off": 12532,
+    "len": 56,
+    "ds": 29982,
+    "text": "the delay answer 'Y', otherwise answer 'N' to try again."
+   },
+   {
+    "file_off": 13112,
+    "seg_off": 12600,
+    "len": 42,
+    "ds": 30042,
+    "text": "'Q' will bring you back to the menu above."
+   },
+   {
+    "file_off": 13166,
+    "seg_off": 12654,
+    "len": 34,
+    "ds": 30090,
+    "text": "New Delay, between 1000 and 30000 "
+   },
+   {
+    "file_off": 13212,
+    "seg_off": 12700,
+    "len": 8,
+    "ds": 30128,
+    "text": "DELAY OF"
+   },
+   {
+    "file_off": 13232,
+    "seg_off": 12720,
+    "len": 16,
+    "ds": 30140,
+    "text": "                "
+   },
+   {
+    "file_off": 13260,
+    "seg_off": 12748,
+    "len": 11,
+    "ds": 30160,
+    "text": "OK (Y/N/Q) "
+   },
+   {
+    "file_off": 13284,
+    "seg_off": 12772,
+    "len": 1,
+    "ds": 30176,
+    "text": "Q"
+   },
+   {
+    "file_off": 13298,
+    "seg_off": 12786,
+    "len": 1,
+    "ds": 30182,
+    "text": "P"
+   },
+   {
+    "file_off": 13312,
+    "seg_off": 12800,
+    "len": 6,
+    "ds": 30188,
+    "text": "      "
+   },
+   {
+    "file_off": 13330,
+    "seg_off": 12818,
+    "len": 158,
+    "ds": 30198,
+    "text": "    Dedicated to Lori Proudfoot.                   Developed with Applied Computing Services, Inc.              Written entirely in Microsoft QuickBasic v3.0."
+   },
+   {
+    "file_off": 13500,
+    "seg_off": 12988,
+    "len": 46,
+    "ds": 30368,
+    "text": "Which party do you wish to use (1-5,0 Quits) ?"
+   },
+   {
+    "file_off": 13558,
+    "seg_off": 13046,
+    "len": 45,
+    "ds": 30426,
+    "text": "Please use a party numbered between 1 and 5 !"
+   },
+   {
+    "file_off": 13616,
+    "seg_off": 13104,
+    "len": 10,
+    "ds": 30484,
+    "text": "GROUPS.DAT"
+   },
+   {
+    "file_off": 13638,
+    "seg_off": 13126,
+    "len": 71,
+    "ds": 30502,
+    "text": "I'm sorry, this party does not exist !  Use the Utilities to create it."
+   },
+   {
+    "file_off": 13722,
+    "seg_off": 13210,
+    "len": 9,
+    "ds": 30588,
+    "text": "CHARS.DAT"
+   },
+   {
+    "file_off": 13744,
+    "seg_off": 13232,
+    "len": 47,
+    "ds": 30610,
+    "text": "Parties of dead characters are not allowed !!! "
+   },
+   {
+    "file_off": 13804,
+    "seg_off": 13292,
+    "len": 18,
+    "ds": 30670,
+    "text": "# CHARACTER HP  SP"
+   },
+   {
+    "file_off": 13834,
+    "seg_off": 13322,
+    "len": 1,
+    "ds": 30696,
+    "text": "D"
+   },
+   {
+    "file_off": 13848,
+    "seg_off": 13336,
+    "len": 8,
+    "ds": 30702,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 13868,
+    "seg_off": 13356,
+    "len": 8,
+    "ds": 30714,
+    "text": "MAZEMOVE"
+   },
+   {
+    "file_off": 13888,
+    "seg_off": 13376,
+    "len": 5,
+    "ds": 30726,
+    "text": "Gold:"
+   },
+   {
+    "file_off": 13906,
+    "seg_off": 13394,
+    "len": 11,
+    "ds": 30736,
+    "text": "Provisions:"
+   },
+   {
+    "file_off": 13930,
+    "seg_off": 13418,
+    "len": 4,
+    "ds": 30752,
+    "text": "MENU"
+   },
+   {
+    "file_off": 13946,
+    "seg_off": 13434,
+    "len": 2,
+    "ds": 30760,
+    "text": "BM"
+   },
+   {
+    "file_off": 13960,
+    "seg_off": 13448,
+    "len": 12,
+    "ds": 30766,
+    "text": "walkdraw.pic"
+   },
+   {
+    "file_off": 13984,
+    "seg_off": 13472,
+    "len": 2,
+    "ds": 30786,
+    "text": "bm"
+   },
+   {
+    "file_off": 13998,
+    "seg_off": 13486,
+    "len": 12,
+    "ds": 30792,
+    "text": "mazedata.bin"
+   },
+   {
+    "file_off": 14022,
+    "seg_off": 13510,
+    "len": 11,
+    "ds": 30808,
+    "text": "startup.bin"
+   },
+   {
+    "file_off": 14054,
+    "seg_off": 13542,
+    "len": 52,
+    "ds": 30830,
+    "text": "Please check this disk, I think it is the wrong one."
+   },
+   {
+    "file_off": 14118,
+    "seg_off": 13606,
+    "len": 54,
+    "ds": 30894,
+    "text": "Please check the drive door, I think you have it open."
+   },
+   {
+    "file_off": 14184,
+    "seg_off": 13672,
+    "len": 59,
+    "ds": 30960,
+    "text": "I'm awfully sorry, but your machine is having I/O problems."
+   },
+   {
+    "file_off": 14256,
+    "seg_off": 13744,
+    "len": 22,
+    "ds": 31032,
+    "text": "I'm not feeling well #"
+   },
+   {
+    "file_off": 14306,
+    "seg_off": 13794,
+    "len": 78,
+    "ds": 31080,
+    "text": "What is the maximum value for any statistic without magical aid (Traits, pg 3)"
+   },
+   {
+    "file_off": 14396,
+    "seg_off": 13884,
+    "len": 92,
+    "ds": 31168,
+    "text": "What is the maximum number of characters you can store on disk (Character,      L)ist, pg 3)"
+   },
+   {
+    "file_off": 14508,
+    "seg_off": 13996,
+    "len": 74,
+    "ds": 31268,
+    "text": "The bonus a Gnome character gets to his Int (Racial Modifiers Chart, pg 3)"
+   },
+   {
+    "file_off": 14602,
+    "seg_off": 14090,
+    "len": 63,
+    "ds": 31350,
+    "text": "What is the maximum damage of a Small Axe (Weapons Chart, pg 7)"
+   },
+   {
+    "file_off": 14686,
+    "seg_off": 14174,
+    "len": 57,
+    "ds": 31422,
+    "text": "What is the Protection of Chain Armor (Armor Chart, pg 7)"
+   },
+   {
+    "file_off": 14764,
+    "seg_off": 14252,
+    "len": 62,
+    "ds": 31488,
+    "text": "What is the cost of an Oil Lantern (Miscellaneous Items, pg 7)"
+   },
+   {
+    "file_off": 14846,
+    "seg_off": 14334,
+    "len": 92,
+    "ds": 31558,
+    "text": "What is the Movement Point Cost to Attack an object in front of you ('A' Key,   Chart, pg 8)"
+   },
+   {
+    "file_off": 14958,
+    "seg_off": 14446,
+    "len": 93,
+    "ds": 31658,
+    "text": "What is the minimum Spell Points to cast a Flame Shield (Minimum Spell Points   Chart, pg 11)"
+   },
+   {
+    "file_off": 15072,
+    "seg_off": 14560,
+    "len": 94,
+    "ds": 31760,
+    "text": "What is the Bonus Damage by Strength for a character with a Strength of 20      (Chart, pg 11)"
+   },
+   {
+    "file_off": 15178,
+    "seg_off": 14666,
+    "len": 94,
+    "ds": 31858,
+    "text": "What is the Maximum S.P. gain per level for a Wizard with an Intellect of 19    (Chart, pg 12)"
+   },
+   {
+    "file_off": 15284,
+    "seg_off": 14772,
+    "len": 19,
+    "ds": 31956,
+    "text": "The Shard of Spring"
+   },
+   {
+    "file_off": 15316,
+    "seg_off": 14804,
+    "len": 9,
+    "ds": 31980,
+    "text": "(0 Exits)"
+   },
+   {
+    "file_off": 15354,
+    "seg_off": 14842,
+    "len": 3,
+    "ds": 32002,
+    "text": " ? "
+   },
+   {
+    "file_off": 15370,
+    "seg_off": 14858,
+    "len": 30,
+    "ds": 32014,
+    "text": "I'm sorry, try again later...."
+   },
+   {
+    "file_off": 15412,
+    "seg_off": 14900,
+    "len": 40,
+    "ds": 32048,
+    "text": "That is not correct, please try again..."
+   },
+   {
+    "file_off": 15480,
+    "seg_off": 14968,
+    "len": 31,
+    "ds": 32104,
+    "text": "You do not have enough memory ("
+   },
+   {
+    "file_off": 15524,
+    "seg_off": 15012,
+    "len": 19,
+    "ds": 32140,
+    "text": "K) to run this game"
+   },
+   {
+    "file_off": 15556,
+    "seg_off": 15044,
+    "len": 52,
+    "ds": 32164,
+    "text": "256K is required, 320K is prefered. Press any key..."
+   },
+   {
+    "file_off": 15620,
+    "seg_off": 15108,
+    "len": 50,
+    "ds": 32220,
+    "text": "Microsoft has recommended that this product be run"
+   },
+   {
+    "file_off": 15682,
+    "seg_off": 15170,
+    "len": 43,
+    "ds": 32274,
+    "text": "with at least 320K of RAM, preferably 384K."
+   },
+   {
+    "file_off": 15738,
+    "seg_off": 15226,
+    "len": 16,
+    "ds": 32322,
+    "text": "Press any key..."
+   },
+   {
+    "file_off": 15774,
+    "seg_off": 15262,
+    "len": 42,
+    "ds": 32348,
+    "text": "You can not run Shard of Spring, you don't"
+   },
+   {
+    "file_off": 15828,
+    "seg_off": 15316,
+    "len": 45,
+    "ds": 32394,
+    "text": "have a graphics monitor!!!!  Press any key..."
+   },
+   {
+    "file_off": 15886,
+    "seg_off": 15374,
+    "len": 11,
+    "ds": 32448,
+    "text": "One floppy,"
+   },
+   {
+    "file_off": 15910,
+    "seg_off": 15398,
+    "len": 13,
+    "ds": 32464,
+    "text": "Two floppies,"
+   },
+   {
+    "file_off": 15936,
+    "seg_off": 15424,
+    "len": 1,
+    "ds": 32482,
+    "text": "Z"
+   },
+   {
+    "file_off": 15950,
+    "seg_off": 15438,
+    "len": 19,
+    "ds": 32488,
+    "text": "Fixed or RAM disk ("
+   },
+   {
+    "file_off": 15982,
+    "seg_off": 15470,
+    "len": 3,
+    "ds": 32512,
+    "text": ":),"
+   },
+   {
+    "file_off": 15998,
+    "seg_off": 15486,
+    "len": 8,
+    "ds": 32520,
+    "text": "? disks,"
+   },
+   {
+    "file_off": 16018,
+    "seg_off": 15506,
+    "len": 13,
+    "ds": 32532,
+    "text": " CRT monitor."
+   },
+   {
+    "file_off": 16044,
+    "seg_off": 15532,
+    "len": 20,
+    "ds": 32554,
+    "text": " LCD or EGA display."
+   },
+   {
+    "file_off": 16076,
+    "seg_off": 15564,
+    "len": 9,
+    "ds": 32578,
+    "text": " delay of"
+   },
+   {
+    "file_off": 16098,
+    "seg_off": 15586,
+    "len": 66,
+    "ds": 32592,
+    "text": "Don, Leslie, and Martin thank you for playing the Shard of Spring."
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 9792,
+    "seg_off": 9280,
+    "len": 8,
+    "text": "MENU.BAS"
+   },
+   {
+    "file_off": 9801,
+    "seg_off": 9289,
+    "len": 10,
+    "text": "MASTER.INC"
+   },
+   {
+    "file_off": 9812,
+    "seg_off": 9300,
+    "len": 11,
+    "text": "INSTALL.INC"
+   },
+   {
+    "file_off": 9842,
+    "seg_off": 9330,
+    "len": 43,
+    "text": " OK,Poisoned,Bound,Still Air,Frozen,D E A D"
+   },
+   {
+    "file_off": 9888,
+    "seg_off": 9376,
+    "len": 77,
+    "text": " Spirit,Dragon,Rose,Sword,Unicorn,Metal,Lotus,Axe,Panther,Ice,Mandrake,Aurora"
+   },
+   {
+    "file_off": 9968,
+    "seg_off": 9456,
+    "len": 59,
+    "text": " Onyx,Phoenix,Wind,Jade,Fire,Hyacinth,Ruby,Ebony,Gold,Comet"
+   },
+   {
+    "file_off": 10030,
+    "seg_off": 9518,
+    "len": 70,
+    "text": " Old Man in Cave,Swamp King,Black Fort,Edrin's Keep,Gate Keeper,Ralith"
+   },
+   {
+    "file_off": 10103,
+    "seg_off": 9591,
+    "len": 66,
+    "text": " Rebel's Hideout,Murthin,Cercion,Lothian,Eldron,Vandiguard,Ralith."
+   },
+   {
+    "file_off": 20786,
+    "seg_off": 20274,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 20798,
+    "seg_off": 20286,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 20810,
+    "seg_off": 20298,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 20816,
+    "seg_off": 20304,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 20853,
+    "seg_off": 20341,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "TOWN.EXE": {
+  "descriptor": [
+   {
+    "file_off": 11116,
+    "seg_off": 10604,
+    "len": 1,
+    "ds": 26592,
+    "text": "0"
+   },
+   {
+    "file_off": 11130,
+    "seg_off": 10618,
+    "len": 1,
+    "ds": 26598,
+    "text": "9"
+   },
+   {
+    "file_off": 11144,
+    "seg_off": 10632,
+    "len": 2,
+    "ds": 26614,
+    "text": "  "
+   },
+   {
+    "file_off": 11158,
+    "seg_off": 10646,
+    "len": 1,
+    "ds": 26630,
+    "text": "-"
+   },
+   {
+    "file_off": 11180,
+    "seg_off": 10668,
+    "len": 1,
+    "ds": 26656,
+    "text": " "
+   },
+   {
+    "file_off": 11202,
+    "seg_off": 10690,
+    "len": 62,
+    "ds": 28066,
+    "text": "Choose building to enter,  # to inspect character, (ESC exits)"
+   },
+   {
+    "file_off": 11276,
+    "seg_off": 10764,
+    "len": 1,
+    "ds": 28140,
+    "text": "A"
+   },
+   {
+    "file_off": 11290,
+    "seg_off": 10778,
+    "len": 18,
+    "ds": 28146,
+    "text": "The party leaves.."
+   },
+   {
+    "file_off": 11320,
+    "seg_off": 10808,
+    "len": 8,
+    "ds": 28168,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 11340,
+    "seg_off": 10828,
+    "len": 4,
+    "ds": 28182,
+    "text": "TOWN"
+   },
+   {
+    "file_off": 11404,
+    "seg_off": 10892,
+    "len": 43,
+    "ds": 28236,
+    "text": "Item to buy, ESC to leave, any key to page."
+   },
+   {
+    "file_off": 11460,
+    "seg_off": 10948,
+    "len": 6,
+    "ds": 28284,
+    "text": "[MORE]"
+   },
+   {
+    "file_off": 11478,
+    "seg_off": 10966,
+    "len": 26,
+    "ds": 28298,
+    "text": "Item to buy, ESC to leave."
+   },
+   {
+    "file_off": 11516,
+    "seg_off": 11004,
+    "len": 1,
+    "ds": 28340,
+    "text": "@"
+   },
+   {
+    "file_off": 11530,
+    "seg_off": 11018,
+    "len": 8,
+    "ds": 28348,
+    "text": "Cost is "
+   },
+   {
+    "file_off": 11550,
+    "seg_off": 11038,
+    "len": 14,
+    "ds": 28360,
+    "text": "Give to char #"
+   },
+   {
+    "file_off": 11576,
+    "seg_off": 11064,
+    "len": 13,
+    "ds": 28378,
+    "text": "(ESC to exit)"
+   },
+   {
+    "file_off": 11602,
+    "seg_off": 11090,
+    "len": 4,
+    "ds": 28402,
+    "text": " ok!"
+   },
+   {
+    "file_off": 11618,
+    "seg_off": 11106,
+    "len": 1,
+    "ds": 28412,
+    "text": "1"
+   },
+   {
+    "file_off": 11632,
+    "seg_off": 11120,
+    "len": 13,
+    "ds": 28418,
+    "text": "No more room!"
+   },
+   {
+    "file_off": 11658,
+    "seg_off": 11146,
+    "len": 5,
+    "ds": 28436,
+    "text": "Done!"
+   },
+   {
+    "file_off": 11676,
+    "seg_off": 11164,
+    "len": 7,
+    "ds": 28448,
+    "text": "Healing"
+   },
+   {
+    "file_off": 11696,
+    "seg_off": 11184,
+    "len": 8,
+    "ds": 28460,
+    "text": "Unpoison"
+   },
+   {
+    "file_off": 11716,
+    "seg_off": 11204,
+    "len": 6,
+    "ds": 28472,
+    "text": "Unbind"
+   },
+   {
+    "file_off": 11734,
+    "seg_off": 11222,
+    "len": 9,
+    "ds": 28482,
+    "text": "Ressurect"
+   },
+   {
+    "file_off": 11780,
+    "seg_off": 11268,
+    "len": 4,
+    "ds": 28516,
+    "text": "/lvl"
+   },
+   {
+    "file_off": 11796,
+    "seg_off": 11284,
+    "len": 43,
+    "ds": 28524,
+    "text": "Enter character # to be healed, (ESC exits)"
+   },
+   {
+    "file_off": 11852,
+    "seg_off": 11340,
+    "len": 17,
+    "ds": 28590,
+    "text": "That will cost   "
+   },
+   {
+    "file_off": 11882,
+    "seg_off": 11370,
+    "len": 17,
+    "ds": 28612,
+    "text": " gold, Pay (Y/N)?"
+   },
+   {
+    "file_off": 11912,
+    "seg_off": 11400,
+    "len": 1,
+    "ds": 28642,
+    "text": "Y"
+   },
+   {
+    "file_off": 11926,
+    "seg_off": 11414,
+    "len": 20,
+    "ds": 28650,
+    "text": "Your rooms will cost"
+   },
+   {
+    "file_off": 11958,
+    "seg_off": 11446,
+    "len": 72,
+    "ds": 28674,
+    "text": " gold each night.  How many nights do you wish to sleep (1-9, 0 exits) ?"
+   },
+   {
+    "file_off": 12042,
+    "seg_off": 11530,
+    "len": 12,
+    "ds": 28762,
+    "text": "You sleep..."
+   },
+   {
+    "file_off": 12066,
+    "seg_off": 11554,
+    "len": 1,
+    "ds": 28784,
+    "text": "N"
+   },
+   {
+    "file_off": 12080,
+    "seg_off": 11568,
+    "len": 14,
+    "ds": 28792,
+    "text": "Welcome to the"
+   },
+   {
+    "file_off": 12106,
+    "seg_off": 11594,
+    "len": 16,
+    "ds": 28810,
+    "text": "Fighter's Guild."
+   },
+   {
+    "file_off": 12134,
+    "seg_off": 11622,
+    "len": 15,
+    "ds": 28832,
+    "text": "Wizard's Guild."
+   },
+   {
+    "file_off": 12162,
+    "seg_off": 11650,
+    "len": 60,
+    "ds": 28852,
+    "text": "Which character # seeks advancement in his art (ESC exits) ?"
+   },
+   {
+    "file_off": 12234,
+    "seg_off": 11722,
+    "len": 24,
+    "ds": 28924,
+    "text": "You are the wrong class!"
+   },
+   {
+    "file_off": 12270,
+    "seg_off": 11758,
+    "len": 32,
+    "ds": 28970,
+    "text": "This character is incapacitated!"
+   },
+   {
+    "file_off": 12322,
+    "seg_off": 11810,
+    "len": 26,
+    "ds": 29030,
+    "text": "The Guild decides you need"
+   },
+   {
+    "file_off": 12360,
+    "seg_off": 11848,
+    "len": 35,
+    "ds": 29060,
+    "text": " experience before gaining a level."
+   },
+   {
+    "file_off": 12432,
+    "seg_off": 11920,
+    "len": 27,
+    "ds": 29130,
+    "text": "You made a level!  You gain"
+   },
+   {
+    "file_off": 12472,
+    "seg_off": 11960,
+    "len": 12,
+    "ds": 29162,
+    "text": " hit points."
+   },
+   {
+    "file_off": 12496,
+    "seg_off": 11984,
+    "len": 13,
+    "ds": 29186,
+    "text": "You also gain"
+   },
+   {
+    "file_off": 12522,
+    "seg_off": 12010,
+    "len": 14,
+    "ds": 29204,
+    "text": " Spell Points!"
+   },
+   {
+    "file_off": 12556,
+    "seg_off": 12044,
+    "len": 16,
+    "ds": 29240,
+    "text": "Stats are up by:"
+   },
+   {
+    "file_off": 12592,
+    "seg_off": 12080,
+    "len": 8,
+    "ds": 29268,
+    "text": "1 pt of "
+   },
+   {
+    "file_off": 12612,
+    "seg_off": 12100,
+    "len": 2,
+    "ds": 29294,
+    "text": "* "
+   },
+   {
+    "file_off": 12626,
+    "seg_off": 12114,
+    "len": 8,
+    "ds": 29300,
+    "text": "You have"
+   },
+   {
+    "file_off": 12646,
+    "seg_off": 12134,
+    "len": 12,
+    "ds": 29312,
+    "text": "points left."
+   },
+   {
+    "file_off": 12670,
+    "seg_off": 12158,
+    "len": 12,
+    "ds": 29328,
+    "text": "Enter skill,"
+   },
+   {
+    "file_off": 12694,
+    "seg_off": 12182,
+    "len": 10,
+    "ds": 29344,
+    "text": "(0 exits) "
+   },
+   {
+    "file_off": 12716,
+    "seg_off": 12204,
+    "len": 4,
+    "ds": 29360,
+    "text": "    "
+   },
+   {
+    "file_off": 12732,
+    "seg_off": 12220,
+    "len": 15,
+    "ds": 29368,
+    "text": "Not enough IQ !"
+   },
+   {
+    "file_off": 12760,
+    "seg_off": 12248,
+    "len": 70,
+    "ds": 29390,
+    "text": "Do you wish to: T)alk with other adventurers, B)uy food? (ESC to exit)"
+   },
+   {
+    "file_off": 12842,
+    "seg_off": 12330,
+    "len": 1,
+    "ds": 29472,
+    "text": "T"
+   },
+   {
+    "file_off": 12856,
+    "seg_off": 12344,
+    "len": 1,
+    "ds": 29478,
+    "text": "B"
+   },
+   {
+    "file_off": 12870,
+    "seg_off": 12358,
+    "len": 34,
+    "ds": 29486,
+    "text": "One day's food for the party costs"
+   },
+   {
+    "file_off": 12916,
+    "seg_off": 12404,
+    "len": 41,
+    "ds": 29524,
+    "text": " gold.  How many rations (1-9, 0 exits) ?"
+   },
+   {
+    "file_off": 12970,
+    "seg_off": 12458,
+    "len": 5,
+    "ds": 29582,
+    "text": "Done!"
+   },
+   {
+    "file_off": 12988,
+    "seg_off": 12476,
+    "len": 1,
+    "ds": 29598,
+    "text": "D"
+   },
+   {
+    "file_off": 13668,
+    "seg_off": 13156,
+    "len": 186,
+    "ds": 30246,
+    "text": "A muscular dwarf with big, beady eyes says he was attacked by Shamblers, horrible swamp monsters made by performing ancient magical rituals on dead swamp matter molded into human form..."
+   },
+   {
+    "file_off": 13866,
+    "seg_off": 13354,
+    "len": 82,
+    "ds": 30436,
+    "text": "The gate leading into Siriadne's fortress is magically bound and cannot be opened."
+   },
+   {
+    "file_off": 13960,
+    "seg_off": 13448,
+    "len": 134,
+    "ds": 30522,
+    "text": "You hear a whisper from behind you: 'A band of rebels that despises the evil Siriadne has taken refuge in the hills to the southwest.'"
+   },
+   {
+    "file_off": 14106,
+    "seg_off": 13594,
+    "len": 147,
+    "ds": 30660,
+    "text": "An ancient looking elvin wizard in the corner beckons you. He tells you in a shaky voice the second word in the name of the Ancient spell: 'Reveli'"
+   },
+   {
+    "file_off": 14502,
+    "seg_off": 13990,
+    "len": 176,
+    "ds": 31040,
+    "text": "The Arena is fine if you are a fighter, but a wizard need go to Terynor for his training. Terynor is nestled in the mountains far to the northeast and is rich in magical items."
+   },
+   {
+    "file_off": 14926,
+    "seg_off": 14414,
+    "len": 109,
+    "ds": 31448,
+    "text": "* Coming soon * From the makers of The Shard of Spring ... an adventure set in the midst of a greater evil..."
+   },
+   {
+    "file_off": 15048,
+    "seg_off": 14536,
+    "len": 12,
+    "ds": 31562,
+    "text": "towndata.bin"
+   },
+   {
+    "file_off": 15072,
+    "seg_off": 14560,
+    "len": 12,
+    "ds": 31578,
+    "text": "towndata.dat"
+   },
+   {
+    "file_off": 15096,
+    "seg_off": 14584,
+    "len": 48,
+    "ds": 31616,
+    "text": "Aack!, There is something wrong with your disks!"
+   },
+   {
+    "file_off": 15172,
+    "seg_off": 14660,
+    "len": 14,
+    "ds": 31686,
+    "text": "You don't have"
+   },
+   {
+    "file_off": 15198,
+    "seg_off": 14686,
+    "len": 12,
+    "ds": 31704,
+    "text": "enough gold!"
+   },
+   {
+    "file_off": 15222,
+    "seg_off": 14710,
+    "len": 9,
+    "ds": 31720,
+    "text": "ITEMS.DAT"
+   },
+   {
+    "file_off": 15244,
+    "seg_off": 14732,
+    "len": 3,
+    "ds": 31762,
+    "text": "   "
+   },
+   {
+    "file_off": 15260,
+    "seg_off": 14748,
+    "len": 1,
+    "ds": 31770,
+    "text": "2"
+   },
+   {
+    "file_off": 15274,
+    "seg_off": 14762,
+    "len": 18,
+    "ds": 31776,
+    "text": "dies in the night."
+   },
+   {
+    "file_off": 15304,
+    "seg_off": 14792,
+    "len": 6,
+    "ds": 31802,
+    "text": " LVL: "
+   },
+   {
+    "file_off": 15322,
+    "seg_off": 14810,
+    "len": 7,
+    "ds": 31822,
+    "text": "H.P.   "
+   },
+   {
+    "file_off": 15342,
+    "seg_off": 14830,
+    "len": 7,
+    "ds": 31834,
+    "text": "S.P.   "
+   },
+   {
+    "file_off": 15362,
+    "seg_off": 14850,
+    "len": 1,
+    "ds": 31846,
+    "text": "/"
+   },
+   {
+    "file_off": 15376,
+    "seg_off": 14864,
+    "len": 6,
+    "ds": 31852,
+    "text": "Exp.  "
+   },
+   {
+    "file_off": 15394,
+    "seg_off": 14882,
+    "len": 7,
+    "ds": 31862,
+    "text": "Stat.  "
+   },
+   {
+    "file_off": 15414,
+    "seg_off": 14902,
+    "len": 13,
+    "ds": 31876,
+    "text": "      Skills:"
+   },
+   {
+    "file_off": 15440,
+    "seg_off": 14928,
+    "len": 12,
+    "ds": 31900,
+    "text": "      Items:"
+   },
+   {
+    "file_off": 15464,
+    "seg_off": 14952,
+    "len": 5,
+    "ds": 31924,
+    "text": "Human"
+   },
+   {
+    "file_off": 15482,
+    "seg_off": 14970,
+    "len": 1,
+    "ds": 31938,
+    "text": "H"
+   },
+   {
+    "file_off": 15496,
+    "seg_off": 14984,
+    "len": 5,
+    "ds": 31944,
+    "text": "Troll"
+   },
+   {
+    "file_off": 15514,
+    "seg_off": 15002,
+    "len": 5,
+    "ds": 31954,
+    "text": "Dwarf"
+   },
+   {
+    "file_off": 15532,
+    "seg_off": 15020,
+    "len": 1,
+    "ds": 31964,
+    "text": "E"
+   },
+   {
+    "file_off": 15546,
+    "seg_off": 15034,
+    "len": 3,
+    "ds": 31970,
+    "text": "Elf"
+   },
+   {
+    "file_off": 15562,
+    "seg_off": 15050,
+    "len": 5,
+    "ds": 31978,
+    "text": "Gnome"
+   },
+   {
+    "file_off": 15580,
+    "seg_off": 15068,
+    "len": 1,
+    "ds": 31988,
+    "text": "G"
+   },
+   {
+    "file_off": 15594,
+    "seg_off": 15082,
+    "len": 5,
+    "ds": 31994,
+    "text": "error"
+   },
+   {
+    "file_off": 15612,
+    "seg_off": 15100,
+    "len": 1,
+    "ds": 32014,
+    "text": ")"
+   },
+   {
+    "file_off": 15626,
+    "seg_off": 15114,
+    "len": 1,
+    "ds": 32022,
+    "text": "*"
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 9964,
+    "seg_off": 9452,
+    "len": 4,
+    "text": "?a=8"
+   },
+   {
+    "file_off": 10384,
+    "seg_off": 9872,
+    "len": 8,
+    "text": "TOWN.BAS"
+   },
+   {
+    "file_off": 10393,
+    "seg_off": 9881,
+    "len": 10,
+    "text": "MASTER.INC"
+   },
+   {
+    "file_off": 10404,
+    "seg_off": 9892,
+    "len": 12,
+    "text": "TOWNCAMP.INC"
+   },
+   {
+    "file_off": 10450,
+    "seg_off": 9938,
+    "len": 54,
+    "text": " \"1)  Sword           (2)\" , \"2)  Axe             (2)\""
+   },
+   {
+    "file_off": 10507,
+    "seg_off": 9995,
+    "len": 54,
+    "text": " \"3)  Mace            (1)\" , \"4)  Karate          (2)\""
+   },
+   {
+    "file_off": 10564,
+    "seg_off": 10052,
+    "len": 54,
+    "text": " \"5)  Darkvision      (2)\" , \"6)  Tactics         (2)\""
+   },
+   {
+    "file_off": 10621,
+    "seg_off": 10109,
+    "len": 54,
+    "text": " \"7)  Armored skin    (4)\" , \"8)  Berserking      (3)\""
+   },
+   {
+    "file_off": 10678,
+    "seg_off": 10166,
+    "len": 54,
+    "text": " \"9)  Hunting         (2)\" , \"10) Persuasion      (2)\""
+   },
+   {
+    "file_off": 10735,
+    "seg_off": 10223,
+    "len": 54,
+    "text": " \"1)  Fire runes      (5)\" , \"2)  Metal runes     (5)\""
+   },
+   {
+    "file_off": 10792,
+    "seg_off": 10280,
+    "len": 54,
+    "text": " \"3)  Wind runes      (5)\" , \"4)  Ice runes       (5)\""
+   },
+   {
+    "file_off": 10849,
+    "seg_off": 10337,
+    "len": 54,
+    "text": " \"5)  Spirit runes    (5)\" , \"6)  Weapon lore     (2)\""
+   },
+   {
+    "file_off": 10906,
+    "seg_off": 10394,
+    "len": 54,
+    "text": " \"7)  Potion lore     (2)\" , \"8)  Item lore       (2)\""
+   },
+   {
+    "file_off": 10963,
+    "seg_off": 10451,
+    "len": 54,
+    "text": " \"9)  Monster lore    (2)\" , \"10) Priesthood      (3)\""
+   },
+   {
+    "file_off": 11020,
+    "seg_off": 10508,
+    "len": 55,
+    "text": " \"Speed\", \"Strength\", \"Intellect\", \"Endurance\", \"Skill\""
+   },
+   {
+    "file_off": 17954,
+    "seg_off": 17442,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 17966,
+    "seg_off": 17454,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 17978,
+    "seg_off": 17466,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 17984,
+    "seg_off": 17472,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 18021,
+    "seg_off": 17509,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "CMBT.EXE": {
+  "descriptor": [
+   {
+    "file_off": 37548,
+    "seg_off": 37036,
+    "len": 1,
+    "ds": 26592,
+    "text": "0"
+   },
+   {
+    "file_off": 37562,
+    "seg_off": 37050,
+    "len": 1,
+    "ds": 26598,
+    "text": "9"
+   },
+   {
+    "file_off": 37576,
+    "seg_off": 37064,
+    "len": 2,
+    "ds": 26614,
+    "text": "  "
+   },
+   {
+    "file_off": 37590,
+    "seg_off": 37078,
+    "len": 1,
+    "ds": 26630,
+    "text": "-"
+   },
+   {
+    "file_off": 37612,
+    "seg_off": 37100,
+    "len": 1,
+    "ds": 26656,
+    "text": " "
+   },
+   {
+    "file_off": 37626,
+    "seg_off": 37114,
+    "len": 5,
+    "ds": 37596,
+    "text": "Hands"
+   },
+   {
+    "file_off": 37644,
+    "seg_off": 37132,
+    "len": 5,
+    "ds": 37606,
+    "text": "Fangs"
+   },
+   {
+    "file_off": 37662,
+    "seg_off": 37150,
+    "len": 5,
+    "ds": 37616,
+    "text": "Hands"
+   },
+   {
+    "file_off": 37712,
+    "seg_off": 37200,
+    "len": 1,
+    "ds": 37678,
+    "text": "S"
+   },
+   {
+    "file_off": 37734,
+    "seg_off": 37222,
+    "len": 4,
+    "ds": 37688,
+    "text": "None"
+   },
+   {
+    "file_off": 37750,
+    "seg_off": 37238,
+    "len": 4,
+    "ds": 37696,
+    "text": "Bite"
+   },
+   {
+    "file_off": 37766,
+    "seg_off": 37254,
+    "len": 12,
+    "ds": 37740,
+    "text": "fastcmbt.bin"
+   },
+   {
+    "file_off": 37790,
+    "seg_off": 37278,
+    "len": 10,
+    "ds": 37758,
+    "text": "SPELLS.DAT"
+   },
+   {
+    "file_off": 37812,
+    "seg_off": 37300,
+    "len": 9,
+    "ds": 37772,
+    "text": "ITEMS.DAT"
+   },
+   {
+    "file_off": 37834,
+    "seg_off": 37322,
+    "len": 4,
+    "ds": 37788,
+    "text": "MAZE"
+   },
+   {
+    "file_off": 38026,
+    "seg_off": 37514,
+    "len": 12,
+    "ds": 37964,
+    "text": "rndmonst.bin"
+   },
+   {
+    "file_off": 38074,
+    "seg_off": 37562,
+    "len": 10,
+    "ds": 38000,
+    "text": "monst2.bin"
+   },
+   {
+    "file_off": 38096,
+    "seg_off": 37584,
+    "len": 10,
+    "ds": 38014,
+    "text": "monst4.bin"
+   },
+   {
+    "file_off": 38118,
+    "seg_off": 37606,
+    "len": 5,
+    "ds": 38030,
+    "text": "monst"
+   },
+   {
+    "file_off": 38136,
+    "seg_off": 37624,
+    "len": 4,
+    "ds": 38042,
+    "text": ".bin"
+   },
+   {
+    "file_off": 38152,
+    "seg_off": 37640,
+    "len": 5,
+    "ds": 38058,
+    "text": "monst"
+   },
+   {
+    "file_off": 38202,
+    "seg_off": 37690,
+    "len": 1,
+    "ds": 38096,
+    "text": "1"
+   },
+   {
+    "file_off": 38224,
+    "seg_off": 37712,
+    "len": 13,
+    "ds": 38110,
+    "text": "Item Breaks !"
+   },
+   {
+    "file_off": 38250,
+    "seg_off": 37738,
+    "len": 17,
+    "ds": 38144,
+    "text": "MONSTERS ALL DEAD"
+   },
+   {
+    "file_off": 38280,
+    "seg_off": 37768,
+    "len": 11,
+    "ds": 38170,
+    "text": "PARTY DIES!"
+   },
+   {
+    "file_off": 38304,
+    "seg_off": 37792,
+    "len": 8,
+    "ds": 38186,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 38324,
+    "seg_off": 37812,
+    "len": 4,
+    "ds": 38202,
+    "text": "DEAD"
+   },
+   {
+    "file_off": 38340,
+    "seg_off": 37828,
+    "len": 4,
+    "ds": 38210,
+    "text": "WRLD"
+   },
+   {
+    "file_off": 38356,
+    "seg_off": 37844,
+    "len": 8,
+    "ds": 38218,
+    "text": "MAZEMOVE"
+   },
+   {
+    "file_off": 38376,
+    "seg_off": 37864,
+    "len": 10,
+    "ds": 38234,
+    "text": "PARTY RAN!"
+   },
+   {
+    "file_off": 38398,
+    "seg_off": 37886,
+    "len": 1,
+    "ds": 38250,
+    "text": "N"
+   },
+   {
+    "file_off": 38412,
+    "seg_off": 37900,
+    "len": 15,
+    "ds": 38262,
+    "text": "KEYPAD TEMPLATE"
+   },
+   {
+    "file_off": 38440,
+    "seg_off": 37928,
+    "len": 5,
+    "ds": 38282,
+    "text": "[ESC]"
+   },
+   {
+    "file_off": 38458,
+    "seg_off": 37946,
+    "len": 5,
+    "ds": 38292,
+    "text": "][ ]["
+   },
+   {
+    "file_off": 38476,
+    "seg_off": 37964,
+    "len": 5,
+    "ds": 38302,
+    "text": "[ATK]"
+   },
+   {
+    "file_off": 38494,
+    "seg_off": 37982,
+    "len": 4,
+    "ds": 38312,
+    "text": "[D]["
+   },
+   {
+    "file_off": 38510,
+    "seg_off": 37998,
+    "len": 4,
+    "ds": 38320,
+    "text": "][?]"
+   },
+   {
+    "file_off": 38526,
+    "seg_off": 38014,
+    "len": 1,
+    "ds": 38328,
+    "text": "["
+   },
+   {
+    "file_off": 38540,
+    "seg_off": 38028,
+    "len": 1,
+    "ds": 38334,
+    "text": "]"
+   },
+   {
+    "file_off": 38554,
+    "seg_off": 38042,
+    "len": 4,
+    "ds": 38340,
+    "text": "[C]["
+   },
+   {
+    "file_off": 38570,
+    "seg_off": 38058,
+    "len": 4,
+    "ds": 38348,
+    "text": "][U]"
+   },
+   {
+    "file_off": 38586,
+    "seg_off": 38074,
+    "len": 7,
+    "ds": 38356,
+    "text": "FACING "
+   },
+   {
+    "file_off": 38606,
+    "seg_off": 38094,
+    "len": 3,
+    "ds": 38368,
+    "text": "MP="
+   },
+   {
+    "file_off": 38622,
+    "seg_off": 38110,
+    "len": 1,
+    "ds": 38386,
+    "text": "3"
+   },
+   {
+    "file_off": 38636,
+    "seg_off": 38124,
+    "len": 1,
+    "ds": 38392,
+    "text": "2"
+   },
+   {
+    "file_off": 38650,
+    "seg_off": 38138,
+    "len": 1,
+    "ds": 38398,
+    "text": "4"
+   },
+   {
+    "file_off": 38664,
+    "seg_off": 38152,
+    "len": 1,
+    "ds": 38404,
+    "text": "D"
+   },
+   {
+    "file_off": 38678,
+    "seg_off": 38166,
+    "len": 1,
+    "ds": 38410,
+    "text": "?"
+   },
+   {
+    "file_off": 38692,
+    "seg_off": 38180,
+    "len": 1,
+    "ds": 38416,
+    "text": "C"
+   },
+   {
+    "file_off": 38706,
+    "seg_off": 38194,
+    "len": 1,
+    "ds": 38422,
+    "text": "U"
+   },
+   {
+    "file_off": 38720,
+    "seg_off": 38208,
+    "len": 1,
+    "ds": 38428,
+    "text": "A"
+   },
+   {
+    "file_off": 38734,
+    "seg_off": 38222,
+    "len": 1,
+    "ds": 38438,
+    "text": "/"
+   },
+   {
+    "file_off": 38748,
+    "seg_off": 38236,
+    "len": 16,
+    "ds": 38458,
+    "text": "Sound is now on."
+   },
+   {
+    "file_off": 38776,
+    "seg_off": 38264,
+    "len": 17,
+    "ds": 38482,
+    "text": "Sound is now off."
+   },
+   {
+    "file_off": 38806,
+    "seg_off": 38294,
+    "len": 2,
+    "ds": 38512,
+    "text": "a$"
+   },
+   {
+    "file_off": 38820,
+    "seg_off": 38308,
+    "len": 2,
+    "ds": 38522,
+    "text": "BP"
+   },
+   {
+    "file_off": 38834,
+    "seg_off": 38322,
+    "len": 11,
+    "ds": 38536,
+    "text": "Experience:"
+   },
+   {
+    "file_off": 38858,
+    "seg_off": 38346,
+    "len": 16,
+    "ds": 38552,
+    "text": " (per character)"
+   },
+   {
+    "file_off": 38902,
+    "seg_off": 38390,
+    "len": 5,
+    "ds": 38594,
+    "text": "Gold:"
+   },
+   {
+    "file_off": 38920,
+    "seg_off": 38408,
+    "len": 5,
+    "ds": 38604,
+    "text": "Gold:"
+   },
+   {
+    "file_off": 38938,
+    "seg_off": 38426,
+    "len": 7,
+    "ds": 38616,
+    "text": " found "
+   },
+   {
+    "file_off": 38974,
+    "seg_off": 38462,
+    "len": 5,
+    "ds": 38646,
+    "text": "finds"
+   },
+   {
+    "file_off": 38992,
+    "seg_off": 38480,
+    "len": 15,
+    "ds": 38656,
+    "text": "Do you take it?"
+   },
+   {
+    "file_off": 39020,
+    "seg_off": 38508,
+    "len": 5,
+    "ds": 38676,
+    "text": "(Y/N)"
+   },
+   {
+    "file_off": 39038,
+    "seg_off": 38526,
+    "len": 1,
+    "ds": 38686,
+    "text": "."
+   },
+   {
+    "file_off": 39052,
+    "seg_off": 38540,
+    "len": 1,
+    "ds": 38696,
+    "text": "Y"
+   },
+   {
+    "file_off": 39066,
+    "seg_off": 38554,
+    "len": 8,
+    "ds": 38702,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 39094,
+    "seg_off": 38582,
+    "len": 4,
+    "ds": 38718,
+    "text": "CMBT"
+   },
+   {
+    "file_off": 39110,
+    "seg_off": 38598,
+    "len": 8,
+    "ds": 38726,
+    "text": "MAZEMOVE"
+   },
+   {
+    "file_off": 39130,
+    "seg_off": 38618,
+    "len": 8,
+    "ds": 38744,
+    "text": "attacks "
+   },
+   {
+    "file_off": 39150,
+    "seg_off": 38638,
+    "len": 4,
+    "ds": 38756,
+    "text": "with"
+   },
+   {
+    "file_off": 39166,
+    "seg_off": 38654,
+    "len": 11,
+    "ds": 38766,
+    "text": "and missed!"
+   },
+   {
+    "file_off": 39198,
+    "seg_off": 38686,
+    "len": 14,
+    "ds": 38798,
+    "text": "for no damage."
+   },
+   {
+    "file_off": 39224,
+    "seg_off": 38712,
+    "len": 2,
+    "ds": 38820,
+    "text": "HK"
+   },
+   {
+    "file_off": 39238,
+    "seg_off": 38726,
+    "len": 14,
+    "ds": 38826,
+    "text": "and hacks for "
+   },
+   {
+    "file_off": 39264,
+    "seg_off": 38752,
+    "len": 2,
+    "ds": 38848,
+    "text": "HT"
+   },
+   {
+    "file_off": 39278,
+    "seg_off": 38766,
+    "len": 13,
+    "ds": 38854,
+    "text": "and hits for "
+   },
+   {
+    "file_off": 39304,
+    "seg_off": 38792,
+    "len": 8,
+    "ds": 38872,
+    "text": " damage."
+   },
+   {
+    "file_off": 39324,
+    "seg_off": 38812,
+    "len": 5,
+    "ds": 38886,
+    "text": "     "
+   },
+   {
+    "file_off": 39342,
+    "seg_off": 38830,
+    "len": 16,
+    "ds": 38896,
+    "text": "and is poisoned!"
+   },
+   {
+    "file_off": 39378,
+    "seg_off": 38866,
+    "len": 1,
+    "ds": 38922,
+    "text": "P"
+   },
+   {
+    "file_off": 39392,
+    "seg_off": 38880,
+    "len": 9,
+    "ds": 38928,
+    "text": " He Dies!"
+   },
+   {
+    "file_off": 39414,
+    "seg_off": 38902,
+    "len": 9,
+    "ds": 38942,
+    "text": " It dies!"
+   },
+   {
+    "file_off": 39436,
+    "seg_off": 38924,
+    "len": 17,
+    "ds": 38962,
+    "text": "All Monsters Dead"
+   },
+   {
+    "file_off": 39466,
+    "seg_off": 38954,
+    "len": 8,
+    "ds": 39016,
+    "text": "is not a"
+   },
+   {
+    "file_off": 39486,
+    "seg_off": 38974,
+    "len": 6,
+    "ds": 39028,
+    "text": "wizard"
+   },
+   {
+    "file_off": 39504,
+    "seg_off": 38992,
+    "len": 10,
+    "ds": 39038,
+    "text": "and cannot"
+   },
+   {
+    "file_off": 39526,
+    "seg_off": 39014,
+    "len": 12,
+    "ds": 39052,
+    "text": "cast spells."
+   },
+   {
+    "file_off": 39550,
+    "seg_off": 39038,
+    "len": 14,
+    "ds": 39070,
+    "text": "Which spell do"
+   },
+   {
+    "file_off": 39576,
+    "seg_off": 39064,
+    "len": 17,
+    "ds": 39088,
+    "text": "you wish to cast?"
+   },
+   {
+    "file_off": 39606,
+    "seg_off": 39094,
+    "len": 14,
+    "ds": 39110,
+    "text": " (ENTER exits)"
+   },
+   {
+    "file_off": 39632,
+    "seg_off": 39120,
+    "len": 17,
+    "ds": 39134,
+    "text": " There is no     "
+   },
+   {
+    "file_off": 39662,
+    "seg_off": 39150,
+    "len": 17,
+    "ds": 39156,
+    "text": " such spell!     "
+   },
+   {
+    "file_off": 39692,
+    "seg_off": 39180,
+    "len": 17,
+    "ds": 39180,
+    "text": " That is not a   "
+   },
+   {
+    "file_off": 39722,
+    "seg_off": 39210,
+    "len": 17,
+    "ds": 39202,
+    "text": " combat spell!   "
+   },
+   {
+    "file_off": 39752,
+    "seg_off": 39240,
+    "len": 17,
+    "ds": 39226,
+    "text": " You don't know  "
+   },
+   {
+    "file_off": 39782,
+    "seg_off": 39270,
+    "len": 17,
+    "ds": 39248,
+    "text": " that spell!     "
+   },
+   {
+    "file_off": 39812,
+    "seg_off": 39300,
+    "len": 17,
+    "ds": 39272,
+    "text": "You will not be  "
+   },
+   {
+    "file_off": 39842,
+    "seg_off": 39330,
+    "len": 17,
+    "ds": 39294,
+    "text": "prepared for that"
+   },
+   {
+    "file_off": 39872,
+    "seg_off": 39360,
+    "len": 17,
+    "ds": 39316,
+    "text": "spell until the  "
+   },
+   {
+    "file_off": 39902,
+    "seg_off": 39390,
+    "len": 11,
+    "ds": 39338,
+    "text": "next round."
+   },
+   {
+    "file_off": 39926,
+    "seg_off": 39414,
+    "len": 8,
+    "ds": 39356,
+    "text": " # SP ? "
+   },
+   {
+    "file_off": 39946,
+    "seg_off": 39434,
+    "len": 15,
+    "ds": 39368,
+    "text": " You don't have"
+   },
+   {
+    "file_off": 39974,
+    "seg_off": 39462,
+    "len": 11,
+    "ds": 39388,
+    "text": " that many!"
+   },
+   {
+    "file_off": 39998,
+    "seg_off": 39486,
+    "len": 10,
+    "ds": 39406,
+    "text": "That spell"
+   },
+   {
+    "file_off": 40020,
+    "seg_off": 39508,
+    "len": 17,
+    "ds": 39420,
+    "text": "requires at least"
+   },
+   {
+    "file_off": 40050,
+    "seg_off": 39538,
+    "len": 5,
+    "ds": 39442,
+    "text": " S.P."
+   },
+   {
+    "file_off": 40068,
+    "seg_off": 39556,
+    "len": 3,
+    "ds": 39454,
+    "text": "   "
+   },
+   {
+    "file_off": 40084,
+    "seg_off": 39572,
+    "len": 9,
+    "ds": 39470,
+    "text": "NO TARGET"
+   },
+   {
+    "file_off": 40106,
+    "seg_off": 39594,
+    "len": 9,
+    "ds": 39484,
+    "text": "SELECTED!"
+   },
+   {
+    "file_off": 40128,
+    "seg_off": 39616,
+    "len": 17,
+    "ds": 39502,
+    "text": "Use arrow keys to"
+   },
+   {
+    "file_off": 40158,
+    "seg_off": 39646,
+    "len": 16,
+    "ds": 39524,
+    "text": "position cursor."
+   },
+   {
+    "file_off": 40186,
+    "seg_off": 39674,
+    "len": 5,
+    "ds": 39544,
+    "text": "]   ["
+   },
+   {
+    "file_off": 40204,
+    "seg_off": 39692,
+    "len": 12,
+    "ds": 39554,
+    "text": "Hit PgDn key"
+   },
+   {
+    "file_off": 40228,
+    "seg_off": 39716,
+    "len": 13,
+    "ds": 39570,
+    "text": "(ESC to Exit)"
+   },
+   {
+    "file_off": 40254,
+    "seg_off": 39742,
+    "len": 15,
+    "ds": 39588,
+    "text": "Who do you want"
+   },
+   {
+    "file_off": 40282,
+    "seg_off": 39770,
+    "len": 13,
+    "ds": 39608,
+    "text": "to use it on?"
+   },
+   {
+    "file_off": 40308,
+    "seg_off": 39796,
+    "len": 7,
+    "ds": 39626,
+    "text": "to use."
+   },
+   {
+    "file_off": 40328,
+    "seg_off": 39816,
+    "len": 17,
+    "ds": 39638,
+    "text": "Where do you want"
+   },
+   {
+    "file_off": 40358,
+    "seg_off": 39846,
+    "len": 11,
+    "ds": 39660,
+    "text": "to cast it?"
+   },
+   {
+    "file_off": 40382,
+    "seg_off": 39870,
+    "len": 8,
+    "ds": 39676,
+    "text": "to cast."
+   },
+   {
+    "file_off": 40402,
+    "seg_off": 39890,
+    "len": 2,
+    "ds": 39716,
+    "text": "PS"
+   },
+   {
+    "file_off": 40416,
+    "seg_off": 39904,
+    "len": 9,
+    "ds": 39736,
+    "text": "and Dies!"
+   },
+   {
+    "file_off": 40438,
+    "seg_off": 39926,
+    "len": 5,
+    "ds": 39750,
+    "text": "     "
+   },
+   {
+    "file_off": 40456,
+    "seg_off": 39944,
+    "len": 9,
+    "ds": 39766,
+    "text": "NO ONE IN"
+   },
+   {
+    "file_off": 40478,
+    "seg_off": 39966,
+    "len": 11,
+    "ds": 39780,
+    "text": "TARGET AREA"
+   },
+   {
+    "file_off": 40502,
+    "seg_off": 39990,
+    "len": 8,
+    "ds": 39820,
+    "text": "and Dies"
+   },
+   {
+    "file_off": 40522,
+    "seg_off": 40010,
+    "len": 5,
+    "ds": 39836,
+    "text": "     "
+   },
+   {
+    "file_off": 40540,
+    "seg_off": 40028,
+    "len": 10,
+    "ds": 39852,
+    "text": "notices no"
+   },
+   {
+    "file_off": 40562,
+    "seg_off": 40050,
+    "len": 11,
+    "ds": 39866,
+    "text": "difference."
+   },
+   {
+    "file_off": 40586,
+    "seg_off": 40074,
+    "len": 12,
+    "ds": 39888,
+    "text": "Breaks free!"
+   },
+   {
+    "file_off": 40610,
+    "seg_off": 40098,
+    "len": 1,
+    "ds": 39906,
+    "text": "B"
+   },
+   {
+    "file_off": 40624,
+    "seg_off": 40112,
+    "len": 10,
+    "ds": 39912,
+    "text": "notices no"
+   },
+   {
+    "file_off": 40646,
+    "seg_off": 40134,
+    "len": 11,
+    "ds": 39926,
+    "text": "difference."
+   },
+   {
+    "file_off": 40670,
+    "seg_off": 40158,
+    "len": 15,
+    "ds": 39948,
+    "text": "is not bound in"
+   },
+   {
+    "file_off": 40698,
+    "seg_off": 40186,
+    "len": 10,
+    "ds": 39968,
+    "text": "chains and"
+   },
+   {
+    "file_off": 40720,
+    "seg_off": 40208,
+    "len": 13,
+    "ds": 39982,
+    "text": "still air and"
+   },
+   {
+    "file_off": 40746,
+    "seg_off": 40234,
+    "len": 7,
+    "ds": 40000,
+    "text": "ice and"
+   },
+   {
+    "file_off": 40766,
+    "seg_off": 40254,
+    "len": 17,
+    "ds": 40012,
+    "text": "notices no effect"
+   },
+   {
+    "file_off": 40796,
+    "seg_off": 40284,
+    "len": 2,
+    "ds": 40040,
+    "text": "FL"
+   },
+   {
+    "file_off": 40810,
+    "seg_off": 40298,
+    "len": 10,
+    "ds": 40046,
+    "text": "Item Fails"
+   },
+   {
+    "file_off": 40832,
+    "seg_off": 40320,
+    "len": 11,
+    "ds": 40060,
+    "text": "Spell Fails"
+   },
+   {
+    "file_off": 40856,
+    "seg_off": 40344,
+    "len": 13,
+    "ds": 40082,
+    "text": "does not have"
+   },
+   {
+    "file_off": 40882,
+    "seg_off": 40370,
+    "len": 14,
+    "ds": 40100,
+    "text": "the Priesthood"
+   },
+   {
+    "file_off": 40908,
+    "seg_off": 40396,
+    "len": 10,
+    "ds": 40118,
+    "text": "and cannot"
+   },
+   {
+    "file_off": 40930,
+    "seg_off": 40418,
+    "len": 8,
+    "ds": 40132,
+    "text": "dispell."
+   },
+   {
+    "file_off": 40950,
+    "seg_off": 40438,
+    "len": 11,
+    "ds": 40146,
+    "text": "has already"
+   },
+   {
+    "file_off": 40974,
+    "seg_off": 40462,
+    "len": 9,
+    "ds": 40162,
+    "text": "dispelled"
+   },
+   {
+    "file_off": 40996,
+    "seg_off": 40484,
+    "len": 12,
+    "ds": 40176,
+    "text": "this combat."
+   },
+   {
+    "file_off": 41020,
+    "seg_off": 40508,
+    "len": 8,
+    "ds": 40194,
+    "text": "is not a"
+   },
+   {
+    "file_off": 41040,
+    "seg_off": 40528,
+    "len": 6,
+    "ds": 40206,
+    "text": "wizard"
+   },
+   {
+    "file_off": 41058,
+    "seg_off": 40546,
+    "len": 10,
+    "ds": 40216,
+    "text": "and cannot"
+   },
+   {
+    "file_off": 41080,
+    "seg_off": 40568,
+    "len": 8,
+    "ds": 40230,
+    "text": "dispell."
+   },
+   {
+    "file_off": 41100,
+    "seg_off": 40588,
+    "len": 13,
+    "ds": 40246,
+    "text": "None of these"
+   },
+   {
+    "file_off": 41126,
+    "seg_off": 40614,
+    "len": 12,
+    "ds": 40264,
+    "text": "monsters are"
+   },
+   {
+    "file_off": 41150,
+    "seg_off": 40638,
+    "len": 7,
+    "ds": 40280,
+    "text": "undead!"
+   },
+   {
+    "file_off": 41170,
+    "seg_off": 40658,
+    "len": 10,
+    "ds": 40296,
+    "text": "Attempting"
+   },
+   {
+    "file_off": 41192,
+    "seg_off": 40680,
+    "len": 7,
+    "ds": 40310,
+    "text": "dispell"
+   },
+   {
+    "file_off": 41212,
+    "seg_off": 40700,
+    "len": 15,
+    "ds": 40324,
+    "text": "Ignores priest."
+   },
+   {
+    "file_off": 41248,
+    "seg_off": 40736,
+    "len": 5,
+    "ds": 40352,
+    "text": "dies."
+   },
+   {
+    "file_off": 41274,
+    "seg_off": 40762,
+    "len": 1,
+    "ds": 40416,
+    "text": ")"
+   },
+   {
+    "file_off": 41288,
+    "seg_off": 40776,
+    "len": 1,
+    "ds": 40422,
+    "text": "*"
+   },
+   {
+    "file_off": 41302,
+    "seg_off": 40790,
+    "len": 35,
+    "ds": 40432,
+    "text": "This character has no items to use!"
+   },
+   {
+    "file_off": 41350,
+    "seg_off": 40838,
+    "len": 17,
+    "ds": 40480,
+    "text": "Use:  (ESC exits)"
+   },
+   {
+    "file_off": 41380,
+    "seg_off": 40868,
+    "len": 25,
+    "ds": 40504,
+    "text": "Not a valid magical item!"
+   },
+   {
+    "file_off": 41418,
+    "seg_off": 40906,
+    "len": 83,
+    "ds": 40544,
+    "text": "Do you wish to use the potion on Y)ourself or T)oss it to another character?       "
+   },
+   {
+    "file_off": 41514,
+    "seg_off": 41002,
+    "len": 17,
+    "ds": 40632,
+    "text": "                 "
+   },
+   {
+    "file_off": 41544,
+    "seg_off": 41032,
+    "len": 14,
+    "ds": 40654,
+    "text": " (ESC cancels)"
+   },
+   {
+    "file_off": 41570,
+    "seg_off": 41058,
+    "len": 16,
+    "ds": 40680,
+    "text": "Toss it to which"
+   },
+   {
+    "file_off": 41598,
+    "seg_off": 41086,
+    "len": 10,
+    "ds": 40700,
+    "text": "character?"
+   },
+   {
+    "file_off": 41620,
+    "seg_off": 41108,
+    "len": 8,
+    "ds": 40714,
+    "text": "char #: "
+   },
+   {
+    "file_off": 41640,
+    "seg_off": 41128,
+    "len": 1,
+    "ds": 40728,
+    "text": "T"
+   },
+   {
+    "file_off": 41654,
+    "seg_off": 41142,
+    "len": 68,
+    "ds": 40736,
+    "text": "Aack!  There is something wrong with the data files, please restore!"
+   },
+   {
+    "file_off": 41734,
+    "seg_off": 41222,
+    "len": 12,
+    "ds": 40816,
+    "text": "MONSTERS.DAT"
+   },
+   {
+    "file_off": 41758,
+    "seg_off": 41246,
+    "len": 1,
+    "ds": 40840,
+    "text": "R"
+   },
+   {
+    "file_off": 41804,
+    "seg_off": 41292,
+    "len": 2,
+    "ds": 40890,
+    "text": "BR"
+   },
+   {
+    "file_off": 41818,
+    "seg_off": 41306,
+    "len": 2,
+    "ds": 40896,
+    "text": "DD"
+   },
+   {
+    "file_off": 41848,
+    "seg_off": 41336,
+    "len": 7,
+    "ds": 40926,
+    "text": "0   0  "
+   },
+   {
+    "file_off": 41868,
+    "seg_off": 41356,
+    "len": 7,
+    "ds": 40938,
+    "text": "0      "
+   },
+   {
+    "file_off": 41888,
+    "seg_off": 41376,
+    "len": 8,
+    "ds": 40950,
+    "text": "Status: "
+   },
+   {
+    "file_off": 41908,
+    "seg_off": 41396,
+    "len": 7,
+    "ds": 40962,
+    "text": "Seeks> "
+   },
+   {
+    "file_off": 41928,
+    "seg_off": 41416,
+    "len": 3,
+    "ds": 40978,
+    "text": "YES"
+   },
+   {
+    "file_off": 41944,
+    "seg_off": 41432,
+    "len": 2,
+    "ds": 40986,
+    "text": "no"
+   },
+   {
+    "file_off": 41958,
+    "seg_off": 41446,
+    "len": 10,
+    "ds": 40992,
+    "text": "Speed:    "
+   },
+   {
+    "file_off": 41980,
+    "seg_off": 41468,
+    "len": 10,
+    "ds": 41006,
+    "text": "Skill:    "
+   },
+   {
+    "file_off": 42002,
+    "seg_off": 41490,
+    "len": 10,
+    "ds": 41020,
+    "text": "Strength: "
+   },
+   {
+    "file_off": 42024,
+    "seg_off": 41512,
+    "len": 10,
+    "ds": 41034,
+    "text": "Magical:  "
+   },
+   {
+    "file_off": 42046,
+    "seg_off": 41534,
+    "len": 13,
+    "ds": 41048,
+    "text": "Armor rating:"
+   },
+   {
+    "file_off": 42072,
+    "seg_off": 41560,
+    "len": 13,
+    "ds": 41066,
+    "text": "Attacks with:"
+   },
+   {
+    "file_off": 42098,
+    "seg_off": 41586,
+    "len": 3,
+    "ds": 41084,
+    "text": " * "
+   },
+   {
+    "file_off": 42114,
+    "seg_off": 41602,
+    "len": 2,
+    "ds": 41092,
+    "text": " *"
+   },
+   {
+    "file_off": 42128,
+    "seg_off": 41616,
+    "len": 6,
+    "ds": 41098,
+    "text": "(ESC, "
+   },
+   {
+    "file_off": 42146,
+    "seg_off": 41634,
+    "len": 9,
+    "ds": 41108,
+    "text": " scrolls)"
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 37376,
+    "seg_off": 36864,
+    "len": 8,
+    "text": "CMBT.BAS"
+   },
+   {
+    "file_off": 37385,
+    "seg_off": 36873,
+    "len": 10,
+    "text": "MASTER.INC"
+   },
+   {
+    "file_off": 37426,
+    "seg_off": 36914,
+    "len": 20,
+    "text": " 10,10, 10,11, 11,10"
+   },
+   {
+    "file_off": 37449,
+    "seg_off": 36937,
+    "len": 20,
+    "text": " 10,16, 10,15, 11,16"
+   },
+   {
+    "file_off": 37472,
+    "seg_off": 36960,
+    "len": 20,
+    "text": " 16,10, 16,11, 15,10"
+   },
+   {
+    "file_off": 37495,
+    "seg_off": 36983,
+    "len": 20,
+    "text": " 16,16, 16,15, 15,16"
+   },
+   {
+    "file_off": 44482,
+    "seg_off": 43970,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 44494,
+    "seg_off": 43982,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 44506,
+    "seg_off": 43994,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 44512,
+    "seg_off": 44000,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 44549,
+    "seg_off": 44037,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "CAMP.EXE": {
+  "descriptor": [
+   {
+    "file_off": 15804,
+    "seg_off": 15292,
+    "len": 1,
+    "ds": 26592,
+    "text": "0"
+   },
+   {
+    "file_off": 15818,
+    "seg_off": 15306,
+    "len": 1,
+    "ds": 26598,
+    "text": "9"
+   },
+   {
+    "file_off": 15832,
+    "seg_off": 15320,
+    "len": 2,
+    "ds": 26614,
+    "text": "  "
+   },
+   {
+    "file_off": 15846,
+    "seg_off": 15334,
+    "len": 1,
+    "ds": 26630,
+    "text": "-"
+   },
+   {
+    "file_off": 15868,
+    "seg_off": 15356,
+    "len": 1,
+    "ds": 26656,
+    "text": " "
+   },
+   {
+    "file_off": 15882,
+    "seg_off": 15370,
+    "len": 2,
+    "ds": 28442,
+    "text": "CR"
+   },
+   {
+    "file_off": 15896,
+    "seg_off": 15384,
+    "len": 11,
+    "ds": 28458,
+    "text": "      Camp:"
+   },
+   {
+    "file_off": 15920,
+    "seg_off": 15408,
+    "len": 15,
+    "ds": 28474,
+    "text": " P)rint char(s)"
+   },
+   {
+    "file_off": 15948,
+    "seg_off": 15436,
+    "len": 7,
+    "ds": 28494,
+    "text": " S)leep"
+   },
+   {
+    "file_off": 15968,
+    "seg_off": 15456,
+    "len": 16,
+    "ds": 28506,
+    "text": " #)inspect char "
+   },
+   {
+    "file_off": 15996,
+    "seg_off": 15484,
+    "len": 12,
+    "ds": 28526,
+    "text": " C)ast spell"
+   },
+   {
+    "file_off": 16020,
+    "seg_off": 15508,
+    "len": 9,
+    "ds": 28542,
+    "text": " R)eorder"
+   },
+   {
+    "file_off": 16042,
+    "seg_off": 15530,
+    "len": 7,
+    "ds": 28556,
+    "text": " T)rade"
+   },
+   {
+    "file_off": 16062,
+    "seg_off": 15550,
+    "len": 6,
+    "ds": 28568,
+    "text": " D)rop"
+   },
+   {
+    "file_off": 16080,
+    "seg_off": 15568,
+    "len": 7,
+    "ds": 28578,
+    "text": " E)quip"
+   },
+   {
+    "file_off": 16100,
+    "seg_off": 15588,
+    "len": 6,
+    "ds": 28590,
+    "text": " H)unt"
+   },
+   {
+    "file_off": 16118,
+    "seg_off": 15606,
+    "len": 10,
+    "ds": 28600,
+    "text": " I)dentify"
+   },
+   {
+    "file_off": 16140,
+    "seg_off": 15628,
+    "len": 13,
+    "ds": 28614,
+    "text": " U)se an item"
+   },
+   {
+    "file_off": 16166,
+    "seg_off": 15654,
+    "len": 13,
+    "ds": 28632,
+    "text": " ESC to leave"
+   },
+   {
+    "file_off": 16192,
+    "seg_off": 15680,
+    "len": 15,
+    "ds": 28650,
+    "text": "Breaking Camp.."
+   },
+   {
+    "file_off": 16220,
+    "seg_off": 15708,
+    "len": 8,
+    "ds": 28670,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 16240,
+    "seg_off": 15728,
+    "len": 4,
+    "ds": 28690,
+    "text": "CAMP"
+   },
+   {
+    "file_off": 16272,
+    "seg_off": 15760,
+    "len": 4,
+    "ds": 28706,
+    "text": "WRLD"
+   },
+   {
+    "file_off": 16288,
+    "seg_off": 15776,
+    "len": 8,
+    "ds": 28714,
+    "text": "MAZEMOVE"
+   },
+   {
+    "file_off": 16308,
+    "seg_off": 15796,
+    "len": 1,
+    "ds": 28730,
+    "text": "S"
+   },
+   {
+    "file_off": 16322,
+    "seg_off": 15810,
+    "len": 1,
+    "ds": 28736,
+    "text": "C"
+   },
+   {
+    "file_off": 16336,
+    "seg_off": 15824,
+    "len": 1,
+    "ds": 28742,
+    "text": "R"
+   },
+   {
+    "file_off": 16350,
+    "seg_off": 15838,
+    "len": 1,
+    "ds": 28748,
+    "text": "T"
+   },
+   {
+    "file_off": 16364,
+    "seg_off": 15852,
+    "len": 1,
+    "ds": 28754,
+    "text": "E"
+   },
+   {
+    "file_off": 16378,
+    "seg_off": 15866,
+    "len": 1,
+    "ds": 28760,
+    "text": "H"
+   },
+   {
+    "file_off": 16392,
+    "seg_off": 15880,
+    "len": 1,
+    "ds": 28766,
+    "text": "I"
+   },
+   {
+    "file_off": 16406,
+    "seg_off": 15894,
+    "len": 1,
+    "ds": 28772,
+    "text": "D"
+   },
+   {
+    "file_off": 16420,
+    "seg_off": 15908,
+    "len": 1,
+    "ds": 28778,
+    "text": "U"
+   },
+   {
+    "file_off": 16434,
+    "seg_off": 15922,
+    "len": 1,
+    "ds": 28784,
+    "text": "P"
+   },
+   {
+    "file_off": 16448,
+    "seg_off": 15936,
+    "len": 40,
+    "ds": 28792,
+    "text": "Character # to trade from ?, (ESC exits)"
+   },
+   {
+    "file_off": 16500,
+    "seg_off": 15988,
+    "len": 13,
+    "ds": 28840,
+    "text": "Trade which ?"
+   },
+   {
+    "file_off": 16526,
+    "seg_off": 16014,
+    "len": 14,
+    "ds": 28872,
+    "text": "    Give to ? "
+   },
+   {
+    "file_off": 16552,
+    "seg_off": 16040,
+    "len": 9,
+    "ds": 28896,
+    "text": "NO ROOM !"
+   },
+   {
+    "file_off": 16574,
+    "seg_off": 16062,
+    "len": 3,
+    "ds": 28914,
+    "text": " OK"
+   },
+   {
+    "file_off": 16590,
+    "seg_off": 16078,
+    "len": 34,
+    "ds": 28922,
+    "text": "Character # to equip ? (ESC exits)"
+   },
+   {
+    "file_off": 16636,
+    "seg_off": 16124,
+    "len": 8,
+    "ds": 28964,
+    "text": "Weapon? "
+   },
+   {
+    "file_off": 16656,
+    "seg_off": 16144,
+    "len": 7,
+    "ds": 28976,
+    "text": " skips."
+   },
+   {
+    "file_off": 16676,
+    "seg_off": 16164,
+    "len": 9,
+    "ds": 28992,
+    "text": "No Weapon"
+   },
+   {
+    "file_off": 16698,
+    "seg_off": 16186,
+    "len": 10,
+    "ds": 29010,
+    "text": "NO SKILL !"
+   },
+   {
+    "file_off": 16720,
+    "seg_off": 16208,
+    "len": 1,
+    "ds": 29024,
+    "text": "2"
+   },
+   {
+    "file_off": 16734,
+    "seg_off": 16222,
+    "len": 10,
+    "ds": 29030,
+    "text": "          "
+   },
+   {
+    "file_off": 16756,
+    "seg_off": 16244,
+    "len": 1,
+    "ds": 29044,
+    "text": "*"
+   },
+   {
+    "file_off": 16770,
+    "seg_off": 16258,
+    "len": 8,
+    "ds": 29050,
+    "text": "Armor?  "
+   },
+   {
+    "file_off": 16790,
+    "seg_off": 16278,
+    "len": 7,
+    "ds": 29062,
+    "text": " skips."
+   },
+   {
+    "file_off": 16810,
+    "seg_off": 16298,
+    "len": 10,
+    "ds": 29074,
+    "text": "No Armor  "
+   },
+   {
+    "file_off": 16832,
+    "seg_off": 16320,
+    "len": 4,
+    "ds": 29088,
+    "text": "OK !"
+   },
+   {
+    "file_off": 16848,
+    "seg_off": 16336,
+    "len": 39,
+    "ds": 29096,
+    "text": "Character # dropping item ? (ESC exits)"
+   },
+   {
+    "file_off": 16900,
+    "seg_off": 16388,
+    "len": 14,
+    "ds": 29144,
+    "text": "Item to drop ?"
+   },
+   {
+    "file_off": 16926,
+    "seg_off": 16414,
+    "len": 10,
+    "ds": 29170,
+    "text": "Dropped ! "
+   },
+   {
+    "file_off": 16948,
+    "seg_off": 16436,
+    "len": 16,
+    "ds": 29184,
+    "text": "You have slept !"
+   },
+   {
+    "file_off": 16976,
+    "seg_off": 16464,
+    "len": 17,
+    "ds": 29206,
+    "text": "You are not tired"
+   },
+   {
+    "file_off": 17006,
+    "seg_off": 16494,
+    "len": 12,
+    "ds": 29228,
+    "text": "You sleep..."
+   },
+   {
+    "file_off": 17030,
+    "seg_off": 16518,
+    "len": 1,
+    "ds": 29250,
+    "text": "N"
+   },
+   {
+    "file_off": 17044,
+    "seg_off": 16532,
+    "len": 44,
+    "ds": 29258,
+    "text": "Character # wishing to identify? (ESC exits)"
+   },
+   {
+    "file_off": 17100,
+    "seg_off": 16588,
+    "len": 1,
+    "ds": 29310,
+    "text": "1"
+   },
+   {
+    "file_off": 17114,
+    "seg_off": 16602,
+    "len": 12,
+    "ds": 29316,
+    "text": "Item to ID ?"
+   },
+   {
+    "file_off": 17138,
+    "seg_off": 16626,
+    "len": 33,
+    "ds": 29340,
+    "text": "You are not trained in that lore!"
+   },
+   {
+    "file_off": 17208,
+    "seg_off": 16696,
+    "len": 6,
+    "ds": 29402,
+    "text": "Failed"
+   },
+   {
+    "file_off": 17226,
+    "seg_off": 16714,
+    "len": 14,
+    "ds": 29412,
+    "text": "You're inside!"
+   },
+   {
+    "file_off": 17252,
+    "seg_off": 16740,
+    "len": 33,
+    "ds": 29430,
+    "text": "Character # to hunt ? (ESC exits)"
+   },
+   {
+    "file_off": 17306,
+    "seg_off": 16794,
+    "len": 12,
+    "ds": 29478,
+    "text": "The hunt was"
+   },
+   {
+    "file_off": 17330,
+    "seg_off": 16818,
+    "len": 15,
+    "ds": 29494,
+    "text": "not successful."
+   },
+   {
+    "file_off": 17358,
+    "seg_off": 16846,
+    "len": 11,
+    "ds": 29514,
+    "text": "successful!"
+   },
+   {
+    "file_off": 17382,
+    "seg_off": 16870,
+    "len": 10,
+    "ds": 29532,
+    "text": "Enter new "
+   },
+   {
+    "file_off": 17404,
+    "seg_off": 16892,
+    "len": 13,
+    "ds": 29546,
+    "text": "position for:"
+   },
+   {
+    "file_off": 17430,
+    "seg_off": 16918,
+    "len": 8,
+    "ds": 29564,
+    "text": " Letter?"
+   },
+   {
+    "file_off": 17450,
+    "seg_off": 16938,
+    "len": 8,
+    "ds": 29576,
+    "text": "  A B C "
+   },
+   {
+    "file_off": 17470,
+    "seg_off": 16958,
+    "len": 8,
+    "ds": 29588,
+    "text": "  D E F "
+   },
+   {
+    "file_off": 17490,
+    "seg_off": 16978,
+    "len": 8,
+    "ds": 29600,
+    "text": "  G H I "
+   },
+   {
+    "file_off": 17510,
+    "seg_off": 16998,
+    "len": 1,
+    "ds": 29616,
+    "text": "A"
+   },
+   {
+    "file_off": 17532,
+    "seg_off": 17020,
+    "len": 39,
+    "ds": 29628,
+    "text": "Character # to cast spell ? (ESC exits)"
+   },
+   {
+    "file_off": 17584,
+    "seg_off": 17072,
+    "len": 16,
+    "ds": 29676,
+    "text": "Cast what spell?"
+   },
+   {
+    "file_off": 17612,
+    "seg_off": 17100,
+    "len": 13,
+    "ds": 29696,
+    "text": "(ENTER exits)"
+   },
+   {
+    "file_off": 17638,
+    "seg_off": 17126,
+    "len": 11,
+    "ds": 29714,
+    "text": "DAZA REVELI"
+   },
+   {
+    "file_off": 17662,
+    "seg_off": 17150,
+    "len": 14,
+    "ds": 29730,
+    "text": "The gate opens"
+   },
+   {
+    "file_off": 17688,
+    "seg_off": 17176,
+    "len": 40,
+    "ds": 29750,
+    "text": "Mumble, mumble, what spell did you say ?"
+   },
+   {
+    "file_off": 17740,
+    "seg_off": 17228,
+    "len": 24,
+    "ds": 29802,
+    "text": "That is a combat spell !"
+   },
+   {
+    "file_off": 17776,
+    "seg_off": 17264,
+    "len": 26,
+    "ds": 29848,
+    "text": "You don't know that spell!"
+   },
+   {
+    "file_off": 17814,
+    "seg_off": 17302,
+    "len": 11,
+    "ds": 29886,
+    "text": "Spell Pts ?"
+   },
+   {
+    "file_off": 17838,
+    "seg_off": 17326,
+    "len": 25,
+    "ds": 29904,
+    "text": "You don't have that many!"
+   },
+   {
+    "file_off": 17876,
+    "seg_off": 17364,
+    "len": 37,
+    "ds": 29944,
+    "text": "You need more spell points than that!"
+   },
+   {
+    "file_off": 17926,
+    "seg_off": 17414,
+    "len": 3,
+    "ds": 29994,
+    "text": "   "
+   },
+   {
+    "file_off": 17942,
+    "seg_off": 17430,
+    "len": 68,
+    "ds": 30002,
+    "text": "Aack!  there is something wrong with the data files, please restore!"
+   },
+   {
+    "file_off": 18022,
+    "seg_off": 17510,
+    "len": 38,
+    "ds": 30082,
+    "text": "Character # to use item ?  (ESC exits)"
+   },
+   {
+    "file_off": 18072,
+    "seg_off": 17560,
+    "len": 9,
+    "ds": 30128,
+    "text": "Use Item:"
+   },
+   {
+    "file_off": 18094,
+    "seg_off": 17582,
+    "len": 35,
+    "ds": 30146,
+    "text": "This character has no items to use!"
+   },
+   {
+    "file_off": 18142,
+    "seg_off": 17630,
+    "len": 34,
+    "ds": 30194,
+    "text": "You really can't make use of this!"
+   },
+   {
+    "file_off": 18188,
+    "seg_off": 17676,
+    "len": 83,
+    "ds": 30248,
+    "text": "Do you wish to use the potion on Y)ourself or G)ive it to another character?       "
+   },
+   {
+    "file_off": 18284,
+    "seg_off": 17772,
+    "len": 31,
+    "ds": 30336,
+    "text": "                  (ESC cancels)"
+   },
+   {
+    "file_off": 18328,
+    "seg_off": 17816,
+    "len": 1,
+    "ds": 30380,
+    "text": "G"
+   },
+   {
+    "file_off": 18342,
+    "seg_off": 17830,
+    "len": 16,
+    "ds": 30386,
+    "text": "Give it to which"
+   },
+   {
+    "file_off": 18370,
+    "seg_off": 17858,
+    "len": 10,
+    "ds": 30406,
+    "text": "character?"
+   },
+   {
+    "file_off": 18392,
+    "seg_off": 17880,
+    "len": 8,
+    "ds": 30420,
+    "text": "char #: "
+   },
+   {
+    "file_off": 18412,
+    "seg_off": 17900,
+    "len": 4,
+    "ds": 30434,
+    "text": "    "
+   },
+   {
+    "file_off": 18428,
+    "seg_off": 17916,
+    "len": 1,
+    "ds": 30442,
+    "text": "Y"
+   },
+   {
+    "file_off": 18442,
+    "seg_off": 17930,
+    "len": 22,
+    "ds": 30448,
+    "text": "That is a Combat Item!"
+   },
+   {
+    "file_off": 18476,
+    "seg_off": 17964,
+    "len": 37,
+    "ds": 30482,
+    "text": "Character # to cast on ?  (ESC exits)"
+   },
+   {
+    "file_off": 18526,
+    "seg_off": 18014,
+    "len": 5,
+    "ds": 30538,
+    "text": " pts!"
+   },
+   {
+    "file_off": 18544,
+    "seg_off": 18032,
+    "len": 37,
+    "ds": 30548,
+    "text": "Character # to cast on ?  (ESC exits)"
+   },
+   {
+    "file_off": 18594,
+    "seg_off": 18082,
+    "len": 7,
+    "ds": 30598,
+    "text": "Lives !"
+   },
+   {
+    "file_off": 18614,
+    "seg_off": 18102,
+    "len": 9,
+    "ds": 30614,
+    "text": "Is cured."
+   },
+   {
+    "file_off": 18636,
+    "seg_off": 18124,
+    "len": 17,
+    "ds": 30628,
+    "text": "Notices no change"
+   },
+   {
+    "file_off": 18666,
+    "seg_off": 18154,
+    "len": 37,
+    "ds": 30650,
+    "text": "Character # to cast on ?  (ESC exits)"
+   },
+   {
+    "file_off": 18716,
+    "seg_off": 18204,
+    "len": 19,
+    "ds": 30696,
+    "text": " notices no change!"
+   },
+   {
+    "file_off": 18748,
+    "seg_off": 18236,
+    "len": 72,
+    "ds": 30730,
+    "text": "A roaring blast of wind buffets the party and when the noise subsides..."
+   },
+   {
+    "file_off": 18832,
+    "seg_off": 18320,
+    "len": 8,
+    "ds": 30814,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 18868,
+    "seg_off": 18356,
+    "len": 45,
+    "ds": 30834,
+    "text": "Enter number of character you wish to print. "
+   },
+   {
+    "file_off": 18926,
+    "seg_off": 18414,
+    "len": 41,
+    "ds": 30884,
+    "text": "(ESC to exit, or 9 to print entire party)"
+   },
+   {
+    "file_off": 18980,
+    "seg_off": 18468,
+    "len": 1,
+    "ds": 30940,
+    "text": "/"
+   },
+   {
+    "file_off": 18994,
+    "seg_off": 18482,
+    "len": 1,
+    "ds": 30946,
+    "text": ":"
+   },
+   {
+    "file_off": 19008,
+    "seg_off": 18496,
+    "len": 70,
+    "ds": 30952,
+    "text": "Make sure that your printer is ready and paper is properly positioned."
+   },
+   {
+    "file_off": 19090,
+    "seg_off": 18578,
+    "len": 10,
+    "ds": 31034,
+    "text": "Wilderness"
+   },
+   {
+    "file_off": 19112,
+    "seg_off": 18600,
+    "len": 7,
+    "ds": 31052,
+    "text": "Party #"
+   },
+   {
+    "file_off": 19132,
+    "seg_off": 18620,
+    "len": 14,
+    "ds": 31064,
+    "text": "    Location: "
+   },
+   {
+    "file_off": 19158,
+    "seg_off": 18646,
+    "len": 7,
+    "ds": 31102,
+    "text": "Skills:"
+   },
+   {
+    "file_off": 19178,
+    "seg_off": 18666,
+    "len": 6,
+    "ds": 31114,
+    "text": "Items:"
+   },
+   {
+    "file_off": 19196,
+    "seg_off": 18684,
+    "len": 11,
+    "ds": 31130,
+    "text": "Level:     "
+   },
+   {
+    "file_off": 19220,
+    "seg_off": 18708,
+    "len": 11,
+    "ds": 31148,
+    "text": "Hit Pts.   "
+   },
+   {
+    "file_off": 19244,
+    "seg_off": 18732,
+    "len": 11,
+    "ds": 31164,
+    "text": "Spell Pts. "
+   },
+   {
+    "file_off": 19268,
+    "seg_off": 18756,
+    "len": 10,
+    "ds": 31180,
+    "text": "Experience"
+   },
+   {
+    "file_off": 19290,
+    "seg_off": 18778,
+    "len": 11,
+    "ds": 31194,
+    "text": "Status     "
+   },
+   {
+    "file_off": 19314,
+    "seg_off": 18802,
+    "len": 15,
+    "ds": 31222,
+    "text": "   (ESC exits) "
+   },
+   {
+    "file_off": 19358,
+    "seg_off": 18846,
+    "len": 13,
+    "ds": 31256,
+    "text": "Item Breaks !"
+   },
+   {
+    "file_off": 19384,
+    "seg_off": 18872,
+    "len": 13,
+    "ds": 31274,
+    "text": "Spell Fails !"
+   },
+   {
+    "file_off": 19410,
+    "seg_off": 18898,
+    "len": 10,
+    "ds": 31304,
+    "text": "spells.dat"
+   },
+   {
+    "file_off": 19432,
+    "seg_off": 18920,
+    "len": 26,
+    "ds": 31320,
+    "text": "You don't have that skill."
+   },
+   {
+    "file_off": 19470,
+    "seg_off": 18958,
+    "len": 32,
+    "ds": 31358,
+    "text": "That character is incapacitated."
+   },
+   {
+    "file_off": 19514,
+    "seg_off": 19002,
+    "len": 31,
+    "ds": 31402,
+    "text": "You have used that skill today."
+   },
+   {
+    "file_off": 19558,
+    "seg_off": 19046,
+    "len": 31,
+    "ds": 31446,
+    "text": "That character is not a wizard."
+   },
+   {
+    "file_off": 19602,
+    "seg_off": 19090,
+    "len": 18,
+    "ds": 31490,
+    "text": "You now have about"
+   },
+   {
+    "file_off": 19632,
+    "seg_off": 19120,
+    "len": 16,
+    "ds": 31512,
+    "text": " turns of light."
+   },
+   {
+    "file_off": 19660,
+    "seg_off": 19148,
+    "len": 9,
+    "ds": 31540,
+    "text": "ITEMS.DAT"
+   },
+   {
+    "file_off": 19682,
+    "seg_off": 19170,
+    "len": 18,
+    "ds": 31582,
+    "text": "dies in the night."
+   },
+   {
+    "file_off": 19712,
+    "seg_off": 19200,
+    "len": 6,
+    "ds": 31608,
+    "text": " LVL: "
+   },
+   {
+    "file_off": 19730,
+    "seg_off": 19218,
+    "len": 7,
+    "ds": 31628,
+    "text": "H.P.   "
+   },
+   {
+    "file_off": 19750,
+    "seg_off": 19238,
+    "len": 7,
+    "ds": 31640,
+    "text": "S.P.   "
+   },
+   {
+    "file_off": 19770,
+    "seg_off": 19258,
+    "len": 6,
+    "ds": 31652,
+    "text": "Exp.  "
+   },
+   {
+    "file_off": 19788,
+    "seg_off": 19276,
+    "len": 7,
+    "ds": 31662,
+    "text": "Stat.  "
+   },
+   {
+    "file_off": 19808,
+    "seg_off": 19296,
+    "len": 13,
+    "ds": 31676,
+    "text": "      Skills:"
+   },
+   {
+    "file_off": 19834,
+    "seg_off": 19322,
+    "len": 12,
+    "ds": 31700,
+    "text": "      Items:"
+   },
+   {
+    "file_off": 19858,
+    "seg_off": 19346,
+    "len": 5,
+    "ds": 31724,
+    "text": "Human"
+   },
+   {
+    "file_off": 19876,
+    "seg_off": 19364,
+    "len": 5,
+    "ds": 31738,
+    "text": "Troll"
+   },
+   {
+    "file_off": 19894,
+    "seg_off": 19382,
+    "len": 5,
+    "ds": 31748,
+    "text": "Dwarf"
+   },
+   {
+    "file_off": 19912,
+    "seg_off": 19400,
+    "len": 3,
+    "ds": 31758,
+    "text": "Elf"
+   },
+   {
+    "file_off": 19928,
+    "seg_off": 19416,
+    "len": 5,
+    "ds": 31766,
+    "text": "Gnome"
+   },
+   {
+    "file_off": 19946,
+    "seg_off": 19434,
+    "len": 5,
+    "ds": 31776,
+    "text": "error"
+   },
+   {
+    "file_off": 19964,
+    "seg_off": 19452,
+    "len": 1,
+    "ds": 31796,
+    "text": ")"
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 7437,
+    "seg_off": 6925,
+    "len": 4,
+    "text": ",5=c"
+   },
+   {
+    "file_off": 11130,
+    "seg_off": 10618,
+    "len": 4,
+    "text": "?a=8"
+   },
+   {
+    "file_off": 14612,
+    "seg_off": 14100,
+    "len": 4,
+    "text": "?a=8"
+   },
+   {
+    "file_off": 15040,
+    "seg_off": 14528,
+    "len": 8,
+    "text": "CAMP.BAS"
+   },
+   {
+    "file_off": 15049,
+    "seg_off": 14537,
+    "len": 10,
+    "text": "MASTER.INC"
+   },
+   {
+    "file_off": 15060,
+    "seg_off": 14548,
+    "len": 12,
+    "text": "TOWNCAMP.INC"
+   },
+   {
+    "file_off": 15104,
+    "seg_off": 14592,
+    "len": 56,
+    "text": "u. \"1)  Sword           (2)\" , \"2)  Axe             (2)\""
+   },
+   {
+    "file_off": 15161,
+    "seg_off": 14649,
+    "len": 56,
+    "text": "v. \"3)  Mace            (1)\" , \"4)  Karate          (2)\""
+   },
+   {
+    "file_off": 15218,
+    "seg_off": 14706,
+    "len": 56,
+    "text": "w. \"5)  Darkvision      (2)\" , \"6)  Tactics         (2)\""
+   },
+   {
+    "file_off": 15275,
+    "seg_off": 14763,
+    "len": 56,
+    "text": "x. \"7)  Armored skin    (4)\" , \"8)  Berserking      (3)\""
+   },
+   {
+    "file_off": 15332,
+    "seg_off": 14820,
+    "len": 56,
+    "text": "y. \"9)  Hunting         (2)\" , \"10) Persuasion      (2)\""
+   },
+   {
+    "file_off": 15389,
+    "seg_off": 14877,
+    "len": 56,
+    "text": "z. \"1)  Fire runes      (5)\" , \"2)  Metal runes     (5)\""
+   },
+   {
+    "file_off": 15446,
+    "seg_off": 14934,
+    "len": 56,
+    "text": "{. \"3)  Wind runes      (5)\" , \"4)  Ice runes       (5)\""
+   },
+   {
+    "file_off": 15503,
+    "seg_off": 14991,
+    "len": 56,
+    "text": "|. \"5)  Spirit runes    (5)\" , \"6)  Weapon lore     (2)\""
+   },
+   {
+    "file_off": 15560,
+    "seg_off": 15048,
+    "len": 56,
+    "text": "}. \"7)  Potion lore     (2)\" , \"8)  Item lore       (2)\""
+   },
+   {
+    "file_off": 15617,
+    "seg_off": 15105,
+    "len": 56,
+    "text": "~. \"9)  Monster lore    (2)\" , \"10) Priesthood      (3)\""
+   },
+   {
+    "file_off": 15675,
+    "seg_off": 15163,
+    "len": 56,
+    "text": ". \"Speed\", \"Strength\", \"Intellect\", \"Endurance\", \"Skill\""
+   },
+   {
+    "file_off": 15732,
+    "seg_off": 15220,
+    "len": 27,
+    "text": "_8  0,1,0,2,2,0,1,0,2,0,1,0"
+   },
+   {
+    "file_off": 22290,
+    "seg_off": 21778,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 22302,
+    "seg_off": 21790,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 22314,
+    "seg_off": 21802,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 22320,
+    "seg_off": 21808,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 22357,
+    "seg_off": 21845,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "MAZEMOVE.EXE": {
+  "descriptor": [
+   {
+    "file_off": 18524,
+    "seg_off": 18012,
+    "len": 1,
+    "ds": 26592,
+    "text": "0"
+   },
+   {
+    "file_off": 18538,
+    "seg_off": 18026,
+    "len": 1,
+    "ds": 26598,
+    "text": "9"
+   },
+   {
+    "file_off": 18552,
+    "seg_off": 18040,
+    "len": 2,
+    "ds": 26614,
+    "text": "  "
+   },
+   {
+    "file_off": 18566,
+    "seg_off": 18054,
+    "len": 1,
+    "ds": 26630,
+    "text": "-"
+   },
+   {
+    "file_off": 18588,
+    "seg_off": 18076,
+    "len": 1,
+    "ds": 26656,
+    "text": " "
+   },
+   {
+    "file_off": 18602,
+    "seg_off": 18090,
+    "len": 32,
+    "ds": 36314,
+    "text": "Chirp I say.  Chirp.  DATA ERROR"
+   },
+   {
+    "file_off": 18646,
+    "seg_off": 18134,
+    "len": 1,
+    "ds": 36354,
+    "text": "C"
+   },
+   {
+    "file_off": 18660,
+    "seg_off": 18148,
+    "len": 1,
+    "ds": 36360,
+    "text": "P"
+   },
+   {
+    "file_off": 18674,
+    "seg_off": 18162,
+    "len": 1,
+    "ds": 36366,
+    "text": "S"
+   },
+   {
+    "file_off": 18688,
+    "seg_off": 18176,
+    "len": 1,
+    "ds": 36372,
+    "text": "Q"
+   },
+   {
+    "file_off": 18702,
+    "seg_off": 18190,
+    "len": 1,
+    "ds": 36378,
+    "text": "1"
+   },
+   {
+    "file_off": 18716,
+    "seg_off": 18204,
+    "len": 1,
+    "ds": 36384,
+    "text": "2"
+   },
+   {
+    "file_off": 18730,
+    "seg_off": 18218,
+    "len": 1,
+    "ds": 36390,
+    "text": "3"
+   },
+   {
+    "file_off": 18744,
+    "seg_off": 18232,
+    "len": 1,
+    "ds": 36396,
+    "text": "4"
+   },
+   {
+    "file_off": 18758,
+    "seg_off": 18246,
+    "len": 4,
+    "ds": 36436,
+    "text": "CAMP"
+   },
+   {
+    "file_off": 18774,
+    "seg_off": 18262,
+    "len": 8,
+    "ds": 36446,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 18794,
+    "seg_off": 18282,
+    "len": 4,
+    "ds": 36480,
+    "text": "CMBT"
+   },
+   {
+    "file_off": 18810,
+    "seg_off": 18298,
+    "len": 4,
+    "ds": 36504,
+    "text": "DEAD"
+   },
+   {
+    "file_off": 18826,
+    "seg_off": 18314,
+    "len": 12,
+    "ds": 36512,
+    "text": "mazeitem.PIC"
+   },
+   {
+    "file_off": 18850,
+    "seg_off": 18338,
+    "len": 12,
+    "ds": 36528,
+    "text": "mazewall.bin"
+   },
+   {
+    "file_off": 18874,
+    "seg_off": 18362,
+    "len": 4,
+    "ds": 36544,
+    "text": "WRLD"
+   },
+   {
+    "file_off": 18890,
+    "seg_off": 18378,
+    "len": 4,
+    "ds": 36560,
+    "text": "MAZE"
+   },
+   {
+    "file_off": 18906,
+    "seg_off": 18394,
+    "len": 1,
+    "ds": 36568,
+    "text": "N"
+   },
+   {
+    "file_off": 18928,
+    "seg_off": 18416,
+    "len": 15,
+    "ds": 36620,
+    "text": "DATA FILE ERROR"
+   },
+   {
+    "file_off": 18956,
+    "seg_off": 18444,
+    "len": 8,
+    "ds": 36640,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 18976,
+    "seg_off": 18464,
+    "len": 8,
+    "ds": 36656,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 18996,
+    "seg_off": 18484,
+    "len": 5,
+    "ds": 36750,
+    "text": "pict1"
+   },
+   {
+    "file_off": 19014,
+    "seg_off": 18502,
+    "len": 5,
+    "ds": 36764,
+    "text": "pict2"
+   },
+   {
+    "file_off": 19048,
+    "seg_off": 18536,
+    "len": 8,
+    "ds": 36946,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 19068,
+    "seg_off": 18556,
+    "len": 14,
+    "ds": 36962,
+    "text": "One momement.."
+   },
+   {
+    "file_off": 19094,
+    "seg_off": 18582,
+    "len": 10,
+    "ds": 36980,
+    "text": "DE5EFF.BIN"
+   },
+   {
+    "file_off": 19116,
+    "seg_off": 18604,
+    "len": 14,
+    "ds": 36998,
+    "text": "              "
+   },
+   {
+    "file_off": 19142,
+    "seg_off": 18630,
+    "len": 14,
+    "ds": 37016,
+    "text": "One momement.."
+   },
+   {
+    "file_off": 19168,
+    "seg_off": 18656,
+    "len": 11,
+    "ds": 37034,
+    "text": "DE51EFF.BIN"
+   },
+   {
+    "file_off": 19192,
+    "seg_off": 18680,
+    "len": 14,
+    "ds": 37054,
+    "text": "              "
+   },
+   {
+    "file_off": 19218,
+    "seg_off": 18706,
+    "len": 12,
+    "ds": 37220,
+    "text": "Enter gem to"
+   },
+   {
+    "file_off": 19242,
+    "seg_off": 18730,
+    "len": 15,
+    "ds": 37236,
+    "text": "touch (B,G,V,R)"
+   },
+   {
+    "file_off": 19270,
+    "seg_off": 18758,
+    "len": 6,
+    "ds": 37256,
+    "text": "or ESC"
+   },
+   {
+    "file_off": 19288,
+    "seg_off": 18776,
+    "len": 4,
+    "ds": 37266,
+    "text": "...."
+   },
+   {
+    "file_off": 19304,
+    "seg_off": 18792,
+    "len": 2,
+    "ds": 37274,
+    "text": "? "
+   },
+   {
+    "file_off": 19318,
+    "seg_off": 18806,
+    "len": 4,
+    "ds": 37288,
+    "text": "BBRG"
+   },
+   {
+    "file_off": 19334,
+    "seg_off": 18822,
+    "len": 5,
+    "ds": 37322,
+    "text": "pict8"
+   },
+   {
+    "file_off": 19352,
+    "seg_off": 18840,
+    "len": 7,
+    "ds": 37378,
+    "text": "MURTHIN"
+   },
+   {
+    "file_off": 19372,
+    "seg_off": 18860,
+    "len": 7,
+    "ds": 37390,
+    "text": "CERCION"
+   },
+   {
+    "file_off": 19392,
+    "seg_off": 18880,
+    "len": 7,
+    "ds": 37402,
+    "text": "LOTHIAN"
+   },
+   {
+    "file_off": 19412,
+    "seg_off": 18900,
+    "len": 10,
+    "ds": 37414,
+    "text": "VANDIGUARD"
+   },
+   {
+    "file_off": 19434,
+    "seg_off": 18922,
+    "len": 17,
+    "ds": 37428,
+    "text": "The brothers are:"
+   },
+   {
+    "file_off": 19464,
+    "seg_off": 18952,
+    "len": 3,
+    "ds": 37452,
+    "text": "#1 "
+   },
+   {
+    "file_off": 19480,
+    "seg_off": 18968,
+    "len": 3,
+    "ds": 37460,
+    "text": "#2 "
+   },
+   {
+    "file_off": 19496,
+    "seg_off": 18984,
+    "len": 3,
+    "ds": 37468,
+    "text": "#3 "
+   },
+   {
+    "file_off": 19512,
+    "seg_off": 19000,
+    "len": 3,
+    "ds": 37476,
+    "text": "#4 "
+   },
+   {
+    "file_off": 19528,
+    "seg_off": 19016,
+    "len": 82,
+    "ds": 37524,
+    "text": "The priest thanks you for freeing him from his giant captor and blesses the party."
+   },
+   {
+    "file_off": 19622,
+    "seg_off": 19110,
+    "len": 9,
+    "ds": 37694,
+    "text": "pict6.BIN"
+   },
+   {
+    "file_off": 19644,
+    "seg_off": 19132,
+    "len": 13,
+    "ds": 37708,
+    "text": "MB T108 O3 L8"
+   },
+   {
+    "file_off": 19670,
+    "seg_off": 19158,
+    "len": 14,
+    "ds": 37726,
+    "text": "MB T108 O3 L16"
+   },
+   {
+    "file_off": 19696,
+    "seg_off": 19184,
+    "len": 20,
+    "ds": 37744,
+    "text": "MB T108 O3 L8 E F#GD"
+   },
+   {
+    "file_off": 19728,
+    "seg_off": 19216,
+    "len": 15,
+    "ds": 37768,
+    "text": "MB T108 O3 L2 G"
+   },
+   {
+    "file_off": 19756,
+    "seg_off": 19244,
+    "len": 16,
+    "ds": 37788,
+    "text": "MB T108 O4 L8 CC"
+   },
+   {
+    "file_off": 19784,
+    "seg_off": 19272,
+    "len": 15,
+    "ds": 37808,
+    "text": "MB T108 O4 L4 E"
+   },
+   {
+    "file_off": 19812,
+    "seg_off": 19300,
+    "len": 16,
+    "ds": 37828,
+    "text": "MB T108 O4 L8 DC"
+   },
+   {
+    "file_off": 19840,
+    "seg_off": 19328,
+    "len": 16,
+    "ds": 37848,
+    "text": "MB T108 O3 L8 BA"
+   },
+   {
+    "file_off": 19868,
+    "seg_off": 19356,
+    "len": 7,
+    "ds": 37868,
+    "text": "O3 L8 G"
+   },
+   {
+    "file_off": 19888,
+    "seg_off": 19376,
+    "len": 7,
+    "ds": 37880,
+    "text": "O3 L3 G"
+   },
+   {
+    "file_off": 19908,
+    "seg_off": 19396,
+    "len": 1,
+    "ds": 37892,
+    "text": "G"
+   },
+   {
+    "file_off": 19922,
+    "seg_off": 19410,
+    "len": 2,
+    "ds": 37898,
+    "text": "GA"
+   },
+   {
+    "file_off": 19936,
+    "seg_off": 19424,
+    "len": 2,
+    "ds": 37904,
+    "text": "L8"
+   },
+   {
+    "file_off": 19950,
+    "seg_off": 19438,
+    "len": 2,
+    "ds": 37910,
+    "text": "BG"
+   },
+   {
+    "file_off": 19964,
+    "seg_off": 19452,
+    "len": 2,
+    "ds": 37916,
+    "text": "AG"
+   },
+   {
+    "file_off": 19978,
+    "seg_off": 19466,
+    "len": 3,
+    "ds": 37922,
+    "text": "F#D"
+   },
+   {
+    "file_off": 19994,
+    "seg_off": 19482,
+    "len": 1,
+    "ds": 37930,
+    "text": "A"
+   },
+   {
+    "file_off": 20008,
+    "seg_off": 19496,
+    "len": 2,
+    "ds": 37936,
+    "text": "L2"
+   },
+   {
+    "file_off": 20022,
+    "seg_off": 19510,
+    "len": 8,
+    "ds": 37956,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 20042,
+    "seg_off": 19530,
+    "len": 8,
+    "ds": 37972,
+    "text": "MAZE.SQZ"
+   },
+   {
+    "file_off": 20062,
+    "seg_off": 19550,
+    "len": 7,
+    "ds": 37984,
+    "text": "EFF.BIN"
+   },
+   {
+    "file_off": 20082,
+    "seg_off": 19570,
+    "len": 8,
+    "ds": 37996,
+    "text": "TEXT.DAT"
+   },
+   {
+    "file_off": 20102,
+    "seg_off": 19590,
+    "len": 2,
+    "ds": 38008,
+    "text": "DG"
+   },
+   {
+    "file_off": 20116,
+    "seg_off": 19604,
+    "len": 2,
+    "ds": 38014,
+    "text": "DE"
+   },
+   {
+    "file_off": 20130,
+    "seg_off": 19618,
+    "len": 2,
+    "ds": 38020,
+    "text": "DT"
+   },
+   {
+    "file_off": 20152,
+    "seg_off": 19640,
+    "len": 50,
+    "ds": 38036,
+    "text": "Which party member do you wish to heal? (0 exits) "
+   },
+   {
+    "file_off": 20214,
+    "seg_off": 19702,
+    "len": 37,
+    "ds": 38100,
+    "text": "That character can't be helped here !"
+   },
+   {
+    "file_off": 20272,
+    "seg_off": 19760,
+    "len": 6,
+    "ds": 38162,
+    "text": "healed"
+   },
+   {
+    "file_off": 20290,
+    "seg_off": 19778,
+    "len": 5,
+    "ds": 38172,
+    "text": " pts."
+   },
+   {
+    "file_off": 20308,
+    "seg_off": 19796,
+    "len": 3,
+    "ds": 38182,
+    "text": " is"
+   },
+   {
+    "file_off": 20324,
+    "seg_off": 19812,
+    "len": 19,
+    "ds": 38190,
+    "text": "This pool is empty!"
+   },
+   {
+    "file_off": 20356,
+    "seg_off": 19844,
+    "len": 14,
+    "ds": 38226,
+    "text": "found an item."
+   },
+   {
+    "file_off": 20382,
+    "seg_off": 19870,
+    "len": 59,
+    "ds": 38248,
+    "text": "Your party is full of items, please discard some from Camp."
+   },
+   {
+    "file_off": 20454,
+    "seg_off": 19942,
+    "len": 4,
+    "ds": 38332,
+    "text": ".BIN"
+   },
+   {
+    "file_off": 20470,
+    "seg_off": 19958,
+    "len": 8,
+    "ds": 38352,
+    "text": "WRLDMOVE"
+   },
+   {
+    "file_off": 20490,
+    "seg_off": 19978,
+    "len": 20,
+    "ds": 38364,
+    "text": "Leaving maze ..     "
+   },
+   {
+    "file_off": 20522,
+    "seg_off": 20010,
+    "len": 20,
+    "ds": 38396,
+    "text": "Making Camp..       "
+   },
+   {
+    "file_off": 20554,
+    "seg_off": 20042,
+    "len": 20,
+    "ds": 38420,
+    "text": "    C O M B A T !   "
+   },
+   {
+    "file_off": 20586,
+    "seg_off": 20074,
+    "len": 20,
+    "ds": 38444,
+    "text": "    B A T T L E !   "
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 17360,
+    "seg_off": 16848,
+    "len": 12,
+    "text": "MAZEMOVE.BAS"
+   },
+   {
+    "file_off": 17373,
+    "seg_off": 16861,
+    "len": 10,
+    "text": "MASTER.INC"
+   },
+   {
+    "file_off": 17408,
+    "seg_off": 16896,
+    "len": 143,
+    "text": "<4 \"You have won! A cool breeze blows through the huge arched windows of the tower room. On an ivory pedestal lies the object of your quest...\""
+   },
+   {
+    "file_off": 17552,
+    "seg_off": 17040,
+    "len": 43,
+    "text": "=4 \"a knife-shaped piece of green crystal.\""
+   },
+   {
+    "file_off": 17596,
+    "seg_off": 17084,
+    "len": 155,
+    "text": ">4 \"As you hold the Shard and look out over the landscape of Ymros, it looks beautiful and peaceful; more peaceful than it has looked in a very long time.\""
+   },
+   {
+    "file_off": 17752,
+    "seg_off": 17240,
+    "len": 173,
+    "text": "?4 \"You watch as a graceful dove flys from the balcony below up into the blue sky. As you turn to go back into the room, you see a black bird out of the corner of your eye,\""
+   },
+   {
+    "file_off": 17926,
+    "seg_off": 17414,
+    "len": 127,
+    "text": "@4 \"moving swiftly upward. As you re-enter the room, an old man who you recognize is standing near the dead body of Siriadne. \""
+   },
+   {
+    "file_off": 18054,
+    "seg_off": 17542,
+    "len": 154,
+    "text": "A4 \"His face shows a mixture of serenity and contentment. He speaks: 'The True springtime shall now return to Ymros because of what you have done today.'\""
+   },
+   {
+    "file_off": 18209,
+    "seg_off": 17697,
+    "len": 149,
+    "text": "B4 \"'Your names shall be remembered as long as men exist to sing of you'. He makes some mysterious motions and everything begins to swirl about you.\""
+   },
+   {
+    "file_off": 18359,
+    "seg_off": 17847,
+    "len": 130,
+    "text": "C4 \"His voice speaks to you out of the dizziness, 'Evil is personified in the form of dragons, but borne in the hearts of men...'\""
+   },
+   {
+    "file_off": 22946,
+    "seg_off": 22434,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 22958,
+    "seg_off": 22446,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 22970,
+    "seg_off": 22458,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 22976,
+    "seg_off": 22464,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 23013,
+    "seg_off": 22501,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "WRLDMOVE.EXE": {
+  "descriptor": [
+   {
+    "file_off": 6444,
+    "seg_off": 5932,
+    "len": 1,
+    "ds": 26592,
+    "text": "0"
+   },
+   {
+    "file_off": 6458,
+    "seg_off": 5946,
+    "len": 1,
+    "ds": 26598,
+    "text": "9"
+   },
+   {
+    "file_off": 6472,
+    "seg_off": 5960,
+    "len": 2,
+    "ds": 26614,
+    "text": "  "
+   },
+   {
+    "file_off": 6486,
+    "seg_off": 5974,
+    "len": 1,
+    "ds": 26630,
+    "text": "-"
+   },
+   {
+    "file_off": 6508,
+    "seg_off": 5996,
+    "len": 1,
+    "ds": 26656,
+    "text": " "
+   },
+   {
+    "file_off": 6522,
+    "seg_off": 6010,
+    "len": 1,
+    "ds": 52590,
+    "text": "C"
+   },
+   {
+    "file_off": 6536,
+    "seg_off": 6024,
+    "len": 1,
+    "ds": 52596,
+    "text": "P"
+   },
+   {
+    "file_off": 6550,
+    "seg_off": 6038,
+    "len": 1,
+    "ds": 52602,
+    "text": "S"
+   },
+   {
+    "file_off": 6564,
+    "seg_off": 6052,
+    "len": 1,
+    "ds": 52608,
+    "text": "Q"
+   },
+   {
+    "file_off": 6578,
+    "seg_off": 6066,
+    "len": 1,
+    "ds": 52614,
+    "text": "1"
+   },
+   {
+    "file_off": 6592,
+    "seg_off": 6080,
+    "len": 1,
+    "ds": 52620,
+    "text": "2"
+   },
+   {
+    "file_off": 6606,
+    "seg_off": 6094,
+    "len": 1,
+    "ds": 52626,
+    "text": "3"
+   },
+   {
+    "file_off": 6620,
+    "seg_off": 6108,
+    "len": 1,
+    "ds": 52632,
+    "text": "4"
+   },
+   {
+    "file_off": 6634,
+    "seg_off": 6122,
+    "len": 4,
+    "ds": 52670,
+    "text": "CAMP"
+   },
+   {
+    "file_off": 6650,
+    "seg_off": 6138,
+    "len": 1,
+    "ds": 52678,
+    "text": "J"
+   },
+   {
+    "file_off": 6664,
+    "seg_off": 6152,
+    "len": 8,
+    "ds": 52684,
+    "text": "MAZEMOVE"
+   },
+   {
+    "file_off": 6684,
+    "seg_off": 6172,
+    "len": 8,
+    "ds": 52700,
+    "text": "MAZEMOVE"
+   },
+   {
+    "file_off": 6704,
+    "seg_off": 6192,
+    "len": 4,
+    "ds": 52720,
+    "text": "TOWN"
+   },
+   {
+    "file_off": 6944,
+    "seg_off": 6432,
+    "len": 46,
+    "ds": 52956,
+    "text": "Thank you for visiting Islandia. Good Hunting."
+   },
+   {
+    "file_off": 7002,
+    "seg_off": 6490,
+    "len": 4,
+    "ds": 53030,
+    "text": "CMBT"
+   },
+   {
+    "file_off": 7018,
+    "seg_off": 6506,
+    "len": 11,
+    "ds": 53042,
+    "text": "wrldmap.bin"
+   },
+   {
+    "file_off": 7042,
+    "seg_off": 6530,
+    "len": 12,
+    "ds": 53058,
+    "text": "wrlditem.pic"
+   },
+   {
+    "file_off": 7066,
+    "seg_off": 6554,
+    "len": 12,
+    "ds": 53074,
+    "text": "fastwrld.bin"
+   },
+   {
+    "file_off": 7090,
+    "seg_off": 6578,
+    "len": 4,
+    "ds": 53094,
+    "text": "WRLD"
+   },
+   {
+    "file_off": 7106,
+    "seg_off": 6594,
+    "len": 4,
+    "ds": 53106,
+    "text": "MAZE"
+   },
+   {
+    "file_off": 7122,
+    "seg_off": 6610,
+    "len": 4,
+    "ds": 53114,
+    "text": "MENU"
+   },
+   {
+    "file_off": 7138,
+    "seg_off": 6626,
+    "len": 4,
+    "ds": 53122,
+    "text": "DEAD"
+   },
+   {
+    "file_off": 7154,
+    "seg_off": 6642,
+    "len": 7,
+    "ds": 53150,
+    "text": "bu16c1r"
+   },
+   {
+    "file_off": 7174,
+    "seg_off": 6662,
+    "len": 3,
+    "ds": 53174,
+    "text": "d1R"
+   },
+   {
+    "file_off": 7190,
+    "seg_off": 6678,
+    "len": 3,
+    "ds": 53182,
+    "text": "u1R"
+   },
+   {
+    "file_off": 7206,
+    "seg_off": 6694,
+    "len": 7,
+    "ds": 53190,
+    "text": "be16c1d"
+   },
+   {
+    "file_off": 7226,
+    "seg_off": 6714,
+    "len": 3,
+    "ds": 53202,
+    "text": "l1D"
+   },
+   {
+    "file_off": 7242,
+    "seg_off": 6730,
+    "len": 3,
+    "ds": 53210,
+    "text": "r1D"
+   },
+   {
+    "file_off": 7258,
+    "seg_off": 6746,
+    "len": 7,
+    "ds": 53218,
+    "text": "br16c1l"
+   },
+   {
+    "file_off": 7278,
+    "seg_off": 6766,
+    "len": 3,
+    "ds": 53230,
+    "text": "u1L"
+   },
+   {
+    "file_off": 7294,
+    "seg_off": 6782,
+    "len": 3,
+    "ds": 53238,
+    "text": "d1L"
+   },
+   {
+    "file_off": 7310,
+    "seg_off": 6798,
+    "len": 3,
+    "ds": 53246,
+    "text": "C1U"
+   },
+   {
+    "file_off": 7326,
+    "seg_off": 6814,
+    "len": 3,
+    "ds": 53254,
+    "text": "r1U"
+   },
+   {
+    "file_off": 7342,
+    "seg_off": 6830,
+    "len": 3,
+    "ds": 53262,
+    "text": "l1U"
+   },
+   {
+    "file_off": 7382,
+    "seg_off": 6870,
+    "len": 14,
+    "ds": 53286,
+    "text": "Welcome to ..."
+   },
+   {
+    "file_off": 7408,
+    "seg_off": 6896,
+    "len": 8,
+    "ds": 53308,
+    "text": "MAZEMOVE"
+   },
+   {
+    "file_off": 7428,
+    "seg_off": 6916,
+    "len": 12,
+    "ds": 53320,
+    "text": "Entering ..."
+   },
+   {
+    "file_off": 7452,
+    "seg_off": 6940,
+    "len": 13,
+    "ds": 53336,
+    "text": "Making Camp.."
+   },
+   {
+    "file_off": 7478,
+    "seg_off": 6966,
+    "len": 17,
+    "ds": 53354,
+    "text": "    C O M B A T !"
+   },
+   {
+    "file_off": 7508,
+    "seg_off": 6996,
+    "len": 17,
+    "ds": 53376,
+    "text": "    B A T T L E !"
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 6352,
+    "seg_off": 5840,
+    "len": 12,
+    "text": "WRLDMOVE.BAS"
+   },
+   {
+    "file_off": 6365,
+    "seg_off": 5853,
+    "len": 10,
+    "text": "MASTER.INC"
+   },
+   {
+    "file_off": 9874,
+    "seg_off": 9362,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 9886,
+    "seg_off": 9374,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 9898,
+    "seg_off": 9386,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 9904,
+    "seg_off": 9392,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 9941,
+    "seg_off": 9429,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "CHARUTIL.EXE": {
+  "descriptor": [
+   {
+    "file_off": 11228,
+    "seg_off": 10716,
+    "len": 1,
+    "ds": 26592,
+    "text": "0"
+   },
+   {
+    "file_off": 11242,
+    "seg_off": 10730,
+    "len": 1,
+    "ds": 26598,
+    "text": "9"
+   },
+   {
+    "file_off": 11256,
+    "seg_off": 10744,
+    "len": 2,
+    "ds": 26614,
+    "text": "  "
+   },
+   {
+    "file_off": 11270,
+    "seg_off": 10758,
+    "len": 1,
+    "ds": 26630,
+    "text": "-"
+   },
+   {
+    "file_off": 11292,
+    "seg_off": 10780,
+    "len": 1,
+    "ds": 26656,
+    "text": " "
+   },
+   {
+    "file_off": 11306,
+    "seg_off": 10794,
+    "len": 4,
+    "ds": 26682,
+    "text": "UTIL"
+   },
+   {
+    "file_off": 11346,
+    "seg_off": 10834,
+    "len": 1,
+    "ds": 27334,
+    "text": "N"
+   },
+   {
+    "file_off": 11360,
+    "seg_off": 10848,
+    "len": 27,
+    "ds": 27340,
+    "text": "Which character to rename ?"
+   },
+   {
+    "file_off": 11400,
+    "seg_off": 10888,
+    "len": 40,
+    "ds": 27372,
+    "text": "Please enter the new name (9 char max): "
+   },
+   {
+    "file_off": 11452,
+    "seg_off": 10940,
+    "len": 1,
+    "ds": 27424,
+    "text": "J"
+   },
+   {
+    "file_off": 11466,
+    "seg_off": 10954,
+    "len": 1,
+    "ds": 27430,
+    "text": "F"
+   },
+   {
+    "file_off": 11480,
+    "seg_off": 10968,
+    "len": 1,
+    "ds": 27436,
+    "text": "D"
+   },
+   {
+    "file_off": 11494,
+    "seg_off": 10982,
+    "len": 1,
+    "ds": 27442,
+    "text": "I"
+   },
+   {
+    "file_off": 11508,
+    "seg_off": 10996,
+    "len": 1,
+    "ds": 27448,
+    "text": "R"
+   },
+   {
+    "file_off": 11522,
+    "seg_off": 11010,
+    "len": 1,
+    "ds": 27454,
+    "text": "C"
+   },
+   {
+    "file_off": 11536,
+    "seg_off": 11024,
+    "len": 9,
+    "ds": 27460,
+    "text": "CHARS.DAT"
+   },
+   {
+    "file_off": 11558,
+    "seg_off": 11046,
+    "len": 10,
+    "ds": 27474,
+    "text": "GROUPS.DAT"
+   },
+   {
+    "file_off": 11580,
+    "seg_off": 11068,
+    "len": 1,
+    "ds": 27494,
+    "text": "E"
+   },
+   {
+    "file_off": 11594,
+    "seg_off": 11082,
+    "len": 43,
+    "ds": 27504,
+    "text": "Please insert the BOOT floppy in the drive,"
+   },
+   {
+    "file_off": 11650,
+    "seg_off": 11138,
+    "len": 19,
+    "ds": 27552,
+    "text": "and press any key.."
+   },
+   {
+    "file_off": 11682,
+    "seg_off": 11170,
+    "len": 1,
+    "ds": 27576,
+    "text": "A"
+   },
+   {
+    "file_off": 11696,
+    "seg_off": 11184,
+    "len": 5,
+    "ds": 27582,
+    "text": ":menu"
+   },
+   {
+    "file_off": 11714,
+    "seg_off": 11202,
+    "len": 51,
+    "ds": 27596,
+    "text": "You must remove a character before adding any more!"
+   },
+   {
+    "file_off": 11778,
+    "seg_off": 11266,
+    "len": 13,
+    "ds": 27654,
+    "text": "(ESC exits) ?"
+   },
+   {
+    "file_off": 11804,
+    "seg_off": 11292,
+    "len": 1,
+    "ds": 27676,
+    "text": "H"
+   },
+   {
+    "file_off": 11818,
+    "seg_off": 11306,
+    "len": 1,
+    "ds": 27682,
+    "text": "T"
+   },
+   {
+    "file_off": 11832,
+    "seg_off": 11320,
+    "len": 1,
+    "ds": 27688,
+    "text": "G"
+   },
+   {
+    "file_off": 11862,
+    "seg_off": 11350,
+    "len": 9,
+    "ds": 27708,
+    "text": "         "
+   },
+   {
+    "file_off": 11884,
+    "seg_off": 11372,
+    "len": 1,
+    "ds": 27722,
+    "text": "B"
+   },
+   {
+    "file_off": 11898,
+    "seg_off": 11386,
+    "len": 1,
+    "ds": 27730,
+    "text": "+"
+   },
+   {
+    "file_off": 11912,
+    "seg_off": 11400,
+    "len": 12,
+    "ds": 27736,
+    "text": "Skills left:"
+   },
+   {
+    "file_off": 11936,
+    "seg_off": 11424,
+    "len": 1,
+    "ds": 27762,
+    "text": "*"
+   },
+   {
+    "file_off": 11958,
+    "seg_off": 11446,
+    "len": 12,
+    "ds": 27774,
+    "text": "Skills left:"
+   },
+   {
+    "file_off": 11998,
+    "seg_off": 11486,
+    "len": 42,
+    "ds": 27798,
+    "text": "Do you wish to keep this character (Y/N) ?"
+   },
+   {
+    "file_off": 12052,
+    "seg_off": 11540,
+    "len": 1,
+    "ds": 27848,
+    "text": ">"
+   },
+   {
+    "file_off": 12066,
+    "seg_off": 11554,
+    "len": 1,
+    "ds": 27854,
+    "text": "Y"
+   },
+   {
+    "file_off": 12080,
+    "seg_off": 11568,
+    "len": 1,
+    "ds": 27864,
+    "text": "1"
+   },
+   {
+    "file_off": 12094,
+    "seg_off": 11582,
+    "len": 1,
+    "ds": 27870,
+    "text": "2"
+   },
+   {
+    "file_off": 12108,
+    "seg_off": 11596,
+    "len": 10,
+    "ds": 27908,
+    "text": "0000000000"
+   },
+   {
+    "file_off": 12138,
+    "seg_off": 11626,
+    "len": 7,
+    "ds": 27928,
+    "text": "Party #"
+   },
+   {
+    "file_off": 12158,
+    "seg_off": 11646,
+    "len": 5,
+    "ds": 27940,
+    "text": "Gold:"
+   },
+   {
+    "file_off": 12176,
+    "seg_off": 11664,
+    "len": 12,
+    "ds": 27950,
+    "text": " Provisions:"
+   },
+   {
+    "file_off": 12200,
+    "seg_off": 11688,
+    "len": 26,
+    "ds": 27966,
+    "text": "Saved in the month of the "
+   },
+   {
+    "file_off": 12238,
+    "seg_off": 11726,
+    "len": 10,
+    "ds": 27996,
+    "text": "Wilderness"
+   },
+   {
+    "file_off": 12260,
+    "seg_off": 11748,
+    "len": 6,
+    "ds": 28014,
+    "text": "maze: "
+   },
+   {
+    "file_off": 12278,
+    "seg_off": 11766,
+    "len": 17,
+    "ds": 28024,
+    "text": "Currently in the "
+   },
+   {
+    "file_off": 12308,
+    "seg_off": 11796,
+    "len": 44,
+    "ds": 28046,
+    "text": "#) Name        Race   Class   Level   Status"
+   },
+   {
+    "file_off": 12364,
+    "seg_off": 11852,
+    "len": 2,
+    "ds": 28102,
+    "text": ") "
+   },
+   {
+    "file_off": 12378,
+    "seg_off": 11866,
+    "len": 4,
+    "ds": 28112,
+    "text": "Hero"
+   },
+   {
+    "file_off": 12394,
+    "seg_off": 11882,
+    "len": 6,
+    "ds": 28120,
+    "text": "Wizard"
+   },
+   {
+    "file_off": 12412,
+    "seg_off": 11900,
+    "len": 33,
+    "ds": 28132,
+    "text": "Any key to continue, (Q quits)..."
+   },
+   {
+    "file_off": 12458,
+    "seg_off": 11946,
+    "len": 1,
+    "ds": 28170,
+    "text": "Q"
+   },
+   {
+    "file_off": 12472,
+    "seg_off": 11960,
+    "len": 12,
+    "ds": 28176,
+    "text": "(0 exits) ? "
+   },
+   {
+    "file_off": 12496,
+    "seg_off": 11984,
+    "len": 12,
+    "ds": 28192,
+    "text": "Is deleted !"
+   },
+   {
+    "file_off": 12520,
+    "seg_off": 12008,
+    "len": 11,
+    "ds": 28208,
+    "text": "(0 exits) ?"
+   },
+   {
+    "file_off": 12544,
+    "seg_off": 12032,
+    "len": 2,
+    "ds": 28226,
+    "text": " #"
+   },
+   {
+    "file_off": 12558,
+    "seg_off": 12046,
+    "len": 3,
+    "ds": 28232,
+    "text": "   "
+   },
+   {
+    "file_off": 12574,
+    "seg_off": 12062,
+    "len": 1,
+    "ds": 28240,
+    "text": "#"
+   },
+   {
+    "file_off": 12596,
+    "seg_off": 12084,
+    "len": 10,
+    "ds": 28250,
+    "text": "No party #"
+   },
+   {
+    "file_off": 12618,
+    "seg_off": 12106,
+    "len": 12,
+    "ds": 28264,
+    "text": "to disband !"
+   },
+   {
+    "file_off": 12642,
+    "seg_off": 12130,
+    "len": 9,
+    "ds": 28280,
+    "text": "CHARS.DAT"
+   },
+   {
+    "file_off": 12664,
+    "seg_off": 12152,
+    "len": 10,
+    "ds": 28296,
+    "text": "GROUPS.DAT"
+   },
+   {
+    "file_off": 12686,
+    "seg_off": 12174,
+    "len": 10,
+    "ds": 28312,
+    "text": "titles.DAT"
+   },
+   {
+    "file_off": 12708,
+    "seg_off": 12196,
+    "len": 5,
+    "ds": 28328,
+    "text": "Human"
+   },
+   {
+    "file_off": 12726,
+    "seg_off": 12214,
+    "len": 5,
+    "ds": 28342,
+    "text": "Troll"
+   },
+   {
+    "file_off": 12744,
+    "seg_off": 12232,
+    "len": 5,
+    "ds": 28352,
+    "text": "Dwarf"
+   },
+   {
+    "file_off": 12762,
+    "seg_off": 12250,
+    "len": 3,
+    "ds": 28362,
+    "text": "Elf"
+   },
+   {
+    "file_off": 12778,
+    "seg_off": 12266,
+    "len": 5,
+    "ds": 28370,
+    "text": "Gnome"
+   },
+   {
+    "file_off": 12796,
+    "seg_off": 12284,
+    "len": 5,
+    "ds": 28380,
+    "text": "error"
+   },
+   {
+    "file_off": 12814,
+    "seg_off": 12302,
+    "len": 48,
+    "ds": 28390,
+    "text": " #) Name       Party         #) Name       Party"
+   },
+   {
+    "file_off": 12882,
+    "seg_off": 12370,
+    "len": 12,
+    "ds": 28458,
+    "text": "(0 exits) ? "
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 2268,
+    "seg_off": 1756,
+    "len": 4,
+    "text": "hk=V"
+   },
+   {
+    "file_off": 9708,
+    "seg_off": 9196,
+    "len": 4,
+    "text": "hk=q"
+   },
+   {
+    "file_off": 10465,
+    "seg_off": 9953,
+    "len": 4,
+    "text": "6o=N"
+   },
+   {
+    "file_off": 10661,
+    "seg_off": 10149,
+    "len": 4,
+    "text": "6o=N"
+   },
+   {
+    "file_off": 10761,
+    "seg_off": 10249,
+    "len": 4,
+    "text": "6o=L"
+   },
+   {
+    "file_off": 11136,
+    "seg_off": 10624,
+    "len": 12,
+    "text": "CHARUTIL.BAS"
+   },
+   {
+    "file_off": 11149,
+    "seg_off": 10637,
+    "len": 10,
+    "text": "MASTER.INC"
+   },
+   {
+    "file_off": 15218,
+    "seg_off": 14706,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 15230,
+    "seg_off": 14718,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 15242,
+    "seg_off": 14730,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 15248,
+    "seg_off": 14736,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 15285,
+    "seg_off": 14773,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "MTEST.EXE": {
+  "descriptor": [
+   {
+    "file_off": 1244,
+    "seg_off": 732,
+    "len": 5,
+    "ds": 21078,
+    "text": "monst"
+   },
+   {
+    "file_off": 1262,
+    "seg_off": 750,
+    "len": 4,
+    "ds": 21088,
+    "text": ".bin"
+   },
+   {
+    "file_off": 1278,
+    "seg_off": 766,
+    "len": 27,
+    "ds": 21102,
+    "text": "hit any key for next screen"
+   },
+   {
+    "file_off": 1318,
+    "seg_off": 806,
+    "len": 5,
+    "ds": 21138,
+    "text": "monst"
+   },
+   {
+    "file_off": 1336,
+    "seg_off": 824,
+    "len": 11,
+    "ds": 21148,
+    "text": "hit any key"
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 528,
+    "seg_off": 16,
+    "len": 11,
+    "text": "bzMTEST   5"
+   },
+   {
+    "file_off": 714,
+    "seg_off": 202,
+    "len": 4,
+    "text": "fR=-"
+   },
+   {
+    "file_off": 954,
+    "seg_off": 442,
+    "len": 4,
+    "text": "fR=-"
+   },
+   {
+    "file_off": 1168,
+    "seg_off": 656,
+    "len": 9,
+    "text": "MTEST.BAS"
+   },
+   {
+    "file_off": 3682,
+    "seg_off": 3170,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 3694,
+    "seg_off": 3182,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 3706,
+    "seg_off": 3194,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 3712,
+    "seg_off": 3200,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 3749,
+    "seg_off": 3237,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "MIO2.EXE": {
+  "descriptor": [
+   {
+    "file_off": 1836,
+    "seg_off": 1324,
+    "len": 19,
+    "ds": 21080,
+    "text": "load picture file #"
+   },
+   {
+    "file_off": 1868,
+    "seg_off": 1356,
+    "len": 5,
+    "ds": 21104,
+    "text": "     "
+   },
+   {
+    "file_off": 1886,
+    "seg_off": 1374,
+    "len": 31,
+    "ds": 21114,
+    "text": "and hit any key to continue    "
+   },
+   {
+    "file_off": 1930,
+    "seg_off": 1418,
+    "len": 31,
+    "ds": 21150,
+    "text": "now saving monst??.bin files   "
+   },
+   {
+    "file_off": 1974,
+    "seg_off": 1462,
+    "len": 3,
+    "ds": 21454,
+    "text": "mon"
+   },
+   {
+    "file_off": 1990,
+    "seg_off": 1478,
+    "len": 4,
+    "ds": 21462,
+    "text": ".bin"
+   },
+   {
+    "file_off": 2006,
+    "seg_off": 1494,
+    "len": 31,
+    "ds": 21472,
+    "text": "hit any key to continue        "
+   },
+   {
+    "file_off": 2050,
+    "seg_off": 1538,
+    "len": 5,
+    "ds": 21510,
+    "text": "monst"
+   },
+   {
+    "file_off": 2068,
+    "seg_off": 1556,
+    "len": 34,
+    "ds": 21524,
+    "text": "verify your pictures              "
+   },
+   {
+    "file_off": 2114,
+    "seg_off": 1602,
+    "len": 34,
+    "ds": 21562,
+    "text": "hit any key to continue           "
+   },
+   {
+    "file_off": 2160,
+    "seg_off": 1648,
+    "len": 5,
+    "ds": 21604,
+    "text": "monst"
+   },
+   {
+    "file_off": 2178,
+    "seg_off": 1666,
+    "len": 34,
+    "ds": 21614,
+    "text": "verify your pictures              "
+   },
+   {
+    "file_off": 2224,
+    "seg_off": 1712,
+    "len": 34,
+    "ds": 21652,
+    "text": "hit any key to continue           "
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 528,
+    "seg_off": 16,
+    "len": 11,
+    "text": "bzMIO2    n"
+   },
+   {
+    "file_off": 1760,
+    "seg_off": 1248,
+    "len": 8,
+    "text": "MIO2.BAS"
+   },
+   {
+    "file_off": 4594,
+    "seg_off": 4082,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 4606,
+    "seg_off": 4094,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 4618,
+    "seg_off": 4106,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 4624,
+    "seg_off": 4112,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 4661,
+    "seg_off": 4149,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ },
+ "WSIO.EXE": {
+  "descriptor": [
+   {
+    "file_off": 1900,
+    "seg_off": 1388,
+    "len": 12,
+    "ds": 21482,
+    "text": "fastwrld.bin"
+   },
+   {
+    "file_off": 1932,
+    "seg_off": 1420,
+    "len": 28,
+    "ds": 21778,
+    "text": "Capture or Load image now..."
+   },
+   {
+    "file_off": 1972,
+    "seg_off": 1460,
+    "len": 12,
+    "ds": 21816,
+    "text": "fastwrld.bin"
+   }
+  ],
+  "data_stmt": [
+   {
+    "file_off": 528,
+    "seg_off": 16,
+    "len": 11,
+    "text": "bzBITMAKE ]"
+   },
+   {
+    "file_off": 1824,
+    "seg_off": 1312,
+    "len": 11,
+    "text": "BITMAKE.BAS"
+   },
+   {
+    "file_off": 4322,
+    "seg_off": 3810,
+    "len": 11,
+    "text": "$BRUN30.EXE"
+   },
+   {
+    "file_off": 4334,
+    "seg_off": 3822,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   },
+   {
+    "file_off": 4346,
+    "seg_off": 3834,
+    "len": 5,
+    "text": "PATH="
+   },
+   {
+    "file_off": 4352,
+    "seg_off": 3840,
+    "len": 4,
+    "text": "LIB="
+   },
+   {
+    "file_off": 4389,
+    "seg_off": 3877,
+    "len": 11,
+    "text": "USERLIB.EXE"
+   }
+  ]
+ }
+}

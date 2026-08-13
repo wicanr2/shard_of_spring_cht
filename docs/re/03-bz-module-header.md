@@ -56,7 +56,9 @@
 ### 順帶:`WSIO.EXE` 的模組名是 `BITMAKE`
 
 十一支裡只有這一支的模組名與檔名不符。**信心等級:已確認**(直接讀位元組)。
-意義未知,但這種不一致通常代表開發期改過檔名或那支是別處來的工具,值得記著。
+
+**已解**:它是 `BITMAKE.BAS` 編出來的([`47`](47-source-filenames-and-master-inc.md) §4)——
+`bz` 標頭的模組名取自**原始碼檔名**,不是輸出檔名。
 
 ## 3. 重定位(`BRUN30.EXE:sub_14BDD`,`0x14BDD`–`0x14CB8`)
 
@@ -126,4 +128,4 @@ body      = exe[bz : bz + size]
 | 標頭 `+0x0A`–`+0x11`、`+0x14`、`+0x18` 之後 | 未知 |
 | `BRUN30` 控制區塊(`ds:0CACh`)的欄位表 | 未知,只知道 `+0x32`/`+0x34` 是兩個區的基底、`+0x54` bit 6 是閘門 |
 | `INT 3Dh` / `INT 3Fh` 的語意 | 已解([`06`](06-runtime-int-abi.md));⚠ 遊戲模組不用 `3Dh`([`07`](07-dispatch-tables.md) §2)|
-| `WSIO.EXE` 為何叫 `BITMAKE` | 未知 |
+| ~~`WSIO.EXE` 為何叫 `BITMAKE`~~ | **已解**:編自 `BITMAKE.BAS`([`47`](47-source-filenames-and-master-inc.md) §4)|

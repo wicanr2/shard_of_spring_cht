@@ -87,9 +87,9 @@
 | C. 原生輔助程式庫 | `USERLIB.EXE`、`MIO2.EXE`、`WSIO.EXE`、`MTEST.EXE` | 未開始 |
 | D. 角色／隊伍資料與存檔 | `CHARS.DAT`、`GROUPS.DAT` | 未開始 |
 | E. 規則資料表 | `ITEMS.DAT`、`SPELLS.DAT`、`MONSTERS.DAT`、`TITLES.DAT`、`TOWNDATA.DAT` | 進行中(`docs/re/16`:三張表格式定案,兩個欄位語意有交叉印證;讀取端未解)|
-| F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`docs/re/17`:未壓縮、38 種圖塊;寬度未定)|
+| F. 世界地圖 | `WRLDMAP.BIN`、`TOWNDATA.BIN` | 進行中(`docs/re/19`:**103 × 121 定案**;圖塊語意未解)|
 | G. 地城與迷宮 | `DG*MAZE.SQZ`（壓縮法未知）、`MAZEDATA.BIN`、`DT*TEXT.DAT` | 未開始 |
-| H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | 未開始 |
+| H. 圖形格式（**只解位元佈局**） | `PICT*.BIN`、`MONST*.BIN`、`*.PIC`、98-byte 圖塊群 | 進行中(`docs/re/19`:BSAVE 容器 52/52;CGA 樣本已定位)|
 | I. 法術效果表 | `DE*EFF.BIN` / `DE*EFF.MST`、`FIRESTRM/HAILSTRM/WINDSTRM.BIN` | 未開始 |
 | J. 戰鬥規則 | `CMBT.EXE`、`FASTCMBT.BIN`、`RNDMONST.BIN` | 未開始 |
 | K. 輸入語意（**不含 BIOS 層**） | 哪些鍵在哪個畫面有效、對應什麼動作 | 未開始 |

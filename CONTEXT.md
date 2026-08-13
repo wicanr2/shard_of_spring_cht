@@ -152,6 +152,7 @@
 | [`49-h-closure.md`](docs/re/49-h-closure.md) | **子系統 H = RE-DONE** | `MIO2.EXE` 是開發工具、給出讀取端;調色盤 `0x3D8=0x0E`;`.PIC` 是 `DRAW` 巨集 |
 | [`50-sqz-maze-format.md`](docs/re/50-sqz-maze-format.md) | **`.SQZ` 已解** | 不是壓縮,是文字 + 跑長;81×51,六檔一致 |
 | [`51-mazedata-and-world-entrances.md`](docs/re/51-mazedata-and-world-entrances.md) | **關卡表 + 世界地圖索引** | `MAZEDATA` 13×8;圖塊 24/25/27/28 = 入口(11 處零誤差);`DT*TEXT` 已確認 |
+| [`52-world-map-reader-and-shared-grid.md`](docs/re/52-world-map-reader-and-shared-grid.md) | **F 的讀取端** | `(y×103+x)×2+0x6822` 逐字對上資料側;`ds:6822` 是「當前地圖」,世界 103／戰鬥 15 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -277,6 +278,7 @@ linear   = 0x10180 + 段內位移
 | 「`0x66DC` 是 linker 保留的記號值」(`docs/re/03` §3)| 語意仍未解 | 「大於檔案大小」推不出「不是位址」|
 | 「遊戲模組不使用 `INT 3Dh`」(`docs/re/07` §2,標**已確認**)| **推翻**:909 處、24 個索引 | **過濾器用助憶碼,而 IDA 把 `CD 3D` 叫 `wait`** —— 同一節裡 227 與「0 個起點」自相矛盾卻沒察覺 |
 | 「`06` §4 的 346 是掃描雜訊」(`docs/re/07` §2 的撤回)| **撤錯了**,346 = `3D:00`,兩種方法同值 | **撤回一個結論也需要證據**,只有推論不夠 |
+| 「`ds:6822` 是 15 列 × 20 欄的主狀態陣列」(`docs/re/43` §1)| 15 是**寬度**;它是「當前地圖」陣列,`WRLDMOVE` 用 103 欄 | **算術對、標籤反了** —— 只看一支模組就替陣列命名 |
 | 「`.SQZ` 是壓縮格式,壓縮法未知」(`docs/re/01`)| 是**純文字** + 跑長編碼 | **拿副檔名當證據**,清單階段沒看內容 |
 | 「`MONST*.BIN` 的資料是連續的」(`docs/re/22` §2 的所有嘗試)| 是**交錯**的(8 word 一組) | **算術對不上時只想到「寬度猜錯」,沒想到「資料不連續」** |
 | 「模組程式碼掃不到陣列索引」(`docs/re/23` §5)| **推翻**:掃錯指紋。word 陣列用 `add`+`shl` 不用 `mul`;改掃 `[reg+disp]` 後 CMBT 有 558 處 | **拿一個不會出現的樣式去掃,把 0 命中讀成「不存在」** |

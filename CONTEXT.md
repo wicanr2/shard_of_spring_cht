@@ -143,6 +143,7 @@
 | [`43-common-block-and-array-indexing.md`](docs/re/43-common-block-and-array-indexing.md) | **陣列索引 + COMMON 區** | `ds:6822` 是 15×≥20 的 word 陣列;`ds:34F8` = 隊伍人數(上限 5);`ds:34E0` = 隊員名字 |
 | [`44-int3d-is-used-after-all.md`](docs/re/44-int3d-is-used-after-all.md) | **`INT 3Dh` 推翻** | 模組有用,909 處;助憶碼過濾器造成的假結論 |
 | [`45-int3d-family.md`](docs/re/45-int3d-family.md) | `INT 3Dh` 這一族 | 字串/暫存值操作;`sub_1A08B` 是自由串列配置器 |
+| [`46-string-table-partial.md`](docs/re/46-string-table-partial.md) | 字串表(L) | 三描述子 + 文字;**等長替換現在可行**,改長度不行 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

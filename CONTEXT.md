@@ -63,6 +63,7 @@
 | **高頻 API 是 BASIC 基本操作(B)** | `docs/re/37`–`38`:指派/加法/搬移/堆疊管理。**遊戲功能要往低頻索引找** |
 | **xref 對 `ds:xxxx` 全域無效(方法)** | `docs/re/39`:IDA 不建 o_mem 的資料參考 → xref 空。改掃運算元文字(`tools/ida/find_dsref.py`)。**已寫進 `CLAUDE.md` §2.1** |
 | **`BRUN30` = MS BASIC Compiler Runtime 5.60(B)** | `docs/re/40`:讀自它自己的字串。可當 §2.1 條件 3 的獨立對照來源 |
+| **子系統 H 已 RE-DONE(第一個)** | `docs/re/49` §4:四項條件逐條核對。圖塊/PICT/MONST/WRLDMAP/`.PIC`/調色盤全解 |
 | **模組 ↔ 原始碼對應已知(A)** | `docs/re/47`:十一支的 `.BAS` 檔名 + `MASTER.INC`(八支共用)/`TOWNCAMP.INC`/`INSTALL.INC` |
 | **中文化規模已量(L)** | `docs/re/47` §5:模組內文字 952 段 / 15,738 B(清單 `generated-text-inventory.json`)|
 | **遊戲狀態的存放方式已解(D–L 基礎)** | `docs/re/43`:COMMON 區 `0x34E0`–`0x681A` 七支共用;主陣列 `ds:6822`(15×≥20 word);隊伍人數 `ds:34F8` 上限 5 |
@@ -148,6 +149,7 @@
 | [`46-string-table-partial.md`](docs/re/46-string-table-partial.md) | 字串表(L) | 三描述子 + 文字;**等長替換現在可行**,改長度不行 |
 | [`47-source-filenames-and-master-inc.md`](docs/re/47-source-filenames-and-master-inc.md) | **原始碼檔名** | 十一支的 `.BAS`/`.INC` 都在;`MASTER.INC` 解釋 COMMON 區;文字總量 15,738 B |
 | [`48-monst-deinterleave.md`](docs/re/48-monst-deinterleave.md) | **`MONST*.BIN` 已解** | 八張 17×17 動畫格,以 8 word 交錯;22/22 檔驗證 |
+| [`49-h-closure.md`](docs/re/49-h-closure.md) | **子系統 H = RE-DONE** | `MIO2.EXE` 是開發工具、給出讀取端;調色盤 `0x3D8=0x0E`;`.PIC` 是 `DRAW` 巨集 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

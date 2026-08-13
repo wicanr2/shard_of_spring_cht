@@ -138,7 +138,7 @@
 | [`39-ds0a3a-and-xref-blind-spot.md`](docs/re/39-ds0a3a-and-xref-blind-spot.md) | `ds:0A3Ah` + xref 盲點 | **xref 看不到 DS 相對存取**;`ds:0A3Ah` 是目前物件指標 |
 | [`40-brun30-identity-and-ds-base.md`](docs/re/40-brun30-identity-and-ds-base.md) | 執行期的身分 | **MS BASIC Compiler Runtime 5.60** |
 | [`41-ds-base-solved.md`](docs/re/41-ds-base-solved.md) | **DS 基底** | `ds:XXXX` = 線性 `0x1FE00 + XXXX`;判準是位移分布的上界 |
-| [`42-module-ds-and-the-66dc-boundary.md`](docs/re/42-module-ds-and-the-66dc-boundary.md) | 模組的資料段 | **`0x66DC` 是真位址**;模組變數大半是 BSS,不在檔案裡 |
+| [`42-module-ds-and-the-66dc-boundary.md`](docs/re/42-module-ds-and-the-66dc-boundary.md) | 模組的資料段 | 七支共用 `0x66C8`–`0x681A`;模組變數大半是 BSS,不在檔案裡 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -261,7 +261,8 @@ linear   = 0x10180 + 段內位移
 | 「xref 為空是因為位址算錯」 | 位址是對的,IDA 根本不為 `o_mem` 建資料參考 | 結論對、理由錯 —— 沒實測就寫成因果 |
 | 「`DS = CS`(`docs/re/40` §2)」 | 只對「單獨執行 BRUN30」的錯誤路徑成立 | **把單一情境的證據當成全域結論** |
 | 「三個常數落在字串中段 → 不是結構指標」 | 用錯基底算的,反證作廢 | 拿未定案的基底去做反證 |
-| 「`0x66DC` 是 linker 保留的記號值」(`docs/re/03` §3)| 是資料段裡的真位址,三支模組的存取停在它前一格 | **「大於檔案大小」推成「不是位址」** —— 把檔案大小當成位址空間大小 |
+| 「`0x66DC` 是 linker 保留的記號值」(`docs/re/03` §3)| 語意仍未解 | 「大於檔案大小」推不出「不是位址」|
+| 「`0x66DC` 是資料段的區域結束位址」(`docs/re/42` §2 第一版)| **否證**:`MENU` 門檻 `0x66E8` 卻有完全相同的存取範圍;而且門檻是段落、位移是位元組 | **兩個數字接近就當成有關係,沒先確認單位** —— 靠「找一個該值不同的樣本」抓到 |
 
 ## 7. 每一輪都要做
 

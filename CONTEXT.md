@@ -45,7 +45,8 @@
 | **模組轉交的檔名來源** | `docs/re/15`,`BRUN30:0x10C25` 把字串描述子抄進 `ds:0B06h` |
 | **規則資料表(子系統 E)** | `docs/re/16`,`MONSTERS` 36B×74、`SPELLS`/`ITEMS` CSV;`w5`=怪物圖、欄1=符文系別 |
 | **BSAVE 容器 + 地圖尺寸(H/F)** | `docs/re/19`,52/52 是 BSAVE;世界地圖 **103×121** 定案 |
-| **CGA 像素佈局(H)** | `docs/re/20`,320×200 2bpp、掃描線兩區交錯,畫面結構連貫 |
+| **CGA 像素佈局(H)** | `docs/re/20`,320×200 2bpp、掃描線兩區交錯 |
+| **圖塊格式(H)** | `docs/re/21`,BASIC `GET` 陣列 17×17,**九個檔各自畫出自己的名字** |
 | **中文化落點盤點(L)** | `docs/re/18`,兩層 ≈35,800 字元;模組內嵌 362 條佔 39% |
 | **世界地圖與地城(F/G)** | `docs/re/17`,`WRLDMAP` 每格 2 bytes、12,467 格 35 種圖塊;六個 `.SQZ` 一律 82 列 |
 
@@ -96,7 +97,8 @@
 | [`17-world-and-maze.md`](docs/re/17-world-and-maze.md) | 地圖與地城 | `WRLDMAP` 每格 2 bytes;`.SQZ` 逐列編碼、六檔皆 82 列 |
 | [`18-text-inventory.md`](docs/re/18-text-inventory.md) | 中文化落點 | 兩層 ≈35,800 字元;資料檔 61% 不必等程式碼分析 |
 | [`19-bsave-container.md`](docs/re/19-bsave-container.md) | BSAVE 容器 | 52/52;`STARTUP.BIN` 是 `0xB800` CGA 整頁;地圖 103×121 |
-| [`20-cga-layout.md`](docs/re/20-cga-layout.md) | CGA 佈局 | 320×200 2bpp 交錯;素材尺寸的裁決方式已寫明 |
+| [`20-cga-layout.md`](docs/re/20-cga-layout.md) | CGA 佈局 | 320×200 2bpp 交錯 |
+| [`21-tile-format.md`](docs/re/21-tile-format.md) | 圖塊格式 | `GET`/`PUT` 陣列 17×17;磚牆/拱門/四角星各自成立 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -161,6 +163,7 @@ linear   = 0x10180 + 段內位移
 |---|---|
 | 十一支的 loader stub「逐位元組相同」 | **只有結構相同**(函式大小序列與段大小一致);位元組不同,差異來自重定位與嵌入的模組名。`docs/re/01` §2 |
 | `INT 3Dh/3Eh/3Fh` 只是「呼叫執行期」,語意未知 | 三支處理常式都已讀完(`docs/re/06`):`3Eh`/`3Fh` 固定吃 1 個參數位元組當派工索引;`3Dh` 有三種情況,其中 `CD 3D 00 oo oo` 會**把自己改寫成 `9A` far call**。⚠ 因此執行中的記憶體映像與磁碟位元組不同 |
+| 小圖的尺寸要靠因數分解 + 九檔互證來挑(`docs/re/20` §2) | **尺寸就寫在資料裡** —— 扣掉 BSAVE 標頭後,前 2 個 word 是 BASIC `GET` 陣列的寬(bit)與高。**看到「扣掉容器標頭後前幾個 byte 是小整數」時,先假設那是內容的標頭,不要直接拿剩餘長度做因數分解。** `docs/re/21` §3 |
 | `WRLDMAP.BIN` 有 12,467 格,寬度候選 91／137 | **12,463 格,103 × 121**。先前沒扣 BSAVE 的 7-byte 標頭與 1-byte EOF;而 **7 是奇數,還讓 2-byte 交錯的奇偶性翻轉**(圖塊在 `data[0::2]` 不是 `d[1::2]`)。**判準:切分單位對了還不夠,起點錯一個 byte 會讓交錯資料整個換半邊。** `docs/re/19` §2 |
 | `WRLDMAP.BIN` 是 byte 陣列,寬度在九個矩形分解裡 | **每格 2 bytes**(低位元組 99.96% 為 0),真正的格數是 12,467 不是 24,934。**ASCII 圖出現「每隔一格重複」的規律時,先懷疑切分單位不是 1 byte。** 而且 `91`/`137` 兩個候選已被肉眼否決(逐列右移)。`docs/re/17` §1 |
 | `ds:74h` 是參數累積指標、`0xC26`–`0xC30` 是 10-byte 緩衝區(`docs/re/14` §3) | **不成立**。依據的那幾行是**強制反組譯錯位**的產物(徵狀:跳躍目標 `loc_14346+1` 落在指令中間);xref 證實 `0xC26`–`0xC32` 是程式碼。**判準:讀強制反組譯的產物前,先 grep 有沒有 `loc_XXXX+N` 這種跳進指令中間的目標。** `docs/re/15` §2–§3 |

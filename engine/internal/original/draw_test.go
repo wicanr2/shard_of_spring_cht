@@ -25,7 +25,7 @@ func TestFastWorldTiles(t *testing.T) {
 
 func TestWrldItemRows(t *testing.T) {
 	rows := SplitPIC(read(t, "WRLDITEM.PIC"))
-	// ⚠ 30 行含 7 個空行。空行**不可以被濾掉** —— 行號就是索引
+	// ⚠ 29 行含 6 個空行。空行**不可以被濾掉** —— 行號就是索引
 	// (docs/re/54 §2、docs/re/130)。
 	if len(rows) != 29 {
 		t.Fatalf("WRLDITEM.PIC 有 %d 行,應為 29(去掉檔尾那個空段之後)", len(rows))
@@ -48,10 +48,10 @@ func TestWrldItemRows(t *testing.T) {
 	}
 }
 
-// 地形值 → 圖塊來源的對照,包含**已知沒有來源的那幾個**。
-// docs/spec/05-world-scene.md §2.2:值 0、10、35–38 沒有來源。
-// 把「沒有來源」也寫成測試,是為了讓之後有人補上來源時**測試會失敗**,
-// 逼他回來更新規格 —— 而不是安靜地讓一個未解項目消失。
+// 地形值 → 圖塊來源的對照。
+// docs/re/132:全部 12,463 格都有來源,只有值 0(地圖邊界)不畫。
+// 值 11 是 SrcBackdrop —— **原版刻意不畫**,不是「還沒解出來」。
+// 這兩者必須分得開,否則「未解」會安靜地變成「已解」。
 func TestWorldTileOrigin(t *testing.T) {
 	for _, c := range []struct {
 		v    int
@@ -63,7 +63,7 @@ func TestWorldTileOrigin(t *testing.T) {
 		{1, SrcFastWrld, 0, "草原"},
 		{9, SrcFastWrld, 8, "山"},
 		{10, SrcWrldItem, 0, "第 0 行"},
-		{11, SrcWrldItem, 1, "海洋 —— 對到**空行**,實際走點陣路徑(re/129 §1)"},
+		{11, SrcBackdrop, 0, "海洋 —— 派工鏈明確跳過,顯示的是底色(re/132 §1)"},
 		{24, SrcWrldItem, 14, "地城入口"},
 		{30, SrcWrldItem, 20, "城鎮"},
 		{38, SrcWrldItem, 28, "最後一行"},
@@ -120,3 +120,58 @@ func TestWorldMapCoverage(t *testing.T) {
 		t.Errorf("無圖塊來源的格數 %d,應只有值 0 的 224 格", noSrc)
 	}
 }
+
+// 六個空行有兩種成因,這條把它們分開鎖住(docs/re/132 §3):
+//
+//	值 11          → 空行,但地圖上有 6,933 格 —— 原版**刻意不畫**
+//	14/19/22/33/34 → 空行,而且地圖上**一次都沒出現**
+//
+// 29 行、6 個空行、其中 5 個對到零出現值 —— 這個吻合就是
+// WrldItemBias = 10 的獨立佐證。偏移錯一格,兩邊立刻對不上。
+func TestEmptyRowsMatchUnusedTiles(t *testing.T) {
+	rows := SplitPIC(read(t, "WRLDITEM.PIC"))
+	if len(rows) != WrldItemLast-WrldItemBias+1 {
+		t.Fatalf("WRLDITEM.PIC 有 %d 行,載入迴圈 I=%d..%d 只讀 %d 行",
+			len(rows), WrldItemBias, WrldItemLast, WrldItemLast-WrldItemBias+1)
+	}
+	cells, err := DecodeWorldMap(read(t, "WRLDMAP.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	count := map[int]int{}
+	for _, c := range cells {
+		count[int(c)]++
+	}
+	for k, r := range rows {
+		v := k + WrldItemBias
+		empty := strings.TrimSpace(r) == ""
+		switch {
+		case v == OceanTile:
+			if !empty {
+				t.Errorf("值 %d(海洋)的第 %d 行不是空的 —— 派工鏈跳過它,檔案卻有巨集", v, k)
+			}
+		case empty && count[v] != 0:
+			t.Errorf("值 %d 對到空行,地圖上卻有 %d 格 —— 偏移可能錯了", v, count[v])
+		case !empty && count[v] == 0 && !unusedWrldItem[v]:
+			t.Errorf("值 %d 有巨集卻在地圖上 0 格 —— 偏移可能錯了", v)
+		case empty && unusedWrldItem[v]:
+			t.Errorf("值 %d 被列為「有巨集但未使用」,實際卻是空行", v)
+		}
+	}
+	for v := range unusedWrldItem {
+		if count[v] != 0 {
+			t.Errorf("值 %d 被列為未使用,地圖上卻有 %d 格 —— 清單要更新", v, count[v])
+		}
+	}
+}
+
+// 有巨集、但世界地圖上一格都沒放的圖塊值(docs/re/132 §3)。
+//
+// 23/26/29 與 24/25/27/28 是同一族的建築,差別是**有沒有門**:
+// 值 28 的巨集就是值 23 再接一段 `bd2c2d2l2u2r2`(門)。
+// 而 24+25+27+28 合計 11 格,正好是 MAZEDATA.BIN 的 11 個地城入口
+// (docs/re/51 §2)—— 所以這三個是沒被放上地圖的變體,不是偏移錯。
+//
+// ⚠ 這份清單是**寫死的例外**。它變動表示地圖或偏移變了,要回去查,
+// 不要直接改數字。
+var unusedWrldItem = map[int]bool{23: true, 26: true, 29: true}

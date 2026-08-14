@@ -19,6 +19,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/vector"
 
 	"shardofspring/internal/layout"
+	"shardofspring/internal/original"
 	"shardofspring/internal/world"
 )
 
@@ -65,6 +66,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			v := g.world.At(mx, my)
 			px := float32(layout.View.X + vx*layout.TileDst)
 			py := float32(layout.View.Y + vy*layout.TileDst)
+
+			// 值 11(海洋,全圖 55.63%)原版**一個像素都不畫**
+			// (docs/re/132 §1),顯示的就是底色。這裡同樣什麼都不做 ——
+			// 畫一張「海的圖」會讓畫面比原版多東西。
+			if src, _ := original.WorldTileOrigin(v); src == original.SrcBackdrop {
+				continue
+			}
 
 			if img, ok := g.tiles[v]; ok {
 				op := &ebiten.DrawImageOptions{}

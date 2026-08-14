@@ -47,20 +47,23 @@ cmp  word ptr ds:0CF96h, 1  →  mov bx, 0CA1Ch
 cmp  word ptr ds:0CF96h, 2  →  mov bx, 0CA78h
 …
 cmp  word ptr ds:0CF96h, 9  →  mov bx, 0CCFCh
-cmp  word ptr ds:0CF96h, 0Bh → mov bx, 0CFA6h
+cmp  word ptr ds:0CF96h, 0Bh → jnz(值 11 什麼都不畫)
 ```
 
 | 圖塊 | 圖形位址 | 間距 |
 |---:|---|---:|
-| 1 | `ds:0xCA1C` | — |
+| 1 | `0xCA1C` | — |
 | 2–9 | `0xCA78`…`0xCCFC` | **各 92** |
-| 11 | `0xCFA6` | 682(換到另一區)|
 
-**圖塊 1–9 的圖形是連續的 92-byte 記錄。** 圖塊 10 缺席 ——
-因為 `0x11153` 的 `cmp ax, 0Ah / jl` 把 **≥ 10 的值分到另一條路徑**。
+**圖塊 1–9 的圖形是連續的 92-byte 記錄**,由 `fastwrld.bin` BLOAD 進來
+([`132`](132-world-tile-dispatch-corrected.md) §2)。圖塊 10 缺席 ——
+因為 `0x11153` 的 `cmp ax, 0Ah / jl` 把 **≥ 10 的值分到另一條路徑**:
+值 11 不畫,其餘走 `0xC980 + 4×值` 的 `DRAW` 巨集表
+([`132`](132-world-tile-dispatch-corrected.md) §1)。
 
 ⚠ 92 bytes 與 [`21`](21-tile-format.md) 的 98-byte 圖塊檔**不同**。
-記憶體中的記錄與檔案裡的不必等長(陣列有自己的對齊),**未追**。
+98 = BSAVE 標頭 7 + 資料 90 + EOF 1,而記憶體裡的記錄是 92 ——
+差額是陣列的對齊,**未追**(依 §1.2 不影響 remake)。
 
 ## 3. `ds:6822` 是「當前地圖」
 

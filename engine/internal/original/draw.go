@@ -124,12 +124,12 @@ func RenderDraw(macro string, w, h int) *image.Paletted {
 
 // SplitPIC 把 .PIC 切成一行一行的 DRAW 巨集(CRLF 分隔,0x1A 結尾)。
 //
-// ⚠ **空行一定要保留。** `WRLDITEM.PIC` 有 30 行、其中 7 行是空的,
-// 而**行號就是索引**(見 WorldTileOrigin)。把空行濾掉會讓 30 變 23、
+// ⚠ **空行一定要保留。** `WRLDITEM.PIC` 有 29 行、其中 6 行是空的,
+// 而**行號就是索引**(見 WorldTileOrigin)。把空行濾掉會讓 29 變 23、
 // 索引整個位移 —— 而位移後的圖仍然是「某種圖」,畫面上看不出錯。
 //
 // 空行本身有意義:它代表**那個圖塊值不走向量路徑**
-// (例如值 11 海洋走點陣,docs/re/129 §1)。
+// (值 11 海洋原版根本不畫,docs/re/132 §1)。
 func SplitPIC(d []byte) []string {
 	s := strings.ReplaceAll(string(d), "\x1a", "")
 	rows := strings.Split(s, "\r\n")
@@ -172,35 +172,50 @@ func DecodeFastWorld(d []byte) ([]*image.Paletted, error) {
 type WorldTileSource int
 
 const (
-	SrcNone     WorldTileSource = iota // 沒有來源 —— 值 0、10、35–38
+	SrcNone     WorldTileSource = iota // 不畫任何東西 —— 只有值 0(地圖邊界)
 	SrcFastWrld                        // FASTWRLD.BIN 第 (值−1) 張
 	SrcWrldItem                        // WRLDITEM.PIC 第 (值−10) 行,0-based
+	SrcBackdrop                        // 值 11(海洋)—— **原版刻意不畫**,見下
 )
 
 // WrldItemBias 是地形值與 `WRLDITEM.PIC` 行號之間的差:行 = 值 − 10(0-based)。
 //
-// 出處 docs/re/54 §2,判別依據是**空行**:該檔 30 行裡有 7 行是空的,
+// 出處 docs/re/54 §2,判別依據是**空行**:該檔 29 行裡有 6 行是空的,
 // 而偏移 10 是唯一讓兩邊同時成立的值 ——
 //
-//	7/7   每個空行對到的圖塊值,要嘛走點陣路徑(值 11 海洋),要嘛地圖上從未出現
+//	6/6   每個空行對到的圖塊值,要嘛不畫(值 11 海洋),要嘛地圖上從未出現
 //	20/20 地圖上用到的每個向量圖塊值,都對到非空行
 //
 // 其餘偏移(11、14)兩邊各有 4–7 筆違規。
 //
 // ⚠ **我曾把這條規則推翻兩次,兩次都是錯的**(docs/re/130)。
-// 根因是 SplitPIC 當時把空行濾掉,30 行變 23,索引位移 ——
+// 根因是 SplitPIC 當時把空行濾掉,29 行變 23,索引位移 ——
 // 然後我去調偏移來補償。**行號就是索引的資料,空行不能濾。**
+//
+// docs/re/132 補上了程式碼側的直接證據:載入迴圈是 `FOR I = 10 TO 38`,
+// 每讀一行就存進 `0xC980 + 4×I`,而繪製時**用地形值直接當索引**。
 const WrldItemBias = 10
+
+// WrldItemLast 是載入迴圈的上界(docs/re/132 §2:`cmp ax,26h / jle`)。
+// 檔案剛好 29 行,對到值 10–38。
+const WrldItemLast = 38
+
+// OceanTile 是海洋的地形值。**原版的派工鏈明確跳過它,一個像素都不畫**
+// (docs/re/132 §1),所以它顯示的就是底色。全圖 55.63%。
+const OceanTile = 11
 
 // WorldTileOrigin 回傳地形值的圖塊來源與行號。
 //
-// ⚠ 呼叫端還要檢查那一行是不是**空的** —— 空行代表該值不走向量路徑
-// (值 11 海洋走點陣,docs/re/129 §1)。本函式不讀檔,所以驗不了。
+// ⚠ 呼叫端還要檢查那一行是不是**空的**。空行有兩種成因,不要混:
+// 值 11 是原版刻意跳過(SrcBackdrop),其餘空行(值 14/19/22/33/34)
+// 則是**地圖上一次都沒出現**的值 —— 兩者在檔案裡長得一樣。
 func WorldTileOrigin(v int) (WorldTileSource, int) {
 	switch {
+	case v == OceanTile:
+		return SrcBackdrop, 0
 	case v >= 1 && v <= 9:
 		return SrcFastWrld, v - 1
-	case v >= WrldItemBias:
+	case v >= WrldItemBias && v <= WrldItemLast:
 		return SrcWrldItem, v - WrldItemBias
 	default:
 		return SrcNone, 0

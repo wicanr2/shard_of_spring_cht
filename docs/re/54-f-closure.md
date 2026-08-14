@@ -36,7 +36,8 @@
 
 ## 2. 對應規則:行號 + 10
 
-`WRLDITEM.PIC` 有 **30 行**,其中 **7 行是空的**(第 1、4、9、12、23、24、29 行)。
+`WRLDITEM.PIC` 有 **29 行**,其中 **6 行是空的**(第 1、4、9、12、23、24 行)。
+(檔尾 CRLF 會多切出一個空段,那不是資料的一行。)
 
 若第 k 行對到圖塊 `k + off`,掃描 `off` = 0…19:
 
@@ -54,7 +55,9 @@
 
 反過來,**地圖上用到的 20 個向量圖塊值全部對到非空行**。
 
-**這不是「大致吻合」,是 7/7 加 20/20。** 隨機對應不可能同時滿足兩邊。
+**這不是「大致吻合」,是 6/6 加 20/20。** 隨機對應不可能同時滿足兩邊。
+[`132`](132-world-tile-dispatch-corrected.md) §2 之後這條還多了程式碼側證據:
+載入迴圈是 `FOR I = 10 TO 38`,29 次,不多不少。
 
 ⚠ 唯一的例外是**圖塊 0**(224 格,全在地圖邊緣)——
 `0 − 10 = −10` 不在檔案裡,所以它走另一條路或根本不繪製。
@@ -101,7 +104,7 @@
 |---|---|---|
 | 1 | 在 IDA 裡讀過原始指令 | 取格常式([`52`](52-world-map-reader-and-shared-grid.md) §1)、點陣派工鏈(§2)、**向量派工(本文 §1)** |
 | 2 | 讀寫端點 | `[di+6822h]` 讀、`ds:0CF96h` 派工、`ds:0xC980+N×4` 取字串 |
-| 3 | 獨立資料印證 | 入口 11/11([`51`](51-mazedata-and-world-entrances.md))、城鎮 13/13、名稱 74/74([`53`](53-world-tiles-towns-and-draw-renderer.md))、`.PIC` 偏移 7/7 + 20/20(§2)、橋與關卡的雙重互證(§3)|
+| 3 | 獨立資料印證 | 入口 11/11([`51`](51-mazedata-and-world-entrances.md))、城鎮 13/13、名稱 74/74([`53`](53-world-tiles-towns-and-draw-renderer.md))、`.PIC` 偏移 6/6 + 20/20(§2)、橋與關卡的雙重互證(§3)|
 | 4 | 筆記含輸入檔 + SHA-256 + linear address + 信心等級 | [`00`](00-inputs.md) + [`19`](19-bsave-container.md)/[`51`](51-mazedata-and-world-entrances.md)/[`52`](52-world-map-reader-and-shared-grid.md)/[`53`](53-world-tiles-towns-and-draw-renderer.md)/本文 |
 
 ### 涵蓋範圍
@@ -112,7 +115,7 @@
 | `TOWNDATA.BIN` | 14 列 × 4 欄的 MBF 浮點,13 個城鎮 |
 | `TOWNDATA.DAT` | 13 個城鎮名 + 61 個商店名 |
 | `FASTWRLD.BIN` | 9 張 17×17 地形圖塊,各 92 bytes |
-| `WRLDITEM.PIC` | 30 行 `DRAW` 巨集,行 k = 圖塊 k+10 |
+| `WRLDITEM.PIC` | **29 行** `DRAW` 巨集,行 k = 圖塊 k+10(值 10–38)|
 
 **F(世界地圖)判定為 RE-DONE。**
 

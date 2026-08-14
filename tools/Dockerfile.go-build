@@ -1,0 +1,22 @@
+# Ebitengine 的 Linux 建置環境。
+#
+# 為什麼需要這顆:Ebitengine 走 cgo,編譯期要 X11 與 OpenGL 的標頭檔,
+# 純 golang image 沒有。執行期的 GL/X11 由使用者桌面提供,不在這裡。
+#
+# 建置:tools/go.sh 會在 image 不存在時自動建
+#   docker build -f tools/Dockerfile.go-build -t shard-go-build:2 tools/
+#
+# ⚠ 這是本專案自己建的 image,清理時只能動它;
+#   禁止對共用資源做 prune / rmi(CLAUDE.md §8)。
+FROM golang:1.24-bookworm
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libgl1-mesa-dev \
+        libx11-dev \
+        libxrandr-dev \
+        libxcursor-dev \
+        libxinerama-dev \
+        libxi-dev \
+        libxxf86vm-dev \
+        pkg-config \
+    && rm -rf /var/lib/apt/lists/*

@@ -138,6 +138,41 @@ func run(in, out string) error {
 		return err
 	}
 
+	// 世界地形圖塊:依 docs/spec/05 §4 的來源表,每個有來源的地形值輸出一張
+	// 17×17 PNG。⚠ **沒有來源的值(0、10、35–38)不輸出** ——
+	// 引擎在執行期畫成刺眼的佔位符,而不是在這裡偷偷補一張圖。
+	fast, err := original.DecodeFastWorld(mustRead(in, "FASTWRLD.BIN"))
+	if err != nil {
+		return fmt.Errorf("FASTWRLD:%w", err)
+	}
+	segs := original.SplitPIC(mustRead(in, "WRLDITEM.PIC"))
+	if err := os.MkdirAll(filepath.Join(out, "gfx", "world"), 0o755); err != nil {
+		return err
+	}
+	nWorld := 0
+	for v := 0; v <= 38; v++ {
+		src, idx := original.WorldTileOrigin(v)
+		var img image.Image
+		switch src {
+		case original.SrcFastWrld:
+			img = fast[idx]
+		case original.SrcWrldItem:
+			if idx >= len(segs) {
+				return fmt.Errorf("地形值 %d 需要 WRLDITEM 段 %d,但只有 %d 段", v, idx, len(segs))
+			}
+			img = original.RenderDraw(segs[idx], 17, 17)
+		default:
+			continue // 無來源,交給執行期畫佔位符
+		}
+		if err := writePNG(filepath.Join(out, "gfx", "world", fmt.Sprintf("t%02d.png", v)), img); err != nil {
+			return err
+		}
+		nWorld++
+	}
+	if err := step("world tiles", nWorld, nil); err != nil {
+		return err
+	}
+
 	// 世界地圖:轉成灰階 PNG 供目視,數值另存 JSON。
 	cells, err := original.DecodeWorldMap(mustRead(in, "WRLDMAP.BIN"))
 	if err != nil {

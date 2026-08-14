@@ -227,6 +227,7 @@
 | [`117-annotation-was-right.md`](docs/re/117-annotation-was-right.md) | 註解是對的,但寫的時候不該是對的 | 排版會製造出資料裡沒有的對立;猜對與猜錯的註解長得一樣 |
 | [`118-daylight.md`](docs/re/118-daylight.md) | **天色 + 位移 83 結案** | `ds:35B4h` 由時辰決定(17→2、19→1);位移 83 選自然光或攜帶光 |
 | [`119-attribute-12-never-decremented.md`](docs/re/119-attribute-12-never-decremented.md) | 屬性 12 從不遞減 | 「X 需要有 Y」式的論證要去找 Y 存不存在 |
+| [`120-offset-84-cleared-in-camp.md`](docs/re/120-offset-84-cleared-in-camp.md) | 位移 84 被清成 0 | 對所有候選都成立的觀察不縮小候選集合 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

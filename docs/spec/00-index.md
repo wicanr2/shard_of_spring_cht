@@ -23,7 +23,13 @@
 | [`02-magic.md`](02-magic.md) | 施法、系別門檻、狀態類法術、魔法道具 |
 | [`03-engine-plan.md`](03-engine-plan.md) | 引擎架構與里程碑(**Go + Ebitengine**)|
 | [`04-display-layout.md`](04-display-layout.md) | **顯示層與中文排版**(1024×768、美術 4×、避頭尾)|
-| [`05-world-scene.md`](05-world-scene.md) | **世界地圖場景**(9×9 視野、地形值總表、移動);⚠ 可通行性未解 |
+| [`05-world-scene.md`](05-world-scene.md) | **世界地圖場景**(9×9 視野、地形值總表、移動、可通行性八條規則)|
+| [`06-party-and-save.md`](06-party-and-save.md) | **隊伍、角色與存檔**(兩個檔的關係、成員槽、狀態欄)|
+| [`07-combat-scene.md`](07-combat-scene.md) | **戰鬥場景**(單位陣列、先攻、可重現的亂數);⚠ 傷害乘數與命中面數未解 |
+| [`08-maze-scene.md`](08-maze-scene.md) | **迷宮與事件**(Major/Minor 座標、視野、事件三類、跨關卡)|
+| [`09-magic-items.md`](09-magic-items.md) | **法術與道具**(施法閘門、威力、狀態強度、道具發動);⚠ 效果類別 3/13 未解 |
+| [`10-localization.md`](10-localization.md) | **中文化上線**(轉檔期併入、破格的定義與預算)|
+| [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 營地 / 名冊**;⚠ 賣出 / 訓練 / 治療 / 傳聞的規則未解 |
 
 ## ⚠ 實作前必讀的五條
 

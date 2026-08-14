@@ -208,6 +208,7 @@
 | [`98-status-level-and-a-sign-error.md`](docs/re/98-status-level-and-a-sign-error.md) | 狀態/等級位移 + 命中的反號 | 位移 38 = 狀態、40 = 等級;`76` 的 `≤` 應為 `>` |
 | [`99-parity-separates-the-two-records.md`](docs/re/99-parity-separates-the-two-records.md) | 奇偶性分開兩個記錄 | `CHARS` 全偶、`GROUPS` 全奇,25 筆零例外 |
 | [`100-chars-attributes-closed.md`](docs/re/100-chars-attributes-closed.md) | `CHARS.DAT` 欄位表 | 位移 12/20/22 解出;整數欄 14/15 有語意 |
+| [`101-groups-record-status.md`](docs/re/101-groups-record-status.md) | `GROUPS.DAT` 現況 | 「六個連續 word = 隊伍成員」被否證;剩 10 欄只能從程式碼追 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -360,6 +361,7 @@ linear   = 0x10180 + 段內位移
 | 「命中 `+30` 的條件是 `屬性8[防] ≤ 1`」(`docs/re/76` §1)| **反號**:`jg` 那一側才是 `+30`,正確為 **`> 1`**。屬性 8 = 狀態,所以是「非 `OK` 狀態的目標更容易被打中」(`98`)| **語意是抓反號的主要工具** —— 沒有語意的數字沒辦法「看起來不對」;補語意時要回頭重讀每一個比較,不能只把名字填進去 |
 | 「兩個記錄的位移分不開,只能靠『這支模組開的是哪個檔』」(`docs/re/89` §3)| **數字本身就分得開**:`CHARS.DAT` 的整數欄位全在偶數位移、`GROUPS.DAT` 全在奇數位移(25 筆零例外);成因是記錄前綴長度的奇偶(`99`)| **說「只能靠上下文」之前,先看資料本身有沒有結構性特徵** |
 | 「`TOWN` 讀到位移 89 → `CHARS.DAT` 的尾端有被用到」(`docs/re/89` §5)| 89 是奇數 → 屬於 `GROUPS.DAT`(記錄長 90,89–90 是最後一欄)| **在還沒能把兩個資料源分開之前,不要用聯集去推任何一個的結構** |
+| 「`ds:3532h`–`ds:353Ch` 六個連續 word = 隊伍六個成員的角色編號」(`docs/re/101` 的工作假設)| **否證**:掃 `cmp` 立即數,它們分別被比 `10` / `21` / `34` / 七個不同值 —— 是六個不相干的純量 | **「DS 裡連續」不等於「同一個陣列」** —— BASIC 純量照宣告順序配置,相鄰是弱訊號;要看它們被當成什麼用 |
 | 差點把玩家職業 `'1'` 寫成「戰士 / Fighter」(`docs/re/87` 起草時)| 遊戲自己的用詞是 **`Hero`**;而 `Fighter` 在本作是**怪物名**(`Lvl 1 Fighter`)| **專有名詞不從語意猜,只從遊戲自己的字串取** —— 中文化的譯名一旦定錯,整份對照表要重來 |
 
 ## 7. 每一輪都要做

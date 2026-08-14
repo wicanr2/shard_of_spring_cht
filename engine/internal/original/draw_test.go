@@ -1,6 +1,9 @@
 package original
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestFastWorldTiles(t *testing.T) {
 	tiles, err := DecodeFastWorld(read(t, "FASTWRLD.BIN"))
@@ -20,10 +23,28 @@ func TestFastWorldTiles(t *testing.T) {
 	}
 }
 
-func TestWrldItemSegments(t *testing.T) {
-	segs := SplitPIC(read(t, "WRLDITEM.PIC"))
-	if len(segs) != 23 {
-		t.Fatalf("WRLDITEM.PIC 有 %d 段,規格說 23(docs/formats/05 §3)", len(segs))
+func TestWrldItemRows(t *testing.T) {
+	rows := SplitPIC(read(t, "WRLDITEM.PIC"))
+	// ⚠ 30 行含 7 個空行。空行**不可以被濾掉** —— 行號就是索引
+	// (docs/re/54 §2、docs/re/130)。
+	if len(rows) != 29 {
+		t.Fatalf("WRLDITEM.PIC 有 %d 行,應為 29(去掉檔尾那個空段之後)", len(rows))
+	}
+	var empty []int
+	for i, r := range rows {
+		if strings.TrimSpace(r) == "" {
+			empty = append(empty, i)
+		}
+	}
+	want := []int{1, 4, 9, 12, 23, 24}
+	if len(empty) != len(want) {
+		t.Fatalf("空行 %v,應為 %v —— 數量不符表示空行被濾掉了", empty, want)
+	}
+	for i := range want {
+		if empty[i] != want[i] {
+			t.Errorf("空行位置 %v,應為 %v", empty, want)
+			break
+		}
 	}
 }
 
@@ -41,18 +62,11 @@ func TestWorldTileOrigin(t *testing.T) {
 		{0, SrcNone, 0, "地圖邊界"},
 		{1, SrcFastWrld, 0, "草原"},
 		{9, SrcFastWrld, 8, "山"},
-		{11, SrcNone, 0, "海洋 —— ⚠ 沒有 WRLDITEM 來源,見 spec/05 §2.2"},
-		// 以下五筆是偏移 +14 的判別依據,7/7 全中(-11 只中 2/7)
-		{24, SrcWrldItem, 10, "地城入口 → 紅色塔樓帶門"},
-		{25, SrcWrldItem, 11, "地城入口 → 紅色城堡帶門"},
-		{27, SrcWrldItem, 13, "地城入口 → 青色洞穴拱門"},
-		{28, SrcWrldItem, 14, "地城入口 → 山體下方一道小門"},
-		{30, SrcWrldItem, 16, "城鎮 → 白色街區平面圖"},
-		{31, SrcWrldItem, 17, "城鎮"},
-		{32, SrcWrldItem, 18, "城鎮"},
-		{36, SrcWrldItem, 22, "最後一段"},
-		{37, SrcNone, 0, "無來源,語意未知"},
-		{38, SrcNone, 0, "無來源,語意未知"},
+		{10, SrcWrldItem, 0, "第 0 行"},
+		{11, SrcWrldItem, 1, "海洋 —— 對到**空行**,實際走點陣路徑(re/129 §1)"},
+		{24, SrcWrldItem, 14, "地城入口"},
+		{30, SrcWrldItem, 20, "城鎮"},
+		{38, SrcWrldItem, 28, "最後一行"},
 	} {
 		src, idx := WorldTileOrigin(c.v)
 		if src != c.src || (src != SrcNone && idx != c.idx) {
@@ -101,14 +115,8 @@ func TestWorldMapCoverage(t *testing.T) {
 	if got := byVal[24] + byVal[25] + byVal[27] + byVal[28]; got != 11 {
 		t.Errorf("地城入口 %d 個,應為 11(對上 MAZEDATA.BIN,docs/re/51)", got)
 	}
-	// ⚠ 這個數字很大(58%),**那不是 bug 是缺口**:
-	// 海洋(值 11,6,933 格)沒有 WRLDITEM 來源。
-	// 「地形值 → 圖塊」不是單一線性偏移,原版可能另有查表或特例
-	// (docs/spec/05 §2.2)。把數字鎖住,解開之後測試會失敗,
-	// 逼人回來更新規格 —— 而不是讓一個未解項目安靜消失。
-	want := 224 /*v0*/ + 30 /*v10*/ + 6933 /*v11 海洋*/ + 8 /*v12*/ +
-		1 /*v13*/ + 9 /*v37*/ + 14 /*v38*/
-	if noSrc != want {
-		t.Errorf("無圖塊來源的格數 %d,規格記 %d", noSrc, want)
+	// 只剩值 0(地圖邊界,224 格)沒有來源。
+	if noSrc != 224 {
+		t.Errorf("無圖塊來源的格數 %d,應只有值 0 的 224 格", noSrc)
 	}
 }

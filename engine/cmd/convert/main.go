@@ -157,8 +157,10 @@ func run(in, out string) error {
 		case original.SrcFastWrld:
 			img = fast[idx]
 		case original.SrcWrldItem:
-			if idx >= len(segs) {
-				return fmt.Errorf("地形值 %d 需要 WRLDITEM 段 %d,但只有 %d 段", v, idx, len(segs))
+			// ⚠ 空行代表該值不走向量路徑(docs/re/54 §2)。不輸出,
+			// 讓執行期畫佔位符 —— 不要拿空巨集渲染出一張全黑的圖冒充。
+			if idx >= len(segs) || strings.TrimSpace(segs[idx]) == "" {
+				continue
 			}
 			img = original.RenderDraw(segs[idx], 17, 17)
 		default:

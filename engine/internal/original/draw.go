@@ -122,16 +122,22 @@ func RenderDraw(macro string, w, h int) *image.Paletted {
 	return img
 }
 
-// SplitPIC 把 .PIC 切成一段一段的 DRAW 巨集(CRLF 分隔,0x1A 結尾)。
+// SplitPIC 把 .PIC 切成一行一行的 DRAW 巨集(CRLF 分隔,0x1A 結尾)。
+//
+// ⚠ **空行一定要保留。** `WRLDITEM.PIC` 有 30 行、其中 7 行是空的,
+// 而**行號就是索引**(見 WorldTileOrigin)。把空行濾掉會讓 30 變 23、
+// 索引整個位移 —— 而位移後的圖仍然是「某種圖」,畫面上看不出錯。
+//
+// 空行本身有意義:它代表**那個圖塊值不走向量路徑**
+// (例如值 11 海洋走點陣,docs/re/129 §1)。
 func SplitPIC(d []byte) []string {
 	s := strings.ReplaceAll(string(d), "\x1a", "")
-	var out []string
-	for _, l := range strings.Split(s, "\r\n") {
-		if strings.TrimSpace(l) != "" {
-			out = append(out, l)
-		}
+	rows := strings.Split(s, "\r\n")
+	// 只去掉檔尾那一個空段(最後一行的 CRLF 造成的),其餘空行保留
+	if len(rows) > 0 && strings.TrimSpace(rows[len(rows)-1]) == "" {
+		rows = rows[:len(rows)-1]
 	}
-	return out
+	return rows
 }
 
 // ---------------------------------------------------------------------------
@@ -168,35 +174,33 @@ type WorldTileSource int
 const (
 	SrcNone     WorldTileSource = iota // 沒有來源 —— 值 0、10、35–38
 	SrcFastWrld                        // FASTWRLD.BIN 第 (值−1) 張
-	SrcWrldItem                        // WRLDITEM.PIC 段索引 (值−14)
+	SrcWrldItem                        // WRLDITEM.PIC 第 (值−10) 行,0-based
 )
 
-// WrldItemBias 是地形值與 WRLDITEM.PIC 段索引之間的差:段 = 值 − 14。
+// WrldItemBias 是地形值與 `WRLDITEM.PIC` 行號之間的差:行 = 值 − 10(0-based)。
 //
-// ⚠ **這個數字被推翻過一次。** 第一版用「地形值 11 是海洋(55.6%),
-// 而段 1 是實心磚牆 —— 整片海洋不可能是磚牆」推出 −11。
-// 那個推理只排除了一個候選,**沒有正面確認任何一個**。
+// 出處 docs/re/54 §2,判別依據是**空行**:該檔 30 行裡有 7 行是空的,
+// 而偏移 10 是唯一讓兩邊同時成立的值 ——
 //
-// 正解用**資料側已知語意的圖塊**去對,7/7 全中:
+//	7/7   每個空行對到的圖塊值,要嘛走點陣路徑(值 11 海洋),要嘛地圖上從未出現
+//	20/20 地圖上用到的每個向量圖塊值,都對到非空行
 //
-//	值 30/31/32 = 城鎮(13 處)  → 段 16/17/18 = 白色街區平面圖
-//	值 24 = 地城入口            → 段 10 = 紅色塔樓帶門
-//	值 25 = 地城入口            → 段 11 = 紅色城堡帶門
-//	值 27 = 地城入口            → 段 13 = 青色洞穴拱門
-//	值 28 = 地城入口            → 段 14 = 山體下方一道小門
+// 其餘偏移(11、14)兩邊各有 4–7 筆違規。
 //
-// 相同測試下 −11 只中 2/7(城鎮全部畫成丘陵)。
-//
-// ⚠ 連帶結果:**海洋(值 11)沒有 WRLDITEM 來源**,它的圖從哪來**未解**
-// (docs/spec/05 §2.2)。
-const WrldItemBias = 14
+// ⚠ **我曾把這條規則推翻兩次,兩次都是錯的**(docs/re/130)。
+// 根因是 SplitPIC 當時把空行濾掉,30 行變 23,索引位移 ——
+// 然後我去調偏移來補償。**行號就是索引的資料,空行不能濾。**
+const WrldItemBias = 10
 
-// WorldTileOrigin 回傳地形值的圖塊來源與索引。
+// WorldTileOrigin 回傳地形值的圖塊來源與行號。
+//
+// ⚠ 呼叫端還要檢查那一行是不是**空的** —— 空行代表該值不走向量路徑
+// (值 11 海洋走點陣,docs/re/129 §1)。本函式不讀檔,所以驗不了。
 func WorldTileOrigin(v int) (WorldTileSource, int) {
 	switch {
 	case v >= 1 && v <= 9:
 		return SrcFastWrld, v - 1
-	case v >= WrldItemBias && v <= WrldItemBias+22:
+	case v >= WrldItemBias:
 		return SrcWrldItem, v - WrldItemBias
 	default:
 		return SrcNone, 0

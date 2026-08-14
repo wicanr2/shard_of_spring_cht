@@ -23,6 +23,7 @@
 | [`02-magic.md`](02-magic.md) | 施法、系別門檻、狀態類法術、魔法道具 |
 | [`03-engine-plan.md`](03-engine-plan.md) | 引擎架構與里程碑(**Go + Ebitengine**)|
 | [`04-display-layout.md`](04-display-layout.md) | **顯示層與中文排版**(1024×768、美術 4×、避頭尾)|
+| [`05-world-scene.md`](05-world-scene.md) | **世界地圖場景**(9×9 視野、地形值總表、移動);⚠ 可通行性未解 |
 
 ## ⚠ 實作前必讀的五條
 

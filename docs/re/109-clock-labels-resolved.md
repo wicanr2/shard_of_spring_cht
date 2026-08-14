@@ -14,7 +14,7 @@
 0x10CD1  Hour:            → 0x10CE2  mov word ptr ds:3010h, 31
 0x10D02   Day:            → 0x10D11  mov word ptr ds:3010h, 29
 0x10D34   In the Month    → 0x10D46  mov word ptr ds:3010h, 27
-0x10DBC  Visibility =     → 0x10542  mov word ptr ds:3010h, 59(另一處)
+0x10DBC  Visibility =     → ⚠ 相距 2170 bytes,**不成立**(見 `110` §1)
 ```
 
 **31 / 29 / 27 / 59 正是 `GROUPS.DAT` 的位移。**
@@ -24,7 +24,7 @@
 | **31** | **時(Hour)** | **已確認** |
 | **29** | **日(Day)** | **已確認** |
 | **27** | **月(Month)** | **已確認** |
-| **59** | **能見度** | **已確認**(先前是消去法,[`105`](105-visibility-fields.md))|
+| 59 | 能見度 | ⚠ **仍是消去法**([`110`](110-display-offset-census.md) §1 撤回本篇的升級)|
 | **33** | **不顯示** —— 時以下的計數(1–10)| 已確認(四級裡唯一沒有標籤的)|
 
 ## 1. 這同時修好了兩件事

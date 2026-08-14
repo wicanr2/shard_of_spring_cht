@@ -108,15 +108,74 @@ const (
 	Blocked               // 撞到地圖邊界
 )
 
+// 可通行性的邊界常數。docs/re/131 §2 規則 1:X 限制在 5–98,
+// 而地圖寬 103 —— **兩側各有幾欄玩家永遠到不了**。
+// ⚠ Y 沒有對應的檢查,原因未解。
+const (
+	MinX = 5
+	MaxX = 98
+)
+
+func in(v, lo, hi int) bool { return v >= lo && v <= hi }
+
+func oneOf(v int, set ...int) bool {
+	for _, x := range set {
+		if v == x {
+			return true
+		}
+	}
+	return false
+}
+
+// Passable 回傳「從 (fromX,fromY) 朝 dir 走到 (toX,toY)」是否允許。
+//
+// docs/re/131 §2 的八條規則,任一成立即不可通行。順序與原版一致。
+func Passable(m *Map, fromX, fromY, toX, toY int, dir Facing) bool {
+	// 1. X 範圍
+	if !in(toX, MinX, MaxX) {
+		return false
+	}
+	cur, dst := m.At(fromX, fromY), m.At(toX, toY)
+
+	// 2. 目標 10–12(11 = 海洋;10 與 12 語意未知但同樣阻擋)
+	if in(dst, 10, 12) {
+		return false
+	}
+	// 3. 目標 20/21 只能從地形 1–4 進入
+	if oneOf(dst, 20, 21) && !in(cur, 1, 4) {
+		return false
+	}
+	// 4. 從 20/21 不能走到海岸線 15–18
+	if oneOf(cur, 20, 21) && in(dst, 15, 18) {
+		return false
+	}
+	// 5–8. 海岸線的方向性阻擋。15/16/17/18 是海岸的四個轉角,
+	// 各擋兩個相鄰方向(docs/re/131 §2)。
+	switch dir {
+	case North:
+		if oneOf(cur, 15, 16) && oneOf(dst, 17, 18) {
+			return false
+		}
+	case East:
+		if oneOf(cur, 15, 18) && oneOf(dst, 16, 17) {
+			return false
+		}
+	case South:
+		if oneOf(cur, 17, 18) && oneOf(dst, 15, 16) {
+			return false
+		}
+	case West:
+		if oneOf(cur, 16, 17) && oneOf(dst, 15, 18) {
+			return false
+		}
+	}
+	return true
+}
+
 // Step 處理一次方向輸入。docs/spec/05 §6:
 //
 //	⚠ **朝向不同時只轉身,不位移。** 往北走的第一下若原本朝東,只會轉成朝北。
 //	這一條會改變操作手感,也會改變每一步消耗的遊戲時間。
-//
-// ⚠ **沒有可通行性檢查。** docs/spec/05 §5:世界地圖的可通行性規則
-// **沒有被 RE 過**,而「海洋當然不能走」是常識不是證據
-// (本作有 WINGS / WIND WALK 這類移動法術,可能是有條件的)。
-// 依 engine-plan §4「不要猜一個值填進去」,這裡只擋地圖邊界。
 func (s *State) Step(dir Facing, m *Map) Result {
 	if s.Facing != dir {
 		s.Facing = dir
@@ -124,7 +183,7 @@ func (s *State) Step(dir Facing, m *Map) Result {
 	}
 	dx, dy := dir.delta()
 	nx, ny := s.X+dx, s.Y+dy
-	if nx < 0 || nx >= W || ny < 0 || ny >= H {
+	if ny < 0 || ny >= H || !Passable(m, s.X, s.Y, nx, ny, dir) {
 		return Blocked
 	}
 	s.X, s.Y = nx, ny

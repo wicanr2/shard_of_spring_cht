@@ -229,6 +229,7 @@
 | [`119-attribute-12-never-decremented.md`](docs/re/119-attribute-12-never-decremented.md) | 屬性 12 從不遞減 | 「X 需要有 Y」式的論證要去找 Y 存不存在 |
 | [`120-offset-84-cleared-in-camp.md`](docs/re/120-offset-84-cleared-in-camp.md) | 位移 84 被清成 0 | 對所有候選都成立的觀察不縮小候選集合 |
 | [`121-offset-84-is-strength.md`](docs/re/121-offset-84-is-strength.md) | **位移 84 = 狀態效果強度**;`CHARS.DAT` 完成 | 要分開候選,去找「只有其中一個會做」的動作 |
+| [`122-d-closure.md`](docs/re/122-d-closure.md) | **子系統 D = RE-DONE,看板 12/12** | 位移 25 歸零時掃 3×3 鄰域 = 遭遇檢查;兩支移動模組同構 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

@@ -71,7 +71,10 @@ type Game struct {
 	overlay   string // 非空 = 敘述覆蓋層開著
 	overlayFont *render.Painter
 
-	// M8:城鎮(docs/spec/11)
+	// M8:城鎮與名冊(docs/spec/11)
+	chars    []original.Character
+	roster   *rosterState
+
 	shops    []original.Shop
 	itemList []original.Item
 	town     *townState
@@ -123,9 +126,22 @@ func (g *Game) Update() error {
 		return nil
 	}
 
+	if inpututil.IsKeyJustPressed(ebiten.KeyN) {
+		g.openRoster() // N)ames —— 名冊(docs/spec/11 §5)
+		return nil
+	}
+
 	dirs := map[ebiten.Key]int{
 		ebiten.KeyUp: 1, ebiten.KeyRight: 2, ebiten.KeyDown: 3, ebiten.KeyLeft: 4,
 		ebiten.KeyDigit1: 1, ebiten.KeyDigit2: 2, ebiten.KeyDigit3: 3, ebiten.KeyDigit4: 4,
+	}
+
+	// 名冊中
+	if g.roster != nil && g.roster.open {
+		for _, k := range inpututil.AppendJustPressedKeys(nil) {
+			g.rosterKey(k)
+		}
+		return nil
 	}
 
 	// 城鎮中
@@ -222,10 +238,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	inCombat := g.field != nil
 	inMaze := g.level != nil && !inCombat
 	inTown := g.town != nil && g.town.mode != townClosed && !inCombat && !inMaze
+	inRoster := g.roster != nil && g.roster.open
 
 	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
 	const half = layout.ViewTiles / 2
-	for vy := 0; !inCombat && !inMaze && !inTown && vy < layout.ViewTiles; vy++ {
+	for vy := 0; !inCombat && !inMaze && !inTown && !inRoster && vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
 			mx, my := g.party.X-half+vx, g.party.Y-half+vy
 			v := g.world.At(mx, my)
@@ -254,7 +271,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	if !inCombat && !inMaze && !inTown {
+	if !inCombat && !inMaze && !inTown && !inRoster {
 		// 隊伍所在格的框
 		c := float32(layout.View.X + half*layout.TileDst)
 		r := float32(layout.View.Y + half*layout.TileDst)
@@ -273,6 +290,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawParty(screen)
 	g.drawMaze(screen)
 	g.drawTown(screen)
+	g.drawRoster(screen)
 	g.drawCombat(screen)
 	g.drawCastMenu(screen)
 	g.drawOverlay(screen)
@@ -412,6 +430,7 @@ func (g *Game) loadParty(dir string, slot int) error {
 		return fmt.Errorf("第 %d 隊還沒建立(記錄整份是空白)—— 出貨磁片組好的是第 5 隊", slot)
 	}
 
+	g.chars = chars
 	// 以 GROUPS.DAT 的成員槽為準(docs/spec/06 §1)
 	for _, id := range grp.MemberIDs() {
 		if id < 1 || id > len(chars) {
@@ -504,4 +523,25 @@ func loadTiles(dir string, max int) map[int]*ebiten.Image {
 		}
 	}
 	return out
+}
+
+
+// writeChars 把名冊寫回 <assets>/save/CHARS.DAT。
+//
+// ⚠ 與 GROUPS.DAT 一樣,**只覆寫已解的欄位** —— 未解的位置由 Raw 原樣保留
+// (docs/spec/06 §3 的同一條原則)。
+func (g *Game) writeChars() error {
+	path := filepath.Join(g.assets, "save", "CHARS.DAT")
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	if len(b) != original.CharRecLen*original.CharSlots {
+		return fmt.Errorf("CHARS.DAT 長度 %d 不對", len(b))
+	}
+	out := append([]byte(nil), b...)
+	for i, c := range g.chars {
+		copy(out[i*original.CharRecLen:], c.Bytes())
+	}
+	return os.WriteFile(path, out, 0o644)
 }

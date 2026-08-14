@@ -240,3 +240,27 @@ func TestStatusNameOKIsBlank(t *testing.T) {
 		t.Errorf("超出範圍的狀態顯示 %q,應為 %q —— 不可以靜默當成正常", s, "?")
 	}
 }
+
+// 角色記錄的往返也要逐位元組相同(docs/spec/06 §3 的同一條原則)。
+//
+// ⚠ 名稱是 10 bytes 但原版只讓玩家輸入 9 個 —— 第 10 格的用途未解,
+// 所以往返測試用**出貨的真實記錄**,不是造出來的。
+func TestCharRoundTrip(t *testing.T) {
+	d := read(t, "CHARS.DAT")
+	chars, err := ParseChars(d)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, c := range chars {
+		got := c.Bytes()
+		want := d[i*CharRecLen : (i+1)*CharRecLen]
+		if !bytes.Equal(got, want) {
+			for k := range want {
+				if got[k] != want[k] {
+					t.Fatalf("第 %d 筆在位移 %d 不同:%#02x → %#02x",
+						i+1, k+1, want[k], got[k])
+				}
+			}
+		}
+	}
+}

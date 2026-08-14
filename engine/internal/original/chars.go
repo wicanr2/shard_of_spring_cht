@@ -1,6 +1,7 @@
 package original
 
 import (
+	"encoding/binary"
 	"fmt"
 	"strings"
 )
@@ -127,4 +128,57 @@ func (c Character) StatusName() string {
 		return "?"
 	}
 	return statusName[c.Status]
+}
+
+// Bytes 把角色寫回 94 bytes。
+//
+// ⚠ 與 Group.Bytes 同一條原則:**從 Raw 出發,只覆寫已解的欄位**
+// (docs/spec/06 §3)。位移 1、12–51、84 之外的位置原樣保留 ——
+// 清成 0 會讓存檔在原版裡打不開,而我們的往返測試看不見。
+func (c Character) Bytes() []byte {
+	r := make([]byte, CharRecLen)
+	if len(c.Raw) == CharRecLen {
+		copy(r, c.Raw)
+	} else {
+		for i := range r {
+			r[i] = ' '
+		}
+	}
+	r[0] = c.Party
+	name := []byte(c.Name)
+	for i := 0; i < 10; i++ {
+		if i < len(name) {
+			r[1+i] = name[i]
+		} else {
+			r[1+i] = ' '
+		}
+	}
+	put := func(pos1, v int) {
+		binary.LittleEndian.PutUint16(r[pos1-1:pos1+1], uint16(int16(v)))
+	}
+	put(12, c.ID)
+	r[13], r[14] = c.Race, c.Class
+	put(16, c.Speed)
+	put(18, c.Str)
+	put(20, c.Int)
+	put(22, c.End)
+	put(24, c.ToHit)
+	put(26, c.MaxHP)
+	put(28, c.HP)
+	put(30, c.MaxSP)
+	put(32, c.SP)
+	put(34, c.Weapon)
+	put(36, c.Armor)
+	put(38, c.Status)
+	put(40, c.Level)
+	for i := 0; i < 10; i++ {
+		if i < len(c.Skills) {
+			r[41+i] = c.Skills[i]
+		}
+	}
+	for k, v := range c.Pack {
+		put(54+2*k, v)
+	}
+	put(84, c.StatMag)
+	return r
 }

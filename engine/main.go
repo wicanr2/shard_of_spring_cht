@@ -78,6 +78,7 @@ type Game struct {
 	shops    []original.Shop
 	itemList []original.Item
 	town     *townState
+	rumors   map[int]string // 酒館傳聞:位移 36 → 文字(docs/re/138 §4)
 
 	// M6:法術(docs/spec/09)
 	spells   []original.Spell
@@ -484,6 +485,10 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 	if err := readJSON(filepath.Join(dir, "data", "shops.json"), &g.shops); err != nil {
 		return err
 	}
+	// 傳聞。⚠ 找不到就是找不到(docs/re/138 §4:10 段對 11 個索引),
+	// 畫面上會明講,不拿別段頂替。
+	g.rumors = map[int]string{}
+	_ = readJSON(filepath.Join(dir, "data", "rumors.json"), &g.rumors)
 	if err := readJSON(filepath.Join(dir, "data", "items.json"), &g.itemList); err != nil {
 		return err
 	}

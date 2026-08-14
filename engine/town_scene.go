@@ -25,6 +25,10 @@ const (
 	townBuildings          // 建築清單
 	townShop               // 商店品項
 	townCamp               // 營地
+	townInn                // 旅店(位移 34 = −3)
+	townHealer             // 治療所(−1)
+	townTavern             // 酒館(−2)
+	townTrainer            // 訓練所(−4)
 )
 
 type townState struct {
@@ -97,7 +101,20 @@ func (g *Game) townKey(k ebiten.Key) {
 	switch ts.mode {
 	case townBuildings:
 		if i := int(k - ebiten.KeyA); i >= 0 && i < len(ts.shops) {
-			ts.shop, ts.mode, ts.msg, ts.page = ts.shops[i], townShop, "", 0
+			ts.shop, ts.msg, ts.page = ts.shops[i], "", 0
+			// 位移 34 的負值決定進哪個畫面(docs/re/138 §2)
+			switch ts.shop.Kind {
+			case original.ShopInn:
+				ts.mode = townInn
+			case original.ShopHealer:
+				ts.mode = townHealer
+			case original.ShopTavern:
+				ts.mode = townTavern
+			case original.ShopTrainer:
+				ts.mode = townTrainer
+			default:
+				ts.mode = townShop
+			}
 		}
 		// ⚠ 營地用 Z 不用 C —— 建築清單的字母是 A 起算,
 		// 而 `C) Hamlet Hospital` 已經佔掉 C。同一個鍵兩個意思是
@@ -105,6 +122,16 @@ func (g *Game) townKey(k ebiten.Key) {
 		if k == ebiten.KeyZ {
 			ts.mode, ts.msg = townCamp, ""
 		}
+	case townInn, townHealer, townTavern, townTrainer:
+		if k == ebiten.KeyEscape {
+			ts.mode, ts.msg = townBuildings, ""
+		}
+		if ts.mode == townInn && k == ebiten.KeyR {
+			g.members = town.Rest(g.members)
+			g.party.Clock.Tick()
+			ts.msg = "住了一晚。⚠ 房價的基準價未解(docs/re/138 §3)"
+		}
+
 	case townShop:
 		// 分頁:原版就是 `+ for next page` / `- for last page`(手冊 p.31)
 		switch k {
@@ -120,8 +147,9 @@ func (g *Game) townKey(k ebiten.Key) {
 			return
 		}
 		if i := int(k - ebiten.KeyA); i >= 0 && i < shopPageSize {
-			if n := ts.page*shopPageSize + i; n < len(g.itemList) {
-				g.buyItem(n)
+			stock := ts.shopStock(g.itemList)
+			if n := ts.page*shopPageSize + i; n < len(stock) {
+				g.buyItem(stock[n])
 			}
 		}
 		if k == ebiten.KeyEscape {
@@ -144,11 +172,27 @@ func (g *Game) townKey(k ebiten.Key) {
 //
 // ⚠ **買給誰未解** —— 原版的商店介面沒有讀到選人的步驟。
 // 這裡固定給第一位,畫面上標出來。
-func (g *Game) buyItem(i int) {
+// shopStock 回傳這間店賣的道具。docs/re/138 §1:位移 34–36 是編號範圍。
+//
+// ⚠ **先前把 57 件全列進每一間店** —— 而那看起來完全正常,
+// 玩家不會知道劍舖不該賣板甲。「多顯示一些」的錯誤沒有症狀。
+func (ts *townState) shopStock(all []original.Item) []original.Item {
+	if ts.shop.Kind != original.ShopGoods {
+		return nil
+	}
+	var out []original.Item
+	for _, it := range all {
+		if it.Index >= ts.shop.First && it.Index <= ts.shop.Last {
+			out = append(out, it)
+		}
+	}
+	return out
+}
+
+func (g *Game) buyItem(it original.Item) {
 	if len(g.members) == 0 {
 		return
 	}
-	it := g.itemList[i]
 	price := town.Price(it.BasePrice, g.town.shop.PriceMult)
 	gold := g.group.Gold
 	r := town.Buy(&gold, &g.members[0], it.Index, price)
@@ -184,17 +228,31 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	case townShop:
 		p.Draw(dst, fmt.Sprintf("%s　價格倍率 %.2f", ts.shop.Name, ts.shop.PriceMult), x, y)
 		y += lh * 1.5
+		stock := ts.shopStock(g.itemList)
 		lo := ts.page * shopPageSize
-		for i := 0; i < shopPageSize && lo+i < len(g.itemList); i++ {
-			it := g.itemList[lo+i]
+		for i := 0; i < shopPageSize && lo+i < len(stock); i++ {
+			it := stock[lo+i]
 			p.Draw(dst, fmt.Sprintf("%c) %s", 'A'+i, ui.PadTo(it.Name, 20)), x, y)
 			p.DrawRight(dst, fmt.Sprint(town.Price(it.BasePrice, ts.shop.PriceMult)),
 				x+380, y)
 			y += lh
 		}
-		pages := (len(g.itemList) + shopPageSize - 1) / shopPageSize
+		pages := (len(stock) + shopPageSize - 1) / shopPageSize
+		if pages < 1 {
+			pages = 1
+		}
 		p.Draw(dst, fmt.Sprintf("第 %d／%d 頁　+ 下一頁　- 上一頁",
 			ts.page+1, pages), x, y+lh*0.5)
+
+	case townInn, townHealer, townTavern, townTrainer:
+		p.Draw(dst, ts.shop.Name+"　"+ts.shop.Kind.String(), x, y)
+		y += lh * 1.5
+		for _, ln := range g.buildingLines(ts) {
+			for _, w := range ui.Wrap(ln, 58) {
+				p.Draw(dst, w, x, y)
+				y += lh
+			}
+		}
 
 	case townCamp:
 		p.Draw(dst, "營地", x, y)
@@ -215,4 +273,40 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			my += lh
 		}
 	}
+}
+
+
+// buildingLines 回傳特殊建築畫面的內容。docs/re/138。
+func (g *Game) buildingLines(ts *townState) []string {
+	switch ts.shop.Kind {
+	case original.ShopInn:
+		return []string{
+			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
+			"R) 住一晚",
+			"⚠ 住宿的**基準價**未解(docs/re/138 §3)——" +
+				"倍率讀得出來，乘的那個數字還沒定位。",
+		}
+	case original.ShopHealer:
+		return []string{
+			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
+			"⚠ 治療的基準價與恢復量未解，本畫面只顯示不施作。",
+		}
+	case original.ShopTavern:
+		if r, ok := g.rumors[ts.shop.Extra]; ok {
+			return []string{r}
+		}
+		return []string{fmt.Sprintf(
+			"⚠ 第 %d 段傳聞未定位(docs/re/138 §4:找到 10 段、索引有 11 個)。"+
+				"⛔ 這裡不拿別段頂替。", ts.shop.Extra)}
+	case original.ShopTrainer:
+		art := "武術"
+		if ts.shop.Extra == 1 {
+			art = "魔法"
+		}
+		return []string{
+			"專精:" + art + "(位移 36 = " + fmt.Sprint(ts.shop.Extra) + ")",
+			"⚠ 升級規則未解（需要的經驗值與技能點成本都還沒解出來）。",
+		}
+	}
+	return nil
 }

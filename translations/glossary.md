@@ -246,8 +246,8 @@
 
    **城鎮 13 個 + 商店 61 家**:同樣用對照格式(專案負責人裁定)。
    例:`翠綠村(Green Hamlet)`、`奧德修斯酒館(Odysseus Pub)`。
-   ⚠ 名稱本身放得下側欄的 30 欄,但**整列(編號 + 名稱 + 價格)要 36 欄**
-   —— 顯示方式見 [`spec/04`](../docs/spec/04-display-layout.md) §5,**未決**。
+   ⚠ 清單放**主視野**(61 欄)不放側欄(30 欄),所以名稱加註放得下
+   —— 見 [`spec/04`](../docs/spec/04-display-layout.md) §5(原本的「未決」前提是錯的)。
 
    ⚠ 原版自己有 `Black Fort`(`MENU.EXE`)與 `Blackfort`(`DT51TEXT`/`TOWN.EXE`)
    兩種拼法([`docs/re/123`](../docs/re/123-menu-data-place-lists.md) §4)。

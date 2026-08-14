@@ -116,3 +116,97 @@ func TestLangFallsBackToOriginal(t *testing.T) {
 		t.Error("nil 表也要回原文")
 	}
 }
+
+// docs/re/138 §4:傳聞 10 段、酒館索引 11 個 —— **差額本身是結論**。
+//
+// ⚠ 這條測試鎖住的是那個差額。哪天第 11 段被定位到,它會失敗,
+// 逼人回來更新 docs/re/138 §4 與實作端的「未定位」訊息。
+func TestRumorCountVsTavernIndices(t *testing.T) {
+	var town []byte
+	var err error
+	for _, dir := range []string{"/game/sharspri", "../../../game/sharspri"} {
+		if town, err = os.ReadFile(filepath.Join(dir, "TOWN.EXE")); err == nil {
+			break
+		}
+	}
+	if err != nil {
+		t.Skip(err)
+	}
+	rumors := ExtractRumors(town)
+	if len(rumors) != 10 {
+		t.Errorf("抽出 %d 段傳聞,docs/re/138 §4 記 10 —— "+
+			"若第 11 段被定位到了,請更新那一節與實作端的訊息", len(rumors))
+	}
+
+	shops, err := ParseShops(read(t, "TOWNDATA.DAT"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	idx := map[int]bool{}
+	for _, s := range shops {
+		if s.Kind == ShopTavern {
+			idx[s.Extra] = true
+		}
+	}
+	if len(idx) != 11 {
+		t.Errorf("酒館的位移 36 有 %d 個相異值,docs/re/138 §4 記 11", len(idx))
+	}
+	missing := 0
+	for i := range idx {
+		if _, ok := rumors[i]; !ok {
+			missing++
+		}
+	}
+	if missing != 1 {
+		t.Errorf("查不到文字的酒館索引有 %d 個,應為 1(那個差額就是未解的部分)", missing)
+	}
+}
+
+// docs/re/138 §1:商店賣的是**編號範圍內**的道具,不是全部 57 件。
+//
+// ⚠ 檢定用「店名對得上內容」—— 名字與內容都由作者填寫,
+// 而作者不會讓劍舖賣藥水。
+func TestShopStockMatchesName(t *testing.T) {
+	shops, err := ParseShops(read(t, "TOWNDATA.DAT"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	items, err := ParseItems(read(t, "ITEMS.DAT"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	goods, wide := 0, 0
+	for _, s := range shops {
+		if s.Kind != ShopGoods {
+			continue
+		}
+		goods++
+		if s.First < 0 || s.Last >= len(items) || s.First > s.Last {
+			t.Errorf("%s 的範圍 %d–%d 超出 0–%d", s.Name, s.First, s.Last, len(items)-1)
+		}
+		if s.Last-s.First+1 > 20 {
+			wide++
+		}
+	}
+	if goods != 26 {
+		t.Errorf("賣道具的商店 %d 間,docs/re/138 §2 記 26", goods)
+	}
+	// 沒有一間店賣超過 20 件 —— 賣 57 件的那個實作會在這裡失敗
+	if wide != 0 {
+		t.Errorf("有 %d 間店的品項超過 20 件 —— 範圍可能沒套上", wide)
+	}
+	// 四種特殊建築的數量
+	for k, want := range map[ShopKind]int{
+		ShopHealer: 8, ShopTavern: 11, ShopInn: 10, ShopTrainer: 6,
+	} {
+		n := 0
+		for _, s := range shops {
+			if s.Kind == k {
+				n++
+			}
+		}
+		if n != want {
+			t.Errorf("%v 有 %d 間,docs/re/138 §2 記 %d", k, n, want)
+		}
+	}
+}

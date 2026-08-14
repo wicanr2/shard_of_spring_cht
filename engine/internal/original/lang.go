@@ -111,3 +111,49 @@ func ParsePlaceTSV(d []byte) map[string]string {
 	}
 	return out
 }
+
+// ExtractRumors 從 TOWN.EXE 抽出酒館傳聞。docs/re/138 §4。
+//
+// 位址範圍與長度門檻都是**觀察到的**,不是從程式碼讀出來的 ——
+// 所以這支函式回傳的段數要當成證據看:
+//
+//	10 段找到、11 個索引(酒館的 TOWNDATA 位移 36 是 1–11)
+//
+// ⚠ **差的那一段不補。** 呼叫端查不到索引時要明講,不要拿別段頂替。
+func ExtractRumors(town []byte) map[int]string {
+	const lo, hi, minLen = 0x032C0, 0x03A40, 55
+	out := map[int]string{}
+	n := 0
+	start := -1
+	flush := func(end int) {
+		if start < 0 || end-start < minLen {
+			start = -1
+			return
+		}
+		s := strings.TrimSpace(string(town[start:end]))
+		// 去掉開頭的描述子殘骸(非字母、非引號的前幾個位元組)
+		for len(s) > 0 && !(s[0] >= 'A' && s[0] <= 'Z') && s[0] != '"' {
+			s = s[1:]
+		}
+		if len(s) >= minLen {
+			n++
+			out[n] = s
+		}
+		start = -1
+	}
+	end := hi
+	if end > len(town) {
+		end = len(town)
+	}
+	for i := lo; i < end; i++ {
+		if town[i] >= 0x20 && town[i] < 0x7F {
+			if start < 0 {
+				start = i
+			}
+			continue
+		}
+		flush(i)
+	}
+	flush(end)
+	return out
+}

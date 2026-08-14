@@ -285,6 +285,22 @@ func run(in, out, transDir string) error {
 		return err
 	}
 
+	// 酒館傳聞。docs/re/138 §4:TOWN.EXE 0x032C9–0x03A40 的長敘述。
+	// ⚠ **找到 10 段而索引有 11 個** —— 第 11 段未定位。
+	// 這裡按出現順序編 1…10,⛔ 不補第 11 段。
+	rumors := original.ExtractRumors(mustRead(in, "TOWN.EXE"))
+	for id, zh := range lang.rumors {
+		if _, ok := rumors[id]; ok {
+			rumors[id] = zh
+		}
+	}
+	if err := writeJSON(filepath.Join(out, "data", "rumors.json"), rumors); err != nil {
+		return err
+	}
+	if err := step("rumors", len(rumors), nil); err != nil {
+		return err
+	}
+
 	// 存檔的初始複本。**原版目錄唯讀**(CLAUDE.md §8),而引擎要寫存檔,
 	// 所以把 CHARS.DAT / GROUPS.DAT 複製到可寫的資產目錄。
 	// ⚠ 只在目標不存在時複製 —— 重跑轉檔不該把玩家的進度洗掉。
@@ -381,6 +397,7 @@ type langTables struct {
 	monsters, spells, items original.Lang
 	dungeon                 map[int]map[int]string // DT 檔號 → id → 譯文
 	places                  map[string]string      // 城鎮／商店名:原文 → 譯文
+	rumors                  map[int]string         // 酒館傳聞(docs/re/138 §4)
 }
 
 // loadLang 讀 translations/ 底下的 TSV。
@@ -397,6 +414,7 @@ func loadLang(dir string) langTables {
 		return b
 	}
 	lt.places = original.ParsePlaceTSV(read("source/towndata.tsv"))
+	lt.rumors = original.ParseDungeonTextTSV(read("module-text/TOWN-rumors.tsv"))
 	lt.monsters = original.ParseLangTSV(read("names/monsters.tsv"))
 	lt.spells = original.ParseLangTSV(read("names/spells.tsv"))
 	lt.items = original.ParseLangTSV(read("names/items.tsv"))

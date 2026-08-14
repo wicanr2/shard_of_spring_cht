@@ -1,6 +1,7 @@
 package original
 
 import (
+	"encoding/binary"
 	"fmt"
 	"strconv"
 	"strings"
@@ -146,10 +147,45 @@ func ParseItems(d []byte) ([]Item, error) {
 
 const shopRecLen = 45
 
+// ShopKind 是建築類別。docs/re/138 §2:位移 34 的負值。
+type ShopKind int
+
+const (
+	ShopGoods   ShopKind = 0  // 位移 34 ≥ 0:賣道具,範圍 [First, Last]
+	ShopHealer  ShopKind = -1 // 治療所
+	ShopTavern  ShopKind = -2 // 酒館;位移 36 = 傳聞編號 1–11
+	ShopInn     ShopKind = -3 // 旅店
+	ShopTrainer ShopKind = -4 // 訓練所;位移 36:0 = 武術、1 = 魔法
+)
+
+func (k ShopKind) String() string {
+	switch k {
+	case ShopHealer:
+		return "治療所"
+	case ShopTavern:
+		return "酒館"
+	case ShopInn:
+		return "旅店"
+	case ShopTrainer:
+		return "訓練所"
+	}
+	return "商店"
+}
+
 type Shop struct {
 	Index int     `json:"index"`
 	Town  string  `json:"town"`
 	Name  string  `json:"name"`
+	// Kind:位移 34 為負時是建築類別,≥ 0 時是 ShopGoods(docs/re/138)。
+	Kind ShopKind `json:"kind"`
+	// First / Last:賣的道具編號範圍(含)。只在 Kind == ShopGoods 時有意義。
+	//
+	// ⚠ 先前的實作把 57 件道具全列進每一間店 —— 而那看起來完全正常,
+	// 玩家不會知道劍舖不該賣板甲。**「多顯示一些」的錯誤沒有症狀。**
+	First int `json:"first"`
+	Last  int `json:"last"`
+	// Extra:位移 36 在特殊建築上的值(酒館 = 傳聞編號、訓練所 = 0 武 / 1 魔)。
+	Extra int `json:"extra"`
 	// PriceMult:售價 = INT(ItemDef.BasePrice × PriceMult)。
 	// ⚠ 三筆記錄(訓練所 / 學院 / 競技場)這裡不是合法 MBF,值為 0,
 	// 語意未解(docs/re/126 §4)—— **不要當成「免費」**。
@@ -163,12 +199,22 @@ func ParseShops(d []byte) ([]Shop, error) {
 	out := make([]Shop, 0, len(d)/shopRecLen)
 	for i := 0; i+shopRecLen <= len(d); i += shopRecLen {
 		r := d[i : i+shopRecLen]
-		out = append(out, Shop{
+		// 位移 34/36 是兩個 16-bit 整數(docs/re/138)。
+		// ⚠ 商店名是 **18 bytes**(16–33),不是 16 —— 位移 34 才是數字欄。
+		a := int(int16(binary.LittleEndian.Uint16(r[34:36])))
+		b := int(int16(binary.LittleEndian.Uint16(r[36:38])))
+		sh := Shop{
 			Index:     len(out),
 			Town:      strings.TrimSpace(string(r[0:16])),
-			Name:      strings.TrimSpace(string(r[16:32])),
+			Name:      strings.TrimSpace(string(r[16:34])),
 			PriceMult: MBF(r[38:42]),
-		})
+		}
+		if a < 0 {
+			sh.Kind, sh.Extra = ShopKind(a), b
+		} else {
+			sh.Kind, sh.First, sh.Last = ShopGoods, a, b
+		}
+		out = append(out, sh)
 	}
 	return out, nil
 }

@@ -1,6 +1,9 @@
 # 原版素材:一律不進版控(見 CLAUDE.md §1「不做的事」)
-original/
-game/
+# ⚠ 開頭的 / 是必要的 —— 不錨定的 `original/` 會匹配**任何深度**的同名目錄,
+#   曾經把 engine/internal/original/ 整包擋掉,而 commit 仍然成功
+#   (clone 下來才會發現編不起來)。
+/original/
+/game/
 *.zip
 *.rar
 

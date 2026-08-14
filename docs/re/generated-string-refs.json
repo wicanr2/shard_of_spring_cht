@@ -1,0 +1,8704 @@
+{
+ "START.EXE": [
+  {
+   "file_off": 585,
+   "seg_off": 73,
+   "reg": "bx",
+   "imm": 20246,
+   "text": "Loading the Shard of Spring, (c) 1986-1987 by Strategic Simulations Inc.",
+   "len": 72
+  },
+  {
+   "file_off": 597,
+   "seg_off": 85,
+   "reg": "bx",
+   "imm": 20322,
+   "text": "MS DOS version by Digital Illusions, Inc.",
+   "len": 41
+  },
+  {
+   "file_off": 606,
+   "seg_off": 94,
+   "reg": "bx",
+   "imm": 20368,
+   "text": "MENU",
+   "len": 4
+  }
+ ],
+ "MENU.EXE": [
+  {
+   "file_off": 806,
+   "seg_off": 294,
+   "reg": "bx",
+   "imm": 26332,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 823,
+   "seg_off": 311,
+   "reg": "bx",
+   "imm": 26338,
+   "text": "9",
+   "len": 1
+  },
+  {
+   "file_off": 946,
+   "seg_off": 434,
+   "reg": "dx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 1067,
+   "seg_off": 555,
+   "reg": "bx",
+   "imm": 26626,
+   "text": "-",
+   "len": 1
+  },
+  {
+   "file_off": 1243,
+   "seg_off": 731,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1514,
+   "seg_off": 1002,
+   "reg": "dx",
+   "imm": 27718,
+   "text": "config.sos",
+   "len": 10
+  },
+  {
+   "file_off": 1582,
+   "seg_off": 1070,
+   "reg": "bx",
+   "imm": 27732,
+   "text": ":",
+   "len": 1
+  },
+  {
+   "file_off": 1601,
+   "seg_off": 1089,
+   "reg": "bx",
+   "imm": 27742,
+   "text": "v1.0",
+   "len": 4
+  },
+  {
+   "file_off": 1612,
+   "seg_off": 1100,
+   "reg": "bx",
+   "imm": 27750,
+   "text": "UTIL",
+   "len": 4
+  },
+  {
+   "file_off": 1673,
+   "seg_off": 1161,
+   "reg": "bx",
+   "imm": 27758,
+   "text": "(Press a key)",
+   "len": 13
+  },
+  {
+   "file_off": 1720,
+   "seg_off": 1208,
+   "reg": "bx",
+   "imm": 27776,
+   "text": "             ",
+   "len": 13
+  },
+  {
+   "file_off": 1733,
+   "seg_off": 1221,
+   "reg": "bx",
+   "imm": 27816,
+   "text": "                 ",
+   "len": 17
+  },
+  {
+   "file_off": 1736,
+   "seg_off": 1224,
+   "reg": "ax",
+   "imm": 27794,
+   "text": "    Main Menu    ",
+   "len": 17
+  },
+  {
+   "file_off": 1746,
+   "seg_off": 1234,
+   "reg": "bx",
+   "imm": 27838,
+   "text": "L)oad a Party.   ",
+   "len": 17
+  },
+  {
+   "file_off": 1756,
+   "seg_off": 1244,
+   "reg": "bx",
+   "imm": 27860,
+   "text": "C)har Utilities. ",
+   "len": 17
+  },
+  {
+   "file_off": 1766,
+   "seg_off": 1254,
+   "reg": "bx",
+   "imm": 27882,
+   "text": "R)estore Mazes.  ",
+   "len": 17
+  },
+  {
+   "file_off": 1776,
+   "seg_off": 1264,
+   "reg": "bx",
+   "imm": 27904,
+   "text": "I)nstall Game.   ",
+   "len": 17
+  },
+  {
+   "file_off": 1786,
+   "seg_off": 1274,
+   "reg": "bx",
+   "imm": 27926,
+   "text": "P)rogram Notes.  ",
+   "len": 17
+  },
+  {
+   "file_off": 1796,
+   "seg_off": 1284,
+   "reg": "bx",
+   "imm": 27948,
+   "text": "Q)uit the Game.  ",
+   "len": 17
+  },
+  {
+   "file_off": 1816,
+   "seg_off": 1304,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 1859,
+   "seg_off": 1347,
+   "reg": "bx",
+   "imm": 27992,
+   "text": "L",
+   "len": 1
+  },
+  {
+   "file_off": 1875,
+   "seg_off": 1363,
+   "reg": "bx",
+   "imm": 27998,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 1946,
+   "seg_off": 1434,
+   "reg": "bx",
+   "imm": 27992,
+   "text": "L",
+   "len": 1
+  },
+  {
+   "file_off": 1962,
+   "seg_off": 1450,
+   "reg": "bx",
+   "imm": 28004,
+   "text": "Please leave the GAME disk in place until you quit the game.",
+   "len": 60
+  },
+  {
+   "file_off": 1987,
+   "seg_off": 1475,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 2006,
+   "seg_off": 1494,
+   "reg": "ax",
+   "imm": 28072,
+   "text": "Please replace the BOOT disk with the GAME disk.",
+   "len": 48
+  },
+  {
+   "file_off": 2058,
+   "seg_off": 1546,
+   "reg": "bx",
+   "imm": 28188,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 2077,
+   "seg_off": 1565,
+   "reg": "ax",
+   "imm": 28136,
+   "text": "Please insert the GAME disk in drive B:.",
+   "len": 40
+  },
+  {
+   "file_off": 2129,
+   "seg_off": 1617,
+   "reg": "bx",
+   "imm": 27732,
+   "text": ":",
+   "len": 1
+  },
+  {
+   "file_off": 2148,
+   "seg_off": 1636,
+   "reg": "bx",
+   "imm": 27992,
+   "text": "L",
+   "len": 1
+  },
+  {
+   "file_off": 2190,
+   "seg_off": 1678,
+   "reg": "bx",
+   "imm": 28198,
+   "text": "CHARUTIL",
+   "len": 8
+  },
+  {
+   "file_off": 2209,
+   "seg_off": 1697,
+   "reg": "bx",
+   "imm": 28210,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 2236,
+   "seg_off": 1724,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 2252,
+   "seg_off": 1740,
+   "reg": "bx",
+   "imm": 28220,
+   "text": "Please have your GAME and BOOT disks ready, you will be asked to swap disks several times. Ready (Y/N) ?",
+   "len": 104
+  },
+  {
+   "file_off": 2267,
+   "seg_off": 1755,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 2299,
+   "seg_off": 1787,
+   "reg": "bx",
+   "imm": 28336,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 2330,
+   "seg_off": 1818,
+   "reg": "bx",
+   "imm": 28348,
+   "text": "51",
+   "len": 2
+  },
+  {
+   "file_off": 2380,
+   "seg_off": 1868,
+   "reg": "ax",
+   "imm": 28354,
+   "text": "Insert BOOT disk for file #",
+   "len": 27
+  },
+  {
+   "file_off": 2390,
+   "seg_off": 1878,
+   "reg": "bx",
+   "imm": 28386,
+   "text": " of 9",
+   "len": 5
+  },
+  {
+   "file_off": 2450,
+   "seg_off": 1938,
+   "reg": "bx",
+   "imm": 28416,
+   "text": "de",
+   "len": 2
+  },
+  {
+   "file_off": 2473,
+   "seg_off": 1961,
+   "reg": "bx",
+   "imm": 28404,
+   "text": "eff.mst",
+   "len": 7
+  },
+  {
+   "file_off": 2506,
+   "seg_off": 1994,
+   "reg": "ax",
+   "imm": 28422,
+   "text": "Insert GAME disk for file #",
+   "len": 27
+  },
+  {
+   "file_off": 2516,
+   "seg_off": 2004,
+   "reg": "bx",
+   "imm": 28454,
+   "text": " of 9",
+   "len": 5
+  },
+  {
+   "file_off": 2617,
+   "seg_off": 2105,
+   "reg": "bx",
+   "imm": 28488,
+   "text": ":de",
+   "len": 3
+  },
+  {
+   "file_off": 2640,
+   "seg_off": 2128,
+   "reg": "bx",
+   "imm": 28472,
+   "text": "eff.bin",
+   "len": 7
+  },
+  {
+   "file_off": 2675,
+   "seg_off": 2163,
+   "reg": "bx",
+   "imm": 28496,
+   "text": "Restoration complete!  Please insert the BOOT disk.",
+   "len": 51
+  },
+  {
+   "file_off": 2725,
+   "seg_off": 2213,
+   "reg": "bx",
+   "imm": 28188,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 2741,
+   "seg_off": 2229,
+   "reg": "bx",
+   "imm": 28560,
+   "text": "Place your GAME disk in drive B: and your BOOT disk in A:.  Ready (Y/N) ?",
+   "len": 73
+  },
+  {
+   "file_off": 2756,
+   "seg_off": 2244,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 2788,
+   "seg_off": 2276,
+   "reg": "bx",
+   "imm": 28336,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 2820,
+   "seg_off": 2308,
+   "reg": "bx",
+   "imm": 28348,
+   "text": "51",
+   "len": 2
+  },
+  {
+   "file_off": 2861,
+   "seg_off": 2349,
+   "reg": "bx",
+   "imm": 28416,
+   "text": "de",
+   "len": 2
+  },
+  {
+   "file_off": 2884,
+   "seg_off": 2372,
+   "reg": "bx",
+   "imm": 28646,
+   "text": "eff.mst",
+   "len": 7
+  },
+  {
+   "file_off": 2933,
+   "seg_off": 2421,
+   "reg": "ax",
+   "imm": 28658,
+   "text": "File #",
+   "len": 6
+  },
+  {
+   "file_off": 2943,
+   "seg_off": 2431,
+   "reg": "bx",
+   "imm": 28668,
+   "text": " of 9",
+   "len": 5
+  },
+  {
+   "file_off": 3010,
+   "seg_off": 2498,
+   "reg": "bx",
+   "imm": 28488,
+   "text": ":de",
+   "len": 3
+  },
+  {
+   "file_off": 3033,
+   "seg_off": 2521,
+   "reg": "bx",
+   "imm": 28678,
+   "text": "eff.bin",
+   "len": 7
+  },
+  {
+   "file_off": 3068,
+   "seg_off": 2556,
+   "reg": "bx",
+   "imm": 28690,
+   "text": "Restoration complete!",
+   "len": 21
+  },
+  {
+   "file_off": 3118,
+   "seg_off": 2606,
+   "reg": "bx",
+   "imm": 28724,
+   "text": "Your fixed disk files will be updated.  Please  insert your BOOT disk in drive A: Ready (Y/N) ?",
+   "len": 95
+  },
+  {
+   "file_off": 3133,
+   "seg_off": 2621,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 3165,
+   "seg_off": 2653,
+   "reg": "bx",
+   "imm": 28336,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 3196,
+   "seg_off": 2684,
+   "reg": "bx",
+   "imm": 28348,
+   "text": "51",
+   "len": 2
+  },
+  {
+   "file_off": 3240,
+   "seg_off": 2728,
+   "reg": "ax",
+   "imm": 28844,
+   "text": "A:de",
+   "len": 4
+  },
+  {
+   "file_off": 3250,
+   "seg_off": 2738,
+   "reg": "bx",
+   "imm": 28832,
+   "text": "eff.mst",
+   "len": 7
+  },
+  {
+   "file_off": 3299,
+   "seg_off": 2787,
+   "reg": "ax",
+   "imm": 28852,
+   "text": "File #",
+   "len": 6
+  },
+  {
+   "file_off": 3309,
+   "seg_off": 2797,
+   "reg": "bx",
+   "imm": 28862,
+   "text": " of 9",
+   "len": 5
+  },
+  {
+   "file_off": 3376,
+   "seg_off": 2864,
+   "reg": "bx",
+   "imm": 28488,
+   "text": ":de",
+   "len": 3
+  },
+  {
+   "file_off": 3399,
+   "seg_off": 2887,
+   "reg": "bx",
+   "imm": 28872,
+   "text": "eff.bin",
+   "len": 7
+  },
+  {
+   "file_off": 3434,
+   "seg_off": 2922,
+   "reg": "bx",
+   "imm": 28884,
+   "text": "Restoration complete! You may remove the BOOT disk.",
+   "len": 51
+  },
+  {
+   "file_off": 3484,
+   "seg_off": 2972,
+   "reg": "bx",
+   "imm": 28948,
+   "text": "I",
+   "len": 1
+  },
+  {
+   "file_off": 3507,
+   "seg_off": 2995,
+   "reg": "bx",
+   "imm": 28958,
+   "text": ",",
+   "len": 1
+  },
+  {
+   "file_off": 3576,
+   "seg_off": 3064,
+   "reg": "bx",
+   "imm": 28968,
+   "text": "Shard of Spring Installation Menu",
+   "len": 33
+  },
+  {
+   "file_off": 3628,
+   "seg_off": 3116,
+   "reg": "bx",
+   "imm": 29006,
+   "text": "Please change those options you desire, press 'F' when finished.",
+   "len": 64
+  },
+  {
+   "file_off": 3681,
+   "seg_off": 3169,
+   "reg": "ax",
+   "imm": 29074,
+   "text": "Currently: ",
+   "len": 11
+  },
+  {
+   "file_off": 3738,
+   "seg_off": 3226,
+   "reg": "bx",
+   "imm": 29090,
+   "text": "0) Hard Disk     ",
+   "len": 17
+  },
+  {
+   "file_off": 3772,
+   "seg_off": 3260,
+   "reg": "bx",
+   "imm": 29112,
+   "text": "1) One Floppy    ",
+   "len": 17
+  },
+  {
+   "file_off": 3806,
+   "seg_off": 3294,
+   "reg": "bx",
+   "imm": 29134,
+   "text": "2) Two Floppies  ",
+   "len": 17
+  },
+  {
+   "file_off": 3840,
+   "seg_off": 3328,
+   "reg": "bx",
+   "imm": 29156,
+   "text": "M) Monitor is LCD or EGA (in emulation)",
+   "len": 39
+  },
+  {
+   "file_off": 3874,
+   "seg_off": 3362,
+   "reg": "bx",
+   "imm": 29200,
+   "text": "T) Adjust Time Delay",
+   "len": 20
+  },
+  {
+   "file_off": 3908,
+   "seg_off": 3396,
+   "reg": "bx",
+   "imm": 29224,
+   "text": "E) Exit Game",
+   "len": 12
+  },
+  {
+   "file_off": 3942,
+   "seg_off": 3430,
+   "reg": "bx",
+   "imm": 29240,
+   "text": "F) Finished",
+   "len": 11
+  },
+  {
+   "file_off": 3994,
+   "seg_off": 3482,
+   "reg": "bx",
+   "imm": 29256,
+   "text": "Selection ?",
+   "len": 11
+  },
+  {
+   "file_off": 4172,
+   "seg_off": 3660,
+   "reg": "bx",
+   "imm": 29276,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 4191,
+   "seg_off": 3679,
+   "reg": "bx",
+   "imm": 26332,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 4220,
+   "seg_off": 3708,
+   "reg": "bx",
+   "imm": 29282,
+   "text": "To install the Shard of Spring on your hard disk, you will need",
+   "len": 63
+  },
+  {
+   "file_off": 4238,
+   "seg_off": 3726,
+   "reg": "bx",
+   "imm": 29350,
+   "text": "to create a subdirectory (if you don't know how, see your DOS manual).",
+   "len": 70
+  },
+  {
+   "file_off": 4274,
+   "seg_off": 3762,
+   "reg": "bx",
+   "imm": 29424,
+   "text": "Simply copy the contents of your BOOT disk and then your GAME disk",
+   "len": 66
+  },
+  {
+   "file_off": 4292,
+   "seg_off": 3780,
+   "reg": "bx",
+   "imm": 29494,
+   "text": "into the subdirectory.",
+   "len": 22
+  },
+  {
+   "file_off": 4328,
+   "seg_off": 3816,
+   "reg": "bx",
+   "imm": 29520,
+   "text": " An example for a subdirectory called SHARD would be:",
+   "len": 53
+  },
+  {
+   "file_off": 4346,
+   "seg_off": 3834,
+   "reg": "bx",
+   "imm": 29578,
+   "text": "              C>copy A:*.* C:\\shard  FOR YOUR BOOT DISK",
+   "len": 55
+  },
+  {
+   "file_off": 4364,
+   "seg_off": 3852,
+   "reg": "bx",
+   "imm": 29638,
+   "text": "              C>copy A:*.* C:\\shard  FOR YOUR GAME DISK",
+   "len": 55
+  },
+  {
+   "file_off": 4400,
+   "seg_off": 3888,
+   "reg": "bx",
+   "imm": 29698,
+   "text": "Which hard disk drive are you going use (C/D/E...) ?",
+   "len": 52
+  },
+  {
+   "file_off": 4469,
+   "seg_off": 3957,
+   "reg": "bx",
+   "imm": 29754,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 4485,
+   "seg_off": 3973,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 4496,
+   "seg_off": 3984,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 4510,
+   "seg_off": 3998,
+   "reg": "bx",
+   "imm": 29760,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 4526,
+   "seg_off": 4014,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 4537,
+   "seg_off": 4025,
+   "reg": "bx",
+   "imm": 28188,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 4551,
+   "seg_off": 4039,
+   "reg": "bx",
+   "imm": 29766,
+   "text": "M",
+   "len": 1
+  },
+  {
+   "file_off": 4603,
+   "seg_off": 4091,
+   "reg": "bx",
+   "imm": 29772,
+   "text": "Do you have either a LCD or EGA (in emulation) monitor (Y/N) ",
+   "len": 61
+  },
+  {
+   "file_off": 4647,
+   "seg_off": 4135,
+   "reg": "bx",
+   "imm": 28336,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 4681,
+   "seg_off": 4169,
+   "reg": "bx",
+   "imm": 29838,
+   "text": "F",
+   "len": 1
+  },
+  {
+   "file_off": 4708,
+   "seg_off": 4196,
+   "reg": "dx",
+   "imm": 29844,
+   "text": "CONFIG.SOS",
+   "len": 10
+  },
+  {
+   "file_off": 4808,
+   "seg_off": 4296,
+   "reg": "bx",
+   "imm": 29858,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 4863,
+   "seg_off": 4351,
+   "reg": "bx",
+   "imm": 29864,
+   "text": "To adjust the delay on messages so you can read them",
+   "len": 52
+  },
+  {
+   "file_off": 4897,
+   "seg_off": 4385,
+   "reg": "bx",
+   "imm": 29920,
+   "text": "enter a number between 1000 and 30000.  When you like",
+   "len": 53
+  },
+  {
+   "file_off": 4931,
+   "seg_off": 4419,
+   "reg": "bx",
+   "imm": 29978,
+   "text": "the delay answer 'Y', otherwise answer 'N' to try again.",
+   "len": 56
+  },
+  {
+   "file_off": 4965,
+   "seg_off": 4453,
+   "reg": "bx",
+   "imm": 30038,
+   "text": "'Q' will bring you back to the menu above.",
+   "len": 42
+  },
+  {
+   "file_off": 5009,
+   "seg_off": 4497,
+   "reg": "bx",
+   "imm": 30086,
+   "text": "New Delay, between 1000 and 30000 ",
+   "len": 34
+  },
+  {
+   "file_off": 5094,
+   "seg_off": 4582,
+   "reg": "bx",
+   "imm": 30124,
+   "text": "DELAY OF",
+   "len": 8
+  },
+  {
+   "file_off": 5151,
+   "seg_off": 4639,
+   "reg": "bx",
+   "imm": 30136,
+   "text": "                ",
+   "len": 16
+  },
+  {
+   "file_off": 5190,
+   "seg_off": 4678,
+   "reg": "bx",
+   "imm": 30156,
+   "text": "OK (Y/N/Q) ",
+   "len": 11
+  },
+  {
+   "file_off": 5252,
+   "seg_off": 4740,
+   "reg": "bx",
+   "imm": 30172,
+   "text": "Q",
+   "len": 1
+  },
+  {
+   "file_off": 5271,
+   "seg_off": 4759,
+   "reg": "bx",
+   "imm": 28336,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 5304,
+   "seg_off": 4792,
+   "reg": "bx",
+   "imm": 30172,
+   "text": "Q",
+   "len": 1
+  },
+  {
+   "file_off": 5323,
+   "seg_off": 4811,
+   "reg": "bx",
+   "imm": 30178,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 5342,
+   "seg_off": 4830,
+   "reg": "ax",
+   "imm": 30184,
+   "text": "      ",
+   "len": 6
+  },
+  {
+   "file_off": 5352,
+   "seg_off": 4840,
+   "reg": "bx",
+   "imm": 30194,
+   "text": "    Dedicated to Lori Proudfoot.                   Developed with Applied Computing Services, Inc.              Written entirely in Microsoft QuickBasic v3.0.",
+   "len": 158
+  },
+  {
+   "file_off": 5415,
+   "seg_off": 4903,
+   "reg": "bx",
+   "imm": 30364,
+   "text": "Which party do you wish to use (1-5,0 Quits) ?",
+   "len": 46
+  },
+  {
+   "file_off": 5430,
+   "seg_off": 4918,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 5529,
+   "seg_off": 5017,
+   "reg": "bx",
+   "imm": 30422,
+   "text": "Please use a party numbered between 1 and 5 !",
+   "len": 45
+  },
+  {
+   "file_off": 5544,
+   "seg_off": 5032,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 5579,
+   "seg_off": 5067,
+   "reg": "bx",
+   "imm": 28210,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 5587,
+   "seg_off": 5075,
+   "reg": "bx",
+   "imm": 30480,
+   "text": "GROUPS.DAT",
+   "len": 10
+  },
+  {
+   "file_off": 5665,
+   "seg_off": 5153,
+   "reg": "bx",
+   "imm": 30498,
+   "text": "I'm sorry, this party does not exist !  Use the Utilities to create it.",
+   "len": 71
+  },
+  {
+   "file_off": 5751,
+   "seg_off": 5239,
+   "reg": "bx",
+   "imm": 28210,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 5759,
+   "seg_off": 5247,
+   "reg": "bx",
+   "imm": 30584,
+   "text": "CHARS.DAT",
+   "len": 9
+  },
+  {
+   "file_off": 6171,
+   "seg_off": 5659,
+   "reg": "bx",
+   "imm": 30606,
+   "text": "Parties of dead characters are not allowed !!! ",
+   "len": 47
+  },
+  {
+   "file_off": 6247,
+   "seg_off": 5735,
+   "reg": "bx",
+   "imm": 30666,
+   "text": "# CHARACTER HP  SP",
+   "len": 18
+  },
+  {
+   "file_off": 6337,
+   "seg_off": 5825,
+   "reg": "bx",
+   "imm": 30178,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 6368,
+   "seg_off": 5856,
+   "reg": "bx",
+   "imm": 30692,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 6419,
+   "seg_off": 5907,
+   "reg": "bx",
+   "imm": 28188,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 6646,
+   "seg_off": 6134,
+   "reg": "bx",
+   "imm": 29760,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 7159,
+   "seg_off": 6647,
+   "reg": "bx",
+   "imm": 30698,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 7173,
+   "seg_off": 6661,
+   "reg": "bx",
+   "imm": 30710,
+   "text": "MAZEMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 7205,
+   "seg_off": 6693,
+   "reg": "bx",
+   "imm": 30722,
+   "text": "Gold:",
+   "len": 5
+  },
+  {
+   "file_off": 7247,
+   "seg_off": 6735,
+   "reg": "bx",
+   "imm": 30732,
+   "text": "Provisions:",
+   "len": 11
+  },
+  {
+   "file_off": 7307,
+   "seg_off": 6795,
+   "reg": "bx",
+   "imm": 30748,
+   "text": "MENU",
+   "len": 4
+  },
+  {
+   "file_off": 7393,
+   "seg_off": 6881,
+   "reg": "ax",
+   "imm": 30756,
+   "text": "BM",
+   "len": 2
+  },
+  {
+   "file_off": 7403,
+   "seg_off": 6891,
+   "reg": "bx",
+   "imm": 28958,
+   "text": ",",
+   "len": 1
+  },
+  {
+   "file_off": 7447,
+   "seg_off": 6935,
+   "reg": "bx",
+   "imm": 30762,
+   "text": "walkdraw.pic",
+   "len": 12
+  },
+  {
+   "file_off": 7509,
+   "seg_off": 6997,
+   "reg": "ax",
+   "imm": 30782,
+   "text": "bm",
+   "len": 2
+  },
+  {
+   "file_off": 7552,
+   "seg_off": 7040,
+   "reg": "bx",
+   "imm": 30788,
+   "text": "mazedata.bin",
+   "len": 12
+  },
+  {
+   "file_off": 7742,
+   "seg_off": 7230,
+   "reg": "bx",
+   "imm": 30804,
+   "text": "startup.bin",
+   "len": 11
+  },
+  {
+   "file_off": 7791,
+   "seg_off": 7279,
+   "reg": "bx",
+   "imm": 30826,
+   "text": "Please check this disk, I think it is the wrong one.",
+   "len": 52
+  },
+  {
+   "file_off": 7893,
+   "seg_off": 7381,
+   "reg": "bx",
+   "imm": 30890,
+   "text": "Please check the drive door, I think you have it open.",
+   "len": 54
+  },
+  {
+   "file_off": 7953,
+   "seg_off": 7441,
+   "reg": "bx",
+   "imm": 30956,
+   "text": "I'm awfully sorry, but your machine is having I/O problems.",
+   "len": 59
+  },
+  {
+   "file_off": 8013,
+   "seg_off": 7501,
+   "reg": "ax",
+   "imm": 31028,
+   "text": "I'm not feeling well #",
+   "len": 22
+  },
+  {
+   "file_off": 8133,
+   "seg_off": 7621,
+   "reg": "bx",
+   "imm": 31076,
+   "text": "What is the maximum value for any statistic without magical aid (Traits, pg 3)",
+   "len": 78
+  },
+  {
+   "file_off": 8169,
+   "seg_off": 7657,
+   "reg": "bx",
+   "imm": 31164,
+   "text": "What is the maximum number of characters you can store on disk (Character,      L)ist, pg 3)",
+   "len": 92
+  },
+  {
+   "file_off": 8205,
+   "seg_off": 7693,
+   "reg": "bx",
+   "imm": 31264,
+   "text": "The bonus a Gnome character gets to his Int (Racial Modifiers Chart, pg 3)",
+   "len": 74
+  },
+  {
+   "file_off": 8241,
+   "seg_off": 7729,
+   "reg": "bx",
+   "imm": 31346,
+   "text": "What is the maximum damage of a Small Axe (Weapons Chart, pg 7)",
+   "len": 63
+  },
+  {
+   "file_off": 8277,
+   "seg_off": 7765,
+   "reg": "bx",
+   "imm": 31418,
+   "text": "What is the Protection of Chain Armor (Armor Chart, pg 7)",
+   "len": 57
+  },
+  {
+   "file_off": 8313,
+   "seg_off": 7801,
+   "reg": "bx",
+   "imm": 31484,
+   "text": "What is the cost of an Oil Lantern (Miscellaneous Items, pg 7)",
+   "len": 62
+  },
+  {
+   "file_off": 8349,
+   "seg_off": 7837,
+   "reg": "bx",
+   "imm": 31554,
+   "text": "What is the Movement Point Cost to Attack an object in front of you ('A' Key,   Chart, pg 8)",
+   "len": 92
+  },
+  {
+   "file_off": 8385,
+   "seg_off": 7873,
+   "reg": "bx",
+   "imm": 31654,
+   "text": "What is the minimum Spell Points to cast a Flame Shield (Minimum Spell Points   Chart, pg 11)",
+   "len": 93
+  },
+  {
+   "file_off": 8421,
+   "seg_off": 7909,
+   "reg": "bx",
+   "imm": 31756,
+   "text": "What is the Bonus Damage by Strength for a character with a Strength of 20      (Chart, pg 11)",
+   "len": 94
+  },
+  {
+   "file_off": 8457,
+   "seg_off": 7945,
+   "reg": "bx",
+   "imm": 31854,
+   "text": "What is the Maximum S.P. gain per level for a Wizard with an Intellect of 19    (Chart, pg 12)",
+   "len": 94
+  },
+  {
+   "file_off": 8524,
+   "seg_off": 8012,
+   "reg": "bx",
+   "imm": 31952,
+   "text": "The Shard of Spring",
+   "len": 19
+  },
+  {
+   "file_off": 8558,
+   "seg_off": 8046,
+   "reg": "bx",
+   "imm": 31976,
+   "text": "(0 Exits)",
+   "len": 9
+  },
+  {
+   "file_off": 8650,
+   "seg_off": 8138,
+   "reg": "bx",
+   "imm": 31998,
+   "text": " ? ",
+   "len": 3
+  },
+  {
+   "file_off": 8834,
+   "seg_off": 8322,
+   "reg": "bx",
+   "imm": 32010,
+   "text": "I'm sorry, try again later....",
+   "len": 30
+  },
+  {
+   "file_off": 8883,
+   "seg_off": 8371,
+   "reg": "bx",
+   "imm": 32044,
+   "text": "That is not correct, please try again...",
+   "len": 40
+  },
+  {
+   "file_off": 9004,
+   "seg_off": 8492,
+   "reg": "bx",
+   "imm": 32100,
+   "text": "You do not have enough memory (",
+   "len": 31
+  },
+  {
+   "file_off": 9026,
+   "seg_off": 8514,
+   "reg": "bx",
+   "imm": 32136,
+   "text": "K) to run this game",
+   "len": 19
+  },
+  {
+   "file_off": 9060,
+   "seg_off": 8548,
+   "reg": "bx",
+   "imm": 32160,
+   "text": "256K is required, 320K is prefered. Press any key...",
+   "len": 52
+  },
+  {
+   "file_off": 9145,
+   "seg_off": 8633,
+   "reg": "bx",
+   "imm": 32216,
+   "text": "Microsoft has recommended that this product be run",
+   "len": 50
+  },
+  {
+   "file_off": 9179,
+   "seg_off": 8667,
+   "reg": "bx",
+   "imm": 32270,
+   "text": "with at least 320K of RAM, preferably 384K.",
+   "len": 43
+  },
+  {
+   "file_off": 9213,
+   "seg_off": 8701,
+   "reg": "bx",
+   "imm": 32318,
+   "text": "Press any key...",
+   "len": 16
+  },
+  {
+   "file_off": 9307,
+   "seg_off": 8795,
+   "reg": "bx",
+   "imm": 32344,
+   "text": "You can not run Shard of Spring, you don't",
+   "len": 42
+  },
+  {
+   "file_off": 9341,
+   "seg_off": 8829,
+   "reg": "bx",
+   "imm": 32390,
+   "text": "have a graphics monitor!!!!  Press any key...",
+   "len": 45
+  },
+  {
+   "file_off": 9401,
+   "seg_off": 8889,
+   "reg": "bx",
+   "imm": 27982,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 9417,
+   "seg_off": 8905,
+   "reg": "bx",
+   "imm": 32444,
+   "text": "One floppy,",
+   "len": 11
+  },
+  {
+   "file_off": 9431,
+   "seg_off": 8919,
+   "reg": "bx",
+   "imm": 28188,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 9447,
+   "seg_off": 8935,
+   "reg": "bx",
+   "imm": 32460,
+   "text": "Two floppies,",
+   "len": 13
+  },
+  {
+   "file_off": 9461,
+   "seg_off": 8949,
+   "reg": "bx",
+   "imm": 27998,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 9477,
+   "seg_off": 8965,
+   "reg": "bx",
+   "imm": 32478,
+   "text": "Z",
+   "len": 1
+  },
+  {
+   "file_off": 9496,
+   "seg_off": 8984,
+   "reg": "ax",
+   "imm": 32484,
+   "text": "Fixed or RAM disk (",
+   "len": 19
+  },
+  {
+   "file_off": 9506,
+   "seg_off": 8994,
+   "reg": "bx",
+   "imm": 32508,
+   "text": ":),",
+   "len": 3
+  },
+  {
+   "file_off": 9525,
+   "seg_off": 9013,
+   "reg": "bx",
+   "imm": 32516,
+   "text": "? disks,",
+   "len": 8
+  },
+  {
+   "file_off": 9547,
+   "seg_off": 9035,
+   "reg": "bx",
+   "imm": 32528,
+   "text": " CRT monitor.",
+   "len": 13
+  },
+  {
+   "file_off": 9561,
+   "seg_off": 9049,
+   "reg": "bx",
+   "imm": 32550,
+   "text": " LCD or EGA display.",
+   "len": 20
+  },
+  {
+   "file_off": 9572,
+   "seg_off": 9060,
+   "reg": "bx",
+   "imm": 32574,
+   "text": " delay of",
+   "len": 9
+  },
+  {
+   "file_off": 9603,
+   "seg_off": 9091,
+   "reg": "bx",
+   "imm": 28958,
+   "text": ",",
+   "len": 1
+  },
+  {
+   "file_off": 9701,
+   "seg_off": 9189,
+   "reg": "bx",
+   "imm": 32588,
+   "text": "Don, Leslie, and Martin thank you for playing the Shard of Spring.",
+   "len": 66
+  }
+ ],
+ "TOWN.EXE": [
+  {
+   "file_off": 744,
+   "seg_off": 232,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 759,
+   "seg_off": 247,
+   "reg": "bx",
+   "imm": 26594,
+   "text": "9",
+   "len": 1
+  },
+  {
+   "file_off": 858,
+   "seg_off": 346,
+   "reg": "dx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 957,
+   "seg_off": 445,
+   "reg": "bx",
+   "imm": 26626,
+   "text": "-",
+   "len": 1
+  },
+  {
+   "file_off": 1100,
+   "seg_off": 588,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1434,
+   "seg_off": 922,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1472,
+   "seg_off": 960,
+   "reg": "bx",
+   "imm": 28062,
+   "text": "Choose building to enter,  # to inspect character, (ESC exits)",
+   "len": 62
+  },
+  {
+   "file_off": 1484,
+   "seg_off": 972,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 1532,
+   "seg_off": 1020,
+   "reg": "bx",
+   "imm": 28178,
+   "text": "TOWN",
+   "len": 4
+  },
+  {
+   "file_off": 1564,
+   "seg_off": 1052,
+   "reg": "ax",
+   "imm": 28142,
+   "text": "The party leaves..",
+   "len": 18
+  },
+  {
+   "file_off": 1601,
+   "seg_off": 1089,
+   "reg": "bx",
+   "imm": 28164,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 2101,
+   "seg_off": 1589,
+   "reg": "bx",
+   "imm": 28232,
+   "text": "Item to buy, ESC to leave, any key to page.",
+   "len": 43
+  },
+  {
+   "file_off": 2125,
+   "seg_off": 1613,
+   "reg": "bx",
+   "imm": 28280,
+   "text": "[MORE]",
+   "len": 6
+  },
+  {
+   "file_off": 2149,
+   "seg_off": 1637,
+   "reg": "bx",
+   "imm": 28294,
+   "text": "Item to buy, ESC to leave.",
+   "len": 26
+  },
+  {
+   "file_off": 2210,
+   "seg_off": 1698,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 2322,
+   "seg_off": 1810,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 2363,
+   "seg_off": 1851,
+   "reg": "bx",
+   "imm": 28336,
+   "text": "@",
+   "len": 1
+  },
+  {
+   "file_off": 2508,
+   "seg_off": 1996,
+   "reg": "bx",
+   "imm": 28344,
+   "text": "Cost is ",
+   "len": 8
+  },
+  {
+   "file_off": 2538,
+   "seg_off": 2026,
+   "reg": "bx",
+   "imm": 28356,
+   "text": "Give to char #",
+   "len": 14
+  },
+  {
+   "file_off": 2561,
+   "seg_off": 2049,
+   "reg": "bx",
+   "imm": 28374,
+   "text": "(ESC to exit)",
+   "len": 13
+  },
+  {
+   "file_off": 2684,
+   "seg_off": 2172,
+   "reg": "bx",
+   "imm": 28398,
+   "text": " ok!",
+   "len": 4
+  },
+  {
+   "file_off": 2777,
+   "seg_off": 2265,
+   "reg": "bx",
+   "imm": 28408,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 2816,
+   "seg_off": 2304,
+   "reg": "bx",
+   "imm": 28414,
+   "text": "No more room!",
+   "len": 13
+  },
+  {
+   "file_off": 2890,
+   "seg_off": 2378,
+   "reg": "bx",
+   "imm": 28432,
+   "text": "Done!",
+   "len": 5
+  },
+  {
+   "file_off": 3042,
+   "seg_off": 2530,
+   "reg": "bx",
+   "imm": 28444,
+   "text": "Healing",
+   "len": 7
+  },
+  {
+   "file_off": 3089,
+   "seg_off": 2577,
+   "reg": "bx",
+   "imm": 28456,
+   "text": "Unpoison",
+   "len": 8
+  },
+  {
+   "file_off": 3135,
+   "seg_off": 2623,
+   "reg": "bx",
+   "imm": 28468,
+   "text": "Unbind",
+   "len": 6
+  },
+  {
+   "file_off": 3164,
+   "seg_off": 2652,
+   "reg": "bx",
+   "imm": 28512,
+   "text": "/lvl",
+   "len": 4
+  },
+  {
+   "file_off": 3188,
+   "seg_off": 2676,
+   "reg": "bx",
+   "imm": 28478,
+   "text": "Ressurect",
+   "len": 9
+  },
+  {
+   "file_off": 3216,
+   "seg_off": 2704,
+   "reg": "bx",
+   "imm": 28512,
+   "text": "/lvl",
+   "len": 4
+  },
+  {
+   "file_off": 3226,
+   "seg_off": 2714,
+   "reg": "bx",
+   "imm": 28520,
+   "text": "Enter character # to be healed, (ESC exits)",
+   "len": 43
+  },
+  {
+   "file_off": 3238,
+   "seg_off": 2726,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 3667,
+   "seg_off": 3155,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 3803,
+   "seg_off": 3291,
+   "reg": "ax",
+   "imm": 28586,
+   "text": "That will cost   ",
+   "len": 17
+  },
+  {
+   "file_off": 3811,
+   "seg_off": 3299,
+   "reg": "bx",
+   "imm": 28608,
+   "text": " gold, Pay (Y/N)?",
+   "len": 17
+  },
+  {
+   "file_off": 3826,
+   "seg_off": 3314,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 3853,
+   "seg_off": 3341,
+   "reg": "bx",
+   "imm": 28638,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 3940,
+   "seg_off": 3428,
+   "reg": "ax",
+   "imm": 28646,
+   "text": "Your rooms will cost",
+   "len": 20
+  },
+  {
+   "file_off": 3948,
+   "seg_off": 3436,
+   "reg": "bx",
+   "imm": 28670,
+   "text": " gold each night.  How many nights do you wish to sleep (1-9, 0 exits) ?",
+   "len": 72
+  },
+  {
+   "file_off": 3963,
+   "seg_off": 3451,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 4068,
+   "seg_off": 3556,
+   "reg": "bx",
+   "imm": 28758,
+   "text": "You sleep...",
+   "len": 12
+  },
+  {
+   "file_off": 4141,
+   "seg_off": 3629,
+   "reg": "bx",
+   "imm": 28780,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 4202,
+   "seg_off": 3690,
+   "reg": "bx",
+   "imm": 28788,
+   "text": "Welcome to the",
+   "len": 14
+  },
+  {
+   "file_off": 4254,
+   "seg_off": 3742,
+   "reg": "bx",
+   "imm": 28806,
+   "text": "Fighter's Guild.",
+   "len": 16
+  },
+  {
+   "file_off": 4275,
+   "seg_off": 3763,
+   "reg": "bx",
+   "imm": 28828,
+   "text": "Wizard's Guild.",
+   "len": 15
+  },
+  {
+   "file_off": 4284,
+   "seg_off": 3772,
+   "reg": "bx",
+   "imm": 28848,
+   "text": "Which character # seeks advancement in his art (ESC exits) ?",
+   "len": 60
+  },
+  {
+   "file_off": 4296,
+   "seg_off": 3784,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 4425,
+   "seg_off": 3913,
+   "reg": "bx",
+   "imm": 28920,
+   "text": "You are the wrong class!",
+   "len": 24
+  },
+  {
+   "file_off": 4508,
+   "seg_off": 3996,
+   "reg": "bx",
+   "imm": 28966,
+   "text": "This character is incapacitated!",
+   "len": 32
+  },
+  {
+   "file_off": 4703,
+   "seg_off": 4191,
+   "reg": "ax",
+   "imm": 29026,
+   "text": "The Guild decides you need",
+   "len": 26
+  },
+  {
+   "file_off": 4711,
+   "seg_off": 4199,
+   "reg": "bx",
+   "imm": 29056,
+   "text": " experience before gaining a level.",
+   "len": 35
+  },
+  {
+   "file_off": 4993,
+   "seg_off": 4481,
+   "reg": "ax",
+   "imm": 29126,
+   "text": "You made a level!  You gain",
+   "len": 27
+  },
+  {
+   "file_off": 5001,
+   "seg_off": 4489,
+   "reg": "bx",
+   "imm": 29158,
+   "text": " hit points.",
+   "len": 12
+  },
+  {
+   "file_off": 5245,
+   "seg_off": 4733,
+   "reg": "ax",
+   "imm": 29182,
+   "text": "You also gain",
+   "len": 13
+  },
+  {
+   "file_off": 5253,
+   "seg_off": 4741,
+   "reg": "bx",
+   "imm": 29200,
+   "text": " Spell Points!",
+   "len": 14
+  },
+  {
+   "file_off": 5413,
+   "seg_off": 4901,
+   "reg": "bx",
+   "imm": 29236,
+   "text": "Stats are up by:",
+   "len": 16
+  },
+  {
+   "file_off": 5558,
+   "seg_off": 5046,
+   "reg": "bx",
+   "imm": 29264,
+   "text": "1 pt of ",
+   "len": 8
+  },
+  {
+   "file_off": 5705,
+   "seg_off": 5193,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 5820,
+   "seg_off": 5308,
+   "reg": "bx",
+   "imm": 28408,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 5831,
+   "seg_off": 5319,
+   "reg": "bx",
+   "imm": 29290,
+   "text": "* ",
+   "len": 2
+  },
+  {
+   "file_off": 5919,
+   "seg_off": 5407,
+   "reg": "ax",
+   "imm": 29296,
+   "text": "You have",
+   "len": 8
+  },
+  {
+   "file_off": 5945,
+   "seg_off": 5433,
+   "reg": "bx",
+   "imm": 29308,
+   "text": "points left.",
+   "len": 12
+  },
+  {
+   "file_off": 5968,
+   "seg_off": 5456,
+   "reg": "bx",
+   "imm": 29324,
+   "text": "Enter skill,",
+   "len": 12
+  },
+  {
+   "file_off": 5991,
+   "seg_off": 5479,
+   "reg": "bx",
+   "imm": 29340,
+   "text": "(0 exits) ",
+   "len": 10
+  },
+  {
+   "file_off": 6064,
+   "seg_off": 5552,
+   "reg": "bx",
+   "imm": 29356,
+   "text": "    ",
+   "len": 4
+  },
+  {
+   "file_off": 6149,
+   "seg_off": 5637,
+   "reg": "bx",
+   "imm": 28408,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 6219,
+   "seg_off": 5707,
+   "reg": "bx",
+   "imm": 29364,
+   "text": "Not enough IQ !",
+   "len": 15
+  },
+  {
+   "file_off": 6332,
+   "seg_off": 5820,
+   "reg": "bx",
+   "imm": 29290,
+   "text": "* ",
+   "len": 2
+  },
+  {
+   "file_off": 6346,
+   "seg_off": 5834,
+   "reg": "bx",
+   "imm": 28408,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 6435,
+   "seg_off": 5923,
+   "reg": "bx",
+   "imm": 29386,
+   "text": "Do you wish to: T)alk with other adventurers, B)uy food? (ESC to exit)",
+   "len": 70
+  },
+  {
+   "file_off": 6447,
+   "seg_off": 5935,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 6474,
+   "seg_off": 5962,
+   "reg": "bx",
+   "imm": 29468,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 6507,
+   "seg_off": 5995,
+   "reg": "bx",
+   "imm": 29474,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 6560,
+   "seg_off": 6048,
+   "reg": "ax",
+   "imm": 29482,
+   "text": "One day's food for the party costs",
+   "len": 34
+  },
+  {
+   "file_off": 6568,
+   "seg_off": 6056,
+   "reg": "bx",
+   "imm": 29520,
+   "text": " gold.  How many rations (1-9, 0 exits) ?",
+   "len": 41
+  },
+  {
+   "file_off": 6583,
+   "seg_off": 6071,
+   "reg": "bx",
+   "imm": 28136,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 6790,
+   "seg_off": 6278,
+   "reg": "bx",
+   "imm": 29578,
+   "text": "Done!",
+   "len": 5
+  },
+  {
+   "file_off": 6865,
+   "seg_off": 6353,
+   "reg": "bx",
+   "imm": 29594,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 6925,
+   "seg_off": 6413,
+   "reg": "bx",
+   "imm": 30242,
+   "text": "A muscular dwarf with big, beady eyes says he was attacked by Shamblers, horrible swamp monsters made by performing ancient magical rituals on dead swamp matter molded into human form...",
+   "len": 186
+  },
+  {
+   "file_off": 6935,
+   "seg_off": 6423,
+   "reg": "bx",
+   "imm": 30432,
+   "text": "The gate leading into Siriadne's fortress is magically bound and cannot be opened.",
+   "len": 82
+  },
+  {
+   "file_off": 6945,
+   "seg_off": 6433,
+   "reg": "bx",
+   "imm": 30518,
+   "text": "You hear a whisper from behind you: 'A band of rebels that despises the evil Siriadne has taken refuge in the hills to the southwest.'",
+   "len": 134
+  },
+  {
+   "file_off": 6955,
+   "seg_off": 6443,
+   "reg": "bx",
+   "imm": 30656,
+   "text": "An ancient looking elvin wizard in the corner beckons you. He tells you in a shaky voice the second word in the name of the Ancient spell: 'Reveli'",
+   "len": 147
+  },
+  {
+   "file_off": 6975,
+   "seg_off": 6463,
+   "reg": "bx",
+   "imm": 31036,
+   "text": "The Arena is fine if you are a fighter, but a wizard need go to Terynor for his training. Terynor is nestled in the mountains far to the northeast and is rich in magical items.",
+   "len": 176
+  },
+  {
+   "file_off": 6995,
+   "seg_off": 6483,
+   "reg": "bx",
+   "imm": 31444,
+   "text": "* Coming soon * From the makers of The Shard of Spring ... an adventure set in the midst of a greater evil...",
+   "len": 109
+  },
+  {
+   "file_off": 7011,
+   "seg_off": 6499,
+   "reg": "bx",
+   "imm": 31558,
+   "text": "towndata.bin",
+   "len": 12
+  },
+  {
+   "file_off": 7034,
+   "seg_off": 6522,
+   "reg": "bx",
+   "imm": 31574,
+   "text": "towndata.dat",
+   "len": 12
+  },
+  {
+   "file_off": 7402,
+   "seg_off": 6890,
+   "reg": "bx",
+   "imm": 31612,
+   "text": "Aack!, There is something wrong with your disks!",
+   "len": 48
+  },
+  {
+   "file_off": 7471,
+   "seg_off": 6959,
+   "reg": "bx",
+   "imm": 28780,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 7513,
+   "seg_off": 7001,
+   "reg": "bx",
+   "imm": 28408,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 7580,
+   "seg_off": 7068,
+   "reg": "bx",
+   "imm": 28408,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 7670,
+   "seg_off": 7158,
+   "reg": "bx",
+   "imm": 31682,
+   "text": "You don't have",
+   "len": 14
+  },
+  {
+   "file_off": 7693,
+   "seg_off": 7181,
+   "reg": "bx",
+   "imm": 31700,
+   "text": "enough gold!",
+   "len": 12
+  },
+  {
+   "file_off": 7815,
+   "seg_off": 7303,
+   "reg": "bx",
+   "imm": 31716,
+   "text": "ITEMS.DAT",
+   "len": 9
+  },
+  {
+   "file_off": 8417,
+   "seg_off": 7905,
+   "reg": "bx",
+   "imm": 31758,
+   "text": "   ",
+   "len": 3
+  },
+  {
+   "file_off": 8472,
+   "seg_off": 7960,
+   "reg": "bx",
+   "imm": 31766,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 8665,
+   "seg_off": 8153,
+   "reg": "bx",
+   "imm": 31772,
+   "text": "dies in the night.",
+   "len": 18
+  },
+  {
+   "file_off": 8691,
+   "seg_off": 8179,
+   "reg": "bx",
+   "imm": 29594,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 8810,
+   "seg_off": 8298,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 9042,
+   "seg_off": 8530,
+   "reg": "bx",
+   "imm": 31798,
+   "text": " LVL: ",
+   "len": 6
+  },
+  {
+   "file_off": 9201,
+   "seg_off": 8689,
+   "reg": "bx",
+   "imm": 31818,
+   "text": "H.P.   ",
+   "len": 7
+  },
+  {
+   "file_off": 9238,
+   "seg_off": 8726,
+   "reg": "bx",
+   "imm": 31842,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 9293,
+   "seg_off": 8781,
+   "reg": "bx",
+   "imm": 31830,
+   "text": "S.P.   ",
+   "len": 7
+  },
+  {
+   "file_off": 9344,
+   "seg_off": 8832,
+   "reg": "bx",
+   "imm": 31842,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 9399,
+   "seg_off": 8887,
+   "reg": "bx",
+   "imm": 31848,
+   "text": "Exp.  ",
+   "len": 6
+  },
+  {
+   "file_off": 9454,
+   "seg_off": 8942,
+   "reg": "bx",
+   "imm": 31858,
+   "text": "Stat.  ",
+   "len": 7
+  },
+  {
+   "file_off": 9514,
+   "seg_off": 9002,
+   "reg": "bx",
+   "imm": 31872,
+   "text": "      Skills:",
+   "len": 13
+  },
+  {
+   "file_off": 9555,
+   "seg_off": 9043,
+   "reg": "bx",
+   "imm": 28408,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 9677,
+   "seg_off": 9165,
+   "reg": "bx",
+   "imm": 31896,
+   "text": "      Items:",
+   "len": 12
+  },
+  {
+   "file_off": 9764,
+   "seg_off": 9252,
+   "reg": "bx",
+   "imm": 31934,
+   "text": "H",
+   "len": 1
+  },
+  {
+   "file_off": 9775,
+   "seg_off": 9263,
+   "reg": "bx",
+   "imm": 31920,
+   "text": "Human",
+   "len": 5
+  },
+  {
+   "file_off": 9787,
+   "seg_off": 9275,
+   "reg": "bx",
+   "imm": 29468,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 9801,
+   "seg_off": 9289,
+   "reg": "bx",
+   "imm": 31940,
+   "text": "Troll",
+   "len": 5
+  },
+  {
+   "file_off": 9813,
+   "seg_off": 9301,
+   "reg": "bx",
+   "imm": 29594,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 9827,
+   "seg_off": 9315,
+   "reg": "bx",
+   "imm": 31950,
+   "text": "Dwarf",
+   "len": 5
+  },
+  {
+   "file_off": 9839,
+   "seg_off": 9327,
+   "reg": "bx",
+   "imm": 31960,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 9853,
+   "seg_off": 9341,
+   "reg": "bx",
+   "imm": 31966,
+   "text": "Elf",
+   "len": 3
+  },
+  {
+   "file_off": 9865,
+   "seg_off": 9353,
+   "reg": "bx",
+   "imm": 31984,
+   "text": "G",
+   "len": 1
+  },
+  {
+   "file_off": 9879,
+   "seg_off": 9367,
+   "reg": "bx",
+   "imm": 31974,
+   "text": "Gnome",
+   "len": 5
+  },
+  {
+   "file_off": 9891,
+   "seg_off": 9379,
+   "reg": "bx",
+   "imm": 31990,
+   "text": "error",
+   "len": 5
+  },
+  {
+   "file_off": 9957,
+   "seg_off": 9445,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 10016,
+   "seg_off": 9504,
+   "reg": "bx",
+   "imm": 32010,
+   "text": ")",
+   "len": 1
+  },
+  {
+   "file_off": 10111,
+   "seg_off": 9599,
+   "reg": "bx",
+   "imm": 32018,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 10138,
+   "seg_off": 9626,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  }
+ ],
+ "CMBT.EXE": [
+  {
+   "file_off": 772,
+   "seg_off": 260,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 789,
+   "seg_off": 277,
+   "reg": "bx",
+   "imm": 26594,
+   "text": "9",
+   "len": 1
+  },
+  {
+   "file_off": 910,
+   "seg_off": 398,
+   "reg": "dx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 1029,
+   "seg_off": 517,
+   "reg": "bx",
+   "imm": 26626,
+   "text": "-",
+   "len": 1
+  },
+  {
+   "file_off": 1200,
+   "seg_off": 688,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1531,
+   "seg_off": 1019,
+   "reg": "bx",
+   "imm": 37674,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 1635,
+   "seg_off": 1123,
+   "reg": "bx",
+   "imm": 37684,
+   "text": "None",
+   "len": 4
+  },
+  {
+   "file_off": 1650,
+   "seg_off": 1138,
+   "reg": "bx",
+   "imm": 37592,
+   "text": "Hands",
+   "len": 5
+  },
+  {
+   "file_off": 1667,
+   "seg_off": 1155,
+   "reg": "bx",
+   "imm": 37692,
+   "text": "Bite",
+   "len": 4
+  },
+  {
+   "file_off": 1684,
+   "seg_off": 1172,
+   "reg": "bx",
+   "imm": 37602,
+   "text": "Fangs",
+   "len": 5
+  },
+  {
+   "file_off": 1701,
+   "seg_off": 1189,
+   "reg": "bx",
+   "imm": 37612,
+   "text": "Hands",
+   "len": 5
+  },
+  {
+   "file_off": 2251,
+   "seg_off": 1739,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 2395,
+   "seg_off": 1883,
+   "reg": "bx",
+   "imm": 37736,
+   "text": "fastcmbt.bin",
+   "len": 12
+  },
+  {
+   "file_off": 2455,
+   "seg_off": 1943,
+   "reg": "bx",
+   "imm": 37754,
+   "text": "SPELLS.DAT",
+   "len": 10
+  },
+  {
+   "file_off": 2605,
+   "seg_off": 2093,
+   "reg": "bx",
+   "imm": 37768,
+   "text": "ITEMS.DAT",
+   "len": 9
+  },
+  {
+   "file_off": 2770,
+   "seg_off": 2258,
+   "reg": "bx",
+   "imm": 37784,
+   "text": "MAZE",
+   "len": 4
+  },
+  {
+   "file_off": 4902,
+   "seg_off": 4390,
+   "reg": "bx",
+   "imm": 37960,
+   "text": "rndmonst.bin",
+   "len": 12
+  },
+  {
+   "file_off": 5389,
+   "seg_off": 4877,
+   "reg": "bx",
+   "imm": 37996,
+   "text": "monst2.bin",
+   "len": 10
+  },
+  {
+   "file_off": 5488,
+   "seg_off": 4976,
+   "reg": "bx",
+   "imm": 38010,
+   "text": "monst4.bin",
+   "len": 10
+  },
+  {
+   "file_off": 5647,
+   "seg_off": 5135,
+   "reg": "bx",
+   "imm": 38026,
+   "text": "monst",
+   "len": 5
+  },
+  {
+   "file_off": 5689,
+   "seg_off": 5177,
+   "reg": "bx",
+   "imm": 38038,
+   "text": ".bin",
+   "len": 4
+  },
+  {
+   "file_off": 5906,
+   "seg_off": 5394,
+   "reg": "bx",
+   "imm": 38054,
+   "text": "monst",
+   "len": 5
+  },
+  {
+   "file_off": 5952,
+   "seg_off": 5440,
+   "reg": "bx",
+   "imm": 38038,
+   "text": ".bin",
+   "len": 4
+  },
+  {
+   "file_off": 6861,
+   "seg_off": 6349,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 7630,
+   "seg_off": 7118,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 7715,
+   "seg_off": 7203,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 8639,
+   "seg_off": 8127,
+   "reg": "bx",
+   "imm": 38106,
+   "text": "Item Breaks !",
+   "len": 13
+  },
+  {
+   "file_off": 9005,
+   "seg_off": 8493,
+   "reg": "bx",
+   "imm": 38140,
+   "text": "MONSTERS ALL DEAD",
+   "len": 17
+  },
+  {
+   "file_off": 9149,
+   "seg_off": 8637,
+   "reg": "bx",
+   "imm": 38166,
+   "text": "PARTY DIES!",
+   "len": 11
+  },
+  {
+   "file_off": 9222,
+   "seg_off": 8710,
+   "reg": "bx",
+   "imm": 38198,
+   "text": "DEAD",
+   "len": 4
+  },
+  {
+   "file_off": 9232,
+   "seg_off": 8720,
+   "reg": "bx",
+   "imm": 38206,
+   "text": "WRLD",
+   "len": 4
+  },
+  {
+   "file_off": 9245,
+   "seg_off": 8733,
+   "reg": "bx",
+   "imm": 38182,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 9264,
+   "seg_off": 8752,
+   "reg": "bx",
+   "imm": 38214,
+   "text": "MAZEMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 9385,
+   "seg_off": 8873,
+   "reg": "bx",
+   "imm": 38230,
+   "text": "PARTY RAN!",
+   "len": 10
+  },
+  {
+   "file_off": 9427,
+   "seg_off": 8915,
+   "reg": "bx",
+   "imm": 38246,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 10127,
+   "seg_off": 9615,
+   "reg": "bx",
+   "imm": 38258,
+   "text": "KEYPAD TEMPLATE",
+   "len": 15
+  },
+  {
+   "file_off": 10163,
+   "seg_off": 9651,
+   "reg": "bx",
+   "imm": 38278,
+   "text": "[ESC]",
+   "len": 5
+  },
+  {
+   "file_off": 10196,
+   "seg_off": 9684,
+   "reg": "bx",
+   "imm": 38308,
+   "text": "[D][",
+   "len": 4
+  },
+  {
+   "file_off": 10216,
+   "seg_off": 9704,
+   "reg": "bx",
+   "imm": 38316,
+   "text": "][?]",
+   "len": 4
+  },
+  {
+   "file_off": 10249,
+   "seg_off": 9737,
+   "reg": "bx",
+   "imm": 38324,
+   "text": "[",
+   "len": 1
+  },
+  {
+   "file_off": 10269,
+   "seg_off": 9757,
+   "reg": "bx",
+   "imm": 38288,
+   "text": "][ ][",
+   "len": 5
+  },
+  {
+   "file_off": 10290,
+   "seg_off": 9778,
+   "reg": "bx",
+   "imm": 38330,
+   "text": "]",
+   "len": 1
+  },
+  {
+   "file_off": 10323,
+   "seg_off": 9811,
+   "reg": "bx",
+   "imm": 38336,
+   "text": "[C][",
+   "len": 4
+  },
+  {
+   "file_off": 10344,
+   "seg_off": 9832,
+   "reg": "bx",
+   "imm": 38344,
+   "text": "][U]",
+   "len": 4
+  },
+  {
+   "file_off": 10377,
+   "seg_off": 9865,
+   "reg": "bx",
+   "imm": 38298,
+   "text": "[ATK]",
+   "len": 5
+  },
+  {
+   "file_off": 10413,
+   "seg_off": 9901,
+   "reg": "bx",
+   "imm": 38352,
+   "text": "FACING ",
+   "len": 7
+  },
+  {
+   "file_off": 10482,
+   "seg_off": 9970,
+   "reg": "bx",
+   "imm": 38364,
+   "text": "MP=",
+   "len": 3
+  },
+  {
+   "file_off": 10646,
+   "seg_off": 10134,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 10670,
+   "seg_off": 10158,
+   "reg": "bx",
+   "imm": 38382,
+   "text": "3",
+   "len": 1
+  },
+  {
+   "file_off": 10694,
+   "seg_off": 10182,
+   "reg": "bx",
+   "imm": 38388,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 10718,
+   "seg_off": 10206,
+   "reg": "bx",
+   "imm": 38394,
+   "text": "4",
+   "len": 1
+  },
+  {
+   "file_off": 10742,
+   "seg_off": 10230,
+   "reg": "bx",
+   "imm": 38400,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 10766,
+   "seg_off": 10254,
+   "reg": "bx",
+   "imm": 38406,
+   "text": "?",
+   "len": 1
+  },
+  {
+   "file_off": 10790,
+   "seg_off": 10278,
+   "reg": "bx",
+   "imm": 38412,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 10814,
+   "seg_off": 10302,
+   "reg": "bx",
+   "imm": 38418,
+   "text": "U",
+   "len": 1
+  },
+  {
+   "file_off": 10838,
+   "seg_off": 10326,
+   "reg": "bx",
+   "imm": 38424,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 10893,
+   "seg_off": 10381,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 10915,
+   "seg_off": 10403,
+   "reg": "bx",
+   "imm": 38388,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 10940,
+   "seg_off": 10428,
+   "reg": "bx",
+   "imm": 38382,
+   "text": "3",
+   "len": 1
+  },
+  {
+   "file_off": 10965,
+   "seg_off": 10453,
+   "reg": "bx",
+   "imm": 38394,
+   "text": "4",
+   "len": 1
+  },
+  {
+   "file_off": 10990,
+   "seg_off": 10478,
+   "reg": "bx",
+   "imm": 38400,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 11006,
+   "seg_off": 10494,
+   "reg": "bx",
+   "imm": 38406,
+   "text": "?",
+   "len": 1
+  },
+  {
+   "file_off": 11022,
+   "seg_off": 10510,
+   "reg": "bx",
+   "imm": 38434,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 11118,
+   "seg_off": 10606,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 11177,
+   "seg_off": 10665,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 11252,
+   "seg_off": 10740,
+   "reg": "bx",
+   "imm": 38412,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 11268,
+   "seg_off": 10756,
+   "reg": "bx",
+   "imm": 37674,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 11300,
+   "seg_off": 10788,
+   "reg": "bx",
+   "imm": 38454,
+   "text": "Sound is now on.",
+   "len": 16
+  },
+  {
+   "file_off": 11314,
+   "seg_off": 10802,
+   "reg": "bx",
+   "imm": 38478,
+   "text": "Sound is now off.",
+   "len": 17
+  },
+  {
+   "file_off": 11343,
+   "seg_off": 10831,
+   "reg": "bx",
+   "imm": 38508,
+   "text": "a$",
+   "len": 2
+  },
+  {
+   "file_off": 11373,
+   "seg_off": 10861,
+   "reg": "bx",
+   "imm": 38424,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 11395,
+   "seg_off": 10883,
+   "reg": "bx",
+   "imm": 38418,
+   "text": "U",
+   "len": 1
+  },
+  {
+   "file_off": 11746,
+   "seg_off": 11234,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 12071,
+   "seg_off": 11559,
+   "reg": "bx",
+   "imm": 38532,
+   "text": "Experience:",
+   "len": 11
+  },
+  {
+   "file_off": 12118,
+   "seg_off": 11606,
+   "reg": "bx",
+   "imm": 38548,
+   "text": " (per character)",
+   "len": 16
+  },
+  {
+   "file_off": 12536,
+   "seg_off": 12024,
+   "reg": "bx",
+   "imm": 38590,
+   "text": "Gold:",
+   "len": 5
+  },
+  {
+   "file_off": 12581,
+   "seg_off": 12069,
+   "reg": "bx",
+   "imm": 38600,
+   "text": "Gold:",
+   "len": 5
+  },
+  {
+   "file_off": 12726,
+   "seg_off": 12214,
+   "reg": "bx",
+   "imm": 38612,
+   "text": " found ",
+   "len": 7
+  },
+  {
+   "file_off": 13169,
+   "seg_off": 12657,
+   "reg": "bx",
+   "imm": 38642,
+   "text": "finds",
+   "len": 5
+  },
+  {
+   "file_off": 13216,
+   "seg_off": 12704,
+   "reg": "bx",
+   "imm": 38682,
+   "text": ".",
+   "len": 1
+  },
+  {
+   "file_off": 13254,
+   "seg_off": 12742,
+   "reg": "bx",
+   "imm": 38652,
+   "text": "Do you take it?",
+   "len": 15
+  },
+  {
+   "file_off": 13288,
+   "seg_off": 12776,
+   "reg": "bx",
+   "imm": 38672,
+   "text": "(Y/N)",
+   "len": 5
+  },
+  {
+   "file_off": 13327,
+   "seg_off": 12815,
+   "reg": "bx",
+   "imm": 38692,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 13399,
+   "seg_off": 12887,
+   "reg": "bx",
+   "imm": 38246,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 13515,
+   "seg_off": 13003,
+   "reg": "bx",
+   "imm": 38714,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 13560,
+   "seg_off": 13048,
+   "reg": "bx",
+   "imm": 38206,
+   "text": "WRLD",
+   "len": 4
+  },
+  {
+   "file_off": 13587,
+   "seg_off": 13075,
+   "reg": "bx",
+   "imm": 38698,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 13620,
+   "seg_off": 13108,
+   "reg": "bx",
+   "imm": 38722,
+   "text": "MAZEMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 14026,
+   "seg_off": 13514,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 14113,
+   "seg_off": 13601,
+   "reg": "bx",
+   "imm": 38740,
+   "text": "attacks ",
+   "len": 8
+  },
+  {
+   "file_off": 14187,
+   "seg_off": 13675,
+   "reg": "bx",
+   "imm": 38752,
+   "text": "with",
+   "len": 4
+  },
+  {
+   "file_off": 14320,
+   "seg_off": 13808,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 14600,
+   "seg_off": 14088,
+   "reg": "bx",
+   "imm": 38762,
+   "text": "and missed!",
+   "len": 11
+  },
+  {
+   "file_off": 15149,
+   "seg_off": 14637,
+   "reg": "bx",
+   "imm": 38794,
+   "text": "for no damage.",
+   "len": 14
+  },
+  {
+   "file_off": 15205,
+   "seg_off": 14693,
+   "reg": "bx",
+   "imm": 38816,
+   "text": "HK",
+   "len": 2
+  },
+  {
+   "file_off": 15229,
+   "seg_off": 14717,
+   "reg": "bx",
+   "imm": 38822,
+   "text": "and hacks for ",
+   "len": 14
+  },
+  {
+   "file_off": 15252,
+   "seg_off": 14740,
+   "reg": "bx",
+   "imm": 38844,
+   "text": "HT",
+   "len": 2
+  },
+  {
+   "file_off": 15276,
+   "seg_off": 14764,
+   "reg": "bx",
+   "imm": 38850,
+   "text": "and hits for ",
+   "len": 13
+  },
+  {
+   "file_off": 15319,
+   "seg_off": 14807,
+   "reg": "bx",
+   "imm": 38868,
+   "text": " damage.",
+   "len": 8
+  },
+  {
+   "file_off": 15456,
+   "seg_off": 14944,
+   "reg": "bx",
+   "imm": 38882,
+   "text": "     ",
+   "len": 5
+  },
+  {
+   "file_off": 15594,
+   "seg_off": 15082,
+   "reg": "bx",
+   "imm": 38892,
+   "text": "and is poisoned!",
+   "len": 16
+  },
+  {
+   "file_off": 15633,
+   "seg_off": 15121,
+   "reg": "bx",
+   "imm": 38918,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 15701,
+   "seg_off": 15189,
+   "reg": "bx",
+   "imm": 38924,
+   "text": " He Dies!",
+   "len": 9
+  },
+  {
+   "file_off": 15722,
+   "seg_off": 15210,
+   "reg": "bx",
+   "imm": 38938,
+   "text": " It dies!",
+   "len": 9
+  },
+  {
+   "file_off": 15884,
+   "seg_off": 15372,
+   "reg": "bx",
+   "imm": 38958,
+   "text": "All Monsters Dead",
+   "len": 17
+  },
+  {
+   "file_off": 16015,
+   "seg_off": 15503,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 18877,
+   "seg_off": 18365,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 18950,
+   "seg_off": 18438,
+   "reg": "bx",
+   "imm": 39012,
+   "text": "is not a",
+   "len": 8
+  },
+  {
+   "file_off": 18983,
+   "seg_off": 18471,
+   "reg": "bx",
+   "imm": 39024,
+   "text": "wizard",
+   "len": 6
+  },
+  {
+   "file_off": 19016,
+   "seg_off": 18504,
+   "reg": "bx",
+   "imm": 39034,
+   "text": "and cannot",
+   "len": 10
+  },
+  {
+   "file_off": 19049,
+   "seg_off": 18537,
+   "reg": "bx",
+   "imm": 39048,
+   "text": "cast spells.",
+   "len": 12
+  },
+  {
+   "file_off": 19161,
+   "seg_off": 18649,
+   "reg": "bx",
+   "imm": 39066,
+   "text": "Which spell do",
+   "len": 14
+  },
+  {
+   "file_off": 19194,
+   "seg_off": 18682,
+   "reg": "bx",
+   "imm": 39084,
+   "text": "you wish to cast?",
+   "len": 17
+  },
+  {
+   "file_off": 19224,
+   "seg_off": 18712,
+   "reg": "bx",
+   "imm": 39106,
+   "text": " (ENTER exits)",
+   "len": 14
+  },
+  {
+   "file_off": 19382,
+   "seg_off": 18870,
+   "reg": "bx",
+   "imm": 39130,
+   "text": " There is no     ",
+   "len": 17
+  },
+  {
+   "file_off": 19415,
+   "seg_off": 18903,
+   "reg": "bx",
+   "imm": 39152,
+   "text": " such spell!     ",
+   "len": 17
+  },
+  {
+   "file_off": 19554,
+   "seg_off": 19042,
+   "reg": "bx",
+   "imm": 39176,
+   "text": " That is not a   ",
+   "len": 17
+  },
+  {
+   "file_off": 19587,
+   "seg_off": 19075,
+   "reg": "bx",
+   "imm": 39198,
+   "text": " combat spell!   ",
+   "len": 17
+  },
+  {
+   "file_off": 19710,
+   "seg_off": 19198,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 19746,
+   "seg_off": 19234,
+   "reg": "bx",
+   "imm": 39222,
+   "text": " You don't know  ",
+   "len": 17
+  },
+  {
+   "file_off": 19779,
+   "seg_off": 19267,
+   "reg": "bx",
+   "imm": 39244,
+   "text": " that spell!     ",
+   "len": 17
+  },
+  {
+   "file_off": 19958,
+   "seg_off": 19446,
+   "reg": "bx",
+   "imm": 39268,
+   "text": "You will not be  ",
+   "len": 17
+  },
+  {
+   "file_off": 19991,
+   "seg_off": 19479,
+   "reg": "bx",
+   "imm": 39290,
+   "text": "prepared for that",
+   "len": 17
+  },
+  {
+   "file_off": 20024,
+   "seg_off": 19512,
+   "reg": "bx",
+   "imm": 39312,
+   "text": "spell until the  ",
+   "len": 17
+  },
+  {
+   "file_off": 20056,
+   "seg_off": 19544,
+   "reg": "bx",
+   "imm": 39334,
+   "text": "next round.",
+   "len": 11
+  },
+  {
+   "file_off": 20340,
+   "seg_off": 19828,
+   "reg": "bx",
+   "imm": 39352,
+   "text": " # SP ? ",
+   "len": 8
+  },
+  {
+   "file_off": 20432,
+   "seg_off": 19920,
+   "reg": "bx",
+   "imm": 39364,
+   "text": " You don't have",
+   "len": 15
+  },
+  {
+   "file_off": 20465,
+   "seg_off": 19953,
+   "reg": "bx",
+   "imm": 39384,
+   "text": " that many!",
+   "len": 11
+  },
+  {
+   "file_off": 20550,
+   "seg_off": 20038,
+   "reg": "bx",
+   "imm": 39402,
+   "text": "That spell",
+   "len": 10
+  },
+  {
+   "file_off": 20583,
+   "seg_off": 20071,
+   "reg": "bx",
+   "imm": 39416,
+   "text": "requires at least",
+   "len": 17
+  },
+  {
+   "file_off": 20623,
+   "seg_off": 20111,
+   "reg": "bx",
+   "imm": 39438,
+   "text": " S.P.",
+   "len": 5
+  },
+  {
+   "file_off": 20708,
+   "seg_off": 20196,
+   "reg": "bx",
+   "imm": 39450,
+   "text": "   ",
+   "len": 3
+  },
+  {
+   "file_off": 20933,
+   "seg_off": 20421,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 21001,
+   "seg_off": 20489,
+   "reg": "bx",
+   "imm": 39466,
+   "text": "NO TARGET",
+   "len": 9
+  },
+  {
+   "file_off": 21034,
+   "seg_off": 20522,
+   "reg": "bx",
+   "imm": 39480,
+   "text": "SELECTED!",
+   "len": 9
+  },
+  {
+   "file_off": 21266,
+   "seg_off": 20754,
+   "reg": "bx",
+   "imm": 39498,
+   "text": "Use arrow keys to",
+   "len": 17
+  },
+  {
+   "file_off": 21299,
+   "seg_off": 20787,
+   "reg": "bx",
+   "imm": 39520,
+   "text": "position cursor.",
+   "len": 16
+  },
+  {
+   "file_off": 21335,
+   "seg_off": 20823,
+   "reg": "bx",
+   "imm": 38324,
+   "text": "[",
+   "len": 1
+  },
+  {
+   "file_off": 21358,
+   "seg_off": 20846,
+   "reg": "bx",
+   "imm": 38330,
+   "text": "]",
+   "len": 1
+  },
+  {
+   "file_off": 21409,
+   "seg_off": 20897,
+   "reg": "bx",
+   "imm": 39540,
+   "text": "]   [",
+   "len": 5
+  },
+  {
+   "file_off": 21430,
+   "seg_off": 20918,
+   "reg": "bx",
+   "imm": 38330,
+   "text": "]",
+   "len": 1
+  },
+  {
+   "file_off": 21485,
+   "seg_off": 20973,
+   "reg": "bx",
+   "imm": 38330,
+   "text": "]",
+   "len": 1
+  },
+  {
+   "file_off": 21518,
+   "seg_off": 21006,
+   "reg": "bx",
+   "imm": 39550,
+   "text": "Hit PgDn key",
+   "len": 12
+  },
+  {
+   "file_off": 21550,
+   "seg_off": 21038,
+   "reg": "bx",
+   "imm": 39566,
+   "text": "(ESC to Exit)",
+   "len": 13
+  },
+  {
+   "file_off": 21593,
+   "seg_off": 21081,
+   "reg": "bx",
+   "imm": 39584,
+   "text": "Who do you want",
+   "len": 15
+  },
+  {
+   "file_off": 21626,
+   "seg_off": 21114,
+   "reg": "bx",
+   "imm": 39604,
+   "text": "to use it on?",
+   "len": 13
+  },
+  {
+   "file_off": 21660,
+   "seg_off": 21148,
+   "reg": "bx",
+   "imm": 39622,
+   "text": "to use.",
+   "len": 7
+  },
+  {
+   "file_off": 21709,
+   "seg_off": 21197,
+   "reg": "bx",
+   "imm": 39634,
+   "text": "Where do you want",
+   "len": 17
+  },
+  {
+   "file_off": 21742,
+   "seg_off": 21230,
+   "reg": "bx",
+   "imm": 39656,
+   "text": "to cast it?",
+   "len": 11
+  },
+  {
+   "file_off": 21776,
+   "seg_off": 21264,
+   "reg": "bx",
+   "imm": 39672,
+   "text": "to cast.",
+   "len": 8
+  },
+  {
+   "file_off": 21911,
+   "seg_off": 21399,
+   "reg": "bx",
+   "imm": 38388,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 21966,
+   "seg_off": 21454,
+   "reg": "bx",
+   "imm": 39450,
+   "text": "   ",
+   "len": 3
+  },
+  {
+   "file_off": 23465,
+   "seg_off": 22953,
+   "reg": "bx",
+   "imm": 39712,
+   "text": "PS",
+   "len": 2
+  },
+  {
+   "file_off": 24224,
+   "seg_off": 23712,
+   "reg": "bx",
+   "imm": 39732,
+   "text": "and Dies!",
+   "len": 9
+  },
+  {
+   "file_off": 24298,
+   "seg_off": 23786,
+   "reg": "bx",
+   "imm": 39746,
+   "text": "     ",
+   "len": 5
+  },
+  {
+   "file_off": 24453,
+   "seg_off": 23941,
+   "reg": "bx",
+   "imm": 39762,
+   "text": "NO ONE IN",
+   "len": 9
+  },
+  {
+   "file_off": 24487,
+   "seg_off": 23975,
+   "reg": "bx",
+   "imm": 39776,
+   "text": "TARGET AREA",
+   "len": 11
+  },
+  {
+   "file_off": 24802,
+   "seg_off": 24290,
+   "reg": "bx",
+   "imm": 39712,
+   "text": "PS",
+   "len": 2
+  },
+  {
+   "file_off": 25034,
+   "seg_off": 24522,
+   "reg": "bx",
+   "imm": 39712,
+   "text": "PS",
+   "len": 2
+  },
+  {
+   "file_off": 25668,
+   "seg_off": 25156,
+   "reg": "bx",
+   "imm": 39816,
+   "text": "and Dies",
+   "len": 8
+  },
+  {
+   "file_off": 26050,
+   "seg_off": 25538,
+   "reg": "bx",
+   "imm": 38400,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 26119,
+   "seg_off": 25607,
+   "reg": "bx",
+   "imm": 39832,
+   "text": "     ",
+   "len": 5
+  },
+  {
+   "file_off": 26225,
+   "seg_off": 25713,
+   "reg": "bx",
+   "imm": 39712,
+   "text": "PS",
+   "len": 2
+  },
+  {
+   "file_off": 26391,
+   "seg_off": 25879,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 26412,
+   "seg_off": 25900,
+   "reg": "bx",
+   "imm": 39848,
+   "text": "notices no",
+   "len": 10
+  },
+  {
+   "file_off": 26446,
+   "seg_off": 25934,
+   "reg": "bx",
+   "imm": 39862,
+   "text": "difference.",
+   "len": 11
+  },
+  {
+   "file_off": 26500,
+   "seg_off": 25988,
+   "reg": "bx",
+   "imm": 39712,
+   "text": "PS",
+   "len": 2
+  },
+  {
+   "file_off": 26633,
+   "seg_off": 26121,
+   "reg": "bx",
+   "imm": 39884,
+   "text": "Breaks free!",
+   "len": 12
+  },
+  {
+   "file_off": 26817,
+   "seg_off": 26305,
+   "reg": "bx",
+   "imm": 39902,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 26838,
+   "seg_off": 26326,
+   "reg": "bx",
+   "imm": 39908,
+   "text": "notices no",
+   "len": 10
+  },
+  {
+   "file_off": 26872,
+   "seg_off": 26360,
+   "reg": "bx",
+   "imm": 39922,
+   "text": "difference.",
+   "len": 11
+  },
+  {
+   "file_off": 26955,
+   "seg_off": 26443,
+   "reg": "bx",
+   "imm": 39712,
+   "text": "PS",
+   "len": 2
+  },
+  {
+   "file_off": 27214,
+   "seg_off": 26702,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 27235,
+   "seg_off": 26723,
+   "reg": "bx",
+   "imm": 39944,
+   "text": "is not bound in",
+   "len": 15
+  },
+  {
+   "file_off": 27285,
+   "seg_off": 26773,
+   "reg": "bx",
+   "imm": 39964,
+   "text": "chains and",
+   "len": 10
+  },
+  {
+   "file_off": 27319,
+   "seg_off": 26807,
+   "reg": "bx",
+   "imm": 39978,
+   "text": "still air and",
+   "len": 13
+  },
+  {
+   "file_off": 27353,
+   "seg_off": 26841,
+   "reg": "bx",
+   "imm": 39996,
+   "text": "ice and",
+   "len": 7
+  },
+  {
+   "file_off": 27387,
+   "seg_off": 26875,
+   "reg": "bx",
+   "imm": 40008,
+   "text": "notices no effect",
+   "len": 17
+  },
+  {
+   "file_off": 27450,
+   "seg_off": 26938,
+   "reg": "bx",
+   "imm": 40036,
+   "text": "FL",
+   "len": 2
+  },
+  {
+   "file_off": 27485,
+   "seg_off": 26973,
+   "reg": "bx",
+   "imm": 40042,
+   "text": "Item Fails",
+   "len": 10
+  },
+  {
+   "file_off": 27506,
+   "seg_off": 26994,
+   "reg": "bx",
+   "imm": 40056,
+   "text": "Spell Fails",
+   "len": 11
+  },
+  {
+   "file_off": 27557,
+   "seg_off": 27045,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 27632,
+   "seg_off": 27120,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 27706,
+   "seg_off": 27194,
+   "reg": "bx",
+   "imm": 40078,
+   "text": "does not have",
+   "len": 13
+  },
+  {
+   "file_off": 27739,
+   "seg_off": 27227,
+   "reg": "bx",
+   "imm": 40096,
+   "text": "the Priesthood",
+   "len": 14
+  },
+  {
+   "file_off": 27772,
+   "seg_off": 27260,
+   "reg": "bx",
+   "imm": 40114,
+   "text": "and cannot",
+   "len": 10
+  },
+  {
+   "file_off": 27805,
+   "seg_off": 27293,
+   "reg": "bx",
+   "imm": 40128,
+   "text": "dispell.",
+   "len": 8
+  },
+  {
+   "file_off": 27879,
+   "seg_off": 27367,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 27953,
+   "seg_off": 27441,
+   "reg": "bx",
+   "imm": 40142,
+   "text": "has already",
+   "len": 11
+  },
+  {
+   "file_off": 27986,
+   "seg_off": 27474,
+   "reg": "bx",
+   "imm": 40158,
+   "text": "dispelled",
+   "len": 9
+  },
+  {
+   "file_off": 28019,
+   "seg_off": 27507,
+   "reg": "bx",
+   "imm": 40172,
+   "text": "this combat.",
+   "len": 12
+  },
+  {
+   "file_off": 28093,
+   "seg_off": 27581,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 28167,
+   "seg_off": 27655,
+   "reg": "bx",
+   "imm": 40190,
+   "text": "is not a",
+   "len": 8
+  },
+  {
+   "file_off": 28200,
+   "seg_off": 27688,
+   "reg": "bx",
+   "imm": 40202,
+   "text": "wizard",
+   "len": 6
+  },
+  {
+   "file_off": 28232,
+   "seg_off": 27720,
+   "reg": "bx",
+   "imm": 40212,
+   "text": "and cannot",
+   "len": 10
+  },
+  {
+   "file_off": 28265,
+   "seg_off": 27753,
+   "reg": "bx",
+   "imm": 40226,
+   "text": "dispell.",
+   "len": 8
+  },
+  {
+   "file_off": 28428,
+   "seg_off": 27916,
+   "reg": "bx",
+   "imm": 40242,
+   "text": "None of these",
+   "len": 13
+  },
+  {
+   "file_off": 28461,
+   "seg_off": 27949,
+   "reg": "bx",
+   "imm": 40260,
+   "text": "monsters are",
+   "len": 12
+  },
+  {
+   "file_off": 28494,
+   "seg_off": 27982,
+   "reg": "bx",
+   "imm": 40276,
+   "text": "undead!",
+   "len": 7
+  },
+  {
+   "file_off": 28584,
+   "seg_off": 28072,
+   "reg": "bx",
+   "imm": 40292,
+   "text": "Attempting",
+   "len": 10
+  },
+  {
+   "file_off": 28617,
+   "seg_off": 28105,
+   "reg": "bx",
+   "imm": 40306,
+   "text": "dispell",
+   "len": 7
+  },
+  {
+   "file_off": 28905,
+   "seg_off": 28393,
+   "reg": "bx",
+   "imm": 40320,
+   "text": "Ignores priest.",
+   "len": 15
+  },
+  {
+   "file_off": 28969,
+   "seg_off": 28457,
+   "reg": "bx",
+   "imm": 40348,
+   "text": "dies.",
+   "len": 5
+  },
+  {
+   "file_off": 29168,
+   "seg_off": 28656,
+   "reg": "bx",
+   "imm": 38092,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 29435,
+   "seg_off": 28923,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 29918,
+   "seg_off": 29406,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 30364,
+   "seg_off": 29852,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 30814,
+   "seg_off": 30302,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 31269,
+   "seg_off": 30757,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 31499,
+   "seg_off": 30987,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 31660,
+   "seg_off": 31148,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 31693,
+   "seg_off": 31181,
+   "reg": "bx",
+   "imm": 40412,
+   "text": ")",
+   "len": 1
+  },
+  {
+   "file_off": 31784,
+   "seg_off": 31272,
+   "reg": "bx",
+   "imm": 40418,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 31815,
+   "seg_off": 31303,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 31970,
+   "seg_off": 31458,
+   "reg": "bx",
+   "imm": 40428,
+   "text": "This character has no items to use!",
+   "len": 35
+  },
+  {
+   "file_off": 32036,
+   "seg_off": 31524,
+   "reg": "bx",
+   "imm": 40476,
+   "text": "Use:  (ESC exits)",
+   "len": 17
+  },
+  {
+   "file_off": 32225,
+   "seg_off": 31713,
+   "reg": "bx",
+   "imm": 40500,
+   "text": "Not a valid magical item!",
+   "len": 25
+  },
+  {
+   "file_off": 32442,
+   "seg_off": 31930,
+   "reg": "bx",
+   "imm": 40628,
+   "text": "                 ",
+   "len": 17
+  },
+  {
+   "file_off": 32445,
+   "seg_off": 31933,
+   "reg": "ax",
+   "imm": 40540,
+   "text": "Do you wish to use the potion on Y)ourself or T)oss it to another character?       ",
+   "len": 83
+  },
+  {
+   "file_off": 32455,
+   "seg_off": 31943,
+   "reg": "bx",
+   "imm": 40650,
+   "text": " (ESC cancels)",
+   "len": 14
+  },
+  {
+   "file_off": 32474,
+   "seg_off": 31962,
+   "reg": "bx",
+   "imm": 38424,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 32505,
+   "seg_off": 31993,
+   "reg": "bx",
+   "imm": 40724,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 32544,
+   "seg_off": 32032,
+   "reg": "bx",
+   "imm": 40676,
+   "text": "Toss it to which",
+   "len": 16
+  },
+  {
+   "file_off": 32577,
+   "seg_off": 32065,
+   "reg": "bx",
+   "imm": 40696,
+   "text": "character?",
+   "len": 10
+  },
+  {
+   "file_off": 32610,
+   "seg_off": 32098,
+   "reg": "bx",
+   "imm": 40710,
+   "text": "char #: ",
+   "len": 8
+  },
+  {
+   "file_off": 32647,
+   "seg_off": 32135,
+   "reg": "bx",
+   "imm": 38692,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 32837,
+   "seg_off": 32325,
+   "reg": "bx",
+   "imm": 40732,
+   "text": "Aack!  There is something wrong with the data files, please restore!",
+   "len": 68
+  },
+  {
+   "file_off": 32890,
+   "seg_off": 32378,
+   "reg": "bx",
+   "imm": 40836,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 32898,
+   "seg_off": 32386,
+   "reg": "bx",
+   "imm": 40812,
+   "text": "MONSTERS.DAT",
+   "len": 12
+  },
+  {
+   "file_off": 34519,
+   "seg_off": 34007,
+   "reg": "bx",
+   "imm": 38518,
+   "text": "BP",
+   "len": 2
+  },
+  {
+   "file_off": 34540,
+   "seg_off": 34028,
+   "reg": "bx",
+   "imm": 38844,
+   "text": "HT",
+   "len": 2
+  },
+  {
+   "file_off": 34580,
+   "seg_off": 34068,
+   "reg": "bx",
+   "imm": 38816,
+   "text": "HK",
+   "len": 2
+  },
+  {
+   "file_off": 34620,
+   "seg_off": 34108,
+   "reg": "bx",
+   "imm": 40886,
+   "text": "BR",
+   "len": 2
+  },
+  {
+   "file_off": 34660,
+   "seg_off": 34148,
+   "reg": "bx",
+   "imm": 40892,
+   "text": "DD",
+   "len": 2
+  },
+  {
+   "file_off": 34700,
+   "seg_off": 34188,
+   "reg": "bx",
+   "imm": 39712,
+   "text": "PS",
+   "len": 2
+  },
+  {
+   "file_off": 34800,
+   "seg_off": 34288,
+   "reg": "bx",
+   "imm": 40036,
+   "text": "FL",
+   "len": 2
+  },
+  {
+   "file_off": 35157,
+   "seg_off": 34645,
+   "reg": "bx",
+   "imm": 40892,
+   "text": "DD",
+   "len": 2
+  },
+  {
+   "file_off": 35435,
+   "seg_off": 34923,
+   "reg": "bx",
+   "imm": 38400,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 35489,
+   "seg_off": 34977,
+   "reg": "bx",
+   "imm": 38388,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 35507,
+   "seg_off": 34995,
+   "reg": "bx",
+   "imm": 40922,
+   "text": "0   0  ",
+   "len": 7
+  },
+  {
+   "file_off": 35528,
+   "seg_off": 35016,
+   "reg": "bx",
+   "imm": 40934,
+   "text": "0      ",
+   "len": 7
+  },
+  {
+   "file_off": 35630,
+   "seg_off": 35118,
+   "reg": "bx",
+   "imm": 40946,
+   "text": "Status: ",
+   "len": 8
+  },
+  {
+   "file_off": 35720,
+   "seg_off": 35208,
+   "reg": "bx",
+   "imm": 40958,
+   "text": "Seeks> ",
+   "len": 7
+  },
+  {
+   "file_off": 35790,
+   "seg_off": 35278,
+   "reg": "bx",
+   "imm": 40974,
+   "text": "YES",
+   "len": 3
+  },
+  {
+   "file_off": 35804,
+   "seg_off": 35292,
+   "reg": "bx",
+   "imm": 40982,
+   "text": "no",
+   "len": 2
+  },
+  {
+   "file_off": 35914,
+   "seg_off": 35402,
+   "reg": "bx",
+   "imm": 40988,
+   "text": "Speed:    ",
+   "len": 10
+  },
+  {
+   "file_off": 35981,
+   "seg_off": 35469,
+   "reg": "bx",
+   "imm": 41002,
+   "text": "Skill:    ",
+   "len": 10
+  },
+  {
+   "file_off": 36045,
+   "seg_off": 35533,
+   "reg": "bx",
+   "imm": 41016,
+   "text": "Strength: ",
+   "len": 10
+  },
+  {
+   "file_off": 36108,
+   "seg_off": 35596,
+   "reg": "bx",
+   "imm": 41030,
+   "text": "Magical:  ",
+   "len": 10
+  },
+  {
+   "file_off": 36149,
+   "seg_off": 35637,
+   "reg": "bx",
+   "imm": 41044,
+   "text": "Armor rating:",
+   "len": 13
+  },
+  {
+   "file_off": 36182,
+   "seg_off": 35670,
+   "reg": "bx",
+   "imm": 41080,
+   "text": " * ",
+   "len": 3
+  },
+  {
+   "file_off": 36209,
+   "seg_off": 35697,
+   "reg": "bx",
+   "imm": 41088,
+   "text": " *",
+   "len": 2
+  },
+  {
+   "file_off": 36244,
+   "seg_off": 35732,
+   "reg": "bx",
+   "imm": 41062,
+   "text": "Attacks with:",
+   "len": 13
+  },
+  {
+   "file_off": 36449,
+   "seg_off": 35937,
+   "reg": "ax",
+   "imm": 41094,
+   "text": "(ESC, ",
+   "len": 6
+  },
+  {
+   "file_off": 36476,
+   "seg_off": 35964,
+   "reg": "bx",
+   "imm": 41104,
+   "text": " scrolls)",
+   "len": 9
+  }
+ ],
+ "CAMP.EXE": [
+  {
+   "file_off": 744,
+   "seg_off": 232,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 759,
+   "seg_off": 247,
+   "reg": "bx",
+   "imm": 26594,
+   "text": "9",
+   "len": 1
+  },
+  {
+   "file_off": 858,
+   "seg_off": 346,
+   "reg": "dx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 957,
+   "seg_off": 445,
+   "reg": "bx",
+   "imm": 26626,
+   "text": "-",
+   "len": 1
+  },
+  {
+   "file_off": 1100,
+   "seg_off": 588,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1292,
+   "seg_off": 780,
+   "reg": "bx",
+   "imm": 28438,
+   "text": "CR",
+   "len": 2
+  },
+  {
+   "file_off": 1319,
+   "seg_off": 807,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 1542,
+   "seg_off": 1030,
+   "reg": "bx",
+   "imm": 28454,
+   "text": "      Camp:",
+   "len": 11
+  },
+  {
+   "file_off": 1565,
+   "seg_off": 1053,
+   "reg": "bx",
+   "imm": 28470,
+   "text": " P)rint char(s)",
+   "len": 15
+  },
+  {
+   "file_off": 1588,
+   "seg_off": 1076,
+   "reg": "bx",
+   "imm": 28490,
+   "text": " S)leep",
+   "len": 7
+  },
+  {
+   "file_off": 1611,
+   "seg_off": 1099,
+   "reg": "bx",
+   "imm": 28502,
+   "text": " #)inspect char ",
+   "len": 16
+  },
+  {
+   "file_off": 1634,
+   "seg_off": 1122,
+   "reg": "bx",
+   "imm": 28522,
+   "text": " C)ast spell",
+   "len": 12
+  },
+  {
+   "file_off": 1657,
+   "seg_off": 1145,
+   "reg": "bx",
+   "imm": 28538,
+   "text": " R)eorder",
+   "len": 9
+  },
+  {
+   "file_off": 1680,
+   "seg_off": 1168,
+   "reg": "bx",
+   "imm": 28552,
+   "text": " T)rade",
+   "len": 7
+  },
+  {
+   "file_off": 1703,
+   "seg_off": 1191,
+   "reg": "bx",
+   "imm": 28564,
+   "text": " D)rop",
+   "len": 6
+  },
+  {
+   "file_off": 1726,
+   "seg_off": 1214,
+   "reg": "bx",
+   "imm": 28574,
+   "text": " E)quip",
+   "len": 7
+  },
+  {
+   "file_off": 1749,
+   "seg_off": 1237,
+   "reg": "bx",
+   "imm": 28586,
+   "text": " H)unt",
+   "len": 6
+  },
+  {
+   "file_off": 1772,
+   "seg_off": 1260,
+   "reg": "bx",
+   "imm": 28596,
+   "text": " I)dentify",
+   "len": 10
+  },
+  {
+   "file_off": 1795,
+   "seg_off": 1283,
+   "reg": "bx",
+   "imm": 28610,
+   "text": " U)se an item",
+   "len": 13
+  },
+  {
+   "file_off": 1815,
+   "seg_off": 1303,
+   "reg": "bx",
+   "imm": 28628,
+   "text": " ESC to leave",
+   "len": 13
+  },
+  {
+   "file_off": 1875,
+   "seg_off": 1363,
+   "reg": "bx",
+   "imm": 28686,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 1901,
+   "seg_off": 1389,
+   "reg": "ax",
+   "imm": 28646,
+   "text": "Breaking Camp..",
+   "len": 15
+  },
+  {
+   "file_off": 1940,
+   "seg_off": 1428,
+   "reg": "bx",
+   "imm": 28702,
+   "text": "WRLD",
+   "len": 4
+  },
+  {
+   "file_off": 1951,
+   "seg_off": 1439,
+   "reg": "bx",
+   "imm": 28666,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 1966,
+   "seg_off": 1454,
+   "reg": "bx",
+   "imm": 28710,
+   "text": "MAZEMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 1989,
+   "seg_off": 1477,
+   "reg": "bx",
+   "imm": 28726,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 2006,
+   "seg_off": 1494,
+   "reg": "bx",
+   "imm": 28732,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 2026,
+   "seg_off": 1514,
+   "reg": "bx",
+   "imm": 28738,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 2046,
+   "seg_off": 1534,
+   "reg": "bx",
+   "imm": 28744,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 2066,
+   "seg_off": 1554,
+   "reg": "bx",
+   "imm": 28750,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 2086,
+   "seg_off": 1574,
+   "reg": "bx",
+   "imm": 28756,
+   "text": "H",
+   "len": 1
+  },
+  {
+   "file_off": 2106,
+   "seg_off": 1594,
+   "reg": "bx",
+   "imm": 28762,
+   "text": "I",
+   "len": 1
+  },
+  {
+   "file_off": 2126,
+   "seg_off": 1614,
+   "reg": "bx",
+   "imm": 28768,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 2146,
+   "seg_off": 1634,
+   "reg": "bx",
+   "imm": 28774,
+   "text": "U",
+   "len": 1
+  },
+  {
+   "file_off": 2166,
+   "seg_off": 1654,
+   "reg": "bx",
+   "imm": 28780,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 2243,
+   "seg_off": 1731,
+   "reg": "bx",
+   "imm": 28788,
+   "text": "Character # to trade from ?, (ESC exits)",
+   "len": 40
+  },
+  {
+   "file_off": 2299,
+   "seg_off": 1787,
+   "reg": "bx",
+   "imm": 28836,
+   "text": "Trade which ?",
+   "len": 13
+  },
+  {
+   "file_off": 2479,
+   "seg_off": 1967,
+   "reg": "bx",
+   "imm": 28868,
+   "text": "    Give to ? ",
+   "len": 14
+  },
+  {
+   "file_off": 2788,
+   "seg_off": 2276,
+   "reg": "bx",
+   "imm": 28892,
+   "text": "NO ROOM !",
+   "len": 9
+  },
+  {
+   "file_off": 2800,
+   "seg_off": 2288,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 2853,
+   "seg_off": 2341,
+   "reg": "bx",
+   "imm": 28910,
+   "text": " OK",
+   "len": 3
+  },
+  {
+   "file_off": 2904,
+   "seg_off": 2392,
+   "reg": "bx",
+   "imm": 28918,
+   "text": "Character # to equip ? (ESC exits)",
+   "len": 34
+  },
+  {
+   "file_off": 3017,
+   "seg_off": 2505,
+   "reg": "ax",
+   "imm": 28960,
+   "text": "Weapon? ",
+   "len": 8
+  },
+  {
+   "file_off": 3025,
+   "seg_off": 2513,
+   "reg": "bx",
+   "imm": 28972,
+   "text": " skips.",
+   "len": 7
+  },
+  {
+   "file_off": 3110,
+   "seg_off": 2598,
+   "reg": "bx",
+   "imm": 28988,
+   "text": "No Weapon",
+   "len": 9
+  },
+  {
+   "file_off": 3314,
+   "seg_off": 2802,
+   "reg": "bx",
+   "imm": 29020,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 3355,
+   "seg_off": 2843,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 3388,
+   "seg_off": 2876,
+   "reg": "bx",
+   "imm": 29006,
+   "text": "NO SKILL !",
+   "len": 10
+  },
+  {
+   "file_off": 3424,
+   "seg_off": 2912,
+   "reg": "bx",
+   "imm": 29026,
+   "text": "          ",
+   "len": 10
+  },
+  {
+   "file_off": 3499,
+   "seg_off": 2987,
+   "reg": "bx",
+   "imm": 29040,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 3526,
+   "seg_off": 3014,
+   "reg": "ax",
+   "imm": 29046,
+   "text": "Armor?  ",
+   "len": 8
+  },
+  {
+   "file_off": 3534,
+   "seg_off": 3022,
+   "reg": "bx",
+   "imm": 29058,
+   "text": " skips.",
+   "len": 7
+  },
+  {
+   "file_off": 3676,
+   "seg_off": 3164,
+   "reg": "bx",
+   "imm": 29070,
+   "text": "No Armor  ",
+   "len": 10
+  },
+  {
+   "file_off": 3824,
+   "seg_off": 3312,
+   "reg": "bx",
+   "imm": 29020,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 3919,
+   "seg_off": 3407,
+   "reg": "bx",
+   "imm": 29040,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 3943,
+   "seg_off": 3431,
+   "reg": "bx",
+   "imm": 29084,
+   "text": "OK !",
+   "len": 4
+  },
+  {
+   "file_off": 3968,
+   "seg_off": 3456,
+   "reg": "bx",
+   "imm": 29092,
+   "text": "Character # dropping item ? (ESC exits)",
+   "len": 39
+  },
+  {
+   "file_off": 4021,
+   "seg_off": 3509,
+   "reg": "bx",
+   "imm": 29140,
+   "text": "Item to drop ?",
+   "len": 14
+  },
+  {
+   "file_off": 4173,
+   "seg_off": 3661,
+   "reg": "bx",
+   "imm": 29166,
+   "text": "Dropped ! ",
+   "len": 10
+  },
+  {
+   "file_off": 4220,
+   "seg_off": 3708,
+   "reg": "bx",
+   "imm": 29180,
+   "text": "You have slept !",
+   "len": 16
+  },
+  {
+   "file_off": 4242,
+   "seg_off": 3730,
+   "reg": "bx",
+   "imm": 29202,
+   "text": "You are not tired",
+   "len": 17
+  },
+  {
+   "file_off": 4269,
+   "seg_off": 3757,
+   "reg": "bx",
+   "imm": 29224,
+   "text": "You sleep...",
+   "len": 12
+  },
+  {
+   "file_off": 4426,
+   "seg_off": 3914,
+   "reg": "bx",
+   "imm": 29246,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 4495,
+   "seg_off": 3983,
+   "reg": "bx",
+   "imm": 29254,
+   "text": "Character # wishing to identify? (ESC exits)",
+   "len": 44
+  },
+  {
+   "file_off": 4558,
+   "seg_off": 4046,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 4588,
+   "seg_off": 4076,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 4640,
+   "seg_off": 4128,
+   "reg": "bx",
+   "imm": 29312,
+   "text": "Item to ID ?",
+   "len": 12
+  },
+  {
+   "file_off": 4856,
+   "seg_off": 4344,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 4867,
+   "seg_off": 4355,
+   "reg": "bx",
+   "imm": 29336,
+   "text": "You are not trained in that lore!",
+   "len": 33
+  },
+  {
+   "file_off": 5009,
+   "seg_off": 4497,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 5047,
+   "seg_off": 4535,
+   "reg": "bx",
+   "imm": 29398,
+   "text": "Failed",
+   "len": 6
+  },
+  {
+   "file_off": 5056,
+   "seg_off": 4544,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 5129,
+   "seg_off": 4617,
+   "reg": "bx",
+   "imm": 29408,
+   "text": "You're inside!",
+   "len": 14
+  },
+  {
+   "file_off": 5154,
+   "seg_off": 4642,
+   "reg": "bx",
+   "imm": 29426,
+   "text": "Character # to hunt ? (ESC exits)",
+   "len": 33
+  },
+  {
+   "file_off": 5220,
+   "seg_off": 4708,
+   "reg": "bx",
+   "imm": 29020,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 5246,
+   "seg_off": 4734,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 5287,
+   "seg_off": 4775,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 5396,
+   "seg_off": 4884,
+   "reg": "bx",
+   "imm": 29474,
+   "text": "The hunt was",
+   "len": 12
+  },
+  {
+   "file_off": 5429,
+   "seg_off": 4917,
+   "reg": "bx",
+   "imm": 29490,
+   "text": "not successful.",
+   "len": 15
+  },
+  {
+   "file_off": 5444,
+   "seg_off": 4932,
+   "reg": "bx",
+   "imm": 29510,
+   "text": "successful!",
+   "len": 11
+  },
+  {
+   "file_off": 5550,
+   "seg_off": 5038,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 5651,
+   "seg_off": 5139,
+   "reg": "bx",
+   "imm": 29528,
+   "text": "Enter new ",
+   "len": 10
+  },
+  {
+   "file_off": 5674,
+   "seg_off": 5162,
+   "reg": "bx",
+   "imm": 29542,
+   "text": "position for:",
+   "len": 13
+  },
+  {
+   "file_off": 5700,
+   "seg_off": 5188,
+   "reg": "bx",
+   "imm": 29560,
+   "text": " Letter?",
+   "len": 8
+  },
+  {
+   "file_off": 5723,
+   "seg_off": 5211,
+   "reg": "bx",
+   "imm": 29572,
+   "text": "  A B C ",
+   "len": 8
+  },
+  {
+   "file_off": 5746,
+   "seg_off": 5234,
+   "reg": "bx",
+   "imm": 29584,
+   "text": "  D E F ",
+   "len": 8
+  },
+  {
+   "file_off": 5769,
+   "seg_off": 5257,
+   "reg": "bx",
+   "imm": 29596,
+   "text": "  G H I ",
+   "len": 8
+  },
+  {
+   "file_off": 5841,
+   "seg_off": 5329,
+   "reg": "bx",
+   "imm": 29612,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 5856,
+   "seg_off": 5344,
+   "reg": "bx",
+   "imm": 28762,
+   "text": "I",
+   "len": 1
+  },
+  {
+   "file_off": 6104,
+   "seg_off": 5592,
+   "reg": "bx",
+   "imm": 29624,
+   "text": "Character # to cast spell ? (ESC exits)",
+   "len": 39
+  },
+  {
+   "file_off": 6198,
+   "seg_off": 5686,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 6242,
+   "seg_off": 5730,
+   "reg": "bx",
+   "imm": 29672,
+   "text": "Cast what spell?",
+   "len": 16
+  },
+  {
+   "file_off": 6266,
+   "seg_off": 5754,
+   "reg": "bx",
+   "imm": 29692,
+   "text": "(ENTER exits)",
+   "len": 13
+  },
+  {
+   "file_off": 6327,
+   "seg_off": 5815,
+   "reg": "bx",
+   "imm": 29710,
+   "text": "DAZA REVELI",
+   "len": 11
+  },
+  {
+   "file_off": 6374,
+   "seg_off": 5862,
+   "reg": "bx",
+   "imm": 29726,
+   "text": "The gate opens",
+   "len": 14
+  },
+  {
+   "file_off": 6480,
+   "seg_off": 5968,
+   "reg": "bx",
+   "imm": 29746,
+   "text": "Mumble, mumble, what spell did you say ?",
+   "len": 40
+  },
+  {
+   "file_off": 6618,
+   "seg_off": 6106,
+   "reg": "bx",
+   "imm": 29798,
+   "text": "That is a combat spell !",
+   "len": 24
+  },
+  {
+   "file_off": 6684,
+   "seg_off": 6172,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 6695,
+   "seg_off": 6183,
+   "reg": "bx",
+   "imm": 29844,
+   "text": "You don't know that spell!",
+   "len": 26
+  },
+  {
+   "file_off": 6752,
+   "seg_off": 6240,
+   "reg": "bx",
+   "imm": 29882,
+   "text": "Spell Pts ?",
+   "len": 11
+  },
+  {
+   "file_off": 6814,
+   "seg_off": 6302,
+   "reg": "bx",
+   "imm": 29900,
+   "text": "You don't have that many!",
+   "len": 25
+  },
+  {
+   "file_off": 6867,
+   "seg_off": 6355,
+   "reg": "bx",
+   "imm": 29940,
+   "text": "You need more spell points than that!",
+   "len": 37
+  },
+  {
+   "file_off": 6966,
+   "seg_off": 6454,
+   "reg": "bx",
+   "imm": 29990,
+   "text": "   ",
+   "len": 3
+  },
+  {
+   "file_off": 7124,
+   "seg_off": 6612,
+   "reg": "bx",
+   "imm": 29998,
+   "text": "Aack!  there is something wrong with the data files, please restore!",
+   "len": 68
+  },
+  {
+   "file_off": 7164,
+   "seg_off": 6652,
+   "reg": "bx",
+   "imm": 30078,
+   "text": "Character # to use item ?  (ESC exits)",
+   "len": 38
+  },
+  {
+   "file_off": 7251,
+   "seg_off": 6739,
+   "reg": "bx",
+   "imm": 30124,
+   "text": "Use Item:",
+   "len": 9
+  },
+  {
+   "file_off": 7282,
+   "seg_off": 6770,
+   "reg": "bx",
+   "imm": 30142,
+   "text": "This character has no items to use!",
+   "len": 35
+  },
+  {
+   "file_off": 7494,
+   "seg_off": 6982,
+   "reg": "bx",
+   "imm": 30190,
+   "text": "You really can't make use of this!",
+   "len": 34
+  },
+  {
+   "file_off": 7817,
+   "seg_off": 7305,
+   "reg": "bx",
+   "imm": 30332,
+   "text": "                  (ESC cancels)",
+   "len": 31
+  },
+  {
+   "file_off": 7820,
+   "seg_off": 7308,
+   "reg": "ax",
+   "imm": 30244,
+   "text": "Do you wish to use the potion on Y)ourself or G)ive it to another character?       ",
+   "len": 83
+  },
+  {
+   "file_off": 7835,
+   "seg_off": 7323,
+   "reg": "bx",
+   "imm": 29612,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 7862,
+   "seg_off": 7350,
+   "reg": "bx",
+   "imm": 30376,
+   "text": "G",
+   "len": 1
+  },
+  {
+   "file_off": 7893,
+   "seg_off": 7381,
+   "reg": "bx",
+   "imm": 30382,
+   "text": "Give it to which",
+   "len": 16
+  },
+  {
+   "file_off": 7916,
+   "seg_off": 7404,
+   "reg": "bx",
+   "imm": 30402,
+   "text": "character?",
+   "len": 10
+  },
+  {
+   "file_off": 7939,
+   "seg_off": 7427,
+   "reg": "bx",
+   "imm": 30416,
+   "text": "char #: ",
+   "len": 8
+  },
+  {
+   "file_off": 8006,
+   "seg_off": 7494,
+   "reg": "bx",
+   "imm": 30430,
+   "text": "    ",
+   "len": 4
+  },
+  {
+   "file_off": 8062,
+   "seg_off": 7550,
+   "reg": "bx",
+   "imm": 30438,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 8378,
+   "seg_off": 7866,
+   "reg": "bx",
+   "imm": 30444,
+   "text": "That is a Combat Item!",
+   "len": 22
+  },
+  {
+   "file_off": 8421,
+   "seg_off": 7909,
+   "reg": "bx",
+   "imm": 30478,
+   "text": "Character # to cast on ?  (ESC exits)",
+   "len": 37
+  },
+  {
+   "file_off": 8837,
+   "seg_off": 8325,
+   "reg": "bx",
+   "imm": 30534,
+   "text": " pts!",
+   "len": 5
+  },
+  {
+   "file_off": 8868,
+   "seg_off": 8356,
+   "reg": "bx",
+   "imm": 29990,
+   "text": "   ",
+   "len": 3
+  },
+  {
+   "file_off": 8923,
+   "seg_off": 8411,
+   "reg": "bx",
+   "imm": 30544,
+   "text": "Character # to cast on ?  (ESC exits)",
+   "len": 37
+  },
+  {
+   "file_off": 9183,
+   "seg_off": 8671,
+   "reg": "bx",
+   "imm": 30594,
+   "text": "Lives !",
+   "len": 7
+  },
+  {
+   "file_off": 9226,
+   "seg_off": 8714,
+   "reg": "bx",
+   "imm": 30610,
+   "text": "Is cured.",
+   "len": 9
+  },
+  {
+   "file_off": 9238,
+   "seg_off": 8726,
+   "reg": "bx",
+   "imm": 30624,
+   "text": "Notices no change",
+   "len": 17
+  },
+  {
+   "file_off": 9314,
+   "seg_off": 8802,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 9396,
+   "seg_off": 8884,
+   "reg": "bx",
+   "imm": 30646,
+   "text": "Character # to cast on ?  (ESC exits)",
+   "len": 37
+  },
+  {
+   "file_off": 9528,
+   "seg_off": 9016,
+   "reg": "bx",
+   "imm": 30692,
+   "text": " notices no change!",
+   "len": 19
+  },
+  {
+   "file_off": 9728,
+   "seg_off": 9216,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 9826,
+   "seg_off": 9314,
+   "reg": "bx",
+   "imm": 29246,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 9835,
+   "seg_off": 9323,
+   "reg": "bx",
+   "imm": 30726,
+   "text": "A roaring blast of wind buffets the party and when the noise subsides...",
+   "len": 72
+  },
+  {
+   "file_off": 9886,
+   "seg_off": 9374,
+   "reg": "bx",
+   "imm": 28686,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 9895,
+   "seg_off": 9383,
+   "reg": "bx",
+   "imm": 30810,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 10022,
+   "seg_off": 9510,
+   "reg": "bx",
+   "imm": 30880,
+   "text": "(ESC to exit, or 9 to print entire party)",
+   "len": 41
+  },
+  {
+   "file_off": 10025,
+   "seg_off": 9513,
+   "reg": "ax",
+   "imm": 30830,
+   "text": "Enter number of character you wish to print. ",
+   "len": 45
+  },
+  {
+   "file_off": 10040,
+   "seg_off": 9528,
+   "reg": "bx",
+   "imm": 29612,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 10082,
+   "seg_off": 9570,
+   "reg": "bx",
+   "imm": 30936,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 10097,
+   "seg_off": 9585,
+   "reg": "bx",
+   "imm": 30942,
+   "text": ":",
+   "len": 1
+  },
+  {
+   "file_off": 10214,
+   "seg_off": 9702,
+   "reg": "bx",
+   "imm": 30948,
+   "text": "Make sure that your printer is ready and paper is properly positioned.",
+   "len": 70
+  },
+  {
+   "file_off": 10253,
+   "seg_off": 9741,
+   "reg": "bx",
+   "imm": 28702,
+   "text": "WRLD",
+   "len": 4
+  },
+  {
+   "file_off": 10267,
+   "seg_off": 9755,
+   "reg": "bx",
+   "imm": 31030,
+   "text": "Wilderness",
+   "len": 10
+  },
+  {
+   "file_off": 10300,
+   "seg_off": 9788,
+   "reg": "bx",
+   "imm": 31048,
+   "text": "Party #",
+   "len": 7
+  },
+  {
+   "file_off": 10313,
+   "seg_off": 9801,
+   "reg": "bx",
+   "imm": 31060,
+   "text": "    Location: ",
+   "len": 14
+  },
+  {
+   "file_off": 10499,
+   "seg_off": 9987,
+   "reg": "bx",
+   "imm": 31098,
+   "text": "Skills:",
+   "len": 7
+  },
+  {
+   "file_off": 10511,
+   "seg_off": 9999,
+   "reg": "bx",
+   "imm": 31110,
+   "text": "Items:",
+   "len": 6
+  },
+  {
+   "file_off": 10542,
+   "seg_off": 10030,
+   "reg": "bx",
+   "imm": 31126,
+   "text": "Level:     ",
+   "len": 11
+  },
+  {
+   "file_off": 10686,
+   "seg_off": 10174,
+   "reg": "bx",
+   "imm": 31144,
+   "text": "Hit Pts.   ",
+   "len": 11
+  },
+  {
+   "file_off": 10721,
+   "seg_off": 10209,
+   "reg": "bx",
+   "imm": 30936,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 10775,
+   "seg_off": 10263,
+   "reg": "bx",
+   "imm": 31160,
+   "text": "Spell Pts. ",
+   "len": 11
+  },
+  {
+   "file_off": 10826,
+   "seg_off": 10314,
+   "reg": "bx",
+   "imm": 30936,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 10880,
+   "seg_off": 10368,
+   "reg": "bx",
+   "imm": 31176,
+   "text": "Experience",
+   "len": 10
+  },
+  {
+   "file_off": 10929,
+   "seg_off": 10417,
+   "reg": "bx",
+   "imm": 31190,
+   "text": "Status     ",
+   "len": 11
+  },
+  {
+   "file_off": 11000,
+   "seg_off": 10488,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 11123,
+   "seg_off": 10611,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 11240,
+   "seg_off": 10728,
+   "reg": "bx",
+   "imm": 29040,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 11269,
+   "seg_off": 10757,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 11435,
+   "seg_off": 10923,
+   "reg": "bx",
+   "imm": 31218,
+   "text": "   (ESC exits) ",
+   "len": 15
+  },
+  {
+   "file_off": 11552,
+   "seg_off": 11040,
+   "reg": "bx",
+   "imm": 31252,
+   "text": "Item Breaks !",
+   "len": 13
+  },
+  {
+   "file_off": 11624,
+   "seg_off": 11112,
+   "reg": "bx",
+   "imm": 31270,
+   "text": "Spell Fails !",
+   "len": 13
+  },
+  {
+   "file_off": 11736,
+   "seg_off": 11224,
+   "reg": "bx",
+   "imm": 29612,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 11938,
+   "seg_off": 11426,
+   "reg": "bx",
+   "imm": 28726,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 11981,
+   "seg_off": 11469,
+   "reg": "bx",
+   "imm": 31300,
+   "text": "spells.dat",
+   "len": 10
+  },
+  {
+   "file_off": 12135,
+   "seg_off": 11623,
+   "reg": "bx",
+   "imm": 31316,
+   "text": "You don't have that skill.",
+   "len": 26
+  },
+  {
+   "file_off": 12175,
+   "seg_off": 11663,
+   "reg": "bx",
+   "imm": 31354,
+   "text": "That character is incapacitated.",
+   "len": 32
+  },
+  {
+   "file_off": 12215,
+   "seg_off": 11703,
+   "reg": "bx",
+   "imm": 31398,
+   "text": "You have used that skill today.",
+   "len": 31
+  },
+  {
+   "file_off": 12255,
+   "seg_off": 11743,
+   "reg": "bx",
+   "imm": 31442,
+   "text": "That character is not a wizard.",
+   "len": 31
+  },
+  {
+   "file_off": 12370,
+   "seg_off": 11858,
+   "reg": "ax",
+   "imm": 31486,
+   "text": "You now have about",
+   "len": 18
+  },
+  {
+   "file_off": 12378,
+   "seg_off": 11866,
+   "reg": "bx",
+   "imm": 31508,
+   "text": " turns of light.",
+   "len": 16
+  },
+  {
+   "file_off": 12467,
+   "seg_off": 11955,
+   "reg": "bx",
+   "imm": 31536,
+   "text": "ITEMS.DAT",
+   "len": 9
+  },
+  {
+   "file_off": 13069,
+   "seg_off": 12557,
+   "reg": "bx",
+   "imm": 29990,
+   "text": "   ",
+   "len": 3
+  },
+  {
+   "file_off": 13124,
+   "seg_off": 12612,
+   "reg": "bx",
+   "imm": 29020,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 13317,
+   "seg_off": 12805,
+   "reg": "bx",
+   "imm": 31578,
+   "text": "dies in the night.",
+   "len": 18
+  },
+  {
+   "file_off": 13343,
+   "seg_off": 12831,
+   "reg": "bx",
+   "imm": 28768,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 13462,
+   "seg_off": 12950,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 13694,
+   "seg_off": 13182,
+   "reg": "bx",
+   "imm": 31604,
+   "text": " LVL: ",
+   "len": 6
+  },
+  {
+   "file_off": 13853,
+   "seg_off": 13341,
+   "reg": "bx",
+   "imm": 31624,
+   "text": "H.P.   ",
+   "len": 7
+  },
+  {
+   "file_off": 13890,
+   "seg_off": 13378,
+   "reg": "bx",
+   "imm": 30936,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 13945,
+   "seg_off": 13433,
+   "reg": "bx",
+   "imm": 31636,
+   "text": "S.P.   ",
+   "len": 7
+  },
+  {
+   "file_off": 13996,
+   "seg_off": 13484,
+   "reg": "bx",
+   "imm": 30936,
+   "text": "/",
+   "len": 1
+  },
+  {
+   "file_off": 14051,
+   "seg_off": 13539,
+   "reg": "bx",
+   "imm": 31648,
+   "text": "Exp.  ",
+   "len": 6
+  },
+  {
+   "file_off": 14106,
+   "seg_off": 13594,
+   "reg": "bx",
+   "imm": 31658,
+   "text": "Stat.  ",
+   "len": 7
+  },
+  {
+   "file_off": 14166,
+   "seg_off": 13654,
+   "reg": "bx",
+   "imm": 31672,
+   "text": "      Skills:",
+   "len": 13
+  },
+  {
+   "file_off": 14207,
+   "seg_off": 13695,
+   "reg": "bx",
+   "imm": 29306,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 14329,
+   "seg_off": 13817,
+   "reg": "bx",
+   "imm": 31696,
+   "text": "      Items:",
+   "len": 12
+  },
+  {
+   "file_off": 14413,
+   "seg_off": 13901,
+   "reg": "bx",
+   "imm": 28756,
+   "text": "H",
+   "len": 1
+  },
+  {
+   "file_off": 14424,
+   "seg_off": 13912,
+   "reg": "bx",
+   "imm": 31720,
+   "text": "Human",
+   "len": 5
+  },
+  {
+   "file_off": 14436,
+   "seg_off": 13924,
+   "reg": "bx",
+   "imm": 28744,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 14450,
+   "seg_off": 13938,
+   "reg": "bx",
+   "imm": 31734,
+   "text": "Troll",
+   "len": 5
+  },
+  {
+   "file_off": 14462,
+   "seg_off": 13950,
+   "reg": "bx",
+   "imm": 28768,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 14476,
+   "seg_off": 13964,
+   "reg": "bx",
+   "imm": 31744,
+   "text": "Dwarf",
+   "len": 5
+  },
+  {
+   "file_off": 14488,
+   "seg_off": 13976,
+   "reg": "bx",
+   "imm": 28750,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 14502,
+   "seg_off": 13990,
+   "reg": "bx",
+   "imm": 31754,
+   "text": "Elf",
+   "len": 3
+  },
+  {
+   "file_off": 14514,
+   "seg_off": 14002,
+   "reg": "bx",
+   "imm": 30376,
+   "text": "G",
+   "len": 1
+  },
+  {
+   "file_off": 14528,
+   "seg_off": 14016,
+   "reg": "bx",
+   "imm": 31762,
+   "text": "Gnome",
+   "len": 5
+  },
+  {
+   "file_off": 14540,
+   "seg_off": 14028,
+   "reg": "bx",
+   "imm": 31772,
+   "text": "error",
+   "len": 5
+  },
+  {
+   "file_off": 14605,
+   "seg_off": 14093,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 14664,
+   "seg_off": 14152,
+   "reg": "bx",
+   "imm": 31792,
+   "text": ")",
+   "len": 1
+  },
+  {
+   "file_off": 14759,
+   "seg_off": 14247,
+   "reg": "bx",
+   "imm": 29040,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 14786,
+   "seg_off": 14274,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  }
+ ],
+ "MAZEMOVE.EXE": [
+  {
+   "file_off": 772,
+   "seg_off": 260,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 789,
+   "seg_off": 277,
+   "reg": "bx",
+   "imm": 26594,
+   "text": "9",
+   "len": 1
+  },
+  {
+   "file_off": 910,
+   "seg_off": 398,
+   "reg": "dx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 1029,
+   "seg_off": 517,
+   "reg": "bx",
+   "imm": 26626,
+   "text": "-",
+   "len": 1
+  },
+  {
+   "file_off": 1200,
+   "seg_off": 688,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1908,
+   "seg_off": 1396,
+   "reg": "bx",
+   "imm": 36310,
+   "text": "Chirp I say.  Chirp.  DATA ERROR",
+   "len": 32
+  },
+  {
+   "file_off": 2017,
+   "seg_off": 1505,
+   "reg": "bx",
+   "imm": 36350,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 2041,
+   "seg_off": 1529,
+   "reg": "bx",
+   "imm": 36356,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 2065,
+   "seg_off": 1553,
+   "reg": "bx",
+   "imm": 36362,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 2089,
+   "seg_off": 1577,
+   "reg": "bx",
+   "imm": 36368,
+   "text": "Q",
+   "len": 1
+  },
+  {
+   "file_off": 2113,
+   "seg_off": 1601,
+   "reg": "bx",
+   "imm": 36374,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 2137,
+   "seg_off": 1625,
+   "reg": "bx",
+   "imm": 36380,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 2161,
+   "seg_off": 1649,
+   "reg": "bx",
+   "imm": 36386,
+   "text": "3",
+   "len": 1
+  },
+  {
+   "file_off": 2185,
+   "seg_off": 1673,
+   "reg": "bx",
+   "imm": 36392,
+   "text": "4",
+   "len": 1
+  },
+  {
+   "file_off": 2223,
+   "seg_off": 1711,
+   "reg": "bx",
+   "imm": 36374,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 2764,
+   "seg_off": 2252,
+   "reg": "bx",
+   "imm": 36380,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 3316,
+   "seg_off": 2804,
+   "reg": "bx",
+   "imm": 36386,
+   "text": "3",
+   "len": 1
+  },
+  {
+   "file_off": 3858,
+   "seg_off": 3346,
+   "reg": "bx",
+   "imm": 36392,
+   "text": "4",
+   "len": 1
+  },
+  {
+   "file_off": 4404,
+   "seg_off": 3892,
+   "reg": "bx",
+   "imm": 36362,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 4436,
+   "seg_off": 3924,
+   "reg": "bx",
+   "imm": 36356,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 4468,
+   "seg_off": 3956,
+   "reg": "bx",
+   "imm": 36350,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 4484,
+   "seg_off": 3972,
+   "reg": "bx",
+   "imm": 36432,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 4511,
+   "seg_off": 3999,
+   "reg": "bx",
+   "imm": 36368,
+   "text": "Q",
+   "len": 1
+  },
+  {
+   "file_off": 4728,
+   "seg_off": 4216,
+   "reg": "bx",
+   "imm": 36442,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 5428,
+   "seg_off": 4916,
+   "reg": "bx",
+   "imm": 36476,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 5457,
+   "seg_off": 4945,
+   "reg": "bx",
+   "imm": 36432,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 5573,
+   "seg_off": 5061,
+   "reg": "bx",
+   "imm": 36500,
+   "text": "DEAD",
+   "len": 4
+  },
+  {
+   "file_off": 5611,
+   "seg_off": 5099,
+   "reg": "bx",
+   "imm": 36508,
+   "text": "mazeitem.PIC",
+   "len": 12
+  },
+  {
+   "file_off": 5686,
+   "seg_off": 5174,
+   "reg": "bx",
+   "imm": 36524,
+   "text": "mazewall.bin",
+   "len": 12
+  },
+  {
+   "file_off": 5705,
+   "seg_off": 5193,
+   "reg": "bx",
+   "imm": 36540,
+   "text": "WRLD",
+   "len": 4
+  },
+  {
+   "file_off": 6000,
+   "seg_off": 5488,
+   "reg": "bx",
+   "imm": 36476,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 6239,
+   "seg_off": 5727,
+   "reg": "bx",
+   "imm": 36374,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 6343,
+   "seg_off": 5831,
+   "reg": "bx",
+   "imm": 36556,
+   "text": "MAZE",
+   "len": 4
+  },
+  {
+   "file_off": 6360,
+   "seg_off": 5848,
+   "reg": "bx",
+   "imm": 36564,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 6787,
+   "seg_off": 6275,
+   "reg": "bx",
+   "imm": 36616,
+   "text": "DATA FILE ERROR",
+   "len": 15
+  },
+  {
+   "file_off": 6947,
+   "seg_off": 6435,
+   "reg": "bx",
+   "imm": 36556,
+   "text": "MAZE",
+   "len": 4
+  },
+  {
+   "file_off": 6958,
+   "seg_off": 6446,
+   "reg": "bx",
+   "imm": 36564,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 6969,
+   "seg_off": 6457,
+   "reg": "bx",
+   "imm": 36636,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 7001,
+   "seg_off": 6489,
+   "reg": "bx",
+   "imm": 36556,
+   "text": "MAZE",
+   "len": 4
+  },
+  {
+   "file_off": 7012,
+   "seg_off": 6500,
+   "reg": "bx",
+   "imm": 36564,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 7023,
+   "seg_off": 6511,
+   "reg": "bx",
+   "imm": 36652,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 7775,
+   "seg_off": 7263,
+   "reg": "bx",
+   "imm": 36746,
+   "text": "pict1",
+   "len": 5
+  },
+  {
+   "file_off": 7804,
+   "seg_off": 7292,
+   "reg": "bx",
+   "imm": 36760,
+   "text": "pict2",
+   "len": 5
+  },
+  {
+   "file_off": 9454,
+   "seg_off": 8942,
+   "reg": "bx",
+   "imm": 36556,
+   "text": "MAZE",
+   "len": 4
+  },
+  {
+   "file_off": 9465,
+   "seg_off": 8953,
+   "reg": "bx",
+   "imm": 36564,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 9476,
+   "seg_off": 8964,
+   "reg": "bx",
+   "imm": 36942,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 9644,
+   "seg_off": 9132,
+   "reg": "bx",
+   "imm": 36958,
+   "text": "One momement..",
+   "len": 14
+  },
+  {
+   "file_off": 9657,
+   "seg_off": 9145,
+   "reg": "bx",
+   "imm": 36976,
+   "text": "DE5EFF.BIN",
+   "len": 10
+  },
+  {
+   "file_off": 9694,
+   "seg_off": 9182,
+   "reg": "bx",
+   "imm": 36994,
+   "text": "              ",
+   "len": 14
+  },
+  {
+   "file_off": 9826,
+   "seg_off": 9314,
+   "reg": "bx",
+   "imm": 37012,
+   "text": "One momement..",
+   "len": 14
+  },
+  {
+   "file_off": 9839,
+   "seg_off": 9327,
+   "reg": "bx",
+   "imm": 37030,
+   "text": "DE51EFF.BIN",
+   "len": 11
+  },
+  {
+   "file_off": 9876,
+   "seg_off": 9364,
+   "reg": "bx",
+   "imm": 37050,
+   "text": "              ",
+   "len": 14
+  },
+  {
+   "file_off": 11338,
+   "seg_off": 10826,
+   "reg": "bx",
+   "imm": 37216,
+   "text": "Enter gem to",
+   "len": 12
+  },
+  {
+   "file_off": 11371,
+   "seg_off": 10859,
+   "reg": "bx",
+   "imm": 37232,
+   "text": "touch (B,G,V,R)",
+   "len": 15
+  },
+  {
+   "file_off": 11404,
+   "seg_off": 10892,
+   "reg": "bx",
+   "imm": 37252,
+   "text": "or ESC",
+   "len": 6
+  },
+  {
+   "file_off": 11437,
+   "seg_off": 10925,
+   "reg": "bx",
+   "imm": 37262,
+   "text": "....",
+   "len": 4
+  },
+  {
+   "file_off": 11462,
+   "seg_off": 10950,
+   "reg": "bx",
+   "imm": 37270,
+   "text": "? ",
+   "len": 2
+  },
+  {
+   "file_off": 11488,
+   "seg_off": 10976,
+   "reg": "bx",
+   "imm": 37284,
+   "text": "BBRG",
+   "len": 4
+  },
+  {
+   "file_off": 11914,
+   "seg_off": 11402,
+   "reg": "bx",
+   "imm": 37318,
+   "text": "pict8",
+   "len": 5
+  },
+  {
+   "file_off": 12335,
+   "seg_off": 11823,
+   "reg": "bx",
+   "imm": 37374,
+   "text": "MURTHIN",
+   "len": 7
+  },
+  {
+   "file_off": 12346,
+   "seg_off": 11834,
+   "reg": "bx",
+   "imm": 37386,
+   "text": "CERCION",
+   "len": 7
+  },
+  {
+   "file_off": 12357,
+   "seg_off": 11845,
+   "reg": "bx",
+   "imm": 37398,
+   "text": "LOTHIAN",
+   "len": 7
+  },
+  {
+   "file_off": 12368,
+   "seg_off": 11856,
+   "reg": "bx",
+   "imm": 37410,
+   "text": "VANDIGUARD",
+   "len": 10
+  },
+  {
+   "file_off": 12402,
+   "seg_off": 11890,
+   "reg": "bx",
+   "imm": 37424,
+   "text": "The brothers are:",
+   "len": 17
+  },
+  {
+   "file_off": 12435,
+   "seg_off": 11923,
+   "reg": "bx",
+   "imm": 37448,
+   "text": "#1 ",
+   "len": 3
+  },
+  {
+   "file_off": 12500,
+   "seg_off": 11988,
+   "reg": "bx",
+   "imm": 37456,
+   "text": "#2 ",
+   "len": 3
+  },
+  {
+   "file_off": 12565,
+   "seg_off": 12053,
+   "reg": "bx",
+   "imm": 37464,
+   "text": "#3 ",
+   "len": 3
+  },
+  {
+   "file_off": 12630,
+   "seg_off": 12118,
+   "reg": "bx",
+   "imm": 37472,
+   "text": "#4 ",
+   "len": 3
+  },
+  {
+   "file_off": 13172,
+   "seg_off": 12660,
+   "reg": "bx",
+   "imm": 37520,
+   "text": "The priest thanks you for freeing him from his giant captor and blesses the party.",
+   "len": 82
+  },
+  {
+   "file_off": 13277,
+   "seg_off": 12765,
+   "reg": "bx",
+   "imm": 37690,
+   "text": "pict6.BIN",
+   "len": 9
+  },
+  {
+   "file_off": 13324,
+   "seg_off": 12812,
+   "reg": "bx",
+   "imm": 37704,
+   "text": "MB T108 O3 L8",
+   "len": 13
+  },
+  {
+   "file_off": 13335,
+   "seg_off": 12823,
+   "reg": "bx",
+   "imm": 37888,
+   "text": "G",
+   "len": 1
+  },
+  {
+   "file_off": 13346,
+   "seg_off": 12834,
+   "reg": "bx",
+   "imm": 37722,
+   "text": "MB T108 O3 L16",
+   "len": 14
+  },
+  {
+   "file_off": 13357,
+   "seg_off": 12845,
+   "reg": "bx",
+   "imm": 37894,
+   "text": "GA",
+   "len": 2
+  },
+  {
+   "file_off": 13368,
+   "seg_off": 12856,
+   "reg": "bx",
+   "imm": 37900,
+   "text": "L8",
+   "len": 2
+  },
+  {
+   "file_off": 13379,
+   "seg_off": 12867,
+   "reg": "bx",
+   "imm": 37906,
+   "text": "BG",
+   "len": 2
+  },
+  {
+   "file_off": 13390,
+   "seg_off": 12878,
+   "reg": "bx",
+   "imm": 37912,
+   "text": "AG",
+   "len": 2
+  },
+  {
+   "file_off": 13401,
+   "seg_off": 12889,
+   "reg": "bx",
+   "imm": 37918,
+   "text": "F#D",
+   "len": 3
+  },
+  {
+   "file_off": 13412,
+   "seg_off": 12900,
+   "reg": "bx",
+   "imm": 37926,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 13423,
+   "seg_off": 12911,
+   "reg": "bx",
+   "imm": 37932,
+   "text": "L2",
+   "len": 2
+  },
+  {
+   "file_off": 13434,
+   "seg_off": 12922,
+   "reg": "bx",
+   "imm": 37740,
+   "text": "MB T108 O3 L8 E F#GD",
+   "len": 20
+  },
+  {
+   "file_off": 13445,
+   "seg_off": 12933,
+   "reg": "bx",
+   "imm": 37764,
+   "text": "MB T108 O3 L2 G",
+   "len": 15
+  },
+  {
+   "file_off": 13456,
+   "seg_off": 12944,
+   "reg": "bx",
+   "imm": 37784,
+   "text": "MB T108 O4 L8 CC",
+   "len": 16
+  },
+  {
+   "file_off": 13467,
+   "seg_off": 12955,
+   "reg": "bx",
+   "imm": 37804,
+   "text": "MB T108 O4 L4 E",
+   "len": 15
+  },
+  {
+   "file_off": 13478,
+   "seg_off": 12966,
+   "reg": "bx",
+   "imm": 37824,
+   "text": "MB T108 O4 L8 DC",
+   "len": 16
+  },
+  {
+   "file_off": 13489,
+   "seg_off": 12977,
+   "reg": "bx",
+   "imm": 37844,
+   "text": "MB T108 O3 L8 BA",
+   "len": 16
+  },
+  {
+   "file_off": 13500,
+   "seg_off": 12988,
+   "reg": "bx",
+   "imm": 37864,
+   "text": "O3 L8 G",
+   "len": 7
+  },
+  {
+   "file_off": 13511,
+   "seg_off": 12999,
+   "reg": "bx",
+   "imm": 37876,
+   "text": "O3 L3 G",
+   "len": 7
+  },
+  {
+   "file_off": 13956,
+   "seg_off": 13444,
+   "reg": "bx",
+   "imm": 37952,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 14029,
+   "seg_off": 13517,
+   "reg": "ax",
+   "imm": 38004,
+   "text": "DG",
+   "len": 2
+  },
+  {
+   "file_off": 14039,
+   "seg_off": 13527,
+   "reg": "bx",
+   "imm": 37968,
+   "text": "MAZE.SQZ",
+   "len": 8
+  },
+  {
+   "file_off": 14085,
+   "seg_off": 13573,
+   "reg": "ax",
+   "imm": 38010,
+   "text": "DE",
+   "len": 2
+  },
+  {
+   "file_off": 14095,
+   "seg_off": 13583,
+   "reg": "bx",
+   "imm": 37980,
+   "text": "EFF.BIN",
+   "len": 7
+  },
+  {
+   "file_off": 14128,
+   "seg_off": 13616,
+   "reg": "ax",
+   "imm": 38016,
+   "text": "DT",
+   "len": 2
+  },
+  {
+   "file_off": 14138,
+   "seg_off": 13626,
+   "reg": "bx",
+   "imm": 37992,
+   "text": "TEXT.DAT",
+   "len": 8
+  },
+  {
+   "file_off": 14512,
+   "seg_off": 14000,
+   "reg": "bx",
+   "imm": 38032,
+   "text": "Which party member do you wish to heal? (0 exits) ",
+   "len": 50
+  },
+  {
+   "file_off": 14526,
+   "seg_off": 14014,
+   "reg": "bx",
+   "imm": 37926,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 14652,
+   "seg_off": 14140,
+   "reg": "bx",
+   "imm": 38096,
+   "text": "That character can't be helped here !",
+   "len": 37
+  },
+  {
+   "file_off": 14919,
+   "seg_off": 14407,
+   "reg": "bx",
+   "imm": 38178,
+   "text": " is",
+   "len": 3
+  },
+  {
+   "file_off": 14954,
+   "seg_off": 14442,
+   "reg": "bx",
+   "imm": 38158,
+   "text": "healed",
+   "len": 6
+  },
+  {
+   "file_off": 14976,
+   "seg_off": 14464,
+   "reg": "bx",
+   "imm": 38168,
+   "text": " pts.",
+   "len": 5
+  },
+  {
+   "file_off": 15104,
+   "seg_off": 14592,
+   "reg": "bx",
+   "imm": 38186,
+   "text": "This pool is empty!",
+   "len": 19
+  },
+  {
+   "file_off": 15301,
+   "seg_off": 14789,
+   "reg": "bx",
+   "imm": 38222,
+   "text": "found an item.",
+   "len": 14
+  },
+  {
+   "file_off": 15358,
+   "seg_off": 14846,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 15505,
+   "seg_off": 14993,
+   "reg": "bx",
+   "imm": 38244,
+   "text": "Your party is full of items, please discard some from Camp.",
+   "len": 59
+  },
+  {
+   "file_off": 15656,
+   "seg_off": 15144,
+   "reg": "bx",
+   "imm": 36476,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 15712,
+   "seg_off": 15200,
+   "reg": "bx",
+   "imm": 38328,
+   "text": ".BIN",
+   "len": 4
+  },
+  {
+   "file_off": 15883,
+   "seg_off": 15371,
+   "reg": "bx",
+   "imm": 38348,
+   "text": "WRLDMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 15896,
+   "seg_off": 15384,
+   "reg": "bx",
+   "imm": 38360,
+   "text": "Leaving maze ..     ",
+   "len": 20
+  },
+  {
+   "file_off": 15910,
+   "seg_off": 15398,
+   "reg": "bx",
+   "imm": 36432,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 15926,
+   "seg_off": 15414,
+   "reg": "bx",
+   "imm": 38392,
+   "text": "Making Camp..       ",
+   "len": 20
+  },
+  {
+   "file_off": 16016,
+   "seg_off": 15504,
+   "reg": "bx",
+   "imm": 36476,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 16042,
+   "seg_off": 15530,
+   "reg": "bx",
+   "imm": 38416,
+   "text": "    C O M B A T !   ",
+   "len": 20
+  },
+  {
+   "file_off": 16056,
+   "seg_off": 15544,
+   "reg": "bx",
+   "imm": 38440,
+   "text": "    B A T T L E !   ",
+   "len": 20
+  }
+ ],
+ "WRLDMOVE.EXE": [
+  {
+   "file_off": 744,
+   "seg_off": 232,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 759,
+   "seg_off": 247,
+   "reg": "bx",
+   "imm": 26594,
+   "text": "9",
+   "len": 1
+  },
+  {
+   "file_off": 858,
+   "seg_off": 346,
+   "reg": "dx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 957,
+   "seg_off": 445,
+   "reg": "bx",
+   "imm": 26626,
+   "text": "-",
+   "len": 1
+  },
+  {
+   "file_off": 1100,
+   "seg_off": 588,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1997,
+   "seg_off": 1485,
+   "reg": "bx",
+   "imm": 52586,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 2019,
+   "seg_off": 1507,
+   "reg": "bx",
+   "imm": 52592,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 2041,
+   "seg_off": 1529,
+   "reg": "bx",
+   "imm": 52598,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 2063,
+   "seg_off": 1551,
+   "reg": "bx",
+   "imm": 52604,
+   "text": "Q",
+   "len": 1
+  },
+  {
+   "file_off": 2085,
+   "seg_off": 1573,
+   "reg": "bx",
+   "imm": 52610,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 2107,
+   "seg_off": 1595,
+   "reg": "bx",
+   "imm": 52616,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 2129,
+   "seg_off": 1617,
+   "reg": "bx",
+   "imm": 52622,
+   "text": "3",
+   "len": 1
+  },
+  {
+   "file_off": 2151,
+   "seg_off": 1639,
+   "reg": "bx",
+   "imm": 52628,
+   "text": "4",
+   "len": 1
+  },
+  {
+   "file_off": 2210,
+   "seg_off": 1698,
+   "reg": "bx",
+   "imm": 52610,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 2485,
+   "seg_off": 1973,
+   "reg": "bx",
+   "imm": 52616,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 2766,
+   "seg_off": 2254,
+   "reg": "bx",
+   "imm": 52628,
+   "text": "4",
+   "len": 1
+  },
+  {
+   "file_off": 3040,
+   "seg_off": 2528,
+   "reg": "bx",
+   "imm": 52622,
+   "text": "3",
+   "len": 1
+  },
+  {
+   "file_off": 3312,
+   "seg_off": 2800,
+   "reg": "bx",
+   "imm": 52586,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 3326,
+   "seg_off": 2814,
+   "reg": "bx",
+   "imm": 52666,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 3349,
+   "seg_off": 2837,
+   "reg": "bx",
+   "imm": 52592,
+   "text": "P",
+   "len": 1
+  },
+  {
+   "file_off": 3377,
+   "seg_off": 2865,
+   "reg": "bx",
+   "imm": 52598,
+   "text": "S",
+   "len": 1
+  },
+  {
+   "file_off": 3405,
+   "seg_off": 2893,
+   "reg": "bx",
+   "imm": 52604,
+   "text": "Q",
+   "len": 1
+  },
+  {
+   "file_off": 3433,
+   "seg_off": 2921,
+   "reg": "bx",
+   "imm": 52674,
+   "text": "J",
+   "len": 1
+  },
+  {
+   "file_off": 3590,
+   "seg_off": 3078,
+   "reg": "bx",
+   "imm": 52680,
+   "text": "MAZEMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 3638,
+   "seg_off": 3126,
+   "reg": "bx",
+   "imm": 52696,
+   "text": "MAZEMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 3701,
+   "seg_off": 3189,
+   "reg": "bx",
+   "imm": 52716,
+   "text": "TOWN",
+   "len": 4
+  },
+  {
+   "file_off": 3811,
+   "seg_off": 3299,
+   "reg": "bx",
+   "imm": 52952,
+   "text": "Thank you for visiting Islandia. Good Hunting.",
+   "len": 46
+  },
+  {
+   "file_off": 4249,
+   "seg_off": 3737,
+   "reg": "bx",
+   "imm": 53026,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 4276,
+   "seg_off": 3764,
+   "reg": "bx",
+   "imm": 52666,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 4338,
+   "seg_off": 3826,
+   "reg": "bx",
+   "imm": 53038,
+   "text": "wrldmap.bin",
+   "len": 11
+  },
+  {
+   "file_off": 4360,
+   "seg_off": 3848,
+   "reg": "bx",
+   "imm": 53054,
+   "text": "wrlditem.pic",
+   "len": 12
+  },
+  {
+   "file_off": 4425,
+   "seg_off": 3913,
+   "reg": "bx",
+   "imm": 53070,
+   "text": "fastwrld.bin",
+   "len": 12
+  },
+  {
+   "file_off": 4451,
+   "seg_off": 3939,
+   "reg": "bx",
+   "imm": 53090,
+   "text": "WRLD",
+   "len": 4
+  },
+  {
+   "file_off": 4491,
+   "seg_off": 3979,
+   "reg": "bx",
+   "imm": 52716,
+   "text": "TOWN",
+   "len": 4
+  },
+  {
+   "file_off": 4502,
+   "seg_off": 3990,
+   "reg": "bx",
+   "imm": 53026,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 4513,
+   "seg_off": 4001,
+   "reg": "bx",
+   "imm": 52666,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 4524,
+   "seg_off": 4012,
+   "reg": "bx",
+   "imm": 53102,
+   "text": "MAZE",
+   "len": 4
+  },
+  {
+   "file_off": 4547,
+   "seg_off": 4035,
+   "reg": "bx",
+   "imm": 53110,
+   "text": "MENU",
+   "len": 4
+  },
+  {
+   "file_off": 4644,
+   "seg_off": 4132,
+   "reg": "bx",
+   "imm": 53118,
+   "text": "DEAD",
+   "len": 4
+  },
+  {
+   "file_off": 5488,
+   "seg_off": 4976,
+   "reg": "ax",
+   "imm": 53146,
+   "text": "bu16c1r",
+   "len": 7
+  },
+  {
+   "file_off": 5496,
+   "seg_off": 4984,
+   "reg": "bx",
+   "imm": 53170,
+   "text": "d1R",
+   "len": 3
+  },
+  {
+   "file_off": 5512,
+   "seg_off": 5000,
+   "reg": "bx",
+   "imm": 53178,
+   "text": "u1R",
+   "len": 3
+  },
+  {
+   "file_off": 5619,
+   "seg_off": 5107,
+   "reg": "ax",
+   "imm": 53186,
+   "text": "be16c1d",
+   "len": 7
+  },
+  {
+   "file_off": 5627,
+   "seg_off": 5115,
+   "reg": "bx",
+   "imm": 53198,
+   "text": "l1D",
+   "len": 3
+  },
+  {
+   "file_off": 5643,
+   "seg_off": 5131,
+   "reg": "bx",
+   "imm": 53206,
+   "text": "r1D",
+   "len": 3
+  },
+  {
+   "file_off": 5747,
+   "seg_off": 5235,
+   "reg": "ax",
+   "imm": 53214,
+   "text": "br16c1l",
+   "len": 7
+  },
+  {
+   "file_off": 5755,
+   "seg_off": 5243,
+   "reg": "bx",
+   "imm": 53226,
+   "text": "u1L",
+   "len": 3
+  },
+  {
+   "file_off": 5771,
+   "seg_off": 5259,
+   "reg": "bx",
+   "imm": 53234,
+   "text": "d1L",
+   "len": 3
+  },
+  {
+   "file_off": 5877,
+   "seg_off": 5365,
+   "reg": "ax",
+   "imm": 53242,
+   "text": "C1U",
+   "len": 3
+  },
+  {
+   "file_off": 5885,
+   "seg_off": 5373,
+   "reg": "bx",
+   "imm": 53250,
+   "text": "r1U",
+   "len": 3
+  },
+  {
+   "file_off": 5901,
+   "seg_off": 5389,
+   "reg": "bx",
+   "imm": 53258,
+   "text": "l1U",
+   "len": 3
+  },
+  {
+   "file_off": 6040,
+   "seg_off": 5528,
+   "reg": "bx",
+   "imm": 52716,
+   "text": "TOWN",
+   "len": 4
+  },
+  {
+   "file_off": 6054,
+   "seg_off": 5542,
+   "reg": "bx",
+   "imm": 53282,
+   "text": "Welcome to ...",
+   "len": 14
+  },
+  {
+   "file_off": 6066,
+   "seg_off": 5554,
+   "reg": "bx",
+   "imm": 53304,
+   "text": "MAZEMOVE",
+   "len": 8
+  },
+  {
+   "file_off": 6080,
+   "seg_off": 5568,
+   "reg": "bx",
+   "imm": 53316,
+   "text": "Entering ...",
+   "len": 12
+  },
+  {
+   "file_off": 6092,
+   "seg_off": 5580,
+   "reg": "bx",
+   "imm": 52666,
+   "text": "CAMP",
+   "len": 4
+  },
+  {
+   "file_off": 6106,
+   "seg_off": 5594,
+   "reg": "bx",
+   "imm": 53332,
+   "text": "Making Camp..",
+   "len": 13
+  },
+  {
+   "file_off": 6176,
+   "seg_off": 5664,
+   "reg": "bx",
+   "imm": 53026,
+   "text": "CMBT",
+   "len": 4
+  },
+  {
+   "file_off": 6200,
+   "seg_off": 5688,
+   "reg": "bx",
+   "imm": 53350,
+   "text": "    C O M B A T !",
+   "len": 17
+  },
+  {
+   "file_off": 6212,
+   "seg_off": 5700,
+   "reg": "bx",
+   "imm": 53372,
+   "text": "    B A T T L E !",
+   "len": 17
+  }
+ ],
+ "CHARUTIL.EXE": [
+  {
+   "file_off": 744,
+   "seg_off": 232,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 759,
+   "seg_off": 247,
+   "reg": "bx",
+   "imm": 26594,
+   "text": "9",
+   "len": 1
+  },
+  {
+   "file_off": 858,
+   "seg_off": 346,
+   "reg": "dx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 957,
+   "seg_off": 445,
+   "reg": "bx",
+   "imm": 26626,
+   "text": "-",
+   "len": 1
+  },
+  {
+   "file_off": 1100,
+   "seg_off": 588,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 1327,
+   "seg_off": 815,
+   "reg": "bx",
+   "imm": 26678,
+   "text": "UTIL",
+   "len": 4
+  },
+  {
+   "file_off": 1447,
+   "seg_off": 935,
+   "reg": "bx",
+   "imm": 27330,
+   "text": "N",
+   "len": 1
+  },
+  {
+   "file_off": 1473,
+   "seg_off": 961,
+   "reg": "bx",
+   "imm": 27336,
+   "text": "Which character to rename ?",
+   "len": 27
+  },
+  {
+   "file_off": 1548,
+   "seg_off": 1036,
+   "reg": "bx",
+   "imm": 27368,
+   "text": "Please enter the new name (9 char max): ",
+   "len": 40
+  },
+  {
+   "file_off": 1681,
+   "seg_off": 1169,
+   "reg": "bx",
+   "imm": 27420,
+   "text": "J",
+   "len": 1
+  },
+  {
+   "file_off": 1701,
+   "seg_off": 1189,
+   "reg": "bx",
+   "imm": 27426,
+   "text": "F",
+   "len": 1
+  },
+  {
+   "file_off": 1715,
+   "seg_off": 1203,
+   "reg": "bx",
+   "imm": 27432,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 1735,
+   "seg_off": 1223,
+   "reg": "bx",
+   "imm": 27438,
+   "text": "I",
+   "len": 1
+  },
+  {
+   "file_off": 1755,
+   "seg_off": 1243,
+   "reg": "bx",
+   "imm": 27444,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 1775,
+   "seg_off": 1263,
+   "reg": "bx",
+   "imm": 27450,
+   "text": "C",
+   "len": 1
+  },
+  {
+   "file_off": 1795,
+   "seg_off": 1283,
+   "reg": "bx",
+   "imm": 27490,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 1809,
+   "seg_off": 1297,
+   "reg": "bx",
+   "imm": 27444,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 1817,
+   "seg_off": 1305,
+   "reg": "bx",
+   "imm": 27456,
+   "text": "CHARS.DAT",
+   "len": 9
+  },
+  {
+   "file_off": 1849,
+   "seg_off": 1337,
+   "reg": "bx",
+   "imm": 27444,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 1855,
+   "seg_off": 1343,
+   "reg": "bx",
+   "imm": 27470,
+   "text": "GROUPS.DAT",
+   "len": 10
+  },
+  {
+   "file_off": 2010,
+   "seg_off": 1498,
+   "reg": "bx",
+   "imm": 27572,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 2046,
+   "seg_off": 1534,
+   "reg": "bx",
+   "imm": 27500,
+   "text": "Please insert the BOOT floppy in the drive,",
+   "len": 43
+  },
+  {
+   "file_off": 2069,
+   "seg_off": 1557,
+   "reg": "bx",
+   "imm": 27548,
+   "text": "and press any key..",
+   "len": 19
+  },
+  {
+   "file_off": 2092,
+   "seg_off": 1580,
+   "reg": "bx",
+   "imm": 27578,
+   "text": ":menu",
+   "len": 5
+  },
+  {
+   "file_off": 2156,
+   "seg_off": 1644,
+   "reg": "bx",
+   "imm": 27592,
+   "text": "You must remove a character before adding any more!",
+   "len": 51
+  },
+  {
+   "file_off": 2252,
+   "seg_off": 1740,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 2417,
+   "seg_off": 1905,
+   "reg": "bx",
+   "imm": 27650,
+   "text": "(ESC exits) ?",
+   "len": 13
+  },
+  {
+   "file_off": 2478,
+   "seg_off": 1966,
+   "reg": "bx",
+   "imm": 27672,
+   "text": "H",
+   "len": 1
+  },
+  {
+   "file_off": 2610,
+   "seg_off": 2098,
+   "reg": "bx",
+   "imm": 27432,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 2740,
+   "seg_off": 2228,
+   "reg": "bx",
+   "imm": 27678,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 2900,
+   "seg_off": 2388,
+   "reg": "bx",
+   "imm": 27490,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 3089,
+   "seg_off": 2577,
+   "reg": "bx",
+   "imm": 27684,
+   "text": "G",
+   "len": 1
+  },
+  {
+   "file_off": 3703,
+   "seg_off": 3191,
+   "reg": "bx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 3911,
+   "seg_off": 3399,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 4044,
+   "seg_off": 3532,
+   "reg": "bx",
+   "imm": 27704,
+   "text": "         ",
+   "len": 9
+  },
+  {
+   "file_off": 4064,
+   "seg_off": 3552,
+   "reg": "bx",
+   "imm": 27672,
+   "text": "H",
+   "len": 1
+  },
+  {
+   "file_off": 4176,
+   "seg_off": 3664,
+   "reg": "bx",
+   "imm": 27572,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 4191,
+   "seg_off": 3679,
+   "reg": "bx",
+   "imm": 27718,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 4223,
+   "seg_off": 3711,
+   "reg": "bx",
+   "imm": 27572,
+   "text": "A",
+   "len": 1
+  },
+  {
+   "file_off": 4246,
+   "seg_off": 3734,
+   "reg": "bx",
+   "imm": 27718,
+   "text": "B",
+   "len": 1
+  },
+  {
+   "file_off": 4275,
+   "seg_off": 3763,
+   "reg": "bx",
+   "imm": 27432,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 4290,
+   "seg_off": 3778,
+   "reg": "bx",
+   "imm": 27678,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 4556,
+   "seg_off": 4044,
+   "reg": "bx",
+   "imm": 27432,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 4597,
+   "seg_off": 4085,
+   "reg": "bx",
+   "imm": 27726,
+   "text": "+",
+   "len": 1
+  },
+  {
+   "file_off": 4643,
+   "seg_off": 4131,
+   "reg": "bx",
+   "imm": 27726,
+   "text": "+",
+   "len": 1
+  },
+  {
+   "file_off": 4686,
+   "seg_off": 4174,
+   "reg": "bx",
+   "imm": 27678,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 4723,
+   "seg_off": 4211,
+   "reg": "bx",
+   "imm": 27726,
+   "text": "+",
+   "len": 1
+  },
+  {
+   "file_off": 4768,
+   "seg_off": 4256,
+   "reg": "bx",
+   "imm": 27490,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 4809,
+   "seg_off": 4297,
+   "reg": "bx",
+   "imm": 27726,
+   "text": "+",
+   "len": 1
+  },
+  {
+   "file_off": 4855,
+   "seg_off": 4343,
+   "reg": "bx",
+   "imm": 27726,
+   "text": "+",
+   "len": 1
+  },
+  {
+   "file_off": 4898,
+   "seg_off": 4386,
+   "reg": "bx",
+   "imm": 27684,
+   "text": "G",
+   "len": 1
+  },
+  {
+   "file_off": 4935,
+   "seg_off": 4423,
+   "reg": "bx",
+   "imm": 27726,
+   "text": "+",
+   "len": 1
+  },
+  {
+   "file_off": 5029,
+   "seg_off": 4517,
+   "reg": "bx",
+   "imm": 27732,
+   "text": "Skills left:",
+   "len": 12
+  },
+  {
+   "file_off": 5047,
+   "seg_off": 4535,
+   "reg": "bx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 5185,
+   "seg_off": 4673,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 5449,
+   "seg_off": 4937,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 5497,
+   "seg_off": 4985,
+   "reg": "bx",
+   "imm": 27758,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 5515,
+   "seg_off": 5003,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 5747,
+   "seg_off": 5235,
+   "reg": "bx",
+   "imm": 27770,
+   "text": "Skills left:",
+   "len": 12
+  },
+  {
+   "file_off": 5767,
+   "seg_off": 5255,
+   "reg": "bx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 5894,
+   "seg_off": 5382,
+   "reg": "bx",
+   "imm": 27844,
+   "text": ">",
+   "len": 1
+  },
+  {
+   "file_off": 5965,
+   "seg_off": 5453,
+   "reg": "bx",
+   "imm": 27794,
+   "text": "Do you wish to keep this character (Y/N) ?",
+   "len": 42
+  },
+  {
+   "file_off": 6028,
+   "seg_off": 5516,
+   "reg": "bx",
+   "imm": 27850,
+   "text": "Y",
+   "len": 1
+  },
+  {
+   "file_off": 6050,
+   "seg_off": 5538,
+   "reg": "bx",
+   "imm": 27860,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 6062,
+   "seg_off": 5550,
+   "reg": "bx",
+   "imm": 27866,
+   "text": "2",
+   "len": 1
+  },
+  {
+   "file_off": 6074,
+   "seg_off": 5562,
+   "reg": "ax",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 6082,
+   "seg_off": 5570,
+   "reg": "bx",
+   "imm": 26610,
+   "text": "  ",
+   "len": 2
+  },
+  {
+   "file_off": 6509,
+   "seg_off": 5997,
+   "reg": "bx",
+   "imm": 27904,
+   "text": "0000000000",
+   "len": 10
+  },
+  {
+   "file_off": 6604,
+   "seg_off": 6092,
+   "reg": "bx",
+   "imm": 27758,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 6765,
+   "seg_off": 6253,
+   "reg": "bx",
+   "imm": 27924,
+   "text": "Party #",
+   "len": 7
+  },
+  {
+   "file_off": 6793,
+   "seg_off": 6281,
+   "reg": "bx",
+   "imm": 27936,
+   "text": "Gold:",
+   "len": 5
+  },
+  {
+   "file_off": 6819,
+   "seg_off": 6307,
+   "reg": "bx",
+   "imm": 27946,
+   "text": " Provisions:",
+   "len": 12
+  },
+  {
+   "file_off": 6866,
+   "seg_off": 6354,
+   "reg": "bx",
+   "imm": 27962,
+   "text": "Saved in the month of the ",
+   "len": 26
+  },
+  {
+   "file_off": 6931,
+   "seg_off": 6419,
+   "reg": "bx",
+   "imm": 27992,
+   "text": "Wilderness",
+   "len": 10
+  },
+  {
+   "file_off": 6970,
+   "seg_off": 6458,
+   "reg": "ax",
+   "imm": 28010,
+   "text": "maze: ",
+   "len": 6
+  },
+  {
+   "file_off": 6997,
+   "seg_off": 6485,
+   "reg": "bx",
+   "imm": 28020,
+   "text": "Currently in the ",
+   "len": 17
+  },
+  {
+   "file_off": 7029,
+   "seg_off": 6517,
+   "reg": "bx",
+   "imm": 28042,
+   "text": "#) Name        Race   Class   Level   Status",
+   "len": 44
+  },
+  {
+   "file_off": 7181,
+   "seg_off": 6669,
+   "reg": "bx",
+   "imm": 28098,
+   "text": ") ",
+   "len": 2
+  },
+  {
+   "file_off": 7280,
+   "seg_off": 6768,
+   "reg": "bx",
+   "imm": 27860,
+   "text": "1",
+   "len": 1
+  },
+  {
+   "file_off": 7291,
+   "seg_off": 6779,
+   "reg": "bx",
+   "imm": 28108,
+   "text": "Hero",
+   "len": 4
+  },
+  {
+   "file_off": 7303,
+   "seg_off": 6791,
+   "reg": "bx",
+   "imm": 28116,
+   "text": "Wizard",
+   "len": 6
+  },
+  {
+   "file_off": 7474,
+   "seg_off": 6962,
+   "reg": "bx",
+   "imm": 28128,
+   "text": "Any key to continue, (Q quits)...",
+   "len": 33
+  },
+  {
+   "file_off": 7494,
+   "seg_off": 6982,
+   "reg": "bx",
+   "imm": 28166,
+   "text": "Q",
+   "len": 1
+  },
+  {
+   "file_off": 7557,
+   "seg_off": 7045,
+   "reg": "bx",
+   "imm": 28172,
+   "text": "(0 exits) ? ",
+   "len": 12
+  },
+  {
+   "file_off": 7655,
+   "seg_off": 7143,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 7718,
+   "seg_off": 7206,
+   "reg": "bx",
+   "imm": 28188,
+   "text": "Is deleted !",
+   "len": 12
+  },
+  {
+   "file_off": 7729,
+   "seg_off": 7217,
+   "reg": "bx",
+   "imm": 27758,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 8069,
+   "seg_off": 7557,
+   "reg": "bx",
+   "imm": 28222,
+   "text": " #",
+   "len": 2
+  },
+  {
+   "file_off": 8099,
+   "seg_off": 7587,
+   "reg": "bx",
+   "imm": 28204,
+   "text": "(0 exits) ?",
+   "len": 11
+  },
+  {
+   "file_off": 8147,
+   "seg_off": 7635,
+   "reg": "bx",
+   "imm": 28228,
+   "text": "   ",
+   "len": 3
+  },
+  {
+   "file_off": 8182,
+   "seg_off": 7670,
+   "reg": "bx",
+   "imm": 28098,
+   "text": ") ",
+   "len": 2
+  },
+  {
+   "file_off": 8281,
+   "seg_off": 7769,
+   "reg": "bx",
+   "imm": 28236,
+   "text": "#",
+   "len": 1
+  },
+  {
+   "file_off": 8305,
+   "seg_off": 7793,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 8356,
+   "seg_off": 7844,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 9184,
+   "seg_off": 8672,
+   "reg": "bx",
+   "imm": 28246,
+   "text": "No party #",
+   "len": 10
+  },
+  {
+   "file_off": 9220,
+   "seg_off": 8708,
+   "reg": "bx",
+   "imm": 28260,
+   "text": "to disband !",
+   "len": 12
+  },
+  {
+   "file_off": 9317,
+   "seg_off": 8805,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 9398,
+   "seg_off": 8886,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 9448,
+   "seg_off": 8936,
+   "reg": "bx",
+   "imm": 27444,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 9454,
+   "seg_off": 8942,
+   "reg": "bx",
+   "imm": 28276,
+   "text": "CHARS.DAT",
+   "len": 9
+  },
+  {
+   "file_off": 9532,
+   "seg_off": 9020,
+   "reg": "bx",
+   "imm": 27758,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 9560,
+   "seg_off": 9048,
+   "reg": "bx",
+   "imm": 27444,
+   "text": "R",
+   "len": 1
+  },
+  {
+   "file_off": 9566,
+   "seg_off": 9054,
+   "reg": "bx",
+   "imm": 28292,
+   "text": "GROUPS.DAT",
+   "len": 10
+  },
+  {
+   "file_off": 9650,
+   "seg_off": 9138,
+   "reg": "bx",
+   "imm": 28308,
+   "text": "titles.DAT",
+   "len": 10
+  },
+  {
+   "file_off": 9815,
+   "seg_off": 9303,
+   "reg": "bx",
+   "imm": 27672,
+   "text": "H",
+   "len": 1
+  },
+  {
+   "file_off": 9826,
+   "seg_off": 9314,
+   "reg": "bx",
+   "imm": 28324,
+   "text": "Human",
+   "len": 5
+  },
+  {
+   "file_off": 9838,
+   "seg_off": 9326,
+   "reg": "bx",
+   "imm": 27678,
+   "text": "T",
+   "len": 1
+  },
+  {
+   "file_off": 9852,
+   "seg_off": 9340,
+   "reg": "bx",
+   "imm": 28338,
+   "text": "Troll",
+   "len": 5
+  },
+  {
+   "file_off": 9864,
+   "seg_off": 9352,
+   "reg": "bx",
+   "imm": 27432,
+   "text": "D",
+   "len": 1
+  },
+  {
+   "file_off": 9878,
+   "seg_off": 9366,
+   "reg": "bx",
+   "imm": 28348,
+   "text": "Dwarf",
+   "len": 5
+  },
+  {
+   "file_off": 9890,
+   "seg_off": 9378,
+   "reg": "bx",
+   "imm": 27490,
+   "text": "E",
+   "len": 1
+  },
+  {
+   "file_off": 9904,
+   "seg_off": 9392,
+   "reg": "bx",
+   "imm": 28358,
+   "text": "Elf",
+   "len": 3
+  },
+  {
+   "file_off": 9916,
+   "seg_off": 9404,
+   "reg": "bx",
+   "imm": 27684,
+   "text": "G",
+   "len": 1
+  },
+  {
+   "file_off": 9930,
+   "seg_off": 9418,
+   "reg": "bx",
+   "imm": 28366,
+   "text": "Gnome",
+   "len": 5
+  },
+  {
+   "file_off": 9942,
+   "seg_off": 9430,
+   "reg": "bx",
+   "imm": 28376,
+   "text": "error",
+   "len": 5
+  },
+  {
+   "file_off": 9988,
+   "seg_off": 9476,
+   "reg": "bx",
+   "imm": 28386,
+   "text": " #) Name       Party         #) Name       Party",
+   "len": 48
+  },
+  {
+   "file_off": 10056,
+   "seg_off": 9544,
+   "reg": "bx",
+   "imm": 27758,
+   "text": "*",
+   "len": 1
+  },
+  {
+   "file_off": 10141,
+   "seg_off": 9629,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 10210,
+   "seg_off": 9698,
+   "reg": "bx",
+   "imm": 26588,
+   "text": "0",
+   "len": 1
+  },
+  {
+   "file_off": 10230,
+   "seg_off": 9718,
+   "reg": "bx",
+   "imm": 28098,
+   "text": ") ",
+   "len": 2
+  },
+  {
+   "file_off": 10270,
+   "seg_off": 9758,
+   "reg": "bx",
+   "imm": 26652,
+   "text": " ",
+   "len": 1
+  },
+  {
+   "file_off": 10344,
+   "seg_off": 9832,
+   "reg": "bx",
+   "imm": 28454,
+   "text": "(0 exits) ? ",
+   "len": 12
+  }
+ ],
+ "MTEST.EXE": [
+  {
+   "file_off": 648,
+   "seg_off": 136,
+   "reg": "ax",
+   "imm": 21074,
+   "text": "monst",
+   "len": 5
+  },
+  {
+   "file_off": 658,
+   "seg_off": 146,
+   "reg": "bx",
+   "imm": 21084,
+   "text": ".bin",
+   "len": 4
+  },
+  {
+   "file_off": 816,
+   "seg_off": 304,
+   "reg": "bx",
+   "imm": 21098,
+   "text": "hit any key for next screen",
+   "len": 27
+  },
+  {
+   "file_off": 888,
+   "seg_off": 376,
+   "reg": "ax",
+   "imm": 21134,
+   "text": "monst",
+   "len": 5
+  },
+  {
+   "file_off": 898,
+   "seg_off": 386,
+   "reg": "bx",
+   "imm": 21084,
+   "text": ".bin",
+   "len": 4
+  },
+  {
+   "file_off": 1056,
+   "seg_off": 544,
+   "reg": "bx",
+   "imm": 21144,
+   "text": "hit any key",
+   "len": 11
+  }
+ ],
+ "MIO2.EXE": [
+  {
+   "file_off": 649,
+   "seg_off": 137,
+   "reg": "bx",
+   "imm": 21076,
+   "text": "load picture file #",
+   "len": 19
+  },
+  {
+   "file_off": 664,
+   "seg_off": 152,
+   "reg": "bx",
+   "imm": 21100,
+   "text": "     ",
+   "len": 5
+  },
+  {
+   "file_off": 699,
+   "seg_off": 187,
+   "reg": "bx",
+   "imm": 21110,
+   "text": "and hit any key to continue    ",
+   "len": 31
+  },
+  {
+   "file_off": 751,
+   "seg_off": 239,
+   "reg": "bx",
+   "imm": 21146,
+   "text": "now saving monst??.bin files   ",
+   "len": 31
+  },
+  {
+   "file_off": 999,
+   "seg_off": 487,
+   "reg": "ax",
+   "imm": 21450,
+   "text": "mon",
+   "len": 3
+  },
+  {
+   "file_off": 1009,
+   "seg_off": 497,
+   "reg": "bx",
+   "imm": 21458,
+   "text": ".bin",
+   "len": 4
+  },
+  {
+   "file_off": 1097,
+   "seg_off": 585,
+   "reg": "bx",
+   "imm": 21468,
+   "text": "hit any key to continue        ",
+   "len": 31
+  },
+  {
+   "file_off": 1188,
+   "seg_off": 676,
+   "reg": "ax",
+   "imm": 21506,
+   "text": "monst",
+   "len": 5
+  },
+  {
+   "file_off": 1198,
+   "seg_off": 686,
+   "reg": "bx",
+   "imm": 21458,
+   "text": ".bin",
+   "len": 4
+  },
+  {
+   "file_off": 1356,
+   "seg_off": 844,
+   "reg": "bx",
+   "imm": 21520,
+   "text": "verify your pictures              ",
+   "len": 34
+  },
+  {
+   "file_off": 1389,
+   "seg_off": 877,
+   "reg": "bx",
+   "imm": 21558,
+   "text": "hit any key to continue           ",
+   "len": 34
+  },
+  {
+   "file_off": 1460,
+   "seg_off": 948,
+   "reg": "ax",
+   "imm": 21600,
+   "text": "monst",
+   "len": 5
+  },
+  {
+   "file_off": 1470,
+   "seg_off": 958,
+   "reg": "bx",
+   "imm": 21458,
+   "text": ".bin",
+   "len": 4
+  },
+  {
+   "file_off": 1628,
+   "seg_off": 1116,
+   "reg": "bx",
+   "imm": 21610,
+   "text": "verify your pictures              ",
+   "len": 34
+  },
+  {
+   "file_off": 1661,
+   "seg_off": 1149,
+   "reg": "bx",
+   "imm": 21648,
+   "text": "hit any key to continue           ",
+   "len": 34
+  }
+ ],
+ "WSIO.EXE": [
+  {
+   "file_off": 708,
+   "seg_off": 196,
+   "reg": "bx",
+   "imm": 21478,
+   "text": "fastwrld.bin",
+   "len": 12
+  },
+  {
+   "file_off": 1144,
+   "seg_off": 632,
+   "reg": "bx",
+   "imm": 21774,
+   "text": "Capture or Load image now...",
+   "len": 28
+  },
+  {
+   "file_off": 1753,
+   "seg_off": 1241,
+   "reg": "bx",
+   "imm": 21812,
+   "text": "fastwrld.bin",
+   "len": 12
+  }
+ ]
+}

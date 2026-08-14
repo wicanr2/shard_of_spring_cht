@@ -453,8 +453,14 @@ shard_of_spring/
 https://github.com/wicanr2/shard_of_spring_cht
 ```
 
-目前是 **private**。原版素材全部 gitignore，要轉 public 只需一行
-`gh repo edit --visibility public`（先確認 git 歷史裡沒有原版檔案）。
+**維持 private。** 原版執行檔、資料檔、美術全部 gitignore，
+但 `translations/` 的雙語對照 TSV 有 `original` 欄，內容是原版英文文本
+（含 9 個地城的完整敘述）——**那是翻譯工作的必要形式，在 private repo 下沒有問題**。
+
+⛔ **不要把這個 repo 轉成 public。** 上一句就是原因：原版劇情文本已經在
+git 歷史裡，`gh repo edit --visibility public` 會連同它一起公開，
+違反 §1「不散布原版資料檔」。真要公開得先改寫歷史或另開一個只含引擎程式碼的 repo，
+**那是需要專案負責人另行決定的事，不是一個順手的動作**。
 
 ---
 

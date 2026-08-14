@@ -204,6 +204,7 @@
 | [`94-skill-tables.md`](docs/re/94-skill-tables.md) | 兩張技能表 | 位移 42–51 由職業決定讀哪張;`Hard Axe` 會 Axe、`Fire Hawk` 會 Fire runes |
 | [`95-no-flee-command.md`](docs/re/95-no-flee-command.md) | 逃跑找不到 | 三條線指向不存在;但「回空」的證據等級不足,標假設 |
 | [`96-facing-and-action-points.md`](docs/re/96-facing-and-action-points.md) | 朝向與行動點數 | 屬性 10 = 朝向,命中 `+12` = 背後攻擊;轉身 1 點、行動 3 點 |
+| [`97-j-closure.md`](docs/re/97-j-closure.md) | **子系統 J = RE-DONE** | `D` = Dispell;「沒有逃跑」以窮舉 + 正對照收斂 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

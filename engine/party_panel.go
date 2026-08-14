@@ -46,9 +46,12 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	// 不自行修正,但也不安靜吞掉。
 	px := float64(layout.Prompt.X + ui.PanelPad)
 	py := float64(layout.Prompt.Y + ui.PanelPad)
-	if g.field != nil {
+	switch {
+	case g.field != nil:
 		g.panel.Draw(dst, "空白鍵：推進一回合　　ESC：結束後離開戰鬥", px, py)
-	} else {
+	case g.level != nil:
+		g.panel.Draw(dst, "方向鍵／1234：移動　　ESC：離開地城　　S：存檔", px, py)
+	default:
 		g.panel.Draw(dst, "方向鍵／1234：移動　　S：存檔", px, py)
 	}
 	py += lh

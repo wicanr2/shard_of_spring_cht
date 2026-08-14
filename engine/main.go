@@ -21,6 +21,7 @@ import (
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
+	"shardofspring/internal/maze"
 	"shardofspring/internal/original"
 	"shardofspring/internal/render"
 	"shardofspring/internal/world"
@@ -60,9 +61,26 @@ type Game struct {
 	items    map[int]combat.Item
 	rand     *combat.SeededRand
 	field    *combat.Field // nil = 不在戰鬥中
+
+	// M5:迷宮(docs/spec/08)
+	assets    string
+	mazeData  []original.MazeEntry
+	mazeTiles map[int]*ebiten.Image
+	level     *mazeLevel // nil = 不在迷宮中
+	mazeState maze.State
+	overlay   string // 非空 = 敘述覆蓋層開著
+	overlayFont *render.Painter
 }
 
 func (g *Game) Update() error {
+	// 覆蓋層開著時吃掉所有按鍵(docs/spec/04 §3:出現時遊戲暫停)
+	if g.overlay != "" {
+		if len(inpututil.AppendJustPressedKeys(nil)) > 0 {
+			g.overlay = ""
+		}
+		return nil
+	}
+
 	// 戰鬥中:方向鍵不移動,空白鍵推一回合、ESC 離開結束的戰鬥。
 	if g.field != nil {
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
@@ -78,16 +96,36 @@ func (g *Game) Update() error {
 		return nil
 	}
 
-	for key, dir := range map[ebiten.Key]world.Facing{
-		ebiten.KeyUp: world.North, ebiten.KeyRight: world.East,
-		ebiten.KeyDown: world.South, ebiten.KeyLeft: world.West,
-		ebiten.KeyDigit1: world.North, ebiten.KeyDigit2: world.East,
-		ebiten.KeyDigit3: world.South, ebiten.KeyDigit4: world.West,
-	} {
+	dirs := map[ebiten.Key]int{
+		ebiten.KeyUp: 1, ebiten.KeyRight: 2, ebiten.KeyDown: 3, ebiten.KeyLeft: 4,
+		ebiten.KeyDigit1: 1, ebiten.KeyDigit2: 2, ebiten.KeyDigit3: 3, ebiten.KeyDigit4: 4,
+	}
+
+	// 迷宮中
+	if g.level != nil {
+		for key, d := range dirs {
+			if inpututil.IsKeyJustPressed(key) {
+				g.stepMaze(maze.Facing(d))
+			}
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+			// ⚠ 原版怎麼離開迷宮**未解**(docs/spec/08 §6)。
+			g.level = nil
+		}
+		return nil
+	}
+
+	for key, d := range dirs {
 		if inpututil.IsKeyJustPressed(key) {
-			if g.party.Step(dir, g.world) == world.Moved && g.party.Encounter == 0 {
+			if g.party.Step(world.Facing(d), g.world) == world.Moved {
+				// 踩到地城入口 → 進迷宮(docs/spec/08 §6)
+				if g.enterMaze(g.party.X, g.party.Y) {
+					return nil
+				}
 				// docs/formats/02 位移 25:歸零時觸發遭遇檢查
-				g.startCombat()
+				if g.party.Encounter == 0 {
+					g.startCombat()
+				}
 			}
 		}
 	}
@@ -135,12 +173,13 @@ func (g *Game) save() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(cgaBlack)
 
-	// 戰鬥中主視野換成戰鬥畫面(docs/spec/07)。
+	// 戰鬥與迷宮各自接管主視野。
 	inCombat := g.field != nil
+	inMaze := g.level != nil && !inCombat
 
 	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
 	const half = layout.ViewTiles / 2
-	for vy := 0; !inCombat && vy < layout.ViewTiles; vy++ {
+	for vy := 0; !inCombat && !inMaze && vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
 			mx, my := g.party.X-half+vx, g.party.Y-half+vy
 			v := g.world.At(mx, my)
@@ -169,7 +208,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	if !inCombat {
+	if !inCombat && !inMaze {
 		// 隊伍所在格的框
 		c := float32(layout.View.X + half*layout.TileDst)
 		r := float32(layout.View.Y + half*layout.TileDst)
@@ -186,7 +225,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	frame(layout.Prompt)
 
 	g.drawParty(screen)
+	g.drawMaze(screen)
 	g.drawCombat(screen)
+	g.drawOverlay(screen)
 
 	// M2 還沒有字型(docs/spec/04 §4 的 TTF 是 M3 之後),
 	// 所以狀態暫時走 Ebitengine 的除錯字。**這不是最終呈現。**
@@ -250,26 +291,19 @@ func load(dir string, slot int, fontPath string, seed uint64, x, y, enc int) (*G
 		return nil, fmt.Errorf("地圖尺寸 %d×%d,規格說 %d×%d", wm.W, wm.H, world.W, world.H)
 	}
 
-	tiles := map[int]*ebiten.Image{}
-	for v := 0; v <= 38; v++ {
-		p := filepath.Join(dir, "gfx", "world", fmt.Sprintf("t%02d.png", v))
-		f, err := os.Open(p)
-		if err != nil {
-			continue // 沒有來源的地形值,執行期畫佔位符
-		}
-		img, _, err := image.Decode(f)
-		f.Close()
-		if err != nil {
-			return nil, fmt.Errorf("%s:%w", p, err)
-		}
-		tiles[v] = ebiten.NewImageFromImage(img)
-	}
+	tiles := loadTiles(filepath.Join(dir, "gfx", "world"), 38)
 
 	g := &Game{
-		world: &world.Map{Cells: wm.Cells},
-		tiles: tiles,
-		noSrc: map[int]bool{},
+		world:  &world.Map{Cells: wm.Cells},
+		tiles:  tiles,
+		assets: dir,
+		noSrc:  map[int]bool{},
 	}
+	if err := readJSON(filepath.Join(dir, "data", "mazedata.json"), &g.mazeData); err != nil {
+		return nil, err
+	}
+	// 迷宮圖塊:MAZEITEM.PIC 第 k 行 = 格值 k(偏移 0)。
+	g.mazeTiles = loadTiles(filepath.Join(dir, "gfx", "maze"), 32)
 	if err := g.loadParty(dir, slot); err != nil {
 		return nil, err
 	}
@@ -294,6 +328,8 @@ func load(dir string, slot int, fontPath string, seed uint64, x, y, enc int) (*G
 	}
 	fmt.Fprintln(os.Stderr, "字型:", path)
 	g.panel = render.NewPainter(src, 20, cgaWhite)
+	// 敘述覆蓋層用 24 px(docs/spec/04 §4 的主要閱讀字級)。
+	g.overlayFont = render.NewPainter(src, 24, cgaWhite)
 	return g, nil
 }
 
@@ -392,4 +428,23 @@ func readJSON(path string, v any) error {
 		return err
 	}
 	return json.Unmarshal(b, v)
+}
+
+
+// loadTiles 讀 <dir>/t00.png … t<max>.png。讀不到的編號不進 map ——
+// 執行期會畫佔位符,讓「沒有來源」在畫面上看得見(docs/spec/05 §4)。
+func loadTiles(dir string, max int) map[int]*ebiten.Image {
+	out := map[int]*ebiten.Image{}
+	for v := 0; v <= max; v++ {
+		f, err := os.Open(filepath.Join(dir, fmt.Sprintf("t%02d.png", v)))
+		if err != nil {
+			continue
+		}
+		img, _, err := image.Decode(f)
+		f.Close()
+		if err == nil {
+			out[v] = ebiten.NewImageFromImage(img)
+		}
+	}
+	return out
 }

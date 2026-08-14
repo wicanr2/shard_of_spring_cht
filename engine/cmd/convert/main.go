@@ -175,6 +175,85 @@ func run(in, out string) error {
 		return err
 	}
 
+	// MAZEITEM.PIC:第 k 行 = 圖塊值 k(**偏移 0**,CONTEXT.md §6 的訂正)。
+	// 空行 = 該值「用到但不繪製」—— 行 0/18/19 是空的,正好對上程式碼的清單
+	// (docs/re/56 §2)。**不要把空行濾掉**,行號就是索引。
+	if err := os.MkdirAll(filepath.Join(out, "gfx", "maze"), 0o755); err != nil {
+		return err
+	}
+	mi := original.SplitPIC(mustRead(in, "MAZEITEM.PIC"))
+	nMazeTile := 0
+	for k, row := range mi {
+		if strings.TrimSpace(row) == "" {
+			continue
+		}
+		img := original.RenderDraw(row, 17, 17)
+		if err := writePNG(filepath.Join(out, "gfx", "maze",
+			fmt.Sprintf("t%02d.png", k)), img); err != nil {
+			return err
+		}
+		nMazeTile++
+	}
+	if err := step("maze tiles", nMazeTile, nil); err != nil {
+		return err
+	}
+
+	// 迷宮:MAZEDATA + 六個 .SQZ + 事件表 + 房間文字,全部轉成 JSON。
+	entries, err := original.ParseMazeData(mustRead(in, "MAZEDATA.BIN"))
+	if err := step("mazedata", len(entries), err); err != nil {
+		return err
+	}
+	if err := writeJSON(filepath.Join(out, "data", "mazedata.json"), entries); err != nil {
+		return err
+	}
+	nMaze, nEvent, nText := 0, 0, 0
+	seenMaze, seenText := map[int]bool{}, map[int]bool{}
+	for _, e := range entries {
+		// ⚠ **不要跳過 (0,0) 的第 13 筆。** 它在世界地圖上沒有入口,
+		// 但指向 DG51 / DT51 —— 那是地城 5 的下半層,只能從樓梯進去
+		// (docs/re/60 §3)。跳過它會讓跨關卡的目的地不存在,
+		// 而畫面上只會看到「走樓梯沒反應」。
+		if !seenMaze[e.MazeFile] {
+			seenMaze[e.MazeFile] = true
+			m, err := original.DecodeSQZ(mustRead(in, fmt.Sprintf("DG%dMAZE.SQZ", e.MazeFile)))
+			if err != nil {
+				return fmt.Errorf("DG%d:%w", e.MazeFile, err)
+			}
+			if err := writeJSON(filepath.Join(out, "data",
+				fmt.Sprintf("maze%d.json", e.MazeFile)), m); err != nil {
+				return err
+			}
+			nMaze++
+		}
+		if !seenText[e.TextFile] {
+			seenText[e.TextFile] = true
+			evs, err := original.ParseEvents(mustRead(in, fmt.Sprintf("DE%dEFF.BIN", e.TextFile)))
+			if err != nil {
+				return fmt.Errorf("DE%d:%w", e.TextFile, err)
+			}
+			if err := writeJSON(filepath.Join(out, "data",
+				fmt.Sprintf("events%d.json", e.TextFile)), evs); err != nil {
+				return err
+			}
+			nEvent++
+			txt := original.ParseDungeonText(mustRead(in, fmt.Sprintf("DT%dTEXT.DAT", e.TextFile)))
+			if err := writeJSON(filepath.Join(out, "data",
+				fmt.Sprintf("dtext%d.json", e.TextFile)), txt); err != nil {
+				return err
+			}
+			nText += len(txt)
+		}
+	}
+	if err := step("mazes", nMaze, nil); err != nil {
+		return err
+	}
+	if err := step("event tables", nEvent, nil); err != nil {
+		return err
+	}
+	if err := step("dungeon text", nText, nil); err != nil {
+		return err
+	}
+
 	// 存檔的初始複本。**原版目錄唯讀**(CLAUDE.md §8),而引擎要寫存檔,
 	// 所以把 CHARS.DAT / GROUPS.DAT 複製到可寫的資產目錄。
 	// ⚠ 只在目標不存在時複製 —— 重跑轉檔不該把玩家的進度洗掉。

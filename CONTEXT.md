@@ -213,6 +213,7 @@
 | [`103-flee-is-leaving-the-field.md`](docs/re/103-flee-is-leaving-the-field.md) | **J = RE-DONE(重新收斂)** | 逃跑 = 隊伍成員朝向全為 0;範圍 9…人數+8 對上 `43` |
 | [`104-groups-fields-from-context.md`](docs/re/104-groups-fields-from-context.md) | `GROUPS.DAT` 再解四欄 | 用語境字串當標籤;9/14 有語意 |
 | [`105-visibility-fields.md`](docs/re/105-visibility-fields.md) | 位移 59/83 = 能見度與來源旗標 | 槽 33 只讀四個變數,消去法;11/14 |
+| [`106-clock-cascade.md`](docs/re/106-clock-cascade.md) | 位移 27/29/33 = 時鐘三級 | 三組 inc→cmp→重設;⚠ 上限 10/34/21 不是地球曆法 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

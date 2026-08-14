@@ -84,7 +84,8 @@
 
 | 項目 | 卡在哪 |
 |---|---|
-| **引擎實作 M0** | 沒有卡住 —— 閘門全開,`docs/spec/03-engine-plan.md` 標 READY,可以動手 |
+| **引擎實作 M0** | 沒有卡住 —— 閘門全開,`spec/03` + `spec/04` 標 READY,可以動手 |
+| 商店清單的加註顯示 | **未決,擋住商店介面**(`spec/04` §5):名稱放得下,整列(編號+名稱+價格)36 欄超出側欄 30 欄。三個候選,其中「首次進入才加註」需要存檔旗標,選它就要在存檔設計時一起做 |
 | ~~DOSBox oracle~~ | **不是卡控**(`CLAUDE.md` §6)。腳本可用,實跑停在開機查表題;要用就由持有原版者依手冊作答,不用就走靜態。十二個子系統的收斂沒有一項靠它 |
 | **模組內字串的中文化** | 1,012 段未動。822 段已接上引用點(`docs/re/124`,100%),還缺**把 1,085 個引用點歸戶到畫面**;障礙是 IDA 只判 ~40% 為程式碼,函式邊界在另外 60% 上不存在 |
 | 重讀 `3E:44` | 該區指令邊界錯位(`docs/re/15` §2)。**不影響任何已定案的結論**,是可讀性問題 |
@@ -96,8 +97,11 @@
 (`docs/re/122` §4 是索引)。規格已收攏並標 READY:
 `docs/formats/01`–`07`(七份格式)、`docs/spec/01`–`02`(戰鬥、魔法)。
 
-技術棧已定案:**Go + Ebitengine**(2026-08-14),
-`docs/spec/03-engine-plan.md` 標 READY —— **可以開始寫引擎程式碼**。
+技術棧與畫布都已定案:**Go + Ebitengine、1024×768**(2026-08-14)。
+`docs/spec/03-engine-plan.md`(架構與里程碑)與 `04-display-layout.md`
+(版面、中文排版、避頭尾)標 READY —— **可以開始寫引擎程式碼**。
+顯示層的核心決定是**美術 4× 整數放大、文字層走 TTF 原生解析度**:
+中文塞不進放大的點陣字格。
 
 **沒有任何外部條件卡著。** DOSBox 是輔助驗證不是卡控(`CLAUDE.md` §6):
 十二個子系統的條件 3 全部由跨檔案 / 跨模組的獨立來源滿足。
@@ -247,6 +251,8 @@
 | [`124-string-refs-linked.md`](docs/re/124-string-refs-linked.md) | **822 段字串全部接上引用點** | 那個掛了很久的「位移↔DS 對應」不需要解;δ 平移負對照證明 100% 不是巧合 |
 | [`125-manual-confirms-spells.md`](docs/re/125-manual-confirms-spells.md) | **官方中文手冊當 oracle** | 法術法力 33/33、命中 ×4 與背擊 +12 兩源吻合;⚠ 手冊內文譯自 Apple II 版 |
 | [`126-shop-price-multiplier.md`](docs/re/126-shop-price-multiplier.md) | **新發現:商店價格倍率** | `TOWNDATA.DAT` 位移 38 = MBF 倍率;`ITEMS.DAT` 欄3 是基準價;「差一點點」的偏差就是主要證據 |
+
+規格:[`docs/spec/00-index.md`](docs/spec/00-index.md) —— 七份格式 + 四份實作規格,全部 READY。
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

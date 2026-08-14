@@ -225,6 +225,7 @@
 | [`115-visibility-lit-and-dark.md`](docs/re/115-visibility-lit-and-dark.md) | 位移 59/61 = 能見度 | ⚠ 對應方向被 `116` 存疑 |
 | [`116-contradiction-in-115.md`](docs/re/116-contradiction-in-115.md) | 位移 25 的形狀 + 質疑 `115` | 註解裡的因果詞要能指到一條指令 |
 | [`117-annotation-was-right.md`](docs/re/117-annotation-was-right.md) | 註解是對的,但寫的時候不該是對的 | 排版會製造出資料裡沒有的對立;猜對與猜錯的註解長得一樣 |
+| [`118-daylight.md`](docs/re/118-daylight.md) | **天色 + 位移 83 結案** | `ds:35B4h` 由時辰決定(17→2、19→1);位移 83 選自然光或攜帶光 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

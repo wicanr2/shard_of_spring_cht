@@ -218,6 +218,7 @@
 | [`108-clock-labels-not-resolved.md`](docs/re/108-clock-labels-not-resolved.md) | 時鐘標籤對應未解 | 顯示端不直接讀計時器;掃描回空的第三個成因是定址形式 |
 | [`109-clock-labels-resolved.md`](docs/re/109-clock-labels-resolved.md) | **時鐘標籤定案** | `ds:3010h` 存的是記錄位移;掃不到的第四種成因是「不在你掃的抽象層」|
 | [`110-display-offset-census.md`](docs/re/110-display-offset-census.md) | 顯示欄位清點 + 訂正 `109` | 兩個事實之間的**距離**也是證據的一部分 |
+| [`111-status-code-equals-school.md`](docs/re/111-status-code-equals-school.md) | **狀態編號 = 法術系別**;`CHARS.DAT` 完成 | `CHAINS`→`Bound`、`STILL AIR`→`Still Air`、`FREEZE`→`Frozen` 三筆全中 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

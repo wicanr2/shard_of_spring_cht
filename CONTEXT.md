@@ -201,6 +201,7 @@
 | [`91-e-closure.md`](docs/re/91-e-closure.md) | **子系統 E = RE-DONE** | 物品欄6 雙重身分;法術負值只出現在四個類別 |
 | [`92-attribute-15-16.md`](docs/re/92-attribute-15-16.md) | 屬性 15 = 目標編號、16 = Hero 旗標 | 一個屬性存的是另一個單位的編號,那就是目標 |
 | [`93-initiative.md`](docs/re/93-initiative.md) | **先攻** | 兩層迴圈依屬性 2(速度)排 `ds:6A7Ah` 順序表;補上 `73` 欄1 的缺口 |
+| [`94-skill-tables.md`](docs/re/94-skill-tables.md) | 兩張技能表 | 位移 42–51 由職業決定讀哪張;`Hard Axe` 會 Axe、`Fire Hawk` 會 Fire runes |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

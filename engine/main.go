@@ -71,6 +71,11 @@ type Game struct {
 	overlay   string // 非空 = 敘述覆蓋層開著
 	overlayFont *render.Painter
 
+	// M8:城鎮(docs/spec/11)
+	shops    []original.Shop
+	itemList []original.Item
+	town     *townState
+
 	// M6:法術(docs/spec/09)
 	spells   []original.Spell
 	castUnit int
@@ -123,6 +128,18 @@ func (g *Game) Update() error {
 		ebiten.KeyDigit1: 1, ebiten.KeyDigit2: 2, ebiten.KeyDigit3: 3, ebiten.KeyDigit4: 4,
 	}
 
+	// 城鎮中
+	if g.town != nil && g.town.mode != townClosed {
+		for _, k := range inpututil.AppendJustPressedKeys(nil) {
+			if k == ebiten.KeyEscape && g.town.mode == townBuildings {
+				g.town = nil
+				break
+			}
+			g.townKey(k)
+		}
+		return nil
+	}
+
 	// 迷宮中
 	if g.level != nil {
 		for key, d := range dirs {
@@ -143,6 +160,12 @@ func (g *Game) Update() error {
 				// 踩到地城入口 → 進迷宮(docs/spec/08 §6)
 				if g.enterMaze(g.party.X, g.party.Y) {
 					return nil
+				}
+				// 踩到城鎮 → 進城(docs/spec/11 §2)
+				if v := g.world.At(g.party.X, g.party.Y); v >= 30 && v <= 32 {
+					if g.enterTown(g.party.X, g.party.Y) {
+						return nil
+					}
 				}
 				// docs/formats/02 位移 25:歸零時觸發遭遇檢查
 				if g.party.Encounter == 0 {
@@ -198,10 +221,11 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	// 戰鬥與迷宮各自接管主視野。
 	inCombat := g.field != nil
 	inMaze := g.level != nil && !inCombat
+	inTown := g.town != nil && g.town.mode != townClosed && !inCombat && !inMaze
 
 	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
 	const half = layout.ViewTiles / 2
-	for vy := 0; !inCombat && !inMaze && vy < layout.ViewTiles; vy++ {
+	for vy := 0; !inCombat && !inMaze && !inTown && vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
 			mx, my := g.party.X-half+vx, g.party.Y-half+vy
 			v := g.world.At(mx, my)
@@ -230,7 +254,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	if !inCombat && !inMaze {
+	if !inCombat && !inMaze && !inTown {
 		// 隊伍所在格的框
 		c := float32(layout.View.X + half*layout.TileDst)
 		r := float32(layout.View.Y + half*layout.TileDst)
@@ -248,6 +272,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	g.drawParty(screen)
 	g.drawMaze(screen)
+	g.drawTown(screen)
 	g.drawCombat(screen)
 	g.drawCastMenu(screen)
 	g.drawOverlay(screen)
@@ -435,6 +460,12 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 		return err
 	}
 	if err := readJSON(filepath.Join(dir, "data", "spells.json"), &g.spells); err != nil {
+		return err
+	}
+	if err := readJSON(filepath.Join(dir, "data", "shops.json"), &g.shops); err != nil {
+		return err
+	}
+	if err := readJSON(filepath.Join(dir, "data", "items.json"), &g.itemList); err != nil {
 		return err
 	}
 	g.items = map[int]combat.Item{}

@@ -84,3 +84,30 @@ func ParseDungeonTextTSV(d []byte) map[int]string {
 	}
 	return out
 }
+
+// ParsePlaceTSV 解析 translations/source/towndata.tsv:
+// kind \t town \t original \t orig_bytes \t translation \t …
+//
+// 回「原文 → 譯文」。城鎮名與商店名混在同一個檔裡,用 `original` 當鍵 ——
+// ⚠ **不用列號**,因為那個檔的列序與 TOWNDATA.DAT 的記錄序不保證一致。
+func ParsePlaceTSV(d []byte) map[string]string {
+	out := map[string]string{}
+	sc := bufio.NewScanner(bytes.NewReader(d))
+	sc.Buffer(make([]byte, 1<<20), 1<<20)
+	first := true
+	for sc.Scan() {
+		if first {
+			first = false
+			continue
+		}
+		f := strings.Split(sc.Text(), "\t")
+		if len(f) < 5 {
+			continue
+		}
+		orig, zh := strings.TrimSpace(f[2]), strings.TrimSpace(f[4])
+		if orig != "" && zh != "" {
+			out[orig] = zh
+		}
+	}
+	return out
+}

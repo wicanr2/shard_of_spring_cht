@@ -81,6 +81,14 @@ func run(in, out, transDir string) error {
 		return err
 	}
 	shops, err := original.ParseShops(mustRead(in, "TOWNDATA.DAT"))
+	for i := range shops {
+		if zh, ok := lang.places[shops[i].Name]; ok {
+			shops[i].Name = zh
+		}
+		if zh, ok := lang.places[shops[i].Town]; ok {
+			shops[i].Town = zh
+		}
+	}
 	if err := step("shops", len(shops), err); err != nil {
 		return err
 	}
@@ -372,6 +380,7 @@ func writePNG(path string, img image.Image) error {
 type langTables struct {
 	monsters, spells, items original.Lang
 	dungeon                 map[int]map[int]string // DT 檔號 → id → 譯文
+	places                  map[string]string      // 城鎮／商店名:原文 → 譯文
 }
 
 // loadLang 讀 translations/ 底下的 TSV。
@@ -387,6 +396,7 @@ func loadLang(dir string) langTables {
 		}
 		return b
 	}
+	lt.places = original.ParsePlaceTSV(read("source/towndata.tsv"))
 	lt.monsters = original.ParseLangTSV(read("names/monsters.tsv"))
 	lt.spells = original.ParseLangTSV(read("names/spells.tsv"))
 	lt.items = original.ParseLangTSV(read("names/items.tsv"))

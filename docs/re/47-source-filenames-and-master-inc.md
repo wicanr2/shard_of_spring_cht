@@ -52,7 +52,7 @@ BASIC 的 `COMMON` 宣告必須在每一支模組裡逐字相同、順序相同,
 ## 3. `INSTALL.INC` 只在 `MENU`
 
 `MENU.EXE` 是唯一 include `INSTALL.INC` 的模組,
-而手冊查詢題的字串([`33`](33-manual-quiz.md))也在 `MENU.EXE`:
+而手冊查詢題的字串([`33`](33-quiz-validates-columns.md))也在 `MENU.EXE`:
 
 ```
 What is the Bonus Damage by Strength for a character with a Strength of 20  (Chart, pg 11)

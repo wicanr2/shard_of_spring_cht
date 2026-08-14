@@ -11,7 +11,7 @@
 #   --log-opt           daemon 預設的 json-file 沒有 rotation(370 GB 事故)
 #   -u $(id -u)         不留 root-owned 檔案
 #   --memory/--pids     上限
-#   只掛 engine/ build/ game/ 與快取,不掛整個 repo
+#   只掛 engine/ build/ workplace/ game/ 與快取,不掛整個 repo
 #   game/ 一律 **:ro** —— CLAUDE.md §8「game/ 與 original/ 唯讀」
 #
 # ⛔ 本腳本**不做任何 docker 清理**。要空間請人工列候選清單再決定,
@@ -45,6 +45,7 @@ run() {
     ${NET_ARGS[@]+"${NET_ARGS[@]}"} \
     -v "$ROOT/engine":/src \
     -v "$ROOT/build":/out \
+    -v "$ROOT/workplace":/workplace \
     -v "$ROOT/game":/game:ro \
     -v "$CACHE":/gocache \
     -w /src \

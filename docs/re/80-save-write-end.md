@@ -62,7 +62,7 @@ call loc_1003D                 ; MKI$ + MID$ 寫回
 | 29 | `ds:3538h` | — |
 | 31 | `ds:353Ah` | — |
 | 33 | `ds:353Ch` | — |
-| **35** | `ds:3518h` | **世界座標 x**([`43`](43-module-ds-layout.md))|
+| **35** | `ds:3518h` | **世界座標 x**([`43`](43-common-block-and-array-indexing.md))|
 | **37** | `ds:351Ah` | **世界座標 y** |
 | **41** | `ds:3520h` | **朝向**([`76`](76-to-hit-formula.md) §1 的 `cmp ds:3520h, 1`)|
 | 45 | `ds:365Ah` | —(寫兩次,`0x10567` 與 `0x109F5`)|

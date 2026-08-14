@@ -21,7 +21,7 @@
 ```
 
 **`81 × 位移79 + (位移81 − 1)`** —— 而 `81` 正是迷宮網格的列數
-([`50`](50-sqz-format.md)/[`55`](55-maze-data.md):`.SQZ` 解碼器的 `mov di, 51h`,
+([`50`](50-sqz-maze-format.md)/[`55`](55-sqz-decoder-from-code.md):`.SQZ` 解碼器的 `mov di, 51h`,
 索引公式 `欄 × 81 + 列`)。
 
 | 位移 | 語意 | 信心 |

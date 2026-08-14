@@ -39,11 +39,11 @@ else:
 ## 5. `DT*TEXT.DAT` — 房間文字
 
 純文字:**3 位數編號 + ASCII 敘述**,沒有加密沒有壓縮。
-中文化的主要落點之一(見 [`re/62`](../re/62-l-closure.md))。
+中文化的主要落點之一(見 [`re/62`](../re/62-l-localization-inventory.md))。
 
 ## 未解
 
 `MAZEDATA` 八欄裡兩欄的語意;事件表 5 個欄位的完整對照。
 
-出處:[`re/50`](../re/50-sqz-format.md)、[`55`](../re/55-maze-data.md)–[`57`](../re/57-g-closure.md)、
-[`59`](../re/59-g-reopened.md)、[`60`](../re/60-g-closure-2.md)
+出處:[`re/50`](../re/50-sqz-maze-format.md)、[`55`](../re/55-sqz-decoder-from-code.md)–[`57`](../re/57-g-closure.md)、
+[`59`](../re/59-de-eff-event-table.md)、[`60`](../re/60-event-lookup-and-tile-19.md)

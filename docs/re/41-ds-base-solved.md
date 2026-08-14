@@ -70,7 +70,7 @@ ds:XXXX 的線性位址 = 0x1FE00 + XXXX
 | 全域 | 線性位址 | 檔案上的初始值 | 出處 |
 |---|---|---|---|
 | `ds:0A3Ah` | `0x2083A` | 0(BSS) | [`39`](39-ds0a3a-and-xref-blind-spot.md) |
-| `ds:0B06h` | `0x20906` | 待讀 | [`15`](15-chain-filename.md) 的檔名緩衝區 |
+| `ds:0B06h` | `0x20906` | 待讀 | [`15`](15-chain-filename-and-misalignment.md) 的檔名緩衝區 |
 | `ds:1142h`/`1144h`/`1146h` | `0x20F42`… | 待讀 | [`39`](39-ds0a3a-and-xref-blind-spot.md) §4 |
 | `ds:12B2h`/`12B4h` | `0x210B2`… | 待讀 | `3E:36` 的閘門 |
 

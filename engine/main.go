@@ -1,6 +1,7 @@
 // Shard of Spring remake。
 //
-// M2:世界地圖場景(docs/spec/05-world-scene.md)。
+// M2:世界地圖場景(docs/spec/05-world-scene.md)
+// M3:隊伍、角色與存檔(docs/spec/06-party-and-save.md)。
 package main
 
 import (
@@ -20,6 +21,7 @@ import (
 
 	"shardofspring/internal/layout"
 	"shardofspring/internal/original"
+	"shardofspring/internal/render"
 	"shardofspring/internal/world"
 )
 
@@ -33,12 +35,24 @@ var (
 )
 
 type Game struct {
+	savePath string // <assets>/save/GROUPS.DAT
+	slot     int
+
 	world *world.Map
 	party world.State
 	tiles map[int]*ebiten.Image // 地形值 → 圖;沒有來源的值不在裡面
 	// noSrc 記下畫面上出現過的未解地形值,顯示在提示列。
 	// 讓未解項目在**執行時**也看得見,不是只在文件裡。
 	noSrc map[int]bool
+
+	// M3:隊伍與存檔(docs/spec/06)
+	members []original.Character // 依 GROUPS.DAT 的成員槽順序
+	group   original.Group
+	panel   *render.Painter
+	// 載入時發現的不一致,畫在提示列。⚠ 不自行修正(docs/spec/06 §1)。
+	warnings []string
+	// 最近一次存檔的結果,畫在提示列。
+	saveMsg string
 }
 
 func (g *Game) Update() error {
@@ -52,7 +66,45 @@ func (g *Game) Update() error {
 			g.party.Step(dir, g.world)
 		}
 	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		if err := g.save(); err != nil {
+			g.saveMsg = "存檔失敗：" + err.Error()
+		} else {
+			g.saveMsg = fmt.Sprintf("已存到第 %d 隊(%s)", g.slot, g.savePath)
+		}
+	}
 	return nil
+}
+
+// save 把目前狀態寫回 GROUPS.DAT。docs/spec/06 §6。
+//
+// ⚠ 寫的是 <assets>/save/ 的複本,**不碰 game/sharspri/**(CLAUDE.md §8)。
+// ⚠ 只覆寫已解的欄位;未解的位置由 Group.Bytes() 從 Raw 原樣保留。
+func (g *Game) save() error {
+	b, err := os.ReadFile(g.savePath)
+	if err != nil {
+		return err
+	}
+	groups, err := original.ParseGroups(b)
+	if err != nil {
+		return err
+	}
+	grp := g.group
+	grp.WorldX, grp.WorldY = g.party.X, g.party.Y
+	grp.Facing = int(g.party.Facing)
+	grp.Month, grp.Day = g.party.Clock.Month, g.party.Clock.Day
+	grp.Hour, grp.Sub = g.party.Clock.Hour, g.party.Clock.Sub
+	grp.Encounter = g.party.Encounter
+	groups[g.slot-1] = grp
+
+	out := make([]byte, 0, len(b))
+	for _, x := range groups {
+		out = append(out, x.Bytes()...)
+	}
+	if len(out) != len(b) {
+		return fmt.Errorf("寫出 %d bytes,原檔 %d", len(out), len(b))
+	}
+	return os.WriteFile(g.savePath, out, 0o644)
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -103,6 +155,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	frame(layout.Message)
 	frame(layout.Prompt)
 
+	g.drawParty(screen)
+
 	// M2 還沒有字型(docs/spec/04 §4 的 TTF 是 M3 之後),
 	// 所以狀態暫時走 Ebitengine 的除錯字。**這不是最終呈現。**
 	ebiten.SetWindowTitle(fmt.Sprintf(
@@ -124,11 +178,13 @@ func (g *Game) Layout(int, int) (int, int) { return layout.ScreenW, layout.Scree
 
 func main() {
 	assets := flag.String("assets", "assets", "資產資料夾(由 cmd/convert 產生)")
-	x := flag.Int("x", 50, "起始 x")
-	y := flag.Int("y", 60, "起始 y")
+	slot := flag.Int("slot", 5, "隊伍存檔槽 1–5(出貨磁片組好的是 #5)")
+	fontPath := flag.String("font", "", "字型檔;留空則依序試內建候選")
+	x := flag.Int("x", -1, "覆寫起始 x(除錯用;預設用存檔裡的座標)")
+	y := flag.Int("y", -1, "覆寫起始 y")
 	flag.Parse()
 
-	g, err := load(*assets, *x, *y)
+	g, err := load(*assets, *slot, *fontPath, *x, *y)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "載入失敗:", err)
 		fmt.Fprintln(os.Stderr, "請先跑:go run ./cmd/convert -in <原版> -out assets")
@@ -142,7 +198,7 @@ func main() {
 	}
 }
 
-func load(dir string, x, y int) (*Game, error) {
+func load(dir string, slot int, fontPath string, x, y int) (*Game, error) {
 	// ⚠ 每個欄位要有自己的 tag。寫成 `W, H int `json:"w"`` 會讓兩個欄位
 	// 共用同一個 tag,H 永遠是 0 —— 而 JSON 解碼**不會報錯**。
 	var wm struct {
@@ -176,14 +232,90 @@ func load(dir string, x, y int) (*Game, error) {
 		tiles[v] = ebiten.NewImageFromImage(img)
 	}
 
-	return &Game{
+	g := &Game{
 		world: &world.Map{Cells: wm.Cells},
-		party: world.State{
-			X: x, Y: y, Facing: world.North,
-			Clock:     world.Clock{Sub: 1, Hour: 4, Day: 1, Month: 1},
-			Encounter: 12,
-		},
 		tiles: tiles,
 		noSrc: map[int]bool{},
-	}, nil
+	}
+	if err := g.loadParty(dir, slot); err != nil {
+		return nil, err
+	}
+	// 除錯用的座標覆寫。**預設不覆寫** —— 存檔裡的座標才是真相。
+	if x >= 0 {
+		g.party.X = x
+	}
+	if y >= 0 {
+		g.party.Y = y
+	}
+
+	src, path, err := render.LoadFont(fontPath)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Fprintln(os.Stderr, "字型:", path)
+	g.panel = render.NewPainter(src, 20, cgaWhite)
+	return g, nil
+}
+
+// loadParty 讀 CHARS.DAT / GROUPS.DAT。docs/spec/06。
+//
+// ⚠ 讀的是 <assets>/save/ 底下的**複本**,不是 game/sharspri/ ——
+// 存檔要寫回去,而原版目錄是唯讀的(CLAUDE.md §8)。
+func (g *Game) loadParty(dir string, slot int) error {
+	if slot < 1 || slot > original.GroupSlots {
+		return fmt.Errorf("存檔槽 %d 超出 1–%d", slot, original.GroupSlots)
+	}
+	cb, err := os.ReadFile(filepath.Join(dir, "save", "CHARS.DAT"))
+	if err != nil {
+		return err
+	}
+	chars, err := original.ParseChars(cb)
+	if err != nil {
+		return err
+	}
+	gb, err := os.ReadFile(filepath.Join(dir, "save", "GROUPS.DAT"))
+	if err != nil {
+		return err
+	}
+	groups, err := original.ParseGroups(gb)
+	if err != nil {
+		return err
+	}
+	g.slot = slot
+	g.savePath = filepath.Join(dir, "save", "GROUPS.DAT")
+	grp := groups[slot-1]
+	if grp.Blank() {
+		return fmt.Errorf("第 %d 隊還沒建立(記錄整份是空白)—— 出貨磁片組好的是第 5 隊", slot)
+	}
+
+	// 以 GROUPS.DAT 的成員槽為準(docs/spec/06 §1)
+	for _, id := range grp.MemberIDs() {
+		if id < 1 || id > len(chars) {
+			g.warnings = append(g.warnings,
+				fmt.Sprintf("成員編號 %d 超出名冊 1–%d", id, len(chars)))
+			continue
+		}
+		c := chars[id-1]
+		if !c.Occupied() {
+			g.warnings = append(g.warnings, fmt.Sprintf("成員編號 %d 指向空槽", id))
+			continue
+		}
+		// CHARS.DAT 位移 1 應該回指同一隊。不一致只記錄,**不自行修正**。
+		if p, ok := c.InParty(); !ok || p != slot {
+			g.warnings = append(g.warnings,
+				fmt.Sprintf("%s 在第 %d 隊的成員表裡,自己的隊伍欄卻是 %q",
+					c.Name, slot, string(c.Party)))
+		}
+		g.members = append(g.members, c)
+	}
+
+	g.group = grp
+	g.party = world.State{
+		X: grp.WorldX, Y: grp.WorldY, Facing: world.Facing(grp.Facing),
+		Clock: world.Clock{
+			Sub: grp.Sub, Hour: grp.Hour, Day: grp.Day, Month: grp.Month,
+		},
+		Encounter: grp.Encounter,
+	}
+	return nil
 }

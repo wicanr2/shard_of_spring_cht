@@ -19,7 +19,7 @@
 | **25** | `ds:3658h` | **隊伍在哪一層地圖** | `MAZEMOVE` / `WRLDMOVE`(只有這兩個)|
 | **31** | `ds:353Ah` | **當前所在的城鎮／設施** | `'Welcome to the'` + `"Fighter's Guild."` |
 | **45** | `ds:365Ah` | **光源剩餘回合數** | `'You now have about'` + `' turns of light.'` |
-| **79** | `ds:351Ch` | **當前迷宮編號** | `DE5EFF.BIN` / `DE51EFF.BIN`(迷宮事件檔,[`60`](60-g-closure-2.md))|
+| **79** | `ds:351Ch` | **當前迷宮編號** | `DE5EFF.BIN` / `DE51EFF.BIN`(迷宮事件檔,[`60`](60-event-lookup-and-tile-19.md))|
 
 ## 1. 為什麼語境字串可以當證據
 
@@ -34,7 +34,7 @@
 
 - 位移 25 的語境**只有 `MAZEMOVE` 與 `WRLDMOVE` 兩個字串**,沒有第三個 ——
   與「隊伍在世界地圖還是在迷宮」的二元性質吻合
-- 位移 79 的語境含 `DE5EFF.BIN` / `DE51EFF.BIN`,而 [`60`](60-g-closure-2.md)
+- 位移 79 的語境含 `DE5EFF.BIN` / `DE51EFF.BIN`,而 [`60`](60-event-lookup-and-tile-19.md)
   已知那是**每個迷宮一個**的事件檔 —— 要選檔就要有迷宮編號
 - 位移 31 出現在 `TOWN` 而不是別處,且與 `'Welcome to the'` 同區
 

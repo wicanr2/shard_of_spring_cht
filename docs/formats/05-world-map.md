@@ -68,5 +68,5 @@ BASIC 的 `BLOAD file$, offset` 自己指定載入點。**不要拿它當結構�
 `WRLDMAP` 高位元組的**地形值 → 地形種類**對照只解到「哪些值會觸發遭遇檢查」
 (12、13、20–32,見 [`spec/01`](../spec/01-combat.md));完整對照表未建。
 
-出處:[`re/17`](../re/17-wrldmap-cell-size.md)、[`19`](../re/19-wrldmap-dimensions.md)、
-[`21`](../re/21-bsave-container.md)、[`51`](../re/51-fastwrld.md)–[`54`](../re/54-f-closure.md)
+出處:[`re/17`](../re/17-world-and-maze.md)、[`19`](../re/19-bsave-container.md)、
+[`21`](../re/21-tile-format.md)、[`51`](../re/51-mazedata-and-world-entrances.md)–[`54`](../re/54-f-closure.md)

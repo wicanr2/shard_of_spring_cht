@@ -85,7 +85,7 @@ BASIC 二維陣列 `A%(單位, 屬性)`,**行主序**:位址 = `屬性 × 15 + �
 
 屬性 14 / 18 的語意;傷害公式的兩個係數;先攻是否每回合重排。
 
-出處:[`re/43`](../re/43-module-ds-layout.md)、[`73`](../re/73-monster-columns-to-combat-array.md)、
+出處:[`re/43`](../re/43-common-block-and-array-indexing.md)、[`73`](../re/73-monster-columns-to-combat-array.md)、
 [`76`](../re/76-to-hit-formula.md)、[`79`](../re/79-alignment-resolved-damage-formula.md)、
 [`83`](../re/83-hp-is-attribute-3.md)、[`92`](../re/92-attribute-15-16.md)–[`98`](../re/98-status-level-and-a-sign-error.md)、
 [`103`](../re/103-flee-is-leaving-the-field.md)

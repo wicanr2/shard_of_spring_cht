@@ -52,5 +52,5 @@ TA n    角度        P f,b    填色
 
 無(H 的範圍依 §1.2 止於「圖能 dump 成 PNG 且肉眼對得上原版」)。
 
-出處:[`re/19`](../re/19-wrldmap-dimensions.md)–[`22`](../re/22-monst-interleave.md)、
-[`48`](../re/48-palette.md)、[`49`](../re/49-h-closure.md)
+出處:[`re/19`](../re/19-bsave-container.md)–[`22`](../re/22-pict-and-monst.md)、
+[`48`](../re/48-monst-deinterleave.md)、[`49`](../re/49-h-closure.md)

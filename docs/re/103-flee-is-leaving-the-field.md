@@ -28,7 +28,7 @@
 ## 1. 索引範圍自己驗證了自己
 
 迴圈從 **9** 開始、上界是 **`ds:34F8h` + 8**。
-[`43`](43-module-ds-layout.md) 早就寫過**戰鬥時隊伍佔第 9–13 欄** ——
+[`43`](43-common-block-and-array-indexing.md) 早就寫過**戰鬥時隊伍佔第 9–13 欄** ——
 若 `ds:34F8h` 是隊伍人數(最多 5),上界正好是 **13**。
 
 **兩個獨立來源給出同一個範圍。**
@@ -68,7 +68,7 @@
 |---|---|---|
 | 1 | IDA 讀原始指令 | 命中([`76`](76-to-hit-formula.md))、傷害([`79`](79-alignment-resolved-damage-formula.md))、先攻([`93`](93-initiative.md))、朝向/行動點數([`96`](96-facing-and-action-points.md))、**逃跑(本篇 §1)**,全部逐條讀出 |
 | 2 | 讀寫端點 | 單位陣列 289 處存取分類([`86`](86-scanner-fixed-conclusion-restored.md));順序表排序端與使用端;逃跑旗標 `ds:9552h` 的寫端與判斷端 |
-| 3 | 獨立資料印證 | 迴圈範圍 9…13 對上 [`43`](43-module-ds-layout.md) 的隊伍欄位;朝向編號對上 [`57`](57-g-closure.md) 的 `MAZEDATA`;`Armored skin` 名稱對上減傷;`Experience:` 對上欄8 |
+| 3 | 獨立資料印證 | 迴圈範圍 9…13 對上 [`43`](43-common-block-and-array-indexing.md) 的隊伍欄位;朝向編號對上 [`57`](57-g-closure.md) 的 `MAZEDATA`;`Armored skin` 名稱對上減傷;`Experience:` 對上欄8 |
 | 4 | 筆記 | [`76`](76-to-hit-formula.md)、[`79`](79-alignment-resolved-damage-formula.md)、[`83`](83-hp-is-attribute-3.md)–[`86`](86-scanner-fixed-conclusion-restored.md)、[`92`](92-attribute-15-16.md)–[`96`](96-facing-and-action-points.md)、[`102`](102-flee-exists-retracting-j.md)、本篇 |
 
 **J = RE-DONE**(第二次,這次是拿著程式碼而不是拿著「找不到」)。看板 **11/12**。

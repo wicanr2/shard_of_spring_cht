@@ -175,6 +175,27 @@ func run(in, out string) error {
 		return err
 	}
 
+	// 存檔的初始複本。**原版目錄唯讀**(CLAUDE.md §8),而引擎要寫存檔,
+	// 所以把 CHARS.DAT / GROUPS.DAT 複製到可寫的資產目錄。
+	// ⚠ 只在目標不存在時複製 —— 重跑轉檔不該把玩家的進度洗掉。
+	if err := os.MkdirAll(filepath.Join(out, "save"), 0o755); err != nil {
+		return err
+	}
+	nSave := 0
+	for _, n := range []string{"CHARS.DAT", "GROUPS.DAT"} {
+		dst := filepath.Join(out, "save", n)
+		if _, err := os.Stat(dst); err == nil {
+			continue
+		}
+		if err := os.WriteFile(dst, mustRead(in, n), 0o644); err != nil {
+			return err
+		}
+		nSave++
+	}
+	if err := step("save seed", nSave, nil); err != nil {
+		return err
+	}
+
 	// 世界地圖:轉成灰階 PNG 供目視,數值另存 JSON。
 	cells, err := original.DecodeWorldMap(mustRead(in, "WRLDMAP.BIN"))
 	if err != nil {

@@ -32,9 +32,9 @@ M2 的實作規格。資料格式在 [`formats/05`](../formats/05-world-map.md),
 | 8 | 178 | — | ⚠ 同時是**另一型地城入口**(座標 35,86)| — | [`re/51`](../re/51-mazedata-and-world-entrances.md) §2 |
 | 10 | 30 | 0.24% | 未指認 | WRLDITEM 0 | — |
 | **11** | **6,933** | **55.63%** | **海洋** | **不畫** —— 底色即海([`re/132`](../re/132-world-tile-dispatch-corrected.md) §1)| [`re/132`](../re/132-world-tile-dispatch-corrected.md) |
-| 12, 13 | 9 | 0.07% | 未指認;**會觸發遭遇檢查**(程式碼證據見 [`re/129`](../re/129-world-tile-dispatch.md) §4)| WRLDITEM 2–3 | [`re/60`](../re/60-g-closure-2.md) |
+| 12, 13 | 9 | 0.07% | 未指認;**會觸發遭遇檢查**(程式碼證據見 [`re/129`](../re/129-world-tile-dispatch.md) §4)| WRLDITEM 2–3 | [`re/60`](../re/60-event-lookup-and-tile-19.md) |
 | 15–18 | 372 | 3.0% | 海岸線 | WRLDITEM 5–8 | [`re/53`](../re/53-world-tiles-towns-and-draw-renderer.md) |
-| 20, 21 | 5 | 0.04% | 未指認;會觸發遭遇檢查 | WRLDITEM | [`re/60`](../re/60-g-closure-2.md) |
+| 20, 21 | 5 | 0.04% | 未指認;會觸發遭遇檢查 | WRLDITEM | [`re/60`](../re/60-event-lookup-and-tile-19.md) |
 | **24, 25, 27, 28** | **11** | 0.09% | **地城入口** | WRLDITEM | [`re/51`](../re/51-mazedata-and-world-entrances.md) |
 | **30, 31, 32** | **13** | 0.10% | **城鎮**(正好 13 個)| WRLDITEM | [`re/53`](../re/53-world-tiles-towns-and-draw-renderer.md) |
 | 35–38 | 36 | 0.29% | **海岸線**(巨集與 15–18 同族);⚠ 但**不阻擋移動** | WRLDITEM 25–28 | [`re/132`](../re/132-world-tile-dispatch-corrected.md) §3 |

@@ -98,7 +98,7 @@
 | 1 | IDA 讀原始指令 | 小鍵盤轉譯層 `0x105C3`–`0x10679`、比對鏈、方向效果(`ds:351A` 減一 / `ds:3518` 加一)、`CHAIN "CAMP"`、五筆 `3Dh:00` 位移 —— 全部逐條讀出 |
 | 2 | 讀寫端點 | 寫端:轉譯層寫 `ds:3794h`(A$);讀端:七支模組的比對鏈 + 五個 `USERLIB` 槽 |
 | 3 | 獨立資料印證 | ① `CAMP` 畫面提示 10/10([`58`](58-key-dispatch-mechanism.md) §3)② `1北 2東` 對上 [`57`](57-g-closure.md) 從 `MAZEDATA` 解出的朝向 ③ 兩支模組的三個槽號完全相同 ④ 五筆位移全部整除 8 |
-| 4 | 筆記 | [`28`](28-ui-text-conventions.md) / [`58`](58-key-dispatch-mechanism.md) / [`69`](69-movement-keys.md) / [`70`](70-key-chains-all-modules.md) / 本篇 |
+| 4 | 筆記 | [`28`](28-input-semantics.md) / [`58`](58-key-dispatch-mechanism.md) / [`69`](69-movement-keys.md) / [`70`](70-key-chains-all-modules.md) / 本篇 |
 
 **K = RE-DONE。** 看板 **9/12**,剩 D、E、J。
 

@@ -12,9 +12,9 @@
 | [`formats/03-monsters-dat.md`](../formats/03-monsters-dat.md) | 怪物表 36×74、系別↔狀態 |
 | [`formats/04-spells-items-dat.md`](../formats/04-spells-items-dat.md) | 法術 33 列、物品 57 列 |
 
-地圖與圖形格式仍以 `docs/re/` 為準(尚未收攏):
-世界地圖 [`re/54`](../re/54-f-closure.md)、迷宮 [`re/60`](../re/60-g-closure-2.md)、
-圖形 [`re/49`](../re/49-h-closure.md)。
+| [`formats/05-world-map.md`](../formats/05-world-map.md) | 世界地圖 103×121、BSAVE 容器 |
+| [`formats/06-maze.md`](../formats/06-maze.md) | `.SQZ` 解碼、迷宮 81 列、事件表 |
+| [`formats/07-graphics.md`](../formats/07-graphics.md) | 圖塊 17×17、`MONST` 交錯、`DRAW` 巨集、調色盤 |
 
 ## 遊戲規則
 
@@ -31,6 +31,9 @@
 2. **`ITEMS.DAT` 欄 4/5/6 是雙重身分**,由呼叫端決定意義。
    讀之前先確定情境是「裝備」還是「魔法道具」。
 3. **技能表由職業決定**。位移 42–51 的同一格,`Hero` 與 `Wizard` 是不同技能。
+4. **兩套地圖索引順序不同**:世界地圖 `y × 103 + x`、迷宮 `欄 × 81 + 列`
+   ([`formats/05`](../formats/05-world-map.md) / [`06`](../formats/06-maze.md))。
+5. **`.SQZ` 不是壓縮格式**,是文字 + 跑長;而 `MONST*.BIN` 的八張子圖是**交錯**的。
 
 ## ⚠ 標 READY 不等於零疑問
 

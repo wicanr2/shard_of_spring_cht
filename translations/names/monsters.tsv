@@ -5,7 +5,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 3	name	Spider	6	蜘蛛	4	Y	
 4	name	Rat	3	老鼠	4	Y	
 5	name	Bat	3	蝙蝠	4	Y	
-6	name	Bugem	5	BUGEM	5	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「布金姆」已汰換
+6	name	Bugem	5	布金姆(Bugem)	13	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 7	name	Skeleton	8	骷髏	4	Y	
 8	name	Skeleton Mage	13	骷髏法師	8	Y	
 9	name	Cobra	5	眼鏡蛇	6	Y	
@@ -17,7 +17,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 15	name	Lvl  3 Fighter	14	3級戰士	7	Y	
 16	name	Lvl  3 Wizard	13	3級法師	7	Y	
 17	name	Zombie	6	殭屍	4	Y	
-18	name	Edrin	5	EDRIN	5	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「艾德林」已汰換
+18	name	Edrin	5	艾德林(Edrin)	13	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 19	name	Cook	4	廚師	4	Y	
 20	name	Lvl  4 Fighter	14	4級戰士	7	Y	
 21	name	Lvl  4 Wizard	13	4級法師	7	Y	
@@ -48,7 +48,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 46	name	Demon Lord	10	惡魔領主	8	Y	
 47	name	Devil	5	魔鬼	4	Y	與「惡魔」系(Demon)區分用詞
 48	name	Wraith	6	亡靈	4	Y	
-49	name	Devir	5	DEVIR	5	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「迪維爾」已汰換
+49	name	Devir	5	迪維爾(Devir)	13	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 50	name	Baby Dragon	11	幼龍	4	Y	
 51	name	Small Dragon	12	小龍	4	Y	
 52	name	Large Dragon	12	大龍	4	Y	
@@ -66,10 +66,10 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 64	name	Guard	5	守衛	4	Y	
 65	name	Swamp King	10	沼澤王	6	Y	
 66	name	Orc	3	半獸人	6	Y	
-67	name	Murthin	7	MURTHIN	7	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「莫辛」已汰換
-68	name	Cercion	7	CERCION	7	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「瑟西恩」已汰換
-69	name	Vandiguard	10	VANDIGUARD	10	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「范迪加德」已汰換
-70	name	Lothian	7	LOTHIAN	7	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「洛西安」已汰換
-71	name	Siriadne !	10	SIRIADNE !	10	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「希瑞雅妮！」已汰換
-72	name	R A L I T H	11	R A L I T H	11	Y	專有名詞,依 glossary 硬規則 4 保留英文(精訊做法);原音譯「拉 利 斯」已汰換
+67	name	Murthin	7	莫辛(Murthin)	13	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
+68	name	Cercion	7	瑟西恩(Cercion)	15	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
+69	name	Vandiguard	10	范迪加德(Vandiguard)	20	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
+70	name	Lothian	7	洛西安(Lothian)	15	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
+71	name	Siriadne !	10	希瑞雅妮！(Siriadne !)	22	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
+72	name	R A L I T H	11	拉 利 斯(R A L I T H)	21	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 73	name	Dark Raven	10	黑暗渡鴉	8	Y	疑似專有名詞或稱號,語意未確認

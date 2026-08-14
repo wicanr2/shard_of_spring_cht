@@ -197,35 +197,63 @@
 
 1. **精訊譯名優先。** §1–§4 的詞一律照手冊,不得改寫成「更好聽」的版本。
    要改必須先確認手冊真的沒有那個詞。
-2. **定長欄位的位元組上限**:`MONSTERS.DAT` 與 `TOWNDATA.DAT` 的名稱欄各 16 bytes
-   (中文 2 bytes → 最多 8 字);`CHARS.DAT` 的角色名 10 bytes(玩家自取,不譯)。
+2. **⚠ 定長欄位的 16-byte 上限對 remake 不成立。**
+   `MONSTERS.DAT` / `TOWNDATA.DAT` 的名稱欄各 16 bytes、`CHARS.DAT` 的角色名 10 bytes
+   —— 那是**改寫原版 `.DAT` 檔**才有的限制。本專案做的是 remake:
+   原版資料檔只在資產轉換階段讀一次,轉成 JSON 進引擎
+   ([`docs/spec/03`](../docs/spec/03-engine-plan.md) §3),
+   **中文字串住在 JSON 裡,不住在 16-byte 欄位裡**。
+
+   TSV 的 `trans_bytes` 欄保留,但只當**參考值**,不是閘門。
+   真正的上限是**畫面欄寬**,而畫布尺寸與字型尚未定案 —— 在那之前不砍譯文。
+
+   > **判準**:同一個毛病犯第二次了(第一次是 `fits` 欄,見 `translations/README.md` §3)。
+   > **每一條「上限」都要問「是誰規定的、對哪一條路線成立」** ——
+   > patch 原版與 remake 的約束完全不同,而 RE 筆記是照 patch 路線寫的。
 3. 時間單位不做換算(見 [`docs/formats/02`](../docs/formats/02-groups-dat.md))。
-4. **劇情專有名詞保留英文大寫,不音譯。** 這是精訊的做法(手冊全篇如此)。
-   適用清單 —— **人名**:`SIRIADNE`、`DEVIR`、`GALIN`、`ELDRON`、`MURTHIN`、
-   `CERCION`、`LOTHIAN`、`VANDIGUARD`、`EDRIN`、`BUGEM`;
-   **劇情地名與家族**:`YMROS`、`RALITH`、`ISLANDA`、`EDRIN'S KEEP`、
-   `BLACKFORT`、`MOONGLOW`。
+4. **專有名詞用「中文(英文)」對照格式。** 專案負責人裁定 2026-08-14:
+   精訊沒譯的部分由本專案譯,專有名詞附原文方便玩家對照。
+
+   ```
+   希瑞雅妮(Siriadne)   拉利斯(Ralith)   艾德林要塞(Edrin's Keep)
+   ```
+
+   ### 適用範圍與兩條細則
+
+   **適用於所有專有名詞**:人名、地名、**城鎮名、商店名**、地城名。
+   ⚠ **普通名詞不加註** —— `Orc` 半獸人、`Spider` 蜘蛛、`Dagger` 匕首
+   這類是種類不是名字,加註只會變吵。
+
+   **① 同一段第一次出現才加註,之後只用中文。**
+   一段房間敘述裡 `Siriadne` 可能出現三次,每次都加註會蓋掉正文。
+   段落邊界 = TSV 的一列。
+
+   **② 位元組長度不是限制**(規則 2)。
+   `翠綠村(Green Hamlet)` 是 20 bytes、`希瑞雅妮(Siriadne)` 是 18 bytes,
+   都超過原版的 16-byte 欄寬 —— **那個欄寬對 remake 不成立**。
+
+   ### 適用清單
+
+   **人名**:希瑞雅妮 `Siriadne`、迪維爾 `Devir`、蓋林 `Galin`、艾爾德隆 `Eldron`、
+   莫辛 `Murthin`、瑟西恩 `Cercion`、洛西安 `Lothian`、范迪加德 `Vandiguard`、
+   艾德林 `Edrin`、布金姆 `Bugem`
+
+   **地名與家族**:伊姆羅斯 `Ymros`、拉利斯 `Ralith`、伊斯蘭達 `Islanda`、
+   艾德林要塞 `Edrin's Keep`、黑堡 `Blackfort`、月華 `Moonglow`
+
+   **帶稱號的複合形**:毀滅者迪維爾 `Devir the Destroyer`、
+   善者蓋林 `Galin the Good`、灰髮艾爾德隆 `Eldron Greyhair`、瘋子莫辛 `Murthin the Mad`
+
+   **城鎮 13 個 + 商店 61 家**:見 §5,`TOWNDATA.DAT` 是定長 16 bytes,
+   依限制 ① **只放中文**。
 
    ⚠ 原版自己有 `Black Fort`(`MENU.EXE`)與 `Blackfort`(`DT51TEXT`/`TOWN.EXE`)
-   兩種拼法([`docs/re/123`](../docs/re/123-menu-data-place-lists.md) §4),
-   譯文採**該處原文的拼法**,不統一 —— 保留英文就沒有統一的必要。
+   兩種拼法([`docs/re/123`](../docs/re/123-menu-data-place-lists.md) §4)。
+   加註時採**該處原文的拼法**,中文一律「黑堡」。
 
-   ### ⚠ 這條的邊界是我劃的,可推翻
-
-   **本規則不含城鎮名與商店名**(§5 那 13 個城鎮與 61 家店維持中文)。
-
-   理由:精訊手冊**從來沒提過任何一個城鎮或商店**,所以「精訊會怎麼處理它們」
-   沒有直接證據;而手冊確實把 `YMROS`/`SIRIADNE`/`RALITH` 這類**敘述文裡的
-   劇情名詞**留成英文,那才是有證據的部分。把規則擴到城鎮會讓
-   世界地圖與 61 家店全部變回英文,等於這一塊不做中文化。
-
-   例外:**店主名若在別處也以角色身分出現**,跟著本規則走 ——
-   目前只有 `Vandiguard's` 一家(該名同時是地城名、墓主名、怪物名)。
-   只出現在店名裡的店主(`Kor`、`Rolo`、`Zor`、`Corbin`、`Loven`、`Jorlor`、
-   `Volir`、`Erlock`、`Balik`、`Red`)視為店名的一部分,維持中文。
-
-   > 這是**判斷,不是精訊的明示**。若專案負責人認為城鎮名也該回英文,
-   > 改這一段即可,`source/towndata.tsv` 有原文欄可直接回退。
+   ⚠ 原版把 `Destroyer` 拼成 `Destoyer`(`DT2TEXT` 201 段)。
+   加註時照該處原文,**不要替原版訂正拼字** —— 玩家在畫面上看到的是錯的那個,
+   加註的目的就是讓他對得上。
 5. ⛔ **玩家要打回去的字串不譯。** `CAMP.EXE` 檔案位移 17638 有字面字串
    `DAZA REVELI`,前後是 `Cast what spell?` 與失敗訊息
    `Mumble, mumble, what spell did you say ?`、成功訊息 `The gate opens` ——

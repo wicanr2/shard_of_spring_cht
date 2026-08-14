@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
 	"shardofspring/internal/ui"
 )
@@ -45,8 +46,18 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	// 不自行修正,但也不安靜吞掉。
 	px := float64(layout.Prompt.X + ui.PanelPad)
 	py := float64(layout.Prompt.Y + ui.PanelPad)
-	g.panel.Draw(dst, "方向鍵／1234：移動　　S：存檔", px, py)
+	if g.field != nil {
+		g.panel.Draw(dst, "空白鍵：推進一回合　　ESC：結束後離開戰鬥", px, py)
+	} else {
+		g.panel.Draw(dst, "方向鍵／1234：移動　　S：存檔", px, py)
+	}
 	py += lh
+	// 未解項在**執行時**也要看得見(docs/spec/07 §3),不是只寫在文件裡。
+	if g.field != nil {
+		for i, u := range combat.Unresolved {
+			g.panel.Draw(dst, "⚠ "+u, px+460, float64(layout.Prompt.Y+ui.PanelPad)+float64(i)*lh)
+		}
+	}
 	if g.saveMsg != "" {
 		g.panel.Draw(dst, g.saveMsg, px, py)
 		py += lh

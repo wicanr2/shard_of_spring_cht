@@ -85,3 +85,85 @@ const (
 func PanelSlack(name string, hpDigits int) int {
 	return int(ColHP) - hpDigits - (int(ColName) + Cols(name))
 }
+
+// ---------------------------------------------------------------------------
+// 斷行。docs/spec/04-display-layout.md §4。
+// ---------------------------------------------------------------------------
+
+// 行首禁則:這些字元不可以出現在一行的開頭。
+const noLineStart = "。，、；：？！」』）〕】》〉…—～%‰℃,.;:?!)]}"
+
+// 行尾禁則:這些字元不可以出現在一行的結尾。
+const noLineEnd = "「『（〔【《〈$#([{"
+
+// Wrap 把一段文字折成每行不超過 cols 欄。
+//
+// 中文允許任意位置斷行,但要避頭尾(docs/spec/04 §4):
+// 斷點若讓標點落到行首、或讓開括號落到行尾,就把前一個字一起推到下一行。
+//
+// ⚠ **英文與數字視為不可分割**,不在字母中間斷行(§4 中英混排第 1 點)。
+func Wrap(s string, cols int) []string {
+	if cols <= 0 {
+		return []string{s}
+	}
+	rs := []rune(s)
+	var out []string
+	line := []rune{}
+	w := 0
+	flush := func() {
+		if len(line) > 0 {
+			out = append(out, string(line))
+			line, w = nil, 0
+		}
+	}
+	for i := 0; i < len(rs); i++ {
+		// 拉丁字母/數字連成一個不可分割的單位
+		j := i
+		for j < len(rs) && isWordRune(rs[j]) {
+			j++
+		}
+		var tok []rune
+		if j > i {
+			tok = rs[i:j]
+			i = j - 1
+		} else {
+			tok = rs[i : i+1]
+		}
+		tw := Cols(string(tok))
+		if w+tw > cols && w > 0 {
+			// 行尾禁則:最後一個字不可以留在行尾
+			for len(line) > 0 && containsRune(noLineEnd, line[len(line)-1]) {
+				tok = append([]rune{line[len(line)-1]}, tok...)
+				line = line[:len(line)-1]
+				w -= RuneCols(tok[0])
+			}
+			flush()
+		}
+		// 行首禁則:標點不可以起頭 —— 硬塞進上一行(超寬一欄好過孤立標點)
+		if w == 0 && len(out) > 0 && len(tok) == 1 && containsRune(noLineStart, tok[0]) {
+			out[len(out)-1] += string(tok)
+			continue
+		}
+		line = append(line, tok...)
+		w += tw
+	}
+	flush()
+	if len(out) == 0 {
+		return []string{""}
+	}
+	return out
+}
+
+func isWordRune(r rune) bool {
+	return (r >= 'a' && r <= 'z') || (r >= 'A' && r <= 'Z') ||
+		(r >= '0' && r <= '9') || r == '\'' || r == '-' || r == '+'
+}
+
+func containsRune(set string, r rune) bool {
+	for _, c := range set {
+		if c == r {
+			return true
+		}
+	}
+	return false
+}

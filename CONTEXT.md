@@ -84,7 +84,7 @@
 
 | 項目 | 卡在哪 |
 |---|---|
-| **引擎實作 M4** | M0–M3 ✅。M3:出貨的 PARTY #5 讀得進來、狀態欄中文繪出、存檔寫回只動已解欄位。M4 = 戰鬥 |
+| **引擎實作 M5** | M0–M4 ✅。M4:命中/傷害/先攻/死亡,同種子可重現;⚠ 傷害乘數 `k₁`、命中面數、怪物遭遇表未解,已具名並顯示在畫面。M5 = 迷宮場景 + 事件 |
 | ~~海洋(值 11)的圖從哪來~~ | **問題本身是錯的**(`docs/re/132`):原版**什麼都不畫**,底色即海。全圖 12,463 格現在 100% 有來源,畫面上沒有佔位符了 |
 | ~~世界地圖的可通行性~~ | **已解**(`docs/re/131`):八條規則,`WRLDMOVE.EXE` `0x10334`–`0x10572`。已實作並經畫面驗證(往東撞海洋停在 x=82)。剩下的是**值 10/12/20/21 的語意**與**呼叫端未讀** |
 | 商店清單的加註顯示 | **未決,擋住商店介面**(`spec/04` §5):名稱放得下,整列(編號+名稱+價格)36 欄超出側欄 30 欄。三個候選,其中「首次進入才加註」需要存檔旗標,選它就要在存檔設計時一起做 |
@@ -262,6 +262,7 @@
 | [`133-chars-offset-1-is-party.md`](docs/re/133-chars-offset-1-is-party.md) | `CHARS.DAT` 位移 1 = **隊伍編號** | 答案在 `CHARUTIL` 的名冊標題(有 `Party` 欄)+ 手冊的 PARTY #5 |
 | [`134-groups-load-routine-and-gold.md`](docs/re/134-groups-load-routine-and-gold.md) | **金幣在位移 19(4B 單精度)** | `MENU` 載入常式的 16 欄對照表;傳位址 vs 傳值本身就是型別證據 |
 | [`135-groups-record-5-is-a-real-save.md`](docs/re/135-groups-record-5-is-a-real-save.md) | **出貨檔第 5 筆是真存檔** | 位移 1–18 = 九個成員槽;它一次印證了世界座標、朝向 3=南、時鐘下界 |
+| [`136-damage-coefficients-still-unresolved.md`](docs/re/136-damage-coefficients-still-unresolved.md) | 傷害係數:`k₂` 解了、`k₁` 沒有 | `k₂` = 擲骰的 `+1`(17/17 形狀);⛔ 三條資料側 delta 路線已否證,不要再試 |
 
 規格:[`docs/spec/00-index.md`](docs/spec/00-index.md) —— 七份格式 + 四份實作規格,全部 READY。
 

@@ -19,6 +19,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/vector"
 
+	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
 	"shardofspring/internal/original"
 	"shardofspring/internal/render"
@@ -53,9 +54,30 @@ type Game struct {
 	warnings []string
 	// 最近一次存檔的結果,畫在提示列。
 	saveMsg string
+
+	// M4:戰鬥(docs/spec/07)
+	monsters []original.Monster
+	items    map[int]combat.Item
+	rand     *combat.SeededRand
+	field    *combat.Field // nil = 不在戰鬥中
 }
 
 func (g *Game) Update() error {
+	// 戰鬥中:方向鍵不移動,空白鍵推一回合、ESC 離開結束的戰鬥。
+	if g.field != nil {
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+			g.stepCombat()
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) &&
+			g.field.Outcome() != combat.Ongoing {
+			g.field = nil
+			// 遭遇倒數重置。⚠ **重置值未解** —— 原版每次遭遇後填什麼
+			// 沒有讀到。這裡沿用出貨存檔的量級,是佔位。
+			g.party.Encounter = 54
+		}
+		return nil
+	}
+
 	for key, dir := range map[ebiten.Key]world.Facing{
 		ebiten.KeyUp: world.North, ebiten.KeyRight: world.East,
 		ebiten.KeyDown: world.South, ebiten.KeyLeft: world.West,
@@ -63,7 +85,10 @@ func (g *Game) Update() error {
 		ebiten.KeyDigit3: world.South, ebiten.KeyDigit4: world.West,
 	} {
 		if inpututil.IsKeyJustPressed(key) {
-			g.party.Step(dir, g.world)
+			if g.party.Step(dir, g.world) == world.Moved && g.party.Encounter == 0 {
+				// docs/formats/02 位移 25:歸零時觸發遭遇檢查
+				g.startCombat()
+			}
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
@@ -110,9 +135,12 @@ func (g *Game) save() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(cgaBlack)
 
+	// 戰鬥中主視野換成戰鬥畫面(docs/spec/07)。
+	inCombat := g.field != nil
+
 	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
 	const half = layout.ViewTiles / 2
-	for vy := 0; vy < layout.ViewTiles; vy++ {
+	for vy := 0; !inCombat && vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
 			mx, my := g.party.X-half+vx, g.party.Y-half+vy
 			v := g.world.At(mx, my)
@@ -141,10 +169,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		}
 	}
 
-	// 隊伍所在格的框
-	c := float32(layout.View.X + half*layout.TileDst)
-	r := float32(layout.View.Y + half*layout.TileDst)
-	vector.StrokeRect(screen, c, r, layout.TileDst, layout.TileDst, 3, cgaWhite, false)
+	if !inCombat {
+		// 隊伍所在格的框
+		c := float32(layout.View.X + half*layout.TileDst)
+		r := float32(layout.View.Y + half*layout.TileDst)
+		vector.StrokeRect(screen, c, r, layout.TileDst, layout.TileDst, 3, cgaWhite, false)
+	}
 
 	frame := func(rc layout.Rect) {
 		vector.StrokeRect(screen, float32(rc.X), float32(rc.Y),
@@ -156,6 +186,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	frame(layout.Prompt)
 
 	g.drawParty(screen)
+	g.drawCombat(screen)
 
 	// M2 還沒有字型(docs/spec/04 §4 的 TTF 是 M3 之後),
 	// 所以狀態暫時走 Ebitengine 的除錯字。**這不是最終呈現。**
@@ -180,11 +211,13 @@ func main() {
 	assets := flag.String("assets", "assets", "資產資料夾(由 cmd/convert 產生)")
 	slot := flag.Int("slot", 5, "隊伍存檔槽 1–5(出貨磁片組好的是 #5)")
 	fontPath := flag.String("font", "", "字型檔;留空則依序試內建候選")
+	seed := flag.Uint64("seed", 1, "戰鬥亂數種子(docs/spec/07 §2:同種子可重現)")
+	enc := flag.Int("encounter", -1, "覆寫遭遇倒數(除錯用)")
 	x := flag.Int("x", -1, "覆寫起始 x(除錯用;預設用存檔裡的座標)")
 	y := flag.Int("y", -1, "覆寫起始 y")
 	flag.Parse()
 
-	g, err := load(*assets, *slot, *fontPath, *x, *y)
+	g, err := load(*assets, *slot, *fontPath, *seed, *x, *y, *enc)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "載入失敗:", err)
 		fmt.Fprintln(os.Stderr, "請先跑:go run ./cmd/convert -in <原版> -out assets")
@@ -198,7 +231,7 @@ func main() {
 	}
 }
 
-func load(dir string, slot int, fontPath string, x, y int) (*Game, error) {
+func load(dir string, slot int, fontPath string, seed uint64, x, y, enc int) (*Game, error) {
 	// ⚠ 每個欄位要有自己的 tag。寫成 `W, H int `json:"w"`` 會讓兩個欄位
 	// 共用同一個 tag,H 永遠是 0 —— 而 JSON 解碼**不會報錯**。
 	var wm struct {
@@ -246,6 +279,13 @@ func load(dir string, slot int, fontPath string, x, y int) (*Game, error) {
 	}
 	if y >= 0 {
 		g.party.Y = y
+	}
+	if enc >= 0 {
+		g.party.Encounter = enc
+	}
+
+	if err := g.loadCombat(dir, seed); err != nil {
+		return nil, err
 	}
 
 	src, path, err := render.LoadFont(fontPath)
@@ -318,4 +358,38 @@ func (g *Game) loadParty(dir string, slot int) error {
 		Encounter: grp.Encounter,
 	}
 	return nil
+}
+
+
+// loadCombat 讀 M4 需要的資料表。docs/spec/07。
+func (g *Game) loadCombat(dir string, seed uint64) error {
+	var monsters []original.Monster
+	if err := readJSON(filepath.Join(dir, "data", "monsters.json"), &monsters); err != nil {
+		return err
+	}
+	var items []struct {
+		Index int `json:"index"`
+		Col4  int `json:"col4"`
+		Col5  int `json:"col5"`
+	}
+	if err := readJSON(filepath.Join(dir, "data", "items.json"), &items); err != nil {
+		return err
+	}
+	g.items = map[int]combat.Item{}
+	for _, it := range items {
+		// ⚠ 欄4/欄5 是型別相依的(docs/re/74)。這裡原樣搬,
+		// 由 combat 依「這是武器還是防具」去解讀 —— 不在載入時分類。
+		g.items[it.Index] = combat.Item{Main: it.Col4, Bonus: it.Col5}
+	}
+	g.monsters = monsters
+	g.rand = combat.NewRand(seed)
+	return nil
+}
+
+func readJSON(path string, v any) error {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return err
+	}
+	return json.Unmarshal(b, v)
 }

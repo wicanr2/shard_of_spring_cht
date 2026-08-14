@@ -223,7 +223,8 @@
 | [`113-d-status-and-remaining.md`](docs/re/113-d-status-and-remaining.md) | D 的收束 | 剩四項都不以「標籤+值+標籤」顯示,字串法結構上無效 |
 | [`114-maze-coordinates.md`](docs/re/114-maze-coordinates.md) | **位移 79/81 = 迷宮座標** | `81 × 欄 + 列` 的陣列算術;`104` 四筆錯三筆 |
 | [`115-visibility-lit-and-dark.md`](docs/re/115-visibility-lit-and-dark.md) | 位移 59/61 = 能見度 | ⚠ 對應方向被 `116` 存疑 |
-| [`116-contradiction-in-115.md`](docs/re/116-contradiction-in-115.md) | 位移 25 的形狀 + 訂正 `115` | 註解裡的因果詞要能指到一條指令 |
+| [`116-contradiction-in-115.md`](docs/re/116-contradiction-in-115.md) | 位移 25 的形狀 + 質疑 `115` | 註解裡的因果詞要能指到一條指令 |
+| [`117-annotation-was-right.md`](docs/re/117-annotation-was-right.md) | 註解是對的,但寫的時候不該是對的 | 排版會製造出資料裡沒有的對立;猜對與猜錯的註解長得一樣 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

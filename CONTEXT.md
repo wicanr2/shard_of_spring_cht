@@ -207,6 +207,7 @@
 | [`97-j-closure.md`](docs/re/97-j-closure.md) | **子系統 J = RE-DONE** | `D` = Dispell;「沒有逃跑」以窮舉 + 正對照收斂 |
 | [`98-status-level-and-a-sign-error.md`](docs/re/98-status-level-and-a-sign-error.md) | 狀態/等級位移 + 命中的反號 | 位移 38 = 狀態、40 = 等級;`76` 的 `≤` 應為 `>` |
 | [`99-parity-separates-the-two-records.md`](docs/re/99-parity-separates-the-two-records.md) | 奇偶性分開兩個記錄 | `CHARS` 全偶、`GROUPS` 全奇,25 筆零例外 |
+| [`100-chars-attributes-closed.md`](docs/re/100-chars-attributes-closed.md) | `CHARS.DAT` 欄位表 | 位移 12/20/22 解出;整數欄 14/15 有語意 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

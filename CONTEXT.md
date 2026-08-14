@@ -222,6 +222,7 @@
 | [`112-light-counter-verified.md`](docs/re/112-light-counter-verified.md) | 位移 45 重驗通過 | 語境證據要能「夾住」目標,不能只是「靠近」|
 | [`113-d-status-and-remaining.md`](docs/re/113-d-status-and-remaining.md) | D 的收束 | 剩四項都不以「標籤+值+標籤」顯示,字串法結構上無效 |
 | [`114-maze-coordinates.md`](docs/re/114-maze-coordinates.md) | **位移 79/81 = 迷宮座標** | `81 × 欄 + 列` 的陣列算術;`104` 四筆錯三筆 |
+| [`115-visibility-lit-and-dark.md`](docs/re/115-visibility-lit-and-dark.md) | **位移 59/61 = 有光/無光的能見度** | 光源決定讀哪一個;消費端與顯示端獨立對上 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

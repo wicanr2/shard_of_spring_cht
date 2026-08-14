@@ -220,6 +220,7 @@
 | [`110-display-offset-census.md`](docs/re/110-display-offset-census.md) | 顯示欄位清點 + 訂正 `109` | 兩個事實之間的**距離**也是證據的一部分 |
 | [`111-status-code-equals-school.md`](docs/re/111-status-code-equals-school.md) | **狀態編號 = 法術系別**;`CHARS.DAT` 完成 | `CHAINS`→`Bound`、`STILL AIR`→`Still Air`、`FREEZE`→`Frozen` 三筆全中 |
 | [`112-light-counter-verified.md`](docs/re/112-light-counter-verified.md) | 位移 45 重驗通過 | 語境證據要能「夾住」目標,不能只是「靠近」|
+| [`113-d-status-and-remaining.md`](docs/re/113-d-status-and-remaining.md) | D 的收束 | 剩四項都不以「標籤+值+標籤」顯示,字串法結構上無效 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

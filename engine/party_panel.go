@@ -48,7 +48,7 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	py := float64(layout.Prompt.Y + ui.PanelPad)
 	switch {
 	case g.field != nil:
-		g.panel.Draw(dst, "空白鍵：推進一回合　　ESC：結束後離開戰鬥", px, py)
+		g.panel.Draw(dst, "空白鍵：推進一回合　　C：施法（固定投一級）　　ESC：離開", px, py)
 	case g.level != nil:
 		g.panel.Draw(dst, "方向鍵／1234：移動　　ESC：離開地城　　S：存檔", px, py)
 	default:

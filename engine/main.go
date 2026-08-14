@@ -70,6 +70,11 @@ type Game struct {
 	mazeState maze.State
 	overlay   string // 非空 = 敘述覆蓋層開著
 	overlayFont *render.Painter
+
+	// M6:法術(docs/spec/09)
+	spells   []original.Spell
+	castUnit int
+	castList []original.Spell
 }
 
 func (g *Game) Update() error {
@@ -83,6 +88,23 @@ func (g *Game) Update() error {
 
 	// 戰鬥中:方向鍵不移動,空白鍵推一回合、ESC 離開結束的戰鬥。
 	if g.field != nil {
+		// 施法選單開著時只吃字母
+		if len(g.castList) > 0 {
+			for i := 0; i < len(g.castList) && i < 26; i++ {
+				if inpututil.IsKeyJustPressed(ebiten.KeyA + ebiten.Key(i)) {
+					g.pickSpell(i)
+					break
+				}
+			}
+			if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+				g.castList = nil
+			}
+			return nil
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyC) {
+			g.openCast()
+			return nil
+		}
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 			g.stepCombat()
 		}
@@ -227,6 +249,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawParty(screen)
 	g.drawMaze(screen)
 	g.drawCombat(screen)
+	g.drawCastMenu(screen)
 	g.drawOverlay(screen)
 
 	// M2 還沒有字型(docs/spec/04 §4 的 TTF 是 M3 之後),
@@ -409,6 +432,9 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 		Col5  int `json:"col5"`
 	}
 	if err := readJSON(filepath.Join(dir, "data", "items.json"), &items); err != nil {
+		return err
+	}
+	if err := readJSON(filepath.Join(dir, "data", "spells.json"), &g.spells); err != nil {
 		return err
 	}
 	g.items = map[int]combat.Item{}

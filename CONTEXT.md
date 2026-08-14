@@ -215,6 +215,7 @@
 | [`105-visibility-fields.md`](docs/re/105-visibility-fields.md) | 位移 59/83 = 能見度與來源旗標 | 槽 33 只讀四個變數,消去法;11/14 |
 | [`106-clock-cascade.md`](docs/re/106-clock-cascade.md) | 位移 27/29/33 = 時鐘三級 | ⚠ 已被 `107` 訂正為四級 |
 | [`107-clock-is-four-levels.md`](docs/re/107-clock-is-four-levels.md) | 時鐘是四級 + 訂正 `104` | 語境字串給的是「在哪裡被動到」,不是「它是什麼」|
+| [`108-clock-labels-not-resolved.md`](docs/re/108-clock-labels-not-resolved.md) | 時鐘標籤對應未解 | 顯示端不直接讀計時器;掃描回空的第三個成因是定址形式 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

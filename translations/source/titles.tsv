@@ -1,0 +1,114 @@
+index	original	byte_len
+0	Character	9
+1	Utilities	9
+2	* Characters *	14
+3	C)reate	7
+4	R)emove	7
+5	N)ew Name	9
+6	* Parties *	11
+7	D)isband	8
+8	J)oin	5
+9	I)nformation	12
+10	E)xit	5
+11	Choice:	7
+12	Name	4
+13	Race:	5
+14	Class:	6
+15	Speed     :	11
+16	Strength  :	11
+17	Intellect :	11
+18	Endurance :	11
+19	Skill     :	11
+20	H.P.:	5
+21	S.P.:	5
+22	Skills	6
+23	Choose Race:	12
+24	H)uman	6
+25	D)warf	6
+26	T)roll	6
+27	E)lf	4
+28	G)nome	6
+29	Human	5
+30	+2	2
+31	Dwarf	5
+32	+1	2
+33	-3	2
+34	+3	2
+35	Troll	5
+36	+5	2
+37	-5	2
+38	Elf	3
+39	-2	2
+40	Gnome	5
+41	1)	2
+42	2)	2
+43	3)	2
+44	4)	2
+45	5)	2
+46	Adjustment 1	12
+47	Adjustment 2	12
+48	Adjustment 3	12
+49	Enter #'s to	12
+50	Be rerolled	11
+51	Or ESC when	11
+52	Done	4
+53	Change	6
+54	Choose class	12
+55	A) Warrior	10
+56	B) Wizard	9
+57	Enter:	6
+58	# to choose	11
+59	(or remove)	11
+60	SPACE for	9
+61	next page	9
+62	ESC when	8
+63	"""done."	6
+64	Skills (	8
+65	  Left)	7
+66	1)  Sword           (2)	23
+67	2)  Axe             (2)	23
+68	3)  Mace            (1)	23
+69	4)  Karate          (2)	23
+70	5)  Darkvision      (2)	23
+71	6)  Tactics         (2)	23
+72	7)  Armored skin    (4)	23
+73	8)  Berserking      (3)	23
+74	9)  Hunting         (2)	23
+75	10) Persuasion      (2)	23
+76	1)  Fire runes      (5)	23
+77	2)  Metal runes     (5)	23
+78	3)  Wind runes      (5)	23
+79	4)  Ice runes       (5)	23
+80	5)  Spirit runes    (5)	23
+81	6)  Weapon lore     (2)	23
+82	7)  Potion lore     (2)	23
+83	8)  Item lore       (2)	23
+84	9)  Monster lore    (2)	23
+85	10) Priesthood      (3)	23
+86	Enter your	10
+87	character's	11
+88	name (10 char)	14
+89	above....	9
+90	# to remove	11
+91	Must disband party	18
+92	before removing!	16
+93	Input number	12
+94	of party	8
+95	to create:	10
+96	Party already	13
+97	exists!	7
+98	Enter characters	16
+99	for party:	10
+100	Player #	8
+101	 : 	3
+102	Character is      	18
+103	already in a party.	19
+104	Which party do 	15
+105	you wish to 	12
+106	to disband 	11
+107	 	1
+108	Party #	7
+109	disbanded.	10
+110	Party number	12
+111	to display	10
+112	"""information on"""	17

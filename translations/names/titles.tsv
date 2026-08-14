@@ -1,0 +1,114 @@
+row	field	original	orig_bytes	translation	trans_bytes	fits	note
+0	menu	Character	9	角色	4	Y	
+1	menu	Utilities	9	工具	4	Y	
+2	menu	* Characters *	14	＊角色＊	8	Y	
+3	menu	C)reate	7	C)創建	6	Y	
+4	menu	R)emove	7	R)移除	6	Y	
+5	menu	N)ew Name	9	N)新名稱	8	Y	
+6	menu	* Parties *	11	＊隊伍＊	8	Y	
+7	menu	D)isband	8	D)解散	6	Y	
+8	menu	J)oin	5	J)加入	6	N	超出原文 1 bytes
+9	menu	I)nformation	12	I)資訊	6	Y	
+10	menu	E)xit	5	E)離開	6	N	超出原文 1 bytes
+11	prompt	Choice:	7	選擇:	5	Y	
+12	stat	Name	4	名稱	4	Y	
+13	stat	Race:	5	種族:	5	Y	
+14	stat	Class:	6	職業:	5	Y	
+15	stat	Speed     :	11	速度:	5	Y	原文含 UI 對齊用空白(padding),譯文未保留,由畫面排版另行處理
+16	stat	Strength  :	11	力量:	5	Y	同上,原文含對齊空白
+17	stat	Intellect :	11	智力:	5	Y	同上,原文含對齊空白
+18	stat	Endurance :	11	耐力:	5	Y	同上,原文含對齊空白
+19	stat	Skill     :	11	技能:	5	Y	同上,原文含對齊空白
+20	stat	H.P.:	5	HP:	3	Y	glossary:H.P. → HP
+21	stat	S.P.:	5	MP:	3	Y	glossary:S.P. → MP
+22	stat	Skills	6	技能	4	Y	
+23	race	Choose Race:	12	選擇種族:	9	Y	
+24	race	H)uman	6	H)人類	6	Y	
+25	race	D)warf	6	D)矮人	6	Y	
+26	race	T)roll	6	T)巨魔	6	Y	
+27	race	E)lf	4	E)精靈	6	N	超出原文 2 bytes
+28	race	G)nome	6	G)地精	6	Y	
+29	race	Human	5	人類	4	Y	
+30	adj	+2	2	+2	2	Y	
+31	race	Dwarf	5	矮人	4	Y	
+32	adj	+1	2	+1	2	Y	
+33	adj	-3	2	-3	2	Y	
+34	adj	+3	2	+3	2	Y	
+35	race	Troll	5	巨魔	4	Y	
+36	adj	+5	2	+5	2	Y	
+37	adj	-5	2	-5	2	Y	
+38	race	Elf	3	精靈	4	N	超出原文 1 bytes
+39	adj	-2	2	-2	2	Y	
+40	race	Gnome	5	地精	4	Y	
+41	menu	1)	2	1)	2	Y	
+42	menu	2)	2	2)	2	Y	
+43	menu	3)	2	3)	2	Y	
+44	menu	4)	2	4)	2	Y	
+45	menu	5)	2	5)	2	Y	
+46	adj	Adjustment 1	12	調整值1	7	Y	
+47	adj	Adjustment 2	12	調整值2	7	Y	
+48	adj	Adjustment 3	12	調整值3	7	Y	
+49	prompt	Enter #'s to	12	輸入編號以	10	Y	原文跨 4 行組成完整句子(49–52),各行獨立翻譯,拼接語序供工程端調整
+50	prompt	Be rerolled	11	重新擲骰	8	Y	
+51	prompt	Or ESC when	11	或按 ESC	8	Y	
+52	prompt	Done	4	完成	4	Y	
+53	menu	Change	6	更改	4	Y	
+54	menu	Choose class	12	選擇職業:	9	Y	
+55	class	A) Warrior	10	A) 勇者	7	Y	對應 CHARS.DAT 職業 Hero,glossary 譯「勇者」,不用「戰士」
+56	class	B) Wizard	9	B) 法師	7	Y	
+57	prompt	Enter:	6	輸入:	5	Y	
+58	prompt	# to choose	11	輸入編號選擇	12	N	超出原文 1 bytes
+59	prompt	(or remove)	11	(或移除)	8	Y	
+60	prompt	SPACE for	9	按空白鍵	8	Y	原文跨 2 行(60–61):SPACE for next page
+61	prompt	next page	9	換頁	4	Y	
+62	prompt	ESC when	8	按 ESC 鍵	9	N	原文跨 2 行(62–63,63 有格式異常見下); 超出原文 1 bytes
+63	prompt	"""done."	6	完成。	6	Y	"原始檔案格式異常:原文為 `""done.`,開頭多一個未配對的雙引號(見 translations/source/README.md),譯文已略去異常引號"
+64	stat	Skills (	8	技能（還剩 	11	N	原文跨 2 行(64–65)組成模板「Skills (N Left)」,譯文改為「技能（還剩 N 點）」語序,分成前後兩段; 超出原文 3 bytes
+65	stat	  Left)	7	 點）	5	Y	
+66	skill_hero	1)  Sword           (2)	23	1) 劍術 (2)	11	Y	
+67	skill_hero	2)  Axe             (2)	23	2) 斧術 (2)	11	Y	
+68	skill_hero	3)  Mace            (1)	23	3) 錘術 (1)	11	Y	
+69	skill_hero	4)  Karate          (2)	23	4) 徒手 (2)	11	Y	
+70	skill_hero	5)  Darkvision      (2)	23	5) 夜視 (2)	11	Y	
+71	skill_hero	6)  Tactics         (2)	23	6) 戰術 (2)	11	Y	
+72	skill_hero	7)  Armored skin    (4)	23	7) 硬皮 (4)	11	Y	
+73	skill_hero	8)  Berserking      (3)	23	8) 狂暴 (3)	11	Y	
+74	skill_hero	9)  Hunting         (2)	23	9) 狩獵 (2)	11	Y	
+75	skill_hero	10) Persuasion      (2)	23	10) 說服 (2)	12	Y	
+76	skill_wiz	1)  Fire runes      (5)	23	1) 火之符文 (5)	15	Y	
+77	skill_wiz	2)  Metal runes     (5)	23	2) 金之符文 (5)	15	Y	
+78	skill_wiz	3)  Wind runes      (5)	23	3) 風之符文 (5)	15	Y	
+79	skill_wiz	4)  Ice runes       (5)	23	4) 冰之符文 (5)	15	Y	
+80	skill_wiz	5)  Spirit runes    (5)	23	5) 靈之符文 (5)	15	Y	
+81	skill_wiz	6)  Weapon lore     (2)	23	6) 兵器學 (2)	13	Y	
+82	skill_wiz	7)  Potion lore     (2)	23	7) 藥劑學 (2)	13	Y	
+83	skill_wiz	8)  Item lore       (2)	23	8) 器物學 (2)	13	Y	
+84	skill_wiz	9)  Monster lore    (2)	23	9) 怪物學 (2)	13	Y	
+85	skill_wiz	10) Priesthood      (3)	23	10) 聖職 (3)	12	Y	
+86	prompt	Enter your	10	請輸入你的	10	Y	原文跨 3 行(86–88):Enter your character's name (10 char)
+87	prompt	character's	11	角色	4	Y	
+88	prompt	name (10 char)	14	名稱（限10字）	14	Y	
+89	prompt	above....	9	於上方……	10	N	超出原文 1 bytes
+90	prompt	# to remove	11	輸入編號以移除	14	N	超出原文 3 bytes
+91	prompt	Must disband party	18	必須先解散隊伍	14	Y	原文跨 2 行(91–92)
+92	prompt	before removing!	16	才能移除！	10	Y	
+93	prompt	Input number	12	請輸入	6	Y	原文跨 3 行(93–95):Input number of party to create:
+94	prompt	of party	8	隊伍	4	Y	
+95	prompt	to create:	10	編號以建立：	12	N	超出原文 2 bytes
+96	prompt	Party already	13	隊伍已經	8	Y	原文跨 2 行(96–97)
+97	prompt	exists!	7	存在！	6	Y	
+98	prompt	Enter characters	16	請輸入角色	10	Y	
+99	prompt	for party:	10	加入隊伍：	10	Y	
+100	prompt	Player #	8	角色編號	8	Y	
+101	prompt	 : 	3	 : 	3	Y	純排版分隔符號,維持原樣
+102	prompt	Character is      	18	角色已經	8	Y	原文跨 2 行(102–103):Character is already in a party.
+103	prompt	already in a party.	19	加入其他隊伍。	14	Y	
+104	prompt	Which party do 	15	你要解散	8	Y	原文跨 3 行(104–106),中文語序與英文斷句不同,已盡量兼顧可讀性;建議工程端改用單一字串
+105	prompt	you wish to 	12	哪一隊	6	Y	
+106	prompt	to disband 	11	隊伍：	6	Y	
+107	prompt	 	1	 	1	Y	排版用空白,維持原樣
+108	prompt	Party #	7	隊伍	4	Y	原文跨 2 行(108–109):Party #N disbanded.
+109	prompt	disbanded.	10	已解散。	8	Y	
+110	prompt	Party number	12	隊伍編號	8	Y	原文跨 3 行(110–112):Party number to display information on
+111	prompt	to display	10	顯示	4	Y	
+112	prompt	"""information on"""	17	相關資訊	8	Y	"原始檔案格式異常:原文含頭尾雙引號 `""information on""`(見 translations/source/README.md),譯文已略去引號"

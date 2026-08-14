@@ -1,0 +1,115 @@
+row	field	original	orig_bytes	translation	trans_bytes	fits	note
+0	1	Dagger	6	匕首	4	Y	
+0	2	knife	5	小刀	4	Y	
+1	1	Small axe	9	小斧	4	Y	
+1	2	small axe	9	小斧	4	Y	
+2	1	Short sword	11	短劍	4	Y	
+2	2	small sword	11	小劍	4	Y	
+3	1	Mace	4	釘錘	4	Y	
+3	2	spiked club	11	釘棍	4	Y	
+4	1	Morning star	12	晨星錘	6	Y	
+4	2	ball & chain	12	鏈球	4	Y	
+5	1	Broad sword	11	闊劍	4	Y	
+5	2	sword	5	劍	2	Y	
+6	1	Battle axe	10	戰斧	4	Y	
+6	2	huge axe	8	巨斧	4	Y	
+7	1	2-hand sword	12	雙手劍	6	Y	
+7	2	huge sword	10	巨劍	4	Y	
+8	1	Mace +1	7	釘錘+1	6	Y	
+8	2	spiked club	11	釘棍	4	Y	
+9	1	Sword +1	8	劍+1	4	Y	
+9	2	huge sword	10	巨劍	4	Y	
+10	1	Axe +1	6	斧+1	4	Y	
+10	2	huge axe	8	巨斧	4	Y	
+11	1	Sword +2	8	劍+2	4	Y	
+11	2	huge sword	10	巨劍	4	Y	
+12	1	Cloth	5	布衣	4	Y	
+12	2	robes	5	長袍	4	Y	
+13	1	Leather	7	皮甲	4	Y	
+13	2	leather	7	皮革	4	Y	
+14	1	Chain	5	鎖甲	4	Y	
+14	2	chain mail	10	鎖子甲	6	Y	
+15	1	Scale	5	鱗甲	4	Y	
+15	2	scale mail	10	鱗甲	4	Y	
+16	1	Plate	5	板甲	4	Y	
+16	2	suit/armor	10	甲冑	4	Y	原文別名為 suit/armor,語意含糊,暫譯「甲冑」
+17	1	Chain +1	8	鎖甲+1	6	Y	
+17	2	chain mail	10	鎖子甲	6	Y	
+18	1	Scale +1	8	鱗甲+1	6	Y	
+18	2	scale mail	10	鱗甲	4	Y	
+19	1	Plate +1	8	板甲+1	6	Y	
+19	2	suit/armor	10	甲冑	4	Y	
+20	1	Plate +2	8	板甲+2	6	Y	
+20	2	suit/armor	10	甲冑	4	Y	
+21	1	Heal potion	11	治療藥水	8	Y	
+21	2	blue vial	9	藍色藥瓶	8	Y	
+22	1	Speed potion	12	速度藥水	8	Y	
+22	2	violet vial	11	紫色藥瓶	8	Y	
+23	1	Psn antidote	12	解毒劑	6	Y	
+23	2	green vial	10	綠色藥瓶	8	Y	
+24	1	Str potion	10	力量藥水	8	Y	
+24	2	red vial	8	紅色藥瓶	8	Y	
+25	1	Pyrotechnik	11	煙火藥劑	8	Y	Pyrotechnik,語意近似「煙火/爆裂藥劑」,建議收進 glossary
+25	2	red vial	8	紅色藥瓶	8	Y	
+26	1	Liquid armor	12	液態護甲	8	Y	
+26	2	metal vial	10	金屬藥瓶	8	Y	
+27	1	Shield ring	11	護盾戒	6	Y	
+27	2	gold ring	9	金戒指	6	Y	
+28	1	Frost ring	10	冰霜戒	6	Y	
+28	2	icy ring	8	冰戒指	6	Y	
+29	1	Storm ring	10	風暴戒	6	Y	
+29	2	dark ring	9	黑戒指	6	Y	
+30	1	Flight ring	11	飛行戒	6	Y	
+30	2	light ring	10	淺色戒指	8	Y	
+31	1	Chain Ring	10	鎖鏈戒	6	Y	
+31	2	iron ring	9	鐵戒指	6	Y	
+32	1	Iron staff	10	鐵杖	4	Y	
+32	2	metal staff	11	金屬杖	6	Y	
+33	1	Staff of ice	12	冰霜杖	6	Y	
+33	2	big icicle	10	大冰柱	6	Y	
+34	1	Crystl staff	12	水晶杖	6	Y	
+34	2	glass stick	11	玻璃棒	6	Y	
+35	1	Fiery staff	11	烈焰杖	6	Y	
+35	2	column/fire	11	火柱	4	Y	
+36	1	Staff/soul	10	靈魂杖	6	Y	
+36	2	dim staff	9	暗淡法杖	8	Y	
+37	1	Wand of light	13	光明杖	6	Y	
+37	2	light wand	10	發光杖	6	Y	
+38	1	Rod of might	12	力量權杖	8	Y	
+38	2	heavy rod	9	沉重權杖	8	Y	
+39	1	Rod/freedom	11	自由權杖	8	Y	
+39	2	light rod	9	輕巧權杖	8	Y	
+40	1	Blue rod	8	藍色權杖	8	Y	
+40	2	colored rod	11	彩色權杖	8	Y	
+41	1	Red rod	7	紅色權杖	8	N	超出原文 1 bytes
+41	2	colored rod	11	彩色權杖	8	Y	
+42	1	Platinum rod	12	白金權杖	8	Y	
+42	2	colored rod	11	彩色權杖	8	Y	
+43	1	Holy symbol	11	聖徽	4	Y	
+43	2	talisman	8	護符	4	Y	
+44	1	Elfin gem	9	精靈寶石	8	Y	
+44	2	glowing rock	12	發光石	6	Y	
+45	1	Eye of fear	11	恐懼之眼	8	Y	
+45	2	glass marble	12	玻璃彈珠	8	Y	
+46	1	Unholy symb.	12	邪徽	4	Y	
+46	2	talisman	8	護符	4	Y	
+47	1	Torch	5	火把	4	Y	
+47	2	wooden stick	12	木棍	4	Y	
+48	1	Oil lantern	11	油燈	4	Y	
+48	2	lantern	7	燈籠	4	Y	
+49	1	Key	3	鑰匙	4	N	超出原文 1 bytes
+49	2	iron key	8	鐵鑰匙	6	Y	
+50	1	Copper key	10	銅鑰匙	6	Y	
+50	2	copper key	10	銅鑰匙	6	Y	
+51	1	Silver key	10	銀鑰匙	6	Y	
+51	2	silver key	10	銀鑰匙	6	Y	
+52	1	Gold key	8	金鑰匙	6	Y	
+52	2	gold key	8	金鑰匙	6	Y	
+53	1	Royal seal	10	王家印璽	8	Y	
+53	2	iron coin	9	鐵幣	4	Y	
+54	1	King's head	11	國王首級	8	Y	
+54	2	bloody head	11	血淋首級	8	Y	
+55	1	F-field key	11	力場鑰匙	8	Y	
+55	2	crystal bar	11	水晶棒	6	Y	
+56	1	Teleporter	10	傳送器	6	Y	
+56	2	paper dove	10	紙鴿	4	Y	

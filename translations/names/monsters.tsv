@@ -1,0 +1,75 @@
+row	field	original	orig_bytes	translation	trans_bytes	fits	note
+0	name	Lvl  1 Fighter	14	1級戰士	7	Y	
+1	name	Lvl  1 Wizard	13	1級法師	7	Y	
+2	name	Orc	3	半獸人	6	Y	
+3	name	Spider	6	蜘蛛	4	Y	
+4	name	Rat	3	老鼠	4	Y	
+5	name	Bat	3	蝙蝠	4	Y	
+6	name	Bugem	5	布金姆	6	Y	音譯,原文語意未確認,建議收進 glossary
+7	name	Skeleton	8	骷髏	4	Y	
+8	name	Skeleton Mage	13	骷髏法師	8	Y	
+9	name	Cobra	5	眼鏡蛇	6	Y	
+10	name	Hill Giant	10	丘陵巨人	8	Y	
+11	name	Evil Spirit	11	邪靈	4	Y	
+12	name	Death Adder	11	死亡蝮蛇	8	Y	
+13	name	Lvl  2 Fighter	14	2級戰士	7	Y	
+14	name	Lvl  2 Wizard	13	2級法師	7	Y	
+15	name	Lvl  3 Fighter	14	3級戰士	7	Y	
+16	name	Lvl  3 Wizard	13	3級法師	7	Y	
+17	name	Zombie	6	殭屍	4	Y	
+18	name	Edrin	5	艾德林	6	Y	音譯(NPC 專有名詞),建議收進 glossary
+19	name	Cook	4	廚師	4	Y	
+20	name	Lvl  4 Fighter	14	4級戰士	7	Y	
+21	name	Lvl  4 Wizard	13	4級法師	7	Y	
+22	name	Ghost	5	幽靈	4	Y	
+23	name	Ghoul	5	食屍鬼	6	Y	
+24	name	Goblin	6	哥布林	6	Y	
+25	name	Spectre	7	魅影	4	Y	
+26	name	Kobold	6	狗頭人	6	Y	
+27	name	Hobgoblin	9	大哥布林	8	Y	
+28	name	Lvl  6 Fighter	14	6級戰士	7	Y	
+29	name	Lvl  5 Wizard	13	5級法師	7	Y	
+30	name	Gargoyle	8	石像鬼	6	Y	
+31	name	Lvl  8 Fighter	14	8級戰士	7	Y	
+32	name	Lvl  8 Wizard	13	8級法師	7	Y	
+33	name	Lvl 10 Fighter	14	10級戰士	8	Y	
+34	name	Lvl 10 Wizard	13	10級法師	8	Y	
+35	name	Lvl 12 Fighter	14	12級戰士	8	Y	
+36	name	Lvl 13 Wizard	13	13級法師	8	Y	
+37	name	Lvl 15 Fighter	14	15級戰士	8	Y	
+38	name	Lvl 16 Wizard	13	16級法師	8	Y	
+39	name	Fire Elemental	14	火元素	6	Y	
+40	name	Metal Elemental	15	金屬元素	8	Y	
+41	name	Wind Elemental	14	風元素	6	Y	
+42	name	Ice Elemental	13	冰元素	6	Y	
+43	name	Spirit Elemental	16	靈元素	6	Y	
+44	name	Fire Demon	10	火焰惡魔	8	Y	
+45	name	Ice Demon	9	冰霜惡魔	8	Y	
+46	name	Demon Lord	10	惡魔領主	8	Y	
+47	name	Devil	5	魔鬼	4	Y	與「惡魔」系(Demon)區分用詞
+48	name	Wraith	6	亡靈	4	Y	
+49	name	Devir	5	迪維爾	6	Y	音譯,疑似專有名詞(近似 Devil 拼法),語意未確認,建議查證後收進 glossary
+50	name	Baby Dragon	11	幼龍	4	Y	
+51	name	Small Dragon	12	小龍	4	Y	
+52	name	Large Dragon	12	大龍	4	Y	
+53	name	Great Dragon	12	巨龍	4	Y	
+54	name	Titan	5	泰坦	4	Y	
+55	name	Ogre	4	食人妖	6	Y	
+56	name	Warrior King	12	戰士王	6	Y	
+57	name	Arch Mage	9	大法師	6	Y	
+58	name	Pit Viper	9	坑蝮蛇	6	Y	與 12「死亡蝮蛇」區分用詞
+59	name	Rattlesnake	11	響尾蛇	6	Y	
+60	name	Giant Spider	12	巨蜘蛛	6	Y	
+61	name	Giant Snake	11	巨蟒	4	Y	
+62	name	Mountain Giant	14	山嶽巨人	8	Y	與 10「丘陵巨人」區分用詞
+63	name	Shambling Mound	15	泥沼巨怪	8	Y	
+64	name	Guard	5	守衛	4	Y	
+65	name	Swamp King	10	沼澤王	6	Y	
+66	name	Orc	3	半獸人	6	Y	
+67	name	Murthin	7	莫辛	4	Y	音譯(NPC 專有名詞),建議收進 glossary
+68	name	Cercion	7	瑟西恩	6	Y	音譯(NPC 專有名詞),建議收進 glossary
+69	name	Vandiguard	10	范迪加德	8	Y	音譯(NPC 專有名詞);8 bytes,上限 16,尚有餘裕
+70	name	Lothian	7	洛西安	6	Y	音譯(NPC 專有名詞),建議收進 glossary
+71	name	Siriadne !	10	希瑞雅妮！	10	Y	音譯(NPC 專有名詞,原文含驚嘆號),建議收進 glossary
+72	name	R A L I T H	11	拉 利 斯	8	Y	音譯(疑似最終頭目專有名詞,原文以空格拉開字母造成戲劇效果,譯文比照留空格),建議收進 glossary
+73	name	Dark Raven	10	黑暗渡鴉	8	Y	疑似專有名詞或稱號,語意未確認

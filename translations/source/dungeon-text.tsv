@@ -1,0 +1,88 @@
+file	index	id	original	byte_len
+DT0TEXT.DAT	0	001	You are within a winding cave passage shrouded in sulfurous mist.  The cave walls are damp with moisture and the echoing sounds of mysterious chanting swirl in and out with the mist.	182
+DT0TEXT.DAT	1	002	Before you is an ancient looking man seated before a fire.  He looks up from his meditation to speak, 'Once you have reached Ralith there will be no turning back.  Only a teleport spell will return you to Ymros.  Choose a path wisely.'	235
+DT1TEXT.DAT	0	101	A shambling mound has been placed at the end of the corridor to guard this door.	80
+DT1TEXT.DAT	1	102	You see a horrifying monster made up of decaying vegetable and swamp matter.  It stands seven feet tall and its glowing yellow eyes tell a history of anger and wrath.	166
+DT1TEXT.DAT	2	103	This is a guardpost.  Two guards with broadswords are stationed here.	69
+DT1TEXT.DAT	3	104	A message written in blood on the wall reads - 'Secret door in passage between forest and pool'.	96
+DT1TEXT.DAT	4	105	Holding cell where a shambling mound is being kept.  Bones and rotting vegetation are everywhere.	97
+DT1TEXT.DAT	5	106	Holding cell where a shambling mound is being kept.  Bones and rotting vegetation are everywhere.	97
+DT1TEXT.DAT	6	107	Before you is the lair of the swamp king.  He is a muscular man with a skull for a helmet and two shamblers as guards.	118
+DT1TEXT.DAT	7	108	A pool of water that seems to radiate vitality beckons you...	61
+DT2TEXT.DAT	0	201	You enter a damp and misty chamber with a skeleton staked to the far wall with daggers.  His head has been twisted in an unnatural fashion to face the door.  'Thus shall be the fate of those that betray Devir the Destoyer ...'	226
+DT2TEXT.DAT	1	202	You find a small key lying in the corner of the room.	53
+DT2TEXT.DAT	2	203	The door is locked.	19
+DT2TEXT.DAT	3	204	'Thank the Gods you have come to rescue me!', cries a ragged old man wearing a holy symbol around his neck.  'Too bad he'll never get out alive!', says a hill giant with a toothless grin.	187
+DT2TEXT.DAT	4	205	You have stumbled upon the chambers of a foul smelling ogre.  He charges towards you with a huge spiked mace and a deafening battle cry.  This just isn't your day.	163
+DT2TEXT.DAT	5	206	This room is the home of an orc.  This orc is no normal orc- with huge muscles and a gleaming two handed sword, which he is wielding in your direction with skill and fierocity.	176
+DT2TEXT.DAT	6	207	A map has been carved into the hard dirt floor of this holding cell.	68
+DT2TEXT.DAT	7	208	This is the lair of Devir the destroyer- a friend of Siriadne's that siezed power of this stronghold from Galin the Good.  Galin's Royal Seal still hangs upon a lonely wall.  Devir's evil eyes stare at you from beneath a horned helm.	233
+DT3TEXT.DAT	0	301	None can pass this point without the Royal Seal.	48
+DT3TEXT.DAT	1	302	You only see a storeroom full of empty boxes, but you hear scratching noises...	79
+DT3TEXT.DAT	2	303	Someone's sleeping quarters.	28
+DT3TEXT.DAT	3	304	Corner of a small room.	23
+DT3TEXT.DAT	4	305	Two men have killed each other here.  One has a battle axe in his skull and the other has a knife in his chest.	111
+DT3TEXT.DAT	5	306	A demonic altar has been built here.	36
+DT3TEXT.DAT	6	307	Beyond a door you hear someone singing, 'Blue is the sky; Blue is the sea.  Red is for blood; and Green is for trees'.	118
+DT3TEXT.DAT	7	308	Two fighters are drinking here and eating cooked rabbit.	56
+DT3TEXT.DAT	8	309	Before you is a large door made of carved ebony.  On either side of the door are cobras coiled and ready to attack.	115
+DT3TEXT.DAT	9	310	The large oaken door is locked shut.	36
+DT3TEXT.DAT	10	311	The door is locked.	19
+DT3TEXT.DAT	11	312	A misty crypt.  A number of ancient tomb tones cover the moist earth.  A glint of silver catches your eye from the ground...	124
+DT3TEXT.DAT	12	313	A wizard's laboratory.  The walls are scuffed with a multitude of burn marks and bottle and glass tubing are scattered about the room.  A blue liquid is bubbling in a beaker over a flame.	187
+DT3TEXT.DAT	13	314	Empty room.	11
+DT3TEXT.DAT	14	315	The dining room of the keep.  A few fighters were eating a foul smelling stew when you barged in.	97
+DT3TEXT.DAT	15	316	This is the kitchen.  The cook is cutting up some old meat to throw in a pot when you entered.	94
+DT3TEXT.DAT	16	317	A huge room that is the home of a giant.  Bones and rotting flesh are everywhere.	81
+DT3TEXT.DAT	17	318	The door is kept closed by a golden lock.	41
+DT3TEXT.DAT	18	319	A massive chamber elegantly furnished.  Sitting around a large marble table are three men who seem to be discussing something.  When you enter they grab their weapons and run to attack.	185
+DT4TEXT.DAT	0	401	Before you is a large brass plate set into the stone floor.  The plate has unknown magical runes carved in it.  A voice from deep within the tower echos,                  'Welcome to the tower of the Gate Keeper'.	213
+DT4TEXT.DAT	1	402	This room lies within the top of the tower and large windows in all directions give a dizzying view of all the land.  The Gate Keeper stands before you, 'One of these 4 gates will lead you to a distant island.  The others ???'	227
+DT5TEXT.DAT	0	503	In the center of the pool lies a shining silver statue of a muscular warrior.  He holds his head erect and his sword to the sky.	128
+DT5TEXT.DAT	1	504	The entry room.  A large dragon hisses, 'Welcome to the Tower of Ralith!'	73
+DT5TEXT.DAT	2	505	The great hall.  A powerful looking fighter is here with a few friends.  You get the feeling you're not wanted.	111
+DT5TEXT.DAT	3	511	This is a wizard's library.  A number of books are about words of command and you read one of interest on how they can be mentally blocked out.	143
+DT5TEXT.DAT	4	512	You see a baby dragon curled up at the foot of a staircase leading up.  As you enter he lets out a puff of steam and moves menacingly towards you.	146
+DT5TEXT.DAT	5	513	A few of Siriadne's lesser henchmen are dining on a meal of meat and ale.  They draw their weapons and advance.	111
+DT5TEXT.DAT	6	514	A towering figure appears from around a corner, 'OH!, I hope you provide more sport than the last group....'	108
+DT5TEXT.DAT	7	515	'My, my.  Care to play?', asks a hulking giant- as he charges the party.	72
+DT5TEXT.DAT	8	516	The art gallery.  The paintings are quite beautiful and represent a history of wealth and prosperity.  Most of them depict tranquil landscape scenes - ironic considering the tower's current owner.	196
+DT5TEXT.DAT	9	517	A demonic chapel has been built here.  The walls have been charred black.  Two gargoyles with glowing red eyes guard the altar.	127
+DT5TEXT.DAT	10	518	A pool of water that eminates power is here.	44
+DT5TEXT.DAT	11	519	To the south is a balcony leaning out of the tower.  From there you see the lake of fire surrounding Ralith.  Beyond is a grand expanse of plains.  What looks like a dove is perched upon the balcony.	199
+DT5TEXT.DAT	12	520	A beautiful bird made of paper folded in to the shape of a dove is on the edge of the balcony.  As you move towards it a great flapping of wings is heard and a great black bat-like creature with red eyes swoops down at you.	223
+DT5TEXT.DAT	13	521	You are in a library with stacks of old and dusty tomes.  They all appear to be about elementals and how they are summoned.  It would take a great wizard indeed to summon one, but it is possible.	195
+DT5TEXT.DAT	14	522	A shimmering force field prevents you from passing.	51
+DT5TEXT.DAT	15	523	A gleaming sword bars further entry into this room.  It follows you movements and maneuvers with great skill.	109
+DT5TEXT.DAT	16	524	A red door at the end of the passage is guarded by a demon.  Its skin is red and scaly, its very gaze implies fire that singes the soul.	136
+DT5TEXT.DAT	17	525	A blast of heat hits you as you open the door.  A being like a huge bonfire jumps out at you leaving a trail of fury and flames . . .	134
+DT51TEXT.DAT	0	506	The statue gallery.  A number of finely carved marble figures adorn the far wall.  They are all of great and powerful warriors- past rulers of Ralith's tower.	158
+DT51TEXT.DAT	1	507	On this wall is inscribed a word of command.  You do not understand the Runes and you feel compelled to turn around and walk away.	130
+DT51TEXT.DAT	2	508	Beyond you is a dark misty room with an air of death about it.  Evil Spirits swirl about you and without the blesing of the priest in Blackfort you cannot get past them.	169
+DT51TEXT.DAT	3	509	This is the crypt of the tower.  Moist earth and a cold mist fill the chamber.  To the south can be seen a lone figure surrounded by a semicircle of flames.  The icy claws of insubstantial hands reach out at you from the darkness.	230
+DT51TEXT.DAT	4	510	The scorching heat of the flames makes your eyes tear and your shoulders burn.  Within the sanctuary of the flames is a skeleton holding a brilliant crystal to its chest.  As you reach out for the crystal its hollow eyes fill with fire.	236
+DT51TEXT.DAT	5	526	This is a balcony high in the tower.  A great wind blows up from outside and swirls inside the room.  A great tornado seems to in the room, and moving towards you with a roaring that deafens the ears.	200
+DT51TEXT.DAT	6	527	An Ice Demon has been placed here to guard the door.  The passageway has become quite cold and the demon gives off a deeper chill of its own.	141
+DT51TEXT.DAT	7	528	This room is very cold but the sight of the gigantic creature of deep blue ice within chills you to the very bone. .  .	119
+DT51TEXT.DAT	8	529	You stand at the entrance to a huge chamber.  It appears empty but you sense a powerful force approaching you.	110
+DT51TEXT.DAT	9	530	A great dragon guards this room.  This sight of its huge claws and leathery wings inspires terror.	98
+DT51TEXT.DAT	10	531	You are assailed by the tower shaking roar of a tremendous dragon as it pounces upon you.	89
+DT51TEXT.DAT	11	532	There are four many-faceted gems implanted in the wall here. One each of blue, green, violet, and red.	102
+DT51TEXT.DAT	12	533	With a sweeping motion of her huge wings, Siriadne summons two ancient dragons from the open sky.  'You have come this far only to die.  I have lived for a thousand years and shall live for a thousand more...	208
+DT51TEXT.DAT	13	544	You feel as if you are becoming insubstantial. Like a ghost you begin to float upwards through the ceiling above you and into a dark corridor. You feel solid once again and realize there is no way of getting back down.	218
+DT51TEXT.DAT	14	545	Didn't they teach you the song in Edrin's Keep? Go there and learn it!	71
+DT6TEXT.DAT	0	601	You are in a dark misty passage hidden in the mountains.	56
+DT6TEXT.DAT	1	602	You are in a large dark room.  To the south are three shadowy figures.  You can feel them watching your every move, but can not see their faces.  You feel a creeping chill...	174
+DT6TEXT.DAT	2	603	A huge shadowy figure and a glint of steel bars your way.  A distant voice whispers, 'We have been watching you....  We have information you want....      Bring us the head of the swamp king and we can talk....'	211
+DT6TEXT.DAT	3	604	A shadowy figure whispers, 'The first word of the spell to destroy the gate of Ralith is 'DAZA'.	96
+DT6TEXT.DAT	4	605	A shadowy figure whispers, 'Great wizards know of powerful spells in a mystic language that have been lost in the fabric of time.  The spell guarding the gate to Ralith is one of these.'	186
+DT6TEXT.DAT	5	606	A shadowy figure whispers, 'The only way to get to the island in the lake of fire is to teleport there.  Only the old man in the cave can do this.  He is a friend of the gate keeper.'	183
+DT7TEXT.DAT	0	701	The Tomb of Murthin (The Mad).  Fancy inscription reads, 'This tree represents the life that you gave us'.  Graffiti reads, 'Nothing without a heart can live.  This tree is the only thing in this tomb that was ever truly alive.'	228
+DT7TEXT.DAT	1	702	The Tomb of Lothian.  Plaque reads, 'Your life was a maze of reality and illusion'.  Second plaque reads, 'May you be lost forever...'	134
+DT7TEXT.DAT	2	703	The Tomb of Cercion.  Inscription reads, 'for a man who loved the sea and died by it'.  Scratchings read, 'That makes us proud we drowned him in it.'	149
+DT7TEXT.DAT	3	704	The Tomb of Vandiguard.  Inscription reads, 'May these eternal fires always burn in your memory'.  Second scrawled inscription reads, 'And may you burn in hell for as long. . .'	177
+DT7TEXT.DAT	4	705	'Why have you returned?  Take heart, my friends.  You can complete your quest without any further aid from me.'	111
+DT7TEXT.DAT	5	706	'I hope you are prepared to name the clan, lest you suffer needlessly!'	71
+DT7TEXT.DAT	6	707	The tomb of Eldron Greyhair.  The spirit of Eldron says, 'Search the tombs of the Moonglow clan and return here when you know their names.'	139
+DT7TEXT.DAT	7	708	Eldron proclaims, 'You have done well. I have been watching you and your quest to kill Siriadne is noble indeed. To aid you I give you this ring. With it your enemies will be struck by a Tempest!'	196
+DT7TEXT.DAT	8	709	Eldron says, 'You must try again, for without passing this test, I can not assist you any more.'	97

@@ -1,0 +1,75 @@
+kind	town	original	orig_bytes	translation	trans_bytes	fits	note
+town	Green Hamlet	Green Hamlet	12	翠綠村	6	Y	
+town	Precious Plains	Precious Plains	15	珍寶平原	8	Y	
+town	Gleon	Gleon	5	格里昂	6	Y	音譯
+town	Arcania	Arcania	7	阿卡尼亞	8	Y	音譯
+town	Woodhaven	Woodhaven	9	林安鎮	6	Y	
+town	Terynor	Terynor	7	特里諾	6	Y	音譯
+town	Myrquacid	Myrquacid	9	密夸希德	8	Y	音譯,造詞地名
+town	Athe	Athe	4	阿瑟	4	Y	音譯
+town	Spider Bay	Spider Bay	10	蜘蛛灣	6	Y	
+town	Janthrin	Janthrin	8	詹斯林	6	Y	音譯
+town	Atlantis	Atlantis	8	亞特蘭提斯	10	Y	通行譯名
+town	Oceana	Oceana	6	歐西安娜	8	Y	音譯
+town	Triton	Triton	6	崔頓	4	Y	通行譯名
+shop	Green Hamlet	The Iron Blade	14	鐵刃劍舖	8	Y	
+shop	Green Hamlet	Rolo's Resthouse	16	羅洛旅店	8	Y	人名音譯
+shop	Green Hamlet	Hamlet Hospital	15	村莊醫館	8	Y	
+shop	Green Hamlet	Kor's Smithy	12	柯爾鐵匠鋪	10	Y	人名音譯
+shop	Green Hamlet	Winsome Weapons	15	精選兵器	8	Y	Winsome(迷人)意譯為精選,保留頭韻感不易兼顧
+shop	Green Hamlet	The Purple Rat	14	紫鼠酒館	8	Y	俏皮酒館名,直譯保留調性
+shop	Green Hamlet	General Goods	13	雜貨店	6	Y	
+shop	Precious Plains	Lucky Blades	12	幸運劍舖	8	Y	
+shop	Precious Plains	The Haystack	12	乾草堆	6	Y	
+shop	Precious Plains	The Grainery	12	穀倉	4	Y	
+shop	Precious Plains	The Tinder Box	14	火絨盒	6	Y	
+shop	Gleon	BladeMaster	11	劍術大師	8	Y	
+shop	Gleon	Flashing Steel	14	寒光鋼刃	8	Y	
+shop	Gleon	Hero's Pub	10	勇者酒館	8	Y	Hero 依 glossary 譯勇者
+shop	Gleon	Corbin's	8	柯賓商店	8	Y	人名音譯,原文未指明業種,補'商店'
+shop	Gleon	Mithril Light	13	秘銀之光	8	Y	
+shop	Arcania	Potion Shoppe	13	藥劑坊	6	Y	
+shop	Arcania	Zor's Healing	13	佐爾醫館	8	Y	人名音譯
+shop	Arcania	Cloud Nine	10	九霄雲外	8	Y	雙關(得意/飄飄然)改用中文對應成語,保留調性
+shop	Arcania	Foaming Brew	12	泡沫佳釀	8	Y	
+shop	Arcania	Magic Shoppe	12	魔法坊	6	Y	
+shop	Arcania	Best Healing	12	極品醫館	8	Y	
+shop	Woodhaven	Dopey Dragon	12	呆萌飛龍	8	Y	俏皮酒館名,保留調性
+shop	Woodhaven	Sun & Moon	10	日月閣	6	Y	
+shop	Woodhaven	Church of Ra	12	拉神殿	6	Y	埃及太陽神 Ra 通行譯名'拉'
+shop	Woodhaven	Three Rings	11	三環閣	6	Y	
+shop	Woodhaven	Flickering Light	16	搖曳燭光	8	Y	
+shop	Terynor	Mystic Sky	10	神秘蒼穹	8	Y	
+shop	Terynor	College of Magic	16	魔法學院	8	Y	
+shop	Terynor	Ares' Elixer	12	戰神藥劑	8	Y	Ares(希臘戰神)取意譯'戰神'而非音譯,店名念起來更自然
+shop	Terynor	Enchanted Steel	15	附魔精鋼	8	Y	
+shop	Terynor	Xeor	4	賽歐	4	Y	音譯,造詞專有名詞
+shop	Terynor	Soft Slumber	12	安眠客棧	8	Y	
+shop	Terynor	Loven's Torches	15	洛文火把行	10	Y	人名音譯
+shop	Myrquacid	A Mystic Shield	15	秘法之盾	8	Y	
+shop	Myrquacid	Jorlor's Healers	16	卓洛醫館	8	Y	人名音譯
+shop	Myrquacid	Volir's Academy	15	沃利爾學院	10	Y	人名音譯
+shop	Myrquacid	The Rising Star	15	新星閣	6	Y	業種不明,取字面意譯
+shop	Myrquacid	The Beaker	10	燒杯屋	6	Y	
+shop	Myrquacid	Adventurer's Inn	16	冒險者旅舍	10	Y	
+shop	Athe	The Sentinel	12	哨兵殿	6	Y	業種不明,取字面意譯
+shop	Athe	The Blacksmith	14	鐵匠鋪	6	Y	
+shop	Athe	The Mermaid	11	美人魚	6	Y	
+shop	Athe	Healthy Herbs	13	養生藥草	8	Y	
+shop	Spider Bay	Erlock's Sail	13	厄洛克帆行	10	Y	人名音譯
+shop	Spider Bay	Healers of Jor	14	喬爾醫館	8	Y	地名/人名 Jor 音譯
+shop	Spider Bay	Salty's Slumber	15	鹹水客棧	8	Y	Salty 意譯呼應海灣情境,未逐字音譯
+shop	Spider Bay	Balik's Arena	13	巴利克鬥技場	12	Y	人名音譯,與下一列同一人物保持一致
+shop	Spider Bay	Balik's Blades	14	巴利克劍舖	10	Y	人名音譯,與上一列同一人物保持一致
+shop	Janthrin	The Grindstone	14	磨刀石	6	Y	
+shop	Janthrin	Vandiguard's	12	范迪加德商行	12	Y	人名音譯,原文未指明業種,補'商行'
+shop	Janthrin	The Pheonix	11	鳳凰閣	6	Y	原文 Pheonix 為 Phoenix 的常見拼誤,譯名不受影響
+shop	Janthrin	Prism	5	稜鏡	4	Y	
+shop	Atlantis	Healers	7	醫療所	6	Y	
+shop	Atlantis	Enchanted Armor	15	附魔鎧甲	8	Y	
+shop	Atlantis	Red's Tavern	12	瑞德酒館	8	Y	人名音譯
+shop	Oceana	Seaside Inn	11	海濱客棧	8	Y	
+shop	Oceana	RingMaker	9	造戒坊	6	Y	
+shop	Oceana	Odysseus Pub	12	奧德修斯酒館	12	Y	Odysseus 通行人名譯法,與'奧德賽'(Odyssey 書名)區分
+shop	Triton	Wizard's Lab	12	法師實驗室	10	Y	Wizard 依 glossary 譯法師
+shop	Triton	Wizard's Library	16	法師圖書館	10	Y	Wizard 依 glossary 譯法師

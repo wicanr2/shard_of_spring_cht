@@ -1,0 +1,115 @@
+row	field	original	byte_len
+0	1	Dagger	6
+0	2	knife	5
+1	1	Small axe	9
+1	2	small axe	9
+2	1	Short sword	11
+2	2	small sword	11
+3	1	Mace	4
+3	2	spiked club	11
+4	1	Morning star	12
+4	2	ball & chain	12
+5	1	Broad sword	11
+5	2	sword	5
+6	1	Battle axe	10
+6	2	huge axe	8
+7	1	2-hand sword	12
+7	2	huge sword	10
+8	1	Mace +1	7
+8	2	spiked club	11
+9	1	Sword +1	8
+9	2	huge sword	10
+10	1	Axe +1	6
+10	2	huge axe	8
+11	1	Sword +2	8
+11	2	huge sword	10
+12	1	Cloth	5
+12	2	robes	5
+13	1	Leather	7
+13	2	leather	7
+14	1	Chain	5
+14	2	chain mail	10
+15	1	Scale	5
+15	2	scale mail	10
+16	1	Plate	5
+16	2	suit/armor	10
+17	1	Chain +1	8
+17	2	chain mail	10
+18	1	Scale +1	8
+18	2	scale mail	10
+19	1	Plate +1	8
+19	2	suit/armor	10
+20	1	Plate +2	8
+20	2	suit/armor	10
+21	1	Heal potion	11
+21	2	blue vial	9
+22	1	Speed potion	12
+22	2	violet vial	11
+23	1	Psn antidote	12
+23	2	green vial	10
+24	1	Str potion	10
+24	2	red vial	8
+25	1	Pyrotechnik	11
+25	2	red vial	8
+26	1	Liquid armor	12
+26	2	metal vial	10
+27	1	Shield ring	11
+27	2	gold ring	9
+28	1	Frost ring	10
+28	2	icy ring	8
+29	1	Storm ring	10
+29	2	dark ring	9
+30	1	Flight ring	11
+30	2	light ring	10
+31	1	Chain Ring	10
+31	2	iron ring	9
+32	1	Iron staff	10
+32	2	metal staff	11
+33	1	Staff of ice	12
+33	2	big icicle	10
+34	1	Crystl staff	12
+34	2	glass stick	11
+35	1	Fiery staff	11
+35	2	column/fire	11
+36	1	Staff/soul	10
+36	2	dim staff	9
+37	1	Wand of light	13
+37	2	light wand	10
+38	1	Rod of might	12
+38	2	heavy rod	9
+39	1	Rod/freedom	11
+39	2	light rod	9
+40	1	Blue rod	8
+40	2	colored rod	11
+41	1	Red rod	7
+41	2	colored rod	11
+42	1	Platinum rod	12
+42	2	colored rod	11
+43	1	Holy symbol	11
+43	2	talisman	8
+44	1	Elfin gem	9
+44	2	glowing rock	12
+45	1	Eye of fear	11
+45	2	glass marble	12
+46	1	Unholy symb.	12
+46	2	talisman	8
+47	1	Torch	5
+47	2	wooden stick	12
+48	1	Oil lantern	11
+48	2	lantern	7
+49	1	Key	3
+49	2	iron key	8
+50	1	Copper key	10
+50	2	copper key	10
+51	1	Silver key	10
+51	2	silver key	10
+52	1	Gold key	8
+52	2	gold key	8
+53	1	Royal seal	10
+53	2	iron coin	9
+54	1	King's head	11
+54	2	bloody head	11
+55	1	F-field key	11
+55	2	crystal bar	11
+56	1	Teleporter	10
+56	2	paper dove	10

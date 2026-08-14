@@ -1,0 +1,20 @@
+id	original	translation	note
+301	None can pass this point without the Royal Seal.	沒有皇家印璽，任何人都無法通過此處。	Royal Seal 見 208 note。
+302	You only see a storeroom full of empty boxes, but you hear scratching noises...	你只看到一間堆滿空箱子的儲藏室，但你聽見了抓撓聲……	
+303	Someone's sleeping quarters.	某人的臥房。	
+304	Corner of a small room.	一間小房間的角落。	
+305	Two men have killed each other here.  One has a battle axe in his skull and the other has a knife in his chest.	兩名男子在此互相殘殺致死。一人的戰斧插在頭骨上，另一人的胸口插著一把匕首。	
+306	A demonic altar has been built here.	這裡建有一座邪魔祭壇。	
+307	Beyond a door you hear someone singing, 'Blue is the sky; Blue is the sea.  Red is for blood; and Green is for trees'.	門後傳來歌聲：「藍是天空；藍是海洋。紅是鮮血；綠是林木。」	
+308	Two fighters are drinking here and eating cooked rabbit.	兩名戰士在此飲酒，吃著烤兔肉。	fighter(小寫、泛稱)依 glossary 硬規則 1 的推論譯為「戰士」，見「建議新增譯名」。
+309	Before you is a large door made of carved ebony.  On either side of the door are cobras coiled and ready to attack.	你面前是一扇黑檀木雕刻的巨大房門，門的兩側各盤踞著一條蓄勢待攻的眼鏡蛇。	
+310	The large oaken door is locked shut.	這扇厚重的橡木門被鎖死了。	
+311	The door is locked.	這扇門上了鎖。	
+312	A misty crypt.  A number of ancient tomb tones cover the moist earth.  A glint of silver catches your eye from the ground...	一座迷霧籠罩的墓穴，古老的墓碑散落在潮濕的地面上。地上有什麼東西閃著銀光，吸引了你的目光……	
+313	A wizard's laboratory.  The walls are scuffed with a multitude of burn marks and bottle and glass tubing are scattered about the room.  A blue liquid is bubbling in a beaker over a flame.	一間巫師的實驗室。牆上滿是焦黑的燒灼痕跡，四處散落著瓶子與玻璃管。一只燒杯裡的藍色液體正在火焰上冒泡。	
+314	Empty room.	空房間。	
+315	The dining room of the keep.  A few fighters were eating a foul smelling stew when you barged in.	這座堡壘的餐廳。你闖入時，幾名戰士正吃著一鍋氣味難聞的燉肉。	fighter 譯法同 308。
+316	This is the kitchen.  The cook is cutting up some old meat to throw in a pot when you entered.	這裡是廚房。你進來時，廚師正切著一些不新鮮的肉，準備丟進鍋裡。	cook 為泛稱職業描述，譯為「廚師」；MONSTERS.DAT 另有同名角色 Cook，見「建議新增譯名」。
+317	A huge room that is the home of a giant.  Bones and rotting flesh are everywhere.	一間巨大的房間，是一隻巨人的巢穴。骨頭與腐肉散落四處。	
+318	The door is kept closed by a golden lock.	這扇門被一把金色的鎖鎖住了。	
+319	A massive chamber elegantly furnished.  Sitting around a large marble table are three men who seem to be discussing something.  When you enter they grab their weapons and run to attack.	一間裝潢華麗的巨大廳堂。三名男子圍坐在一張大理石長桌旁，似乎在商討什麼事。你一進門，他們便抄起武器衝上前來。	

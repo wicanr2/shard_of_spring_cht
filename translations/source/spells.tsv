@@ -1,0 +1,69 @@
+row	field	original	byte_len
+0	1	COLUMN OF FIRE	14
+0	6	Burnt for	9
+1	1	FLAME STRIKE	12
+1	6	Struck down by   fire	21
+2	1	FIRE STORM	10
+2	6	Burnt for	9
+3	1	SWORD	5
+3	6	Sliced for	10
+4	1	CHAINS	6
+4	6	Bound in chains	15
+5	1	DEATH BLADE	11
+5	6	Hacked to pieces	16
+6	1	STRENGTH	8
+6	6	IS Strengthened	15
+7	1	TEMPEST	7
+7	6	Struck by storm for	19
+8	1	STILL AIR	9
+8	6	Frozen in space	15
+9	1	WINGS OF VICTORY	16
+9	6	Gains courage	13
+10	1	WINGS	5
+10	6	Flys with speed	15
+11	1	HAIL STORM	10
+11	6	Hailed on for	13
+12	1	CHILL	5
+12	6	Chilled	7
+13	1	SLOW	4
+13	6	Slowed down	11
+14	1	FREEZE	6
+14	6	Frozen in ice	13
+15	1	SPIRIT WRACK	12
+15	6	Is tormented...	15
+16	1	WEAKEN	6
+16	6	Becomes weaker	14
+17	1	CLUMSINESS	10
+17	6	Becomes clumsy	14
+18	1	MELT	4
+18	6	Is melted from   the ice	24
+19	1	BREAK BONDS	11
+19	6	Has bonds broken	16
+20	1	FREEDOM	7
+20	6	Is freed	8
+21	1	WIND WALK	9
+21	6	The party is      displaced	27
+22	1	BREATH OF LIFE	14
+22	6	Is healed for	13
+23	1	HEAL	4
+23	6	Is healed for	13
+24	1	RESURRECT	9
+24	6	Is revived!	11
+25	1	CURE POISON	11
+25	6	Is unpoisoned	13
+26	1	TRANSFERENCE	12
+26	6	Gains power	11
+27	1	ARMOR	5
+27	6	Clothed in armor	16
+28	1	SANCTUARY	9
+28	6	Is Enveloped in an aura of peace	32
+29	1	ICE SHIELD	10
+29	6	Protected by    a wall of ice	29
+30	1	FLAME SHIELD	12
+30	6	Protected by    flames	22
+31	1	MAGIC TORCH	11
+31	6	Magic flames     dance before you	33
+32	1	CRYSTALIGHT	11
+32	6	Icy Blue light    surrounds you	31
+33	1	ET CETERA	9
+33	6	0	1

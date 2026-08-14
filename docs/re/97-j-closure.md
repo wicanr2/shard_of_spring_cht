@@ -1,4 +1,7 @@
-# 97 — 子系統 J(戰鬥規則)= RE-DONE
+# 97 —(已撤回)子系統 J(戰鬥規則)= RE-DONE
+
+> ⛔ **RE-DONE 宣告撤回**:逃跑存在([`102`](102-flee-exists-retracting-j.md))。
+> §1(`D` = Dispell)與 §2(`sub_1783E`)仍然成立;§3 的「沒有逃跑」作廢。
 
 日期:2026-08-14
 接續:[`96-facing-and-action-points.md`](96-facing-and-action-points.md)

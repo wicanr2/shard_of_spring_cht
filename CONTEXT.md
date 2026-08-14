@@ -209,6 +209,7 @@
 | [`99-parity-separates-the-two-records.md`](docs/re/99-parity-separates-the-two-records.md) | 奇偶性分開兩個記錄 | `CHARS` 全偶、`GROUPS` 全奇,25 筆零例外 |
 | [`100-chars-attributes-closed.md`](docs/re/100-chars-attributes-closed.md) | `CHARS.DAT` 欄位表 | 位移 12/20/22 解出;整數欄 14/15 有語意 |
 | [`101-groups-record-status.md`](docs/re/101-groups-record-status.md) | `GROUPS.DAT` 現況 | 「六個連續 word = 隊伍成員」被否證;剩 10 欄只能從程式碼追 |
+| [`102-flee-exists-retracting-j.md`](docs/re/102-flee-exists-retracting-j.md) | **撤回 J = RE-DONE** | `'PARTY RAN!'`;正規表示式有 `run` 沒有 `ran` |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。
@@ -362,6 +363,7 @@ linear   = 0x10180 + 段內位移
 | 「兩個記錄的位移分不開,只能靠『這支模組開的是哪個檔』」(`docs/re/89` §3)| **數字本身就分得開**:`CHARS.DAT` 的整數欄位全在偶數位移、`GROUPS.DAT` 全在奇數位移(25 筆零例外);成因是記錄前綴長度的奇偶(`99`)| **說「只能靠上下文」之前,先看資料本身有沒有結構性特徵** |
 | 「`TOWN` 讀到位移 89 → `CHARS.DAT` 的尾端有被用到」(`docs/re/89` §5)| 89 是奇數 → 屬於 `GROUPS.DAT`(記錄長 90,89–90 是最後一欄)| **在還沒能把兩個資料源分開之前,不要用聯集去推任何一個的結構** |
 | 「`ds:3532h`–`ds:353Ch` 六個連續 word = 隊伍六個成員的角色編號」(`docs/re/101` 的工作假設)| **否證**:掃 `cmp` 立即數,它們分別被比 `10` / `21` / `34` / 七個不同值 —— 是六個不相干的純量 | **「DS 裡連續」不等於「同一個陣列」** —— BASIC 純量照宣告順序配置,相鄰是弱訊號;要看它們被當成什麼用 |
+| 「這個遊戲沒有逃跑指令」+「J = RE-DONE」(`docs/re/95`、`97`)| **錯**:`CMBT` 有 `'PARTY RAN!'`(`0x122A9`),逃跑時把 `GROUPS.DAT` 位移 85 清為 0。根因:搜尋式有 `run` 沒有 `ran`;而「只有兩個轉交叢集」被誤讀成「只有兩個出口」——**一個叢集裡有兩個出口**(`102`)| **正對照要對「這一次的查詢」做,不是對「這個方法」做** —— 該拿一個已知存在的同類目標(`'PARTY DIES!'`)去測關鍵字,當場就會暴露它太窄 |
 | 差點把玩家職業 `'1'` 寫成「戰士 / Fighter」(`docs/re/87` 起草時)| 遊戲自己的用詞是 **`Hero`**;而 `Fighter` 在本作是**怪物名**(`Lvl 1 Fighter`)| **專有名詞不從語意猜,只從遊戲自己的字串取** —— 中文化的譯名一旦定錯,整份對照表要重來 |
 
 ## 7. 每一輪都要做

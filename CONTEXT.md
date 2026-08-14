@@ -200,6 +200,7 @@
 | [`90-monster-column-9-is-a-tier.md`](docs/re/90-monster-column-9-is-a-tier.md) | 怪物欄9 = 難度階級 | 三組碰撞否證「等級」;判別點是單射性不是大小 |
 | [`91-e-closure.md`](docs/re/91-e-closure.md) | **子系統 E = RE-DONE** | 物品欄6 雙重身分;法術負值只出現在四個類別 |
 | [`92-attribute-15-16.md`](docs/re/92-attribute-15-16.md) | 屬性 15 = 目標編號、16 = Hero 旗標 | 一個屬性存的是另一個單位的編號,那就是目標 |
+| [`93-initiative.md`](docs/re/93-initiative.md) | **先攻** | 兩層迴圈依屬性 2(速度)排 `ds:6A7Ah` 順序表;補上 `73` 欄1 的缺口 |
 
 工具:`tools/ida.sh`(headless 包裝)、`tools/ida/*.py`(匯出腳本)。
 原始 JSON 在 `workplace/ida/out/`(gitignore,可用 `docs/re/01` §6 的指令重跑)。

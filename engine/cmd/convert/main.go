@@ -23,15 +23,16 @@ import (
 func main() {
 	in := flag.String("in", "game/sharspri", "原版資料夾(唯讀)")
 	out := flag.String("out", "assets", "輸出資料夾")
+	trans := flag.String("translations", "/translations", "譯文資料夾(docs/spec/10)")
 	flag.Parse()
 
-	if err := run(*in, *out); err != nil {
+	if err := run(*in, *out, *trans); err != nil {
 		fmt.Fprintln(os.Stderr, "轉換失敗:", err)
 		os.Exit(1)
 	}
 }
 
-func run(in, out string) error {
+func run(in, out, transDir string) error {
 	for _, d := range []string{
 		filepath.Join(out, "data"),
 		filepath.Join(out, "gfx", "tiles"),
@@ -54,14 +55,28 @@ func run(in, out string) error {
 
 	// --- 數值表 ---------------------------------------------------------
 	monsters, err := original.ParseMonsters(mustRead(in, "MONSTERS.DAT"))
+	// 譯文(docs/spec/10):在**轉檔期**併進資料,執行期就沒有查表分支。
+	// ⚠ 缺漏時保留原文,不要變成空字串。
+	lang := loadLang(transDir)
+	for i := range monsters {
+		monsters[i].Name = lang.monsters.Get(i, "name", monsters[i].Name)
+	}
 	if err := step("monsters", len(monsters), err); err != nil {
 		return err
 	}
 	spells, err := original.ParseSpells(mustRead(in, "SPELLS.DAT"))
+	for i := range spells {
+		spells[i].Name = lang.spells.Get(i, "1", spells[i].Name)
+		spells[i].HitMsg = lang.spells.Get(i, "6", spells[i].HitMsg)
+	}
 	if err := step("spells", len(spells), err); err != nil {
 		return err
 	}
 	items, err := original.ParseItems(mustRead(in, "ITEMS.DAT"))
+	for i := range items {
+		items[i].Name = lang.items.Get(i, "1", items[i].Name)
+		items[i].Alias = lang.items.Get(i, "2", items[i].Alias)
+	}
 	if err := step("items", len(items), err); err != nil {
 		return err
 	}
@@ -237,6 +252,14 @@ func run(in, out string) error {
 			}
 			nEvent++
 			txt := original.ParseDungeonText(mustRead(in, fmt.Sprintf("DT%dTEXT.DAT", e.TextFile)))
+			// 地城敘述的譯文以 id 對應
+			if zh := lang.dungeon[e.TextFile]; zh != nil {
+				for id, t := range zh {
+					if _, ok := txt[id]; ok {
+						txt[id] = t
+					}
+				}
+			}
 			if err := writeJSON(filepath.Join(out, "data",
 				fmt.Sprintf("dtext%d.json", e.TextFile)), txt); err != nil {
 				return err
@@ -342,4 +365,35 @@ func writePNG(path string, img image.Image) error {
 	}
 	defer f.Close()
 	return png.Encode(f, img)
+}
+
+
+// langTables 是所有譯文表。docs/spec/10 §2。
+type langTables struct {
+	monsters, spells, items original.Lang
+	dungeon                 map[int]map[int]string // DT 檔號 → id → 譯文
+}
+
+// loadLang 讀 translations/ 底下的 TSV。
+//
+// ⚠ **讀不到就回空表,不是錯誤** —— 譯文缺漏時 Lang.Get 會保留原文,
+// 所以沒有譯文的環境仍然跑得起來(英文版)。
+func loadLang(dir string) langTables {
+	lt := langTables{dungeon: map[int]map[int]string{}}
+	read := func(rel string) []byte {
+		b, err := os.ReadFile(filepath.Join(dir, rel))
+		if err != nil {
+			return nil
+		}
+		return b
+	}
+	lt.monsters = original.ParseLangTSV(read("names/monsters.tsv"))
+	lt.spells = original.ParseLangTSV(read("names/spells.tsv"))
+	lt.items = original.ParseLangTSV(read("names/items.tsv"))
+	for _, n := range []int{0, 1, 2, 3, 4, 5, 6, 7, 51} {
+		if b := read(fmt.Sprintf("dungeon-text/DT%dTEXT.tsv", n)); b != nil {
+			lt.dungeon[n] = original.ParseDungeonTextTSV(b)
+		}
+	}
+	return lt
 }

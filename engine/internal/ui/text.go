@@ -75,6 +75,14 @@ const (
 	ColName   = 5.0  // 名稱:左對齊
 	ColHP     = 24.0 // HP:**右**對齊到這一欄
 	ColSP     = 30.0 // SP:右對齊
+
+	// CombatNameCols 是戰鬥單位列的名稱欄寬(docs/spec/10 §4)。
+	//
+	// ⚠ 24 而不是 12:九個頭目的譯名帶 `中文(English)` 加註
+	// (glossary 硬規則 4),最長的 `希瑞雅妮！(Siriadne !)` 是 22 欄。
+	// 主視野有 60 欄,**該放寬的是預算不是譯名** ——
+	// 原版的 16 bytes 限制來自它要寫回 MONSTERS.DAT,remake 不寫回。
+	CombatNameCols = 24
 )
 
 // PanelSlack 回傳「名稱欄尾」與「HP 欄頭」之間還剩幾欄;負值表示重疊。
@@ -92,6 +100,10 @@ func PanelSlack(name string, hpDigits int) int {
 
 // 行首禁則:這些字元不可以出現在一行的開頭。
 const noLineStart = "。，、；：？！」』）〕】》〉…—～%‰℃,.;:?!)]}"
+
+// HangTolerance 是懸掛標點允許超出的欄數(一個全形字寬)。
+// 超過就改成把上一行最後一個字拉下來(見 Wrap)。
+const HangTolerance = 2
 
 // 行尾禁則:這些字元不可以出現在一行的結尾。
 const noLineEnd = "「『（〔【《〈$#([{"
@@ -139,10 +151,24 @@ func Wrap(s string, cols int) []string {
 			}
 			flush()
 		}
-		// 行首禁則:標點不可以起頭 —— 硬塞進上一行(超寬一欄好過孤立標點)
+		// 行首禁則:標點不可以起頭。做法是**懸掛**到上一行 ——
+		// 但只掛得下一個全形寬(HangTolerance)。
+		//
+		// ⚠ 連續的收尾標點(例如 `！」`)會一路掛過去,把上一行撐爆。
+		// 掛不下時改用另一種避頭尾:把上一行的**最後一個字拉下來**,
+		// 讓標點跟著它到新的一行。
 		if w == 0 && len(out) > 0 && len(tok) == 1 && containsRune(noLineStart, tok[0]) {
-			out[len(out)-1] += string(tok)
-			continue
+			prev := out[len(out)-1]
+			if Cols(prev)+RuneCols(tok[0]) <= cols+HangTolerance {
+				out[len(out)-1] = prev + string(tok)
+				continue
+			}
+			pr := []rune(prev)
+			if len(pr) > 1 {
+				out[len(out)-1] = string(pr[:len(pr)-1])
+				line = append(line, pr[len(pr)-1])
+				w += RuneCols(pr[len(pr)-1])
+			}
 		}
 		line = append(line, tok...)
 		w += tw

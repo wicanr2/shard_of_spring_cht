@@ -132,7 +132,7 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 
 func unitLine(u combat.Unit) string {
 	if !u.Alive() {
-		return ui.PadTo(u.Name, 12) + "  倒下"
+		return ui.PadTo(u.Name, ui.CombatNameCols) + "  倒下"
 	}
-	return fmt.Sprintf("%s  HP %3d  速 %2d", ui.PadTo(u.Name, 12), u.HP, u.Speed)
+	return fmt.Sprintf("%s  HP %3d  速 %2d", ui.PadTo(u.Name, ui.CombatNameCols), u.HP, u.Speed)
 }

@@ -26,7 +26,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 12	1	Cloth	5	布衣	4	Y	
 12	2	robes	5	長袍	4	Y	
 13	1	Leather	7	皮甲	4	Y	
-13	2	leather	7	皮革	4	Y	
+13	2	leather	7	皮甲	4	Y	
 14	1	Chain	5	鎖甲	4	Y	
 14	2	chain mail	10	鎖子甲	6	Y	
 15	1	Scale	5	鱗甲	4	Y	
@@ -96,7 +96,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 47	1	Torch	5	火把	4	Y	
 47	2	wooden stick	12	木棍	4	Y	
 48	1	Oil lantern	11	油燈	4	Y	
-48	2	lantern	7	燈籠	4	Y	
+48	2	lantern	7	油燈	4	Y	
 49	1	Key	3	鑰匙	4	N	超出原文 1 bytes
 49	2	iron key	8	鐵鑰匙	6	Y	
 50	1	Copper key	10	銅鑰匙	6	Y	

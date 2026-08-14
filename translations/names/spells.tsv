@@ -1,69 +1,69 @@
 row	field	original	orig_bytes	translation	trans_bytes	fits	note
-0	1	COLUMN OF FIRE	14	火焰之柱	8	Y	
+0	1	COLUMN OF FIRE	14	火柱	4	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「火焰之柱」已汰換
 0	6	Burnt for	9	灼燒造成	8	Y	
-1	1	FLAME STRIKE	12	烈焰打擊	8	Y	
+1	1	FLAME STRIKE	12	烈焰猛擊術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「烈焰打擊」已汰換
 1	6	Struck down by   fire	21	被烈焰擊倒，造成	16	Y	
-2	1	FIRE STORM	10	火焰風暴	8	Y	
+2	1	FIRE STORM	10	狂焰暴風術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「火焰風暴」已汰換
 2	6	Burnt for	9	灼燒造成	8	Y	
-3	1	SWORD	5	劍刃術	6	N	超出原文 1 bytes
+3	1	SWORD	5	劍術	4	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「劍刃術」已汰換
 3	6	Sliced for	10	劈砍造成	8	Y	
-4	1	CHAINS	6	鎖鏈術	6	Y	
+4	1	CHAINS	6	鐵鍊術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「鎖鏈術」已汰換
 4	6	Bound in chains	15	被鎖鏈束縛	10	Y	對應狀態表「束縛」,見 glossary
-5	1	DEATH BLADE	11	死亡之刃	8	Y	
+5	1	DEATH BLADE	11	死亡劍刃術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「死亡之刃」已汰換
 5	6	Hacked to pieces	16	被砍成碎片	10	Y	
-6	1	STRENGTH	8	力量術	6	Y	
+6	1	STRENGTH	8	強壯術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「力量術」已汰換
 6	6	IS Strengthened	15	力量增強	8	Y	
-7	1	TEMPEST	7	暴風術	6	Y	
+7	1	TEMPEST	7	暴風雨術	8	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「暴風術」已汰換
 7	6	Struck by storm for	19	遭風暴擊中，造成	16	Y	
-8	1	STILL AIR	9	凝滯氣場	8	Y	對應狀態表「凝滯」,見 glossary
+8	1	STILL AIR	9	空氣凝結術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「凝滯氣場」已汰換
 8	6	Frozen in space	15	被凝滯於空中	12	Y	
 9	1	WINGS OF VICTORY	16	勝利之翼	8	Y	
 9	6	Gains courage	13	獲得勇氣	8	Y	
-10	1	WINGS	5	疾風之翼	8	N	超出原文 3 bytes
+10	1	WINGS	5	魔翼術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「疾風之翼」已汰換
 10	6	Flys with speed	15	疾飛而起	8	Y	
-11	1	HAIL STORM	10	冰雹風暴	8	Y	
+11	1	HAIL STORM	10	冰雹暴風術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「冰雹風暴」已汰換
 11	6	Hailed on for	13	冰雹擊中，造成	14	N	超出原文 1 bytes
-12	1	CHILL	5	寒冷術	6	N	超出原文 1 bytes
+12	1	CHILL	5	寒風術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「寒冷術」已汰換
 12	6	Chilled	7	受寒	4	Y	
 13	1	SLOW	4	遲緩術	6	N	超出原文 2 bytes
 13	6	Slowed down	11	行動遲緩	8	Y	
 14	1	FREEZE	6	冰凍術	6	Y	
 14	6	Frozen in ice	13	被冰封凍結	10	Y	對應狀態表「冰封」,見 glossary
-15	1	SPIRIT WRACK	12	靈魂折磨	8	Y	
+15	1	SPIRIT WRACK	12	滅魂術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「靈魂折磨」已汰換
 15	6	Is tormented...	15	受盡折磨……	12	Y	
-16	1	WEAKEN	6	虛弱術	6	Y	
+16	1	WEAKEN	6	衰弱術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「虛弱術」已汰換
 16	6	Becomes weaker	14	變得虛弱	8	Y	
-17	1	CLUMSINESS	10	笨拙術	6	Y	
+17	1	CLUMSINESS	10	愚蠢術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「笨拙術」已汰換
 17	6	Becomes clumsy	14	變得笨拙	8	Y	
-18	1	MELT	4	融化術	6	N	超出原文 2 bytes
+18	1	MELT	4	溶解術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「融化術」已汰換
 18	6	Is melted from   the ice	24	從冰封中融化解除	16	Y	
-19	1	BREAK BONDS	11	解縛術	6	Y	
+19	1	BREAK BONDS	11	破鐐銬術	8	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「解縛術」已汰換
 19	6	Has bonds broken	16	束縛已解除	10	Y	
 20	1	FREEDOM	7	自由術	6	Y	
 20	6	Is freed	8	獲得自由	8	Y	
 21	1	WIND WALK	9	風行術	6	Y	
 21	6	The party is      displaced	27	全隊被瞬間移動	14	Y	
-22	1	BREATH OF LIFE	14	生命之息	8	Y	
+22	1	BREATH OF LIFE	14	生命之氣	8	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「生命之息」已汰換
 22	6	Is healed for	13	恢復	4	Y	
-23	1	HEAL	4	治療術	6	N	超出原文 2 bytes
+23	1	HEAL	4	醫療術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「治療術」已汰換
 23	6	Is healed for	13	恢復	4	Y	
 24	1	RESURRECT	9	復活術	6	Y	
 24	6	Is revived!	11	復活了！	8	Y	
 25	1	CURE POISON	11	解毒術	6	Y	
 25	6	Is unpoisoned	13	解除中毒	8	Y	
-26	1	TRANSFERENCE	12	轉移術	6	Y	
+26	1	TRANSFERENCE	12	移轉術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「轉移術」已汰換
 26	6	Gains power	11	獲得力量	8	Y	
 27	1	ARMOR	5	護甲術	6	N	超出原文 1 bytes
 27	6	Clothed in armor	16	被護甲包覆	10	Y	
-28	1	SANCTUARY	9	庇護術	6	Y	
+28	1	SANCTUARY	9	聖靈庇護術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「庇護術」已汰換
 28	6	Is Enveloped in an aura of peace	32	被祥和的靈光籠罩	16	Y	
 29	1	ICE SHIELD	10	冰盾術	6	Y	
 29	6	Protected by    a wall of ice	29	受冰牆保護	10	Y	
-30	1	FLAME SHIELD	12	火盾術	6	Y	
+30	1	FLAME SHIELD	12	火焰盾牌術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「火盾術」已汰換
 30	6	Protected by    flames	22	受烈焰保護	10	Y	
-31	1	MAGIC TORCH	11	魔法火炬	8	Y	
+31	1	MAGIC TORCH	11	魔火焰術	8	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「魔法火炬」已汰換
 31	6	Magic flames     dance before you	33	魔法火焰在眼前躍動	18	Y	
-32	1	CRYSTALIGHT	11	水晶之光	8	Y	
+32	1	CRYSTALIGHT	11	水晶燈術	8	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「水晶之光」已汰換
 32	6	Icy Blue light    surrounds you	31	冰藍色光芒環繞著你	18	Y	
 33	1	ET CETERA	9	等等	4	Y	哨兵列(ET CETERA),不是真正的法術,收進來但不譯作遊戲內文字
 33	6	0	1	0	1	Y	哨兵列數值欄位,原樣保留

@@ -25,7 +25,7 @@ shop	Precious Plains	The Grainery	12	穀倉	4	Y
 shop	Precious Plains	The Tinder Box	14	火絨盒	6	Y	
 shop	Gleon	BladeMaster	11	劍術大師	8	Y	
 shop	Gleon	Flashing Steel	14	寒光鋼刃	8	Y	
-shop	Gleon	Hero's Pub	10	勇者酒館	8	Y	Hero 依 glossary 譯勇者
+shop	Gleon	Hero's Pub	10	戰士酒館	8	Y	Hero/Warrior/Fighter 同一職業,精訊譯「戰士」(硬規則 1)
 shop	Gleon	Corbin's	8	柯賓商店	8	Y	人名音譯,原文未指明業種,補'商店'
 shop	Gleon	Mithril Light	13	秘銀之光	8	Y	
 shop	Arcania	Potion Shoppe	13	藥劑坊	6	Y	
@@ -62,7 +62,7 @@ shop	Spider Bay	Salty's Slumber	15	鹹水客棧	8	Y	Salty 意譯呼應海灣情�
 shop	Spider Bay	Balik's Arena	13	巴利克鬥技場	12	Y	人名音譯,與下一列同一人物保持一致
 shop	Spider Bay	Balik's Blades	14	巴利克劍舖	10	Y	人名音譯,與上一列同一人物保持一致
 shop	Janthrin	The Grindstone	14	磨刀石	6	Y	
-shop	Janthrin	Vandiguard's	12	范迪加德商行	12	Y	人名音譯,原文未指明業種,補'商行'
+shop	Janthrin	Vandiguard's	12	VANDIGUARD 商行	15	Y	人名保留英文(硬規則 4:該名在地城敘述與怪物表都出現);原文未指明業種,補「商行」
 shop	Janthrin	The Pheonix	11	鳳凰閣	6	Y	原文 Pheonix 為 Phoenix 的常見拼誤,譯名不受影響
 shop	Janthrin	Prism	5	稜鏡	4	Y	
 shop	Atlantis	Healers	7	醫療所	6	Y	

@@ -54,7 +54,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 52	prompt	Done	4	完成	4	Y	
 53	menu	Change	6	更改	4	Y	
 54	menu	Choose class	12	選擇職業:	9	Y	
-55	class	A) Warrior	10	A) 勇者	7	Y	對應 CHARS.DAT 職業 Hero,glossary 譯「勇者」,不用「戰士」
+55	class	A) Warrior	10	A) 戰士	7	Y	精訊 1987 官方譯名;原譯「A) 勇者」已汰換
 56	class	B) Wizard	9	B) 法師	7	Y	
 57	prompt	Enter:	6	輸入:	5	Y	
 58	prompt	# to choose	11	輸入編號選擇	12	N	超出原文 1 bytes
@@ -62,29 +62,29 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 60	prompt	SPACE for	9	按空白鍵	8	Y	原文跨 2 行(60–61):SPACE for next page
 61	prompt	next page	9	換頁	4	Y	
 62	prompt	ESC when	8	按 ESC 鍵	9	N	原文跨 2 行(62–63,63 有格式異常見下); 超出原文 1 bytes
-63	prompt	"""done."	6	完成。	6	Y	"原始檔案格式異常:原文為 `""done.`,開頭多一個未配對的雙引號(見 translations/source/README.md),譯文已略去異常引號"
+63	prompt	"done.	6	完成。	6	Y	原始檔案格式異常:原文為 `"done.`,開頭多一個未配對的雙引號(見 translations/source/README.md),譯文已略去異常引號
 64	stat	Skills (	8	技能（還剩 	11	N	原文跨 2 行(64–65)組成模板「Skills (N Left)」,譯文改為「技能（還剩 N 點）」語序,分成前後兩段; 超出原文 3 bytes
 65	stat	  Left)	7	 點）	5	Y	
 66	skill_hero	1)  Sword           (2)	23	1) 劍術 (2)	11	Y	
 67	skill_hero	2)  Axe             (2)	23	2) 斧術 (2)	11	Y	
-68	skill_hero	3)  Mace            (1)	23	3) 錘術 (1)	11	Y	
-69	skill_hero	4)  Karate          (2)	23	4) 徒手 (2)	11	Y	
+68	skill_hero	3)  Mace            (1)	23	3) 釘頭鎚 (1)	13	Y	精訊 1987 官方譯名;原譯「3) 錘術 (1)」已汰換
+69	skill_hero	4)  Karate          (2)	23	4) 空手道 (2)	13	Y	精訊 1987 官方譯名;原譯「4) 徒手 (2)」已汰換
 70	skill_hero	5)  Darkvision      (2)	23	5) 夜視 (2)	11	Y	
-71	skill_hero	6)  Tactics         (2)	23	6) 戰術 (2)	11	Y	
-72	skill_hero	7)  Armored skin    (4)	23	7) 硬皮 (4)	11	Y	
-73	skill_hero	8)  Berserking      (3)	23	8) 狂暴 (3)	11	Y	
-74	skill_hero	9)  Hunting         (2)	23	9) 狩獵 (2)	11	Y	
-75	skill_hero	10) Persuasion      (2)	23	10) 說服 (2)	12	Y	
-76	skill_wiz	1)  Fire runes      (5)	23	1) 火之符文 (5)	15	Y	
-77	skill_wiz	2)  Metal runes     (5)	23	2) 金之符文 (5)	15	Y	
-78	skill_wiz	3)  Wind runes      (5)	23	3) 風之符文 (5)	15	Y	
-79	skill_wiz	4)  Ice runes       (5)	23	4) 冰之符文 (5)	15	Y	
-80	skill_wiz	5)  Spirit runes    (5)	23	5) 靈之符文 (5)	15	Y	
-81	skill_wiz	6)  Weapon lore     (2)	23	6) 兵器學 (2)	13	Y	
-82	skill_wiz	7)  Potion lore     (2)	23	7) 藥劑學 (2)	13	Y	
-83	skill_wiz	8)  Item lore       (2)	23	8) 器物學 (2)	13	Y	
-84	skill_wiz	9)  Monster lore    (2)	23	9) 怪物學 (2)	13	Y	
-85	skill_wiz	10) Priesthood      (3)	23	10) 聖職 (3)	12	Y	
+71	skill_hero	6)  Tactics         (2)	23	6) 策略 (2)	11	Y	精訊 1987 官方譯名;原譯「6) 戰術 (2)」已汰換
+72	skill_hero	7)  Armored skin    (4)	23	7) 護甲 (4)	11	Y	精訊 1987 官方譯名;原譯「7) 硬皮 (4)」已汰換
+73	skill_hero	8)  Berserking      (3)	23	8) 技擊術 (3)	13	Y	精訊 1987 官方譯名;原譯「8) 狂暴 (3)」已汰換
+74	skill_hero	9)  Hunting         (2)	23	9) 打獵 (2)	11	Y	精訊 1987 官方譯名;原譯「9) 狩獵 (2)」已汰換
+75	skill_hero	10) Persuasion      (2)	23	10) 說服能力 (2)	16	Y	精訊 1987 官方譯名;原譯「10) 說服 (2)」已汰換
+76	skill_wiz	1)  Fire runes      (5)	23	1) 火誌 (5)	11	Y	精訊 1987 官方譯名;原譯「1) 火之符文 (5)」已汰換
+77	skill_wiz	2)  Metal runes     (5)	23	2) 金誌 (5)	11	Y	精訊 1987 官方譯名;原譯「2) 金之符文 (5)」已汰換
+78	skill_wiz	3)  Wind runes      (5)	23	3) 風誌 (5)	11	Y	精訊 1987 官方譯名;原譯「3) 風之符文 (5)」已汰換
+79	skill_wiz	4)  Ice runes       (5)	23	4) 冰誌 (5)	11	Y	精訊 1987 官方譯名;原譯「4) 冰之符文 (5)」已汰換
+80	skill_wiz	5)  Spirit runes    (5)	23	5) 精神之誌 (5)	15	Y	精訊 1987 官方譯名;原譯「5) 靈之符文 (5)」已汰換
+81	skill_wiz	6)  Weapon lore     (2)	23	6) 武器知識 (2)	15	Y	精訊 1987 官方譯名;原譯「6) 兵器學 (2)」已汰換
+82	skill_wiz	7)  Potion lore     (2)	23	7) 藥劑知識 (2)	15	Y	精訊 1987 官方譯名;原譯「7) 藥劑學 (2)」已汰換
+83	skill_wiz	8)  Item lore       (2)	23	8) 物品知識 (2)	15	Y	精訊 1987 官方譯名;原譯「8) 器物學 (2)」已汰換
+84	skill_wiz	9)  Monster lore    (2)	23	9) 怪物知識 (2)	15	Y	精訊 1987 官方譯名;原譯「9) 怪物學 (2)」已汰換
+85	skill_wiz	10) Priesthood      (3)	23	10) 降魔術 (3)	14	Y	精訊 1987 官方譯名;原譯「10) 聖職 (3)」已汰換
 86	prompt	Enter your	10	請輸入你的	10	Y	原文跨 3 行(86–88):Enter your character's name (10 char)
 87	prompt	character's	11	角色	4	Y	
 88	prompt	name (10 char)	14	名稱（限10字）	14	Y	
@@ -111,4 +111,4 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 109	prompt	disbanded.	10	已解散。	8	Y	
 110	prompt	Party number	12	隊伍編號	8	Y	原文跨 3 行(110–112):Party number to display information on
 111	prompt	to display	10	顯示	4	Y	
-112	prompt	"""information on"""	17	相關資訊	8	Y	"原始檔案格式異常:原文含頭尾雙引號 `""information on""`(見 translations/source/README.md),譯文已略去引號"
+112	prompt	"information on"	17	相關資訊	8	Y	原始檔案格式異常:原文含頭尾雙引號 `"information on"`(見 translations/source/README.md),譯文已略去引號

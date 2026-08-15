@@ -91,6 +91,9 @@ type Game struct {
 	exp     [original.CharSlots]int
 	expPath string // <assets>/save/exp.json
 
+	// M11:聲音(docs/spec/13)。nil = 音訊關閉,遊戲照常跑。
+	sound *sound
+
 	// M6:法術(docs/spec/09)
 	spells   []original.Spell
 	castUnit int
@@ -439,6 +442,7 @@ func load(dir string, slot int, fontPath string, seed uint64, x, y, enc int) (*G
 	g.panel = render.NewPainter(src, 20, cgaWhite)
 	// 敘述覆蓋層用 24 px(docs/spec/04 §4 的主要閱讀字級)。
 	g.overlayFont = render.NewPainter(src, 24, cgaWhite)
+	g.initSound() // docs/spec/13:失敗只記警告,不影響遊戲
 	return g, nil
 }
 

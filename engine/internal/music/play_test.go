@@ -130,3 +130,18 @@ func TestUserlibScoreParses(t *testing.T) {
 		t.Errorf("USERLIB 五段合計應為 12 個音,得 %d", len(n))
 	}
 }
+
+// 16-bit 立體聲的長度是 8-bit 單聲道的四倍,而且靜音對應到 0。
+func TestRenderPCM16(t *testing.T) {
+	notes := []Note{{Freq: 0, Dur: 0.01, Gate: 1}} // 休止
+	mono := Render(notes, SampleRate)
+	st := RenderPCM16(notes, SampleRate)
+	if len(st) != len(mono)*4 {
+		t.Errorf("立體聲 %d bytes,單聲道 %d × 4 = %d", len(st), len(mono), len(mono)*4)
+	}
+	for i := 0; i < len(st); i += 2 {
+		if st[i] != 0 || st[i+1] != 0 {
+			t.Fatalf("休止的取樣 %d 不是 0(%d,%d)", i/2, st[i], st[i+1])
+		}
+	}
+}

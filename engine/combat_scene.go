@@ -7,6 +7,7 @@ import (
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
+	"shardofspring/internal/music"
 	"shardofspring/internal/original"
 	"shardofspring/internal/ui"
 )
@@ -176,6 +177,12 @@ func (g *Game) endTurn() {
 		f.Log = append(f.Log, "戰鬥結束："+o.String())
 		if _, msg := g.awardExp(f.Units[:]); msg != "" {
 			f.Log = append(f.Log, msg)
+		}
+		if o == combat.PartyDead {
+			// ⚠ `USERLIB` 那五段的**用途是推測**(docs/re/148 §2):
+			// 它慢一半、而 USERLIB 有死亡與結局兩個匯出槽。
+			// 全滅時放它是本引擎的選擇,不是讀到呼叫端。
+			g.play(music.Userlib)
 		}
 		g.actor = -1
 		return

@@ -3,8 +3,13 @@
 # 為什麼需要這顆:Ebitengine 走 cgo,編譯期要 X11 與 OpenGL 的標頭檔,
 # 純 golang image 沒有。執行期的 GL/X11 由使用者桌面提供,不在這裡。
 #
+# ⚠ **音訊(docs/spec/13)另外要 ALSA 的標頭檔** —— `ebiten/v2/audio` 底下的
+# `oto/v3` 走 cgo 連 ALSA。少了它 `go vet` 會停在
+# `Package 'alsa', required by 'virtual:world', not found`,
+# 而那個訊息**看起來像 pkg-config 壞了**,不像少一個 dev 套件。
+#
 # 建置:tools/go.sh 會在 image 不存在時自動建
-#   docker build -f tools/Dockerfile.go-build -t shard-go-build:2 tools/
+#   docker build -f tools/Dockerfile.go-build -t shard-go-build:3 tools/
 #
 # ⚠ 這是本專案自己建的 image,清理時只能動它;
 #   禁止對共用資源做 prune / rmi(CLAUDE.md §8)。
@@ -18,5 +23,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxinerama-dev \
         libxi-dev \
         libxxf86vm-dev \
+        libasound2-dev \
         pkg-config \
     && rm -rf /var/lib/apt/lists/*

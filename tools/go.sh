@@ -19,7 +19,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE="${GO_IMAGE:-shard-go-build:2}"
+IMAGE="${GO_IMAGE:-shard-go-build:3}"
 CACHE="$ROOT/workplace/gocache"
 
 mkdir -p "$CACHE/build" "$CACHE/mod" "$ROOT/build"

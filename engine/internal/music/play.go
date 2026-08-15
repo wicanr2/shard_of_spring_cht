@@ -189,3 +189,23 @@ func Render(notes []Note, sampleRate int) []byte {
 	}
 	return out
 }
+
+// SampleRate 是本引擎的取樣率。Ebitengine 的音訊需要 16-bit LE 立體聲。
+const SampleRate = 22050
+
+// RenderPCM16 把音符算成 **16-bit LE 立體聲**,也就是 Ebitengine 吃的格式。
+//
+// ⚠ 與 Render 分開是為了讓測試能驗轉換本身:
+// 8-bit 單聲道是 PC 喇叭的形狀,16-bit 立體聲是播放層的要求,
+// **把兩者混在一起會讓「音錯了」與「格式錯了」分不開**。
+func RenderPCM16(notes []Note, sampleRate int) []byte {
+	mono := Render(notes, sampleRate)
+	out := make([]byte, 0, len(mono)*4)
+	for _, v := range mono {
+		// 0–255 的無號 → −32768…32767 的有號
+		s := int16((int(v) - 128) * 256)
+		lo, hi := byte(s&0xff), byte(s>>8)
+		out = append(out, lo, hi, lo, hi) // 左右聲道相同
+	}
+	return out
+}

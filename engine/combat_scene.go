@@ -27,12 +27,17 @@ func (g *Game) startCombat() bool {
 	pick := g.rand.Roll(len(g.monsters)) - 1
 	g.field = combat.Build(g.members, []original.Monster{g.monsters[pick]},
 		g.items, g.rand)
+	g.field.Place() // docs/spec/12 §5:初始佈陣(原版陣型未解,這裡是佔位)
+	g.field.ResetPoints(&g.points)
+	g.actor = g.firstActor()
 	g.field.Log = append(g.field.Log,
 		fmt.Sprintf("遭遇 %s！", g.monsters[pick].Name))
 	return true
 }
 
-// stepCombat 推進一回合。
+// stepCombat 是 M4 的「一次推完一整回合」。**畫面上已經不用它**
+// (M10 改成戰場操作,docs/spec/12)—— 留著是因為它是自動對打的最短路徑,
+// 測試與除錯用得到。⚠ 它**不算行動點數**,所以不要拿它當規則參考。
 func (g *Game) stepCombat() {
 	f := g.field
 	if f == nil || f.Outcome() != combat.Ongoing {
@@ -83,6 +88,136 @@ func (g *Game) pickTarget(attacker int) (int, bool) {
 	return 0, false
 }
 
+// --- 戰場操作。docs/spec/12-combat-board.md -------------------------------
+
+// firstActor 回傳先攻表裡第一個還能動的**隊員**。
+//
+// ⚠ 只有隊員由玩家操作;怪物在 endTurn 時自動走完(docs/spec/12 §5)。
+func (g *Game) firstActor() int {
+	for i := combat.PartyBase; i < combat.PartyBase+combat.PartyMax; i++ {
+		u := g.field.Units[i]
+		if u.Alive() && u.OnField() && g.points[i] > 0 {
+			return i
+		}
+	}
+	return -1
+}
+
+// boardKey 處理戰場上的一次按鍵。回 true 表示這個鍵被吃掉了。
+func (g *Game) boardKey(k ebiten.Key) bool {
+	f := g.field
+	if f.Outcome() != combat.Ongoing || g.actor < 0 {
+		return false
+	}
+	var r combat.ActResult
+	switch k {
+	case ebiten.KeyUp:
+		r = g.moveOrTurn(combat.North)
+	case ebiten.KeyRight:
+		r = g.moveOrTurn(combat.East)
+	case ebiten.KeyDown:
+		r = g.moveOrTurn(combat.South)
+	case ebiten.KeyLeft:
+		r = g.moveOrTurn(combat.West)
+	case ebiten.KeyA:
+		r = f.StrikeFront(&g.points, g.actor)
+	case ebiten.KeyEnter, ebiten.KeyKPEnter:
+		g.endTurn()
+		return true
+	default:
+		return false
+	}
+	if r != combat.ActOK {
+		f.Log = append(f.Log, f.Units[g.actor].Name+"："+r.String())
+	}
+	if g.points[g.actor] <= 0 || !f.Units[g.actor].OnField() {
+		g.nextActor()
+	}
+	return true
+}
+
+// moveOrTurn 沿用世界地圖的「先轉再走」手感:朝向不同時只轉身。
+//
+// ⚠ 這是**本引擎的操作選擇**,不是原版規則 —— 原版的戰場是
+// `←`/`→` 轉向、`<RETURN>` 前進(手冊 p.34)。兩者花的點數一樣,
+// 差別只在按鍵數。畫面上的指令提示照本引擎的寫。
+func (g *Game) moveOrTurn(dir combat.Facing) combat.ActResult {
+	if g.field.Units[g.actor].Facing != dir {
+		return g.field.Turn(&g.points, g.actor, dir)
+	}
+	return g.field.Step(&g.points, g.actor)
+}
+
+// nextActor 換下一個隊員;都走完了就讓怪物動,然後開新回合。
+func (g *Game) nextActor() {
+	for i := g.actor + 1; i < combat.PartyBase+combat.PartyMax; i++ {
+		u := g.field.Units[i]
+		if u.Alive() && u.OnField() && g.points[i] > 0 {
+			g.actor = i
+			return
+		}
+	}
+	g.endTurn()
+}
+
+// endTurn 結束玩家這一輪:怪物依序行動,然後重發點數。
+func (g *Game) endTurn() {
+	f := g.field
+	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
+		if f.Outcome() != combat.Ongoing {
+			break
+		}
+		u := f.Units[i]
+		if u.Alive() && u.OnField() {
+			f.MonsterTurn(&g.points, i)
+		}
+	}
+	if o := f.Outcome(); o != combat.Ongoing {
+		f.Log = append(f.Log, "戰鬥結束："+o.String())
+		if _, msg := g.awardExp(f.Units[:]); msg != "" {
+			f.Log = append(f.Log, msg)
+		}
+		g.actor = -1
+		return
+	}
+	if combat.ReorderEachRound {
+		f.Sort()
+	}
+	f.Round++
+	f.ResetPoints(&g.points)
+	g.actor = g.firstActor()
+	if g.actor < 0 {
+		// 全隊都動不了(離場或倒下)—— 直接讓下一輪跑,免得卡住
+		g.actor = -1
+	}
+}
+
+// drawBoard 畫 15×15 的戰場。
+func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
+	f, p := g.field, g.panel
+	lh := p.LineHeight()
+	cell := lh * 0.9
+	for y := 0; y < combat.BoardSize; y++ {
+		for x := 0; x < combat.BoardSize; x++ {
+			ch := "·" // 空格
+			if combat.OnEdge(x, y) {
+				ch = "○" // 圓點 = 出口(手冊 p.33)
+			}
+			if i := f.Occupant(x, y); i >= 0 {
+				if f.Units[i].IsMonster {
+					ch = "怪"
+				} else if i == g.actor {
+					ch = "◆" // 輪到誰
+				} else {
+					ch = "人"
+				}
+			}
+			p.Draw(dst, ch, x0+float64(x)*cell, y0+float64(y)*cell)
+		}
+	}
+	return y0 + float64(combat.BoardSize)*cell
+}
+
 // drawCombat 在主視野畫戰鬥的狀態與訊息。
 func (g *Game) drawCombat(dst *ebiten.Image) {
 	f, p := g.field, g.panel
@@ -94,7 +229,13 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 	lh := p.LineHeight()
 
 	p.Draw(dst, fmt.Sprintf("戰鬥 — 第 %d 回合", f.Round), x, y)
-	y += lh * 1.5
+	y += lh * 1.3
+	y = g.drawBoard(dst, x, y) + lh*0.5
+	if g.actor >= 0 {
+		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d　方向鍵移動(先轉再走)　A 攻擊　Enter 結束",
+			f.Units[g.actor].Name, g.points[g.actor], f.Units[g.actor].Speed), x, y)
+		y += lh * 1.2
+	}
 
 	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
 		u := f.Units[i]

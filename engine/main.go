@@ -61,6 +61,9 @@ type Game struct {
 	items    map[int]combat.Item
 	rand     *combat.SeededRand
 	field    *combat.Field // nil = 不在戰鬥中
+	// M10:戰場(docs/spec/12)
+	points combat.Points
+	actor  int // 目前輪到的隊員索引;−1 = 沒有人能動
 
 	// M5:迷宮(docs/spec/08)
 	assets      string
@@ -121,8 +124,13 @@ func (g *Game) Update() error {
 			g.openCast()
 			return nil
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-			g.stepCombat()
+		// M10 之後戰鬥由戰場操作(docs/spec/12);
+		// ⚠ 先前的「空白鍵推一整回合」已經移除 —— 兩套並存會讓同一場戰鬥
+		// 有兩種規則(一套算行動點數、一套不算),而畫面上分不出剛才用了哪一套。
+		for _, k := range inpututil.AppendJustPressedKeys(nil) {
+			if g.boardKey(k) {
+				return nil
+			}
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) &&
 			g.field.Outcome() != combat.Ongoing {

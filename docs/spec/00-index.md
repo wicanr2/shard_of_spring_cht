@@ -29,7 +29,8 @@
 | [`08-maze-scene.md`](08-maze-scene.md) | **迷宮與事件**(Major/Minor 座標、視野、事件三類、跨關卡)|
 | [`09-magic-items.md`](09-magic-items.md) | **法術與道具**(施法閘門、威力、狀態強度、道具發動);⚠ 效果類別 3/13 未解 |
 | [`10-localization.md`](10-localization.md) | **中文化上線**(轉檔期併入、破格的定義與預算)|
-| [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 營地 / 名冊**;⚠ 賣出 / 訓練 / 治療 / 傳聞的規則未解 |
+| [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 旅店 / 酒館 / 訓練所 / 治療所 / 營地 / 名冊 / 角色創造**;⚠ 屬性骰法未解(3d6 已排除)|
+| [`12-combat-board.md`](12-combat-board.md) | **戰場**(15×15、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 初始佈陣與怪物 AI 是佔位 |
 
 ## ⚠ 實作前必讀的五條
 

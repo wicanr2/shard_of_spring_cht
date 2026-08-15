@@ -337,12 +337,85 @@ func TestBytesLeavesUnresolvedTailUntouched(t *testing.T) {
 	tail := []byte{0x20, 0x20, 0x20, 0x01, 0x00, 0x00, 0x00, 0x40, 0x00}
 	copy(raw[85:], tail)
 
-	c := Character{Name: "測試", Raw: raw, SkillPts: int(tail[3])}
+	// 經驗值要照原樣讀出來再寫回去,否則下面的「原樣保留」測不到東西。
+	c := Character{Name: "測試", Raw: raw, SkillPts: int(tail[3]),
+		Exp: MBF(raw[offExp-1 : offExp+3])}
 	out := c.Bytes()
 	if got := out[85:88]; string(got) != string(tail[:3]) {
 		t.Errorf("位移 86–88 被改動了:%X → %X", tail[:3], got)
 	}
 	if got := out[89:94]; string(got) != string(tail[4:]) {
 		t.Errorf("位移 90–94 被改動了:%X → %X", tail[4:], got)
+	}
+}
+
+// 經驗值:值沒變就一個 byte 都不動,值變了才寫成 MBF。
+//
+// ⚠ 這兩半要一起測。只測「沒變不動」會讓「永遠不寫」通過;
+// 只測「變了會寫」會讓「每次都寫」通過 —— 而每次都寫會把原版的
+// `00 00 00 40`(它的零)改成 `00 00 00 00`,逐位元組往返就壞了。
+func TestExpWritesOnlyWhenChanged(t *testing.T) {
+	raw := make([]byte, CharRecLen)
+	for i := range raw {
+		raw[i] = 0x20
+	}
+	copy(raw[offExp-1:], []byte{0x00, 0x00, 0x00, 0x40})
+
+	zero := MBF(raw[offExp-1 : offExp+3])
+	if zero == 0 {
+		t.Fatalf("出貨的「零經驗」照 MBF 解不該剛好是 0,而是 %g —— 這個測試的前提沒了", zero)
+	}
+	c := Character{Raw: raw, Exp: zero}
+	if got := c.Bytes()[offExp-1 : offExp+3]; got[3] != 0x40 {
+		t.Errorf("值沒變卻改寫了位元組:%X", got)
+	}
+
+	c.Exp = 1500
+	got := c.Bytes()[offExp-1 : offExp+3]
+	if v := MBF(got); v != 1500 {
+		t.Errorf("寫回 1500 再讀出來是 %g(bytes %X)", v, got)
+	}
+}
+
+// 出貨的五個角色都是等級 1,經驗值畫面上印 0。
+func TestShippedExpDisplaysZero(t *testing.T) {
+	chars, err := ParseChars(read(t, "CHARS.DAT"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, c := range chars[:5] {
+		if c.Level != 1 {
+			t.Fatalf("%s 等級 %d —— 這個測試假設出貨角色都是 1 級", c.Name, c.Level)
+		}
+		if int(c.Exp) != 0 {
+			t.Errorf("%s 的經驗值取整數是 %d,畫面上印的是 0", c.Name, int(c.Exp))
+		}
+	}
+}
+
+// 戰後分經驗的資格:HP > 0 **且** 狀態 < 5(docs/re/150 §2)。
+//
+// ⚠ 兩個條件要分開測。只測「死人不分」的話,`HP > 0` 單獨一條也會通過 ——
+// 出貨資料上死人的 HP 也是 0,兩個條件在那裡永遠一起成立。
+func TestEarnsExpNeedsBothConditions(t *testing.T) {
+	cases := []struct {
+		name string
+		hp   int
+		st   int
+		want bool
+	}{
+		{"活著又正常", 5, StatusOK, true},
+		{"中毒但活著", 5, StatusPoisoned, true},
+		{"束縛但活著", 5, StatusBound, true},
+		{"冰封但活著", 5, StatusFrozen, true},
+		{"HP 0", 0, StatusOK, false},
+		{"狀態死亡但 HP 還有值", 5, StatusDead, false},
+		{"兩個都不合格", 0, StatusDead, false},
+	}
+	for _, c := range cases {
+		got := Character{HP: c.hp, Status: c.st}.EarnsExp()
+		if got != c.want {
+			t.Errorf("%s(HP %d、狀態 %d)= %v,應為 %v", c.name, c.hp, c.st, got, c.want)
+		}
 	}
 }

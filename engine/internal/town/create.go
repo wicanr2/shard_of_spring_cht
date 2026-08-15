@@ -37,8 +37,8 @@ const AttrRollAssumption = "⚠ 屬性的骰法未解(docs/re/143 §5)—— 本
 
 // SkillPoints 回傳創造時可用的技能點數。
 //
-// **= 智力**(手冊 p.12 + 實跑:智力 3 的巨魔點掉成本 2 的技能後剩 1,
-// docs/re/143 §3)。⚠ 只有一個樣本,分不開「= 智力」與「= 智力 + 0」。
+// **= 智能**(手冊 p.12 + 實跑:智能 3 的巨魔點掉成本 2 的技能後剩 1,
+// docs/re/143 §3)。⚠ 只有一個樣本,分不開「= 智能」與「= 智能 + 0」。
 func SkillPoints(intellect int) int { return intellect }
 
 // SkillCost 回傳一項技能的點數成本。
@@ -124,7 +124,7 @@ func (r CreateResult) String() string {
 
 // Create 依種族、職業、擲出的屬性與名稱造一個角色,寫進名冊第一個空槽。
 //
-// ⚠ **初始生命值 = 體質**(手冊 p.13「它也是你一開始的生命點數」;
+// ⚠ **初始生命值 = 體能**(手冊 p.13「它也是你一開始的生命點數」;
 // 創造畫面上 `Endurance 5` 對應 `H.P.: 5`,兩個來源一致)。
 // ⚠ 初始法力值**未解** —— 法師的 `S.P.` 在創造畫面上是空的,
 // 手冊只說「智能決定巫師一開始的法力點數」而沒給算式。這裡填 0 並標出來。
@@ -156,12 +156,12 @@ func Create(chars []original.Character, race rules.Race, class rules.Class,
 		ID:    slot + 1,
 		Race:  byte(race), Class: byte(class),
 		Speed: spd, Str: str, Int: intel, End: end, ToHit: skill,
-		MaxHP: end, HP: end, // 初始生命 = 體質
+		MaxHP: end, HP: end, // 初始生命 = 體能
 		Weapon: original.NotEquipped, Armor: original.NotEquipped,
 		Level:    1,
 		Skills:   raceSkills(race, class),
 		Flags2:   "0000000000",
-		SkillPts: intel, // 技能點數 = 智力,一點都還沒花(docs/re/144 §4)
+		SkillPts: intel, // 技能點數 = 智能,一點都還沒花(docs/re/144 §4)
 	}
 	// 背包十格全空。⚠ 哨兵是 99 不是 0 —— 填 0 會讓每一格都看起來裝著第 0 號道具。
 	for i := range c.Pack {

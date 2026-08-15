@@ -38,12 +38,13 @@
 種族也對得上:`Grod`(Troll)力量 16、體質 15 **兩項都是最高**;
 `Fire Hawk` / `Richtatha`(Elf / Gnome)智力 15 / 13 最高、力量最低。
 
-> ⚠ 「智力」「體質」是**從關係命名的**(哪個值決定法力 / 生命值),
-> **不是從遊戲字串取的** —— `CAMP` 的角色卡只印
-> `Level` / `Hit Pts.` / `Spell Pts.` / `Experience` / `Status` / `Skills`,
-> **五個基本屬性沒有畫面標籤**。
-> 中文化時這四個名字要另外決定,不能當成原文譯名。
-> (對照 [`88`](88-races-and-classes.md) §3:`Hero` 是從字串取的,可以直接用。)
+> 這四個屬性最初是**從關係命名的**(哪個值決定法力 / 生命值),
+> 而原版的名字後來在兩個地方找到,兩邊一致
+> ([`150`](150-experience-is-offset-90.md) §5.1):
+> `TITLES.DAT` 的 `"Speed     :"` … `"Skill     :"`,
+> 以及 `CAMP.EXE` / `TOWN.EXE` 裡的 `"Speed", "Strength", "Intellect", "Endurance", "Skill"`。
+> **關係推出來的語意與原版標籤對得上**:決定法力的是 `Intellect`、決定生命值的是 `Endurance`。
+> 譯名照 `translations/glossary.md`(手冊用詞:速度／力量／智能／體能／技巧)。
 
 ## 3. `CHARS.DAT` 的完整欄位表
 

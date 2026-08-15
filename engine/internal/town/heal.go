@@ -29,12 +29,13 @@ func (k HealKind) String() string {
 	return "治療傷勢"
 }
 
-// 狀態碼。= 法術系別編號(docs/formats/03「法術系別 = 狀態編號」)。
+// 狀態碼。定義在 `original`(那是記錄的語意,不是城鎮的),
+// 這裡只是別名 —— **同一個數字不要在兩個套件裡各寫一次**。
 const (
-	StatusOK       = 0
-	StatusPoisoned = 1
-	StatusBound    = 2
-	StatusDead     = 5
+	StatusOK       = original.StatusOK
+	StatusPoisoned = original.StatusPoisoned
+	StatusBound    = original.StatusBound
+	StatusDead     = original.StatusDead
 )
 
 // HealCost 回傳一項服務在某間治療所的價格。

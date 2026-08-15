@@ -190,8 +190,8 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 	}{
 		{1, "速度", c.rolled.Speed, info.Speed},
 		{2, "力量", c.rolled.Str, info.Str},
-		{3, "智力", c.rolled.Int, info.Int},
-		{4, "體質", c.rolled.End, info.End},
+		{3, "智能", c.rolled.Int, info.Int},
+		{4, "體能", c.rolled.End, info.End},
 		{5, "技巧", c.rolled.Skill, info.Skill},
 	}
 	for _, r := range rows {
@@ -204,7 +204,7 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 			mark, r.n, r.name, r.roll, r.mod, r.roll+r.mod))
 	}
 	y += lh * 0.3
-	line(fmt.Sprintf("生命值 %d（= 加完修正的體質）", c.rolled.End+info.End))
+	line(fmt.Sprintf("生命值 %d（= 加完修正的體能）", c.rolled.End+info.End))
 	y += lh * 0.3
 
 	switch c.step {

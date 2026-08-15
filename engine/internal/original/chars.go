@@ -32,6 +32,25 @@ const (
 	// 位移 74 起讀成 word 是 12336 = 0x3030 = 兩個 ASCII `'0'`,
 	// 那是另一串字串旗標,不是背包的後五格。手冊 p.39 也寫「只能帶 10 件」。
 	PackSlots = 10
+	// offExp 是經驗值的 1-based 位移,4 bytes MBF 單精度。
+	// 五處程式碼、三支模組都讀這裡(docs/re/150 §1),
+	// 其中兩處緊接在載入 `Exp.  ` 標籤之後 —— 標籤與欄位相鄰。
+	offExp = 90
+)
+
+// 狀態碼(位移 38)。= 法術系別編號(docs/formats/03),名稱取自 `MENU.EXE`
+// 的 `OK,Poisoned,Bound,Still Air,Frozen,D E A D`。
+//
+// ⚠ **`StatusDead` 不等於「HP 為 0」。** 原版的戰後結算同時檢查兩者
+// (docs/re/150 §2),所以兩個判斷不能互相替代 ——
+// 出貨資料上死人的 HP 也是 0,差別要到「HP 0 但狀態不是 5」才看得出來。
+const (
+	StatusOK       = 0
+	StatusPoisoned = 1
+	StatusBound    = 2
+	StatusStill    = 3
+	StatusFrozen   = 4
+	StatusDead     = 5
 )
 
 // Character 是一筆角色記錄。欄位順序與 docs/formats/01 的表相同。
@@ -59,6 +78,7 @@ type Character struct {
 	Flags2   string // 位移 74–83:第二串十個旗標,**語意未解**(docs/re/144 §6)
 	StatMag  int    // 位移 84:狀態效果強度
 	SkillPts int    // 位移 89:剩餘技能點數(docs/re/144 §4)
+	Exp      float64 // 位移 90–93:經驗值,MBF 單精度(docs/re/150)
 	Raw      []byte // 原始 94 bytes —— 存檔往返要逐位元組保留未解欄位
 }
 
@@ -68,6 +88,15 @@ type Character struct {
 // 位移 1 的 '*' 究竟是「空槽」還是「無隊伍」未解,而名稱空白在兩種讀法下
 // 都是空槽 —— 這條判定因此不依賴那個未解項。
 func (c Character) Occupied() bool { return strings.TrimSpace(c.Name) != "" }
+
+// EarnsExp 回傳戰後這個角色分不分得到經驗。
+//
+// 原版的結算迴圈把兩個條件 `and` 起來(docs/re/150 §2):
+// **當前生命值 > 0 且 狀態 < 5**。
+//
+// ⚠ 兩個條件都要,不能只留其中一個 —— 中毒、束縛、凝滯、冰封的人**照分**,
+// 而在出貨資料上「死了」與「HP 0」永遠同時成立,少寫一個看不出差別。
+func (c Character) EarnsExp() bool { return c.HP > 0 && c.Status < StatusDead }
 
 // InParty 回傳這個角色是否編在某一隊,以及隊號(1–5)。
 func (c Character) InParty() (int, bool) {
@@ -98,6 +127,7 @@ func ParseChars(d []byte) ([]Character, error) {
 			Status: u16(r, 38), Level: u16(r, 40),
 			Skills: string(r[41:51]), Flags2: string(r[73:83]),
 			StatMag: u16(r, 84), SkillPts: int(r[88]),
+			Exp: MBF(r[offExp-1 : offExp+3]),
 			Raw: append([]byte(nil), r...),
 		}
 		// 背包:位移 54 + 2i(docs/formats/01)
@@ -199,5 +229,15 @@ func (c Character) Bytes() []byte {
 		}
 	}
 	r[88] = byte(c.SkillPts)
+	// 經驗值(位移 90–93,MBF 單精度)。
+	//
+	// ⚠ **只在值真的變了才覆寫。** 原版的「零經驗」寫成 `00 00 00 40`
+	// (MBF 解出來是 2.7e-20,畫面印 0),而 PutMBF(0) 寫的是 `00 00 00 00` ——
+	// 兩者行為相同但位元組不同。無條件覆寫會讓「載入後原樣存回」的
+	// 逐位元組往返測試失敗,而那個失敗與真正的欄位錯誤長得一樣。
+	// docs/re/150 §1.2。
+	if MBF(r[offExp-1:offExp+3]) != c.Exp {
+		copy(r[offExp-1:offExp+3], PutMBF(c.Exp))
+	}
 	return r
 }

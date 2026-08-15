@@ -134,22 +134,19 @@ const (
 	ResurrectPerLv = 100
 )
 
-// CampRestHeal 保留給「不睡覺、只休息一會兒」。原版沒有這個動作 ——
-// 它是本引擎為了讓玩家能推進時鐘而加的,**恢復量因此是自訂的,不是未解的原版值**。
-const CampRestHeal = 1
-
 // Unresolved 是要顯示在畫面上的未解項(docs/spec/11 §3、§4)。
 var Unresolved = []string{
 	"原版沒有賣出功能(docs/re/142 §4),所以這裡也沒有",
 	"角色創造的基礎屬性骰法未解,只套種族修正",
-	"經驗值存在存檔的哪個位移未解,升級用引擎自己的計數",
+	"每一場戰鬥給多少經驗未解(位移已定在 90–93,docs/re/150)",
+	"營地的打獵 / 鑑定 / 傳遞 / 調整隊形四個指令規則未解,未實作",
 	"PERSUASIVENESS 技能怎麼降價未解,價格未套用它",
 }
 
-// Rest 讓全隊休息一次(引擎自訂的動作,見 CampRestHeal)。
-func Rest(party []original.Character) []original.Character {
-	return heal(party, CampRestHeal, CampRestHeal)
-}
+// 這裡曾經有一個「休息一會兒」的自訂動作,綁在 `R` 上。
+// 原版營地選單的 `R` 是 **R)eorder**(調整隊形順序,docs/re/150 §5.2),
+// 而自訂動作佔著那個字母,會讓「原版按 R 會怎樣」永遠測不出來。
+// **自己加的東西不要佔原版按鍵。**
 
 // InnSleep 是旅店睡一晚。手冊 p.37:回 2 HP、10 SP,並且供餐(不耗食糧)。
 func InnSleep(party []original.Character) []original.Character {

@@ -36,10 +36,10 @@ type townState struct {
 	shop  original.Shop   // 進去的那一間
 	page  int             // 商品分頁(原版有 `+ for next page`,手冊 p.31)
 	msg   string
-	// 營地的子畫面。手冊 p.38–39 列了十個指令,這裡先做三個
-	// (裝備 / 檢視 / 丟棄)—— 那三個是「買了東西之後玩得下去」的最短路徑。
+	// 營地的子畫面。原版選單有 11 個指令(docs/re/150 §5.2),
+	// 這裡做了三個:角色卡、裝備、丟棄。其餘的規則還沒解,選單上標「未實作」。
 	campWho  int  // 選到第幾位成員
-	campMode byte // 0 = 選單、'W' 裝武器、'A' 裝防具、'I' 檢視、'D' 丟棄
+	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別
 }
 
 // shopPageSize 是一頁的商品數。主視野高 612、行高 26 → 扣掉標題約 20 列。
@@ -195,15 +195,18 @@ func (g *Game) townKey(k ebiten.Key) {
 			return
 		}
 		switch k {
-		case ebiten.KeyW, ebiten.KeyA, ebiten.KeyI, ebiten.KeyD:
+		case ebiten.KeyE, ebiten.KeyD:
 			ts.campMode = campLetter(k)
 			ts.msg = "按編號選人"
 			ts.campWho = -1
-		case ebiten.KeyR:
-			g.members = town.Rest(g.members)
-			g.party.Clock.Tick()
-			ts.msg = "全隊休息了一會兒(這個動作原版沒有,恢復量是本引擎自訂的 " +
-				fmt.Sprint(town.CampRestHeal) + " 點)"
+		case ebiten.Key1, ebiten.Key2, ebiten.Key3, ebiten.Key4, ebiten.Key5:
+			// 原版是 `#)inspect char` —— 直接按編號。
+			if i := int(k - ebiten.Key1); i < len(g.members) {
+				ts.campMode, ts.campWho, ts.msg = '#', i, ""
+			}
+		case ebiten.KeyP, ebiten.KeyR, ebiten.KeyT, ebiten.KeyH, ebiten.KeyI,
+			ebiten.KeyC, ebiten.KeyU:
+			ts.msg = campUnimplemented[k] + ":原版有這個指令,但規則還沒解,本引擎未實作"
 		case ebiten.KeyS:
 			// 手冊 p.38:每人耗 1 份食糧,回 1 HP、5 SP;沒得吃的人扣 1 HP。
 			before := g.group.Provisions
@@ -312,9 +315,11 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			town.CampSleepFood, town.CampSleepHP, town.CampSleepSP,
 			g.group.Provisions), x, y)
 		y += lh
-		p.Draw(dst, "R) 休息一會兒（本引擎自訂，非原版動作）", x, y)
+		p.Draw(dst, "1–5) 檢視角色　E) 裝備　D) 丟棄", x, y)
 		y += lh
-		p.Draw(dst, "W) 拿武器　A) 穿防具　I) 檢視背包　D) 丟棄　（手冊 p.38–39 的十個指令做了四個）", x, y)
+		p.Draw(dst, "P) 列印角色表　R) 調整隊形　T) 傳遞　H) 打獵　I) 鑑定　C) 施法　U) 使用道具", x, y)
+		y += lh
+		p.Draw(dst, "　　（上面這七個原版有，規則未解，本引擎未實作）", x, y)
 		y += lh
 		if ts.campMode != 0 {
 			y += lh * 0.5
@@ -340,19 +345,25 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	}
 }
 
+// campUnimplemented 是原版選單上有、但規則還沒解的指令。
+//
+// ⚠ **列出來比隱藏好。** 少一個指令的選單看起來完全正常,
+// 沒有人會發現漏了什麼 —— 而 `R)eorder` 會直接影響戰鬥站位。
+var campUnimplemented = map[ebiten.Key]string{
+	ebiten.KeyP: "P) 列印角色表",
+	ebiten.KeyR: "R) 調整隊形順序",
+	ebiten.KeyT: "T) 隊員之間傳遞",
+	ebiten.KeyH: "H) 打獵",
+	ebiten.KeyI: "I) 鑑定",
+	ebiten.KeyC: "C) 施法",
+	ebiten.KeyU: "U) 使用道具",
+}
+
 // campLetter 把按鍵換成營地子畫面的代號。
-// ⚠ **武器與防具分成兩個指令**,不是選了格子再判斷是哪一種 ——
-// `ITEMS.DAT` **沒有**「這是武器還是防具」的欄位
-// (docs/formats/04:「分類不在資料裡,在呼叫端」)。
-// 用編號範圍去猜會在資料外的編號上默默猜錯,而畫面上看不出來。
 func campLetter(k ebiten.Key) byte {
 	switch k {
-	case ebiten.KeyW:
-		return 'W'
-	case ebiten.KeyA:
-		return 'A'
-	case ebiten.KeyI:
-		return 'I'
+	case ebiten.KeyE:
+		return 'E'
 	case ebiten.KeyD:
 		return 'D'
 	}
@@ -374,6 +385,21 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
 			ts.campWho = i
 			ts.msg = ""
+		}
+		return
+	}
+	// 角色卡只是看,沒有下一步。
+	if ts.campMode == '#' {
+		return
+	}
+	// `E)quip` 選完人再選武器還是防具 —— **分類不在 `ITEMS.DAT` 裡,在呼叫端**
+	// (docs/formats/04)。用編號範圍去猜會在資料外的編號上默默猜錯。
+	if ts.campMode == 'E' {
+		switch k {
+		case ebiten.KeyW:
+			ts.campMode = 'W'
+		case ebiten.KeyA:
+			ts.campMode = 'A'
 		}
 		return
 	}
@@ -483,9 +509,38 @@ func (g *Game) trainMember(i, guildExtra int) {
 		c.Name, c.Level, c.MaxHP, c.MaxSP)
 }
 
+// charCard 是原版 `#)inspect char` 的角色卡(docs/re/150 §1.1)。
+//
+// 版面照原版:左邊五個基本屬性、右邊等級與衍生值。
+// ⚠ 屬性名用**手冊的譯名**(速度／力量／智能／體能／技巧,
+// translations/glossary.md)—— 原版畫面上的英文標籤與手冊同一組詞,
+// 所以譯名不必另外決定。
+func (g *Game) charCard(c original.Character) []string {
+	sp := "—"
+	if c.MaxSP > 0 {
+		sp = fmt.Sprintf("%d／%d", c.SP, c.MaxSP)
+	}
+	st := c.StatusName()
+	if st == "" {
+		st = "正常"
+	}
+	return []string{
+		fmt.Sprintf("%s　%s %s　等級 %d", c.Name, c.RaceName(), c.ClassName(), c.Level),
+		"",
+		fmt.Sprintf("速度 %2d　　生命 %d／%d", c.Speed, c.HP, c.MaxHP),
+		fmt.Sprintf("力量 %2d　　法力 %s", c.Str, sp),
+		fmt.Sprintf("智能 %2d　　經驗 %d", c.Int, g.charExp(c)),
+		fmt.Sprintf("體能 %2d　　狀態 %s", c.End, st),
+		fmt.Sprintf("技巧 %2d", c.ToHit),
+	}
+}
+
 // campLines 回傳營地子畫面的內容。
 func (g *Game) campLines(ts *townState) []string {
-	title := map[byte]string{'W': "拿武器", 'A': "穿防具", 'I': "檢視背包", 'D': "丟棄"}[ts.campMode]
+	if ts.campMode == '#' && ts.campWho >= 0 && ts.campWho < len(g.members) {
+		return g.charCard(g.members[ts.campWho])
+	}
+	title := map[byte]string{'E': "裝備", 'W': "拿武器", 'A': "穿防具", 'D': "丟棄"}[ts.campMode]
 	if ts.campWho < 0 {
 		out := []string{title + "：按編號選人"}
 		for i, c := range g.members {
@@ -494,6 +549,10 @@ func (g *Game) campLines(ts *townState) []string {
 		return out
 	}
 	c := g.members[ts.campWho]
+	if ts.campMode == 'E' {
+		return []string{c.Name + "：W) 當武器　A) 當防具",
+			"（`ITEMS.DAT` 沒有「武器還是防具」這個欄位，分類在呼叫端）"}
+	}
 	out := []string{fmt.Sprintf("%s 的背包（%s，按字母選格）", c.Name, title)}
 	for i, n := range c.Pack {
 		if n == original.NotEquipped {

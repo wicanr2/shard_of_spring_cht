@@ -52,7 +52,7 @@ SceneManager           ← 取代 retf 轉交;場景切換不序列化,直接傳
 
 | 規格 | 型別 |
 |---|---|
-| [`formats/01`](../formats/01-chars-dat.md) | `Character`(速度/力量/智力/體質/命中/HP/MP/裝備/狀態/等級/技能旗標/背包)|
+| [`formats/01`](../formats/01-chars-dat.md) | `Character`(速度/力量/智能/體能/命中/HP/MP/裝備/狀態/等級/技能旗標/背包)|
 | [`formats/02`](../formats/02-groups-dat.md) | `WorldState`(補給/遭遇倒數/四級時鐘/座標×2/朝向/光源/能見度)|
 | [`formats/03`](../formats/03-monsters-dat.md) | `MonsterDef` × 74 |
 | [`formats/04`](../formats/04-spells-items-dat.md) | `SpellDef` × 33、`ItemDef` × 57 |

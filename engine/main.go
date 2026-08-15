@@ -85,12 +85,6 @@ type Game struct {
 	town      *townState
 	rumors    map[int]string // 酒館傳聞:位移 36 → 文字(docs/re/138 §4)
 
-	// 經驗值。⚠ **不寫進 CHARS.DAT** —— 它在原版記錄裡的位移未解
-	// (docs/re/140 §9),猜一個位移寫下去會壞掉原版讀得到的欄位,
-	// 而往返測試看不見。索引 = 角色槽號 − 1。
-	exp     [original.CharSlots]int
-	expPath string // <assets>/save/exp.json
-
 	// M11:聲音(docs/spec/13)。nil = 音訊關閉,遊戲照常跑。
 	sound *sound
 
@@ -252,7 +246,34 @@ func (g *Game) Update() error {
 //
 // ⚠ 寫的是 <assets>/save/ 的複本,**不碰 game/sharspri/**(CLAUDE.md §8)。
 // ⚠ 只覆寫已解的欄位;未解的位置由 Group.Bytes() 從 Raw 原樣保留。
+// syncMember 把一位隊伍成員的變化寫回名冊。
+//
+// ⚠ `g.members` 是 `g.chars` 的**複本**,不是指標 ——
+// 戰鬥扣的血、拿到的經驗全部只改到複本。少了這一步,
+// 存檔會把「打完仗之前」的名冊寫回去,而且**不會報錯**:
+// 檔案長度對、欄位合法、原版也開得起來,只是進度沒了。
+func (g *Game) syncMember(c original.Character) {
+	if c.ID >= 1 && c.ID <= len(g.chars) {
+		g.chars[c.ID-1] = c
+	}
+}
+
+func (g *Game) syncMembers() {
+	for _, c := range g.members {
+		g.syncMember(c)
+	}
+}
+
+// save 寫回存檔。**兩個檔一起寫。**
+//
+// 原版的存檔常式(`USERLIB` 槽 34)在同一段裡開了兩個檔:
+// `#1` = `CHARS.DAT`(記錄 94)、`#2` = `GROUPS.DAT`(記錄 90),docs/re/80 §1。
+// 只寫其中一個會讓兩份資料對不上 —— 隊伍位置前進了,成員的血量卻回到上一次。
 func (g *Game) save() error {
+	g.syncMembers()
+	if err := g.writeChars(); err != nil {
+		return err
+	}
 	b, err := os.ReadFile(g.savePath)
 	if err != nil {
 		return err
@@ -475,8 +496,6 @@ func (g *Game) loadParty(dir string, slot int) error {
 	}
 	g.slot = slot
 	g.savePath = filepath.Join(dir, "save", "GROUPS.DAT")
-	g.expPath = filepath.Join(dir, "save", "exp.json")
-	g.loadExp()
 	grp := groups[slot-1]
 	if grp.Blank() {
 		return fmt.Errorf("第 %d 隊還沒建立(記錄整份是空白)—— 出貨磁片組好的是第 5 隊", slot)

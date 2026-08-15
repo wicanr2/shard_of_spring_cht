@@ -3,6 +3,7 @@ package town
 import (
 	"testing"
 
+	"shardofspring/internal/combat"
 	"shardofspring/internal/original"
 )
 
@@ -142,5 +143,40 @@ func TestPickUpFillsFromTheBack(t *testing.T) {
 	}
 	if w, s := PickUp(full, 7); w != -1 || s != -1 {
 		t.Errorf("背包全滿應回 (-1,-1),得 (%d,%d)", w, s)
+	}
+}
+
+// 打獵的收穫:兩個邊界各自能獨立弄錯,所以分開驗(docs/re/177 §4)。
+func TestHuntYieldEdges(t *testing.T) {
+	cases := []struct {
+		roll int // ScriptRand 的 Roll(16) 回傳值(1…16)
+		want int
+	}{
+		{1, 0},  // INT(RND×16)=0  → −6 → 夾成 0
+		{7, 0},  // =6  → 0        ← ★ 最後一個失敗,`0` 不被夾但也是失敗
+		{8, 1},  // =7  → 1        ← ★ 第一個成功
+		{16, 9}, // =15 → 9        ← 上界,實跑量到的最大值
+	}
+	for _, c := range cases {
+		r := &combat.ScriptRand{Values: []int{c.roll}}
+		if got := HuntYield(r); got != c.want {
+			t.Errorf("Roll=%d:收穫應為 %d,得 %d", c.roll, c.want, got)
+		}
+		if r.Faces[0] != HuntFaces {
+			t.Errorf("面數應為 %d,得 %d", HuntFaces, r.Faces[0])
+		}
+	}
+}
+
+// 失敗率是 7/16 不是 6/16 —— 差別在「收穫 0 也是失敗」。
+func TestHuntFailureRateIsSevenSixteenths(t *testing.T) {
+	fail := 0
+	for roll := 1; roll <= HuntFaces; roll++ {
+		if HuntYield(&combat.ScriptRand{Values: []int{roll}}) == 0 {
+			fail++
+		}
+	}
+	if fail != 7 {
+		t.Errorf("16 個擲出裡應有 7 個失敗,得 %d", fail)
 	}
 }

@@ -1,6 +1,9 @@
 package town
 
-import "shardofspring/internal/original"
+import (
+	"shardofspring/internal/combat"
+	"shardofspring/internal/original"
+)
 
 // 營地裡兩個每天一次的技能:H)unt 與 I)dentify。docs/re/166。
 //
@@ -75,6 +78,41 @@ func CanHunt(c original.Character, outdoors bool) SkillGate {
 	}
 	return SkillOK
 }
+
+// HuntFaces / HuntOffset 是打獵收穫的兩個常數,**都是讀出來的**
+// (docs/re/177 §4):
+//
+//	16  `INT 3F:AD, 04` —— 那個 API 把內嵌位元組加到浮點累加器的指數,
+//	    所以 04 是「乘 2⁴」,不是「加 4」
+//	−6  DGROUP `ds:731E` 的初值(MBF `00 00 c0 83`)
+const (
+	HuntFaces  = 16
+	HuntOffset = -6
+)
+
+// HuntYield 回傳一次打獵的收穫份數;**0 就是失敗**。
+//
+//	原版:ds:731C = INT(RND × 16) + (−6);若 < 0 夾成 0
+//
+// ⚠ **只夾負數,`0` 不夾** —— 收穫 0 走 `The hunt was not successful.`,
+// 不是「成功但拿 0 份」。所以失敗率是 7/16 而不是 6/16。
+//
+// r.Roll(n) 回 1…n,而原版的 `INT(RND × 16)` 是 0…15,所以要減 1。
+//
+// ⚠ 28 個實跑樣本回檢過(docs/re/177 §4.1,χ² ≈ 9.3 / 9 df),
+// 但那是**回檢不是推導** —— 兩個常數都來自檔案。
+func HuntYield(r combat.Rand) int {
+	n := r.Roll(HuntFaces) - 1 + HuntOffset
+	if n < 0 {
+		return 0
+	}
+	return n
+}
+
+// ⚠ **補給品沒有上限**。原版夾在 `ds:6F10`,而那個變數沒有編譯期初值
+// (docs/re/177 §6),靜態讀不到。⛔ 不要自己編一個上限 ——
+// 編一個就等於發明了一條原版沒有的規則,而玩家會撞到它。
+// 要解就是在原版裡把補給品堆到上限看它停在哪。
 
 // LoreFor 回傳辨識這個道具要哪一個 lore 技能;0 = 空格(原版直接回選單)。
 //

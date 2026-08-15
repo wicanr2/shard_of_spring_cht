@@ -717,9 +717,11 @@ func (g *Game) buildingLines(ts *townState) []string {
 
 // hunt 與 identify 是營地裡兩個「每天一次」的技能。docs/re/166。
 //
-// ⚠ 兩者的**結果**都還沒讀完:打獵的擲骰(`INT 3D:33` 的參數、加項、上限)
-// 與鑑定的 `Failed` 分支都未解(docs/re/166 §6)。
-// 所以這裡只做**閘門**——閘門是逐條讀出來的,結果不是。
+// 打獵的擲骰讀出來了(docs/re/177 §4):`max(0, INT(RND × 16) − 6)`。
+// ⚠ 補給品的**上限**仍未解(`ds:6F10` 沒有編譯期初值),所以這裡不夾。
+//
+// ⚠ 鑑定的 `Failed` 分支還沒讀完 —— 骰面數是 d100,門檻未讀。
+// 所以鑑定**必定成功**並在訊息裡標未解。
 // ⛔ 不要為了「有東西發生」自己編一個成功率。
 
 func (g *Game) hunt(who int) {
@@ -734,7 +736,13 @@ func (g *Game) hunt(who int) {
 	}
 	c.SkillUsed = true
 	g.syncMember(*c)
-	ts.msg = c.Name + " 出去打獵了。⚠ 收穫多少未解（docs/re/166 §2）"
+	// ⚠ 收穫 0 是**失敗**,不是「成功但拿 0 份」——原版分成兩句話。
+	if n := town.HuntYield(g.rand); n > 0 {
+		g.group.Provisions += n
+		ts.msg = fmt.Sprintf("%s 打獵成功！補給 +%d（共 %d）", c.Name, n, g.group.Provisions)
+	} else {
+		ts.msg = c.Name + " 這趟沒有收穫。"
+	}
 }
 
 func (g *Game) identify(who, slot int) {
@@ -751,5 +759,5 @@ func (g *Game) identify(who, slot int) {
 	if it, ok := g.itemByIndex(item); ok {
 		name = it.Name
 	}
-	ts.msg = c.Name + " 辨識了 " + name + "。⚠ 成功率未解（docs/re/166 §3）"
+	ts.msg = c.Name + " 辨識了 " + name + "。⚠ 成功率未解（docs/re/177 §7）"
 }

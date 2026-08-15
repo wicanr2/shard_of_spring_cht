@@ -72,9 +72,14 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 補給品是 `GROUPS.DAT` **位移 23**([`formats/02`](../formats/02-groups-dat.md)),
 手冊 p.39:「如果打獵成功了,你會增加幾份**食糧**」✓。
 
-⚠ **擲骰本身沒讀完**:`ds:731E`(加項)與 `INT 3D:33` 吃的參數都未解,
-所以「成功機率多少、加幾份」不知道。讀到的是**形狀**(擲一次、夾在 ≥ 0、
-0 就是失敗)與**上限存在**。
+擲骰後來讀完了([`177`](177-dgroup-init-stream-and-hunt-formula.md) §4):
+
+```
+收穫 = max(0, INT(RND × 16) − 6)     ; 0–9,失敗率 7/16
+```
+
+`INT 3D:33` 是帶引數的 `RND`(`ds:72CE = 1.0`),`INT 3F:AD, 04` 是 × 16,
+加項 `ds:731E = −6.0`。**上限 `ds:6F10` 仍未解** —— 它沒有編譯期初值。
 
 `ds:3534` 是**當前迷宮編號**,`99` = 不在任何迷宮
 ([`169`](169-encounter-zone-selects-the-monster.md) §4:`MAZEMOVE` 把同一個變數
@@ -154,7 +159,8 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 | 項目 | 狀態 |
 |---|---|
 | 誰把位移 86 清回 `'0'` | **未解**(§1)|
-| 打獵的擲骰:`INT 3D:33` 的參數、`ds:731E`、上限 `ds:6F10` | **未解**(§2)|
+| ~~打獵的擲骰:`INT 3D:33` 的參數、`ds:731E`~~ | **已解**([`177`](177-dgroup-init-stream-and-hunt-formula.md) §4)|
+| 補給品上限 `ds:6F10` | **未解** —— 沒有編譯期初值 |
 | ~~`ds:3534` 在別處被填什麼~~ | **已解**:當前迷宮編號([`169`](169-encounter-zone-selects-the-monster.md) §4)|
 | ~~背包格是 0-based 還是 1-based~~ | **已解**:0-based([`167`](167-record-field-accessor-and-identified-flags.md) §3)|
 | `I)dentify` 的 `Failed` 分支(擲骰)| **未讀** |

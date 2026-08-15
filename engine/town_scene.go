@@ -351,9 +351,9 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 // ⚠ **列出來比隱藏好。** 少一個指令的選單看起來完全正常,
 // 沒有人會發現漏了什麼 —— 而 `R)eorder` 會直接影響戰鬥站位。
 var campUnimplemented = map[ebiten.Key]string{
-	ebiten.KeyP: "P) 列印角色表",
-	ebiten.KeyH: "H) 打獵",
-	ebiten.KeyI: "I) 鑑定",
+	// P)rint 是驅動 1986 年的並列埠印表機。⚠ 依 CLAUDE.md §1.2 的邊界,
+	// 它**不影響 remake 的行為**,所以不解也不做 —— 但選單上要看得到。
+	ebiten.KeyP: "P) 列印角色表(原版輸出到印表機,本引擎不做)",
 	ebiten.KeyC: "C) 施法",
 	ebiten.KeyU: "U) 使用道具",
 }
@@ -369,6 +369,10 @@ func campLetter(k ebiten.Key) byte {
 		return 'R'
 	case ebiten.KeyT:
 		return 'T'
+	case ebiten.KeyH:
+		return 'H'
+	case ebiten.KeyI:
+		return 'I'
 	}
 	return 0
 }
@@ -396,6 +400,12 @@ func (g *Game) campSubKey(k ebiten.Key) {
 	}
 	// 角色卡只是看,沒有下一步。
 	if ts.campMode == '#' {
+		return
+	}
+	// H)unt:選完人就結束,不必選道具(docs/re/166 §2)。
+	if ts.campMode == 'H' {
+		g.hunt(ts.campWho)
+		ts.campMode, ts.campWho = 0, -1
 		return
 	}
 	// R)eorder 與 T)rade 都要選第二個人
@@ -449,6 +459,10 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		return
 	}
 	switch ts.campMode {
+	case 'I':
+		g.identify(ts.campWho, slot)
+		ts.campMode, ts.campWho = 0, -1
+		return
 	case 'W', 'A':
 		it, ok := g.itemByIndex(c.Pack[slot])
 		if !ok {
@@ -699,4 +713,43 @@ func (g *Game) buildingLines(ts *townState) []string {
 		return append(lines, "", town.GrowthAssumption)
 	}
 	return nil
+}
+
+// hunt 與 identify 是營地裡兩個「每天一次」的技能。docs/re/166。
+//
+// ⚠ 兩者的**結果**都還沒讀完:打獵的擲骰(`INT 3D:33` 的參數、加項、上限)
+// 與鑑定的 `Failed` 分支都未解(docs/re/166 §6)。
+// 所以這裡只做**閘門**——閘門是逐條讀出來的,結果不是。
+// ⛔ 不要為了「有東西發生」自己編一個成功率。
+
+func (g *Game) hunt(who int) {
+	ts := g.town
+	c := &g.members[who]
+	// 原版的「在野外」是 `ds:3534 ≥ 99`,而那個變數的來源未解 ——
+	// 引擎用「不在迷宮、也不在城鎮」。營地開在城鎮裡時就是室內。
+	outdoors := g.level == nil && g.town != nil && g.town.mode == townCamp
+	if gate := town.CanHunt(*c, outdoors); gate != town.SkillOK {
+		ts.msg = c.Name + "：" + gate.String()
+		return
+	}
+	c.SkillUsed = true
+	g.syncMember(*c)
+	ts.msg = c.Name + " 出去打獵了。⚠ 收穫多少未解（docs/re/166 §2）"
+}
+
+func (g *Game) identify(who, slot int) {
+	ts := g.town
+	c := &g.members[who]
+	item := c.Pack[slot]
+	if gate := town.CanIdentify(*c, item); gate != town.SkillOK {
+		ts.msg = c.Name + "：" + gate.String()
+		return
+	}
+	c.SkillUsed = true
+	g.syncMember(*c)
+	name := "那件東西"
+	if it, ok := g.itemByIndex(item); ok {
+		name = it.Name
+	}
+	ts.msg = c.Name + " 辨識了 " + name + "。⚠ 成功率未解（docs/re/166 §3）"
 }

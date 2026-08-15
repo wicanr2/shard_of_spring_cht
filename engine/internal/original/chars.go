@@ -36,6 +36,9 @@ const (
 	// 五處程式碼、三支模組都讀這裡(docs/re/150 §1),
 	// 其中兩處緊接在載入 `Exp.  ` 標籤之後 —— 標籤與欄位相鄰。
 	offExp = 90
+	// offSkillUsed 是「今天用過技能」的旗標位移(docs/re/166 §1)。
+	// `H)unt` 與 `I)dentify` 共用。
+	offSkillUsed = 86
 )
 
 // 狀態碼(位移 38)。= 法術系別編號(docs/formats/03),名稱取自 `MENU.EXE`
@@ -55,31 +58,35 @@ const (
 
 // Character 是一筆角色記錄。欄位順序與 docs/formats/01 的表相同。
 type Character struct {
-	Party    byte   // 位移 1:所屬隊伍 '1'–'5';'*' = 無(docs/re/133)
-	Name     string // 位移 2–11
-	ID       int    // 位移 12,1–25
-	Race     byte   // 位移 14:H/T/D/E/G
-	Class    byte   // 位移 15:'1' = Hero、'2' = Wizard
-	Speed    int    // 位移 16
-	Str      int    // 位移 18
-	Int      int    // 位移 20
-	End      int    // 位移 22
-	ToHit    int    // 位移 24
-	MaxHP    int    // 位移 26
-	HP       int    // 位移 28
-	MaxSP    int    // 位移 30
-	SP       int    // 位移 32
-	Weapon   int    // 位移 34:背包格號,99 = 未裝備
-	Armor    int    // 位移 36:同上
-	Status   int    // 位移 38:= 法術系別編號(docs/formats/03)
-	Level    int    // 位移 40
-	Skills   string // 位移 42–51:十個 '0'/'1',**表由職業決定**
-	Pack     [PackSlots]int
-	Flags2   string  // 位移 74–83:第二串十個旗標,**語意未解**(docs/re/144 §6)
-	StatMag  int     // 位移 84:狀態效果強度
-	SkillPts int     // 位移 89:剩餘技能點數(docs/re/144 §4)
-	Exp      float64 // 位移 90–93:經驗值,MBF 單精度(docs/re/150)
-	Raw      []byte  // 原始 94 bytes —— 存檔往返要逐位元組保留未解欄位
+	Party   byte   // 位移 1:所屬隊伍 '1'–'5';'*' = 無(docs/re/133)
+	Name    string // 位移 2–11
+	ID      int    // 位移 12,1–25
+	Race    byte   // 位移 14:H/T/D/E/G
+	Class   byte   // 位移 15:'1' = Hero、'2' = Wizard
+	Speed   int    // 位移 16
+	Str     int    // 位移 18
+	Int     int    // 位移 20
+	End     int    // 位移 22
+	ToHit   int    // 位移 24
+	MaxHP   int    // 位移 26
+	HP      int    // 位移 28
+	MaxSP   int    // 位移 30
+	SP      int    // 位移 32
+	Weapon  int    // 位移 34:背包格號,99 = 未裝備
+	Armor   int    // 位移 36:同上
+	Status  int    // 位移 38:= 法術系別編號(docs/formats/03)
+	Level   int    // 位移 40
+	Skills  string // 位移 42–51:十個 '0'/'1',**表由職業決定**
+	Pack    [PackSlots]int
+	Flags2  string // 位移 74–83:第二串十個旗標,**語意未解**(docs/re/144 §6)
+	StatMag int    // 位移 84:狀態效果強度
+	// SkillUsed:今天已經用過技能(docs/re/166 §1)。原版是 `MID$(記錄, 86, 1) = "1"`,
+	// `H)unt` 與 `I)dentify` 共用同一個旗標。
+	// ⚠ 出貨存檔這一格是**空白**不是 `'0'` —— 判定要寫成「等於 `'1'` 才算用過」。
+	SkillUsed bool
+	SkillPts  int     // 位移 89:剩餘技能點數(docs/re/144 §4)
+	Exp       float64 // 位移 90–93:經驗值,MBF 單精度(docs/re/150)
+	Raw       []byte  // 原始 94 bytes —— 存檔往返要逐位元組保留未解欄位
 }
 
 // Occupied 回傳這一槽是否有角色。
@@ -118,8 +125,9 @@ func ParseChars(d []byte) ([]Character, error) {
 			Status: u16(r, 38), Level: u16(r, 40),
 			Skills: string(r[41:51]), Flags2: string(r[73:83]),
 			StatMag: u16(r, 84), SkillPts: int(r[88]),
-			Exp: MBF(r[offExp-1 : offExp+3]),
-			Raw: append([]byte(nil), r...),
+			SkillUsed: r[offSkillUsed-1] == '1',
+			Exp:       MBF(r[offExp-1 : offExp+3]),
+			Raw:       append([]byte(nil), r...),
 		}
 		// 背包:位移 54 + 2i(docs/formats/01)
 		for k := range c.Pack {
@@ -214,6 +222,13 @@ func (c Character) Bytes() []byte {
 		put(54+2*k, v)
 	}
 	put(84, c.StatMag)
+	// 位移 86:⚠ 只在旗標為真時寫 '1' —— 出貨存檔的「沒用過」是**空白**,
+	// 寫成 '0' 會動到一個原版沒動過的位元組(docs/re/166 §1)。
+	if c.SkillUsed {
+		r[offSkillUsed-1] = '1'
+	} else if r[offSkillUsed-1] == '1' {
+		r[offSkillUsed-1] = ' '
+	}
 	for i := 0; i < 10; i++ {
 		if i < len(c.Flags2) {
 			r[73+i] = c.Flags2[i]

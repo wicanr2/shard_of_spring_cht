@@ -186,10 +186,15 @@ func Passable(m *Map, fromX, fromY, toX, toY int, dir Facing) bool {
 // Step 處理一次方向輸入。docs/spec/05 §6:
 //
 //	⚠ **朝向不同時只轉身,不位移。** 往北走的第一下若原本朝東,只會轉成朝北。
-//	這一條會改變操作手感,也會改變每一步消耗的遊戲時間。
+//
+// ⚠ **轉身也要推進時鐘**(docs/re/149:實跑量出來的)。
+// 先前只在實際位移時推進 —— 那樣時鐘會走得比原版慢,
+// 而**慢的時鐘沒有症狀**:天色、遭遇、食糧消耗全部一起變慢,
+// 玩起來只覺得「這遊戲比較寬鬆」。
 func (s *State) Step(dir Facing, m *Map) Result {
 	if s.Facing != dir {
 		s.Facing = dir
+		s.tick()
 		return Turned
 	}
 	dx, dy := dir.delta()
@@ -198,12 +203,21 @@ func (s *State) Step(dir Facing, m *Map) Result {
 		return Blocked
 	}
 	s.X, s.Y = nx, ny
+	s.tick()
+	return Moved
+}
 
-	// docs/spec/05 §7:每次**實際位移**推進時鐘一格,並遞減遭遇倒數。
-	// 純轉身不推進。
+// Tick 推進時鐘一格並遞減遭遇倒數 —— 給場景層在「非移動的動作」上呼叫
+// (docs/re/149:存檔也算一個動作)。
+func (s *State) Tick() { s.tick() }
+
+// tick 推進時鐘一格並遞減遭遇倒數。
+//
+// 原版的 `dec 位移25` 就接在時鐘進位那一段的最後(docs/re/107 §1),
+// 所以**兩者一定同步** —— 不要在別處單獨動其中一個。
+func (s *State) tick() {
 	s.Clock.Tick()
 	if s.Encounter > 0 {
 		s.Encounter--
 	}
-	return Moved
 }

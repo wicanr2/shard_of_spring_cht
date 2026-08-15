@@ -19,11 +19,14 @@ func TestTurnBeforeMove(t *testing.T) {
 	if s.Facing != North {
 		t.Errorf("朝向應變成北,得 %v", s.Facing)
 	}
-	if s.Encounter != 10 {
-		t.Errorf("純轉身不該遞減遭遇倒數,得 %d", s.Encounter)
+	// ⚠ **轉身也要花時間**(docs/re/149:6 步 0 轉 = 7 格、18 步 2 轉 = 21 格,
+	// 兩次都等於「按鍵數 + 1」)。先前這裡斷言「純轉身不推進」,
+	// 而那樣時鐘會走得比原版慢 —— 慢的時鐘沒有症狀。
+	if s.Encounter != 9 {
+		t.Errorf("轉身也該遞減遭遇倒數,得 %d", s.Encounter)
 	}
-	if s.Clock != (Clock{}) {
-		t.Errorf("純轉身不該推進時鐘,得 %+v", s.Clock)
+	if s.Clock == (Clock{}) {
+		t.Error("轉身也該推進時鐘")
 	}
 
 	if r := s.Step(North, m); r != Moved {
@@ -32,8 +35,8 @@ func TestTurnBeforeMove(t *testing.T) {
 	if s.X != 50 || s.Y != 49 {
 		t.Errorf("往北應 y−1,得 (%d,%d)", s.X, s.Y)
 	}
-	if s.Encounter != 9 {
-		t.Errorf("位移應遞減遭遇倒數,得 %d", s.Encounter)
+	if s.Encounter != 8 {
+		t.Errorf("轉身 + 位移共兩格,遭遇倒數應為 8,得 %d", s.Encounter)
 	}
 }
 

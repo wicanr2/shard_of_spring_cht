@@ -236,6 +236,9 @@ func (g *Game) Update() error {
 		}
 	}
 	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		// ⚠ **存檔也推進時鐘一格**(docs/re/149:只按 S 不移動,位移 33 仍 +1)。
+		// 這不是直覺的行為 —— 但三次量測都吻合「每個動作一格」。
+		g.party.Tick()
 		if err := g.save(); err != nil {
 			g.saveMsg = "存檔失敗：" + err.Error()
 		} else {

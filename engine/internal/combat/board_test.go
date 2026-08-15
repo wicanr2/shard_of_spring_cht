@@ -183,7 +183,7 @@ func TestPlaceKeepsPartyOffTheRim(t *testing.T) {
 	f.Place()
 	for i := PartyBase; i < PartyBase+PartyMax; i++ {
 		u := f.Units[i]
-		if u.X <= 0 || u.X >= BoardSize-1 || u.Y <= 0 || u.Y >= BoardSize-1 {
+		if u.X <= 0 || u.X >= BoardW-1 || u.Y <= 0 || u.Y >= BoardH-1 {
 			t.Errorf("第 %d 位站在 (%d,%d) —— 那是最外圈", i-PartyBase+1, u.X, u.Y)
 		}
 	}
@@ -195,5 +195,45 @@ func TestPlaceKeepsPartyOffTheRim(t *testing.T) {
 			t.Errorf("兩個單位站在同一格 %v", k)
 		}
 		seen[k] = true
+	}
+}
+
+// 陣列寬 31、基準 13 是讀出來的(docs/re/164 §1/§2)——
+// 這個測試會在有人把它改回 15 或改動基準時失敗。
+func TestBoardStrideAndBase(t *testing.T) {
+	if BoardW != 31 {
+		t.Errorf("格陣列寬度 %d,原版索引是 列×31+欄(docs/re/164 §1)", BoardW)
+	}
+	if PartyBaseX != 13 || PartyBaseY != 13 {
+		t.Errorf("隊伍基準 (%d,%d),原版兩軸都是 +13(docs/re/164 §2)",
+			PartyBaseX, PartyBaseY)
+	}
+	f := &Field{}
+	for i := PartyBase; i < PartyBase+5; i++ {
+		f.Units[i] = Unit{HP: 5, Facing: South}
+	}
+	f.Place()
+	// 五個人落在 x ∈ {12,13,14}、y ∈ {13,14}
+	for i := PartyBase; i < PartyBase+5; i++ {
+		u := f.Units[i]
+		if u.X < 12 || u.X > 14 || u.Y < 13 || u.Y > 14 {
+			t.Errorf("第 %d 位在 (%d,%d),應落在 x 12–14、y 13–14",
+				i-PartyBase+1, u.X, u.Y)
+		}
+	}
+}
+
+// 視窗夾在盤內,而且不會露出盤外的格子。
+func TestViewOriginClamps(t *testing.T) {
+	for _, c := range [][4]int{
+		{0, 0, 0, 0},
+		{BoardW - 1, BoardH - 1, BoardW - ViewW, BoardH - ViewH},
+		{15, 15, 15 - ViewW/2, 15 - ViewH/2},
+	} {
+		x, y := ViewOrigin(c[0], c[1])
+		if x != c[2] || y != c[3] {
+			t.Errorf("ViewOrigin(%d,%d) = (%d,%d),應為 (%d,%d)",
+				c[0], c[1], x, y, c[2], c[3])
+		}
 	}
 }

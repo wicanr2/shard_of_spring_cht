@@ -4,20 +4,56 @@ import "shardofspring/internal/rules"
 
 // 戰場。docs/spec/12-combat-board.md。
 //
-// 15×15,四周一圈是離場用的「圓點」(手冊 p.33)。
 // 座標 (0,0) 在左上,x 往東、y 往南 —— 戰場不索引任何原版檔案,
 // 所以取最不容易寫反的一種。
 
-const BoardSize = 15
+// BoardW 是格陣列的寬度。**讀出來的**:原版索引是 `列 × 31 + 欄`
+// (docs/re/164 §1,三處 `mov dx, 31` + `imul`)。
+//
+// ⚠ 手冊 p.33 的「15×15」講的是**畫面**,不是這個陣列 ——
+// 隊伍站在 x ∈ {12,13,14},只有 15 寬的話會貼在右下角,
+// 而原版截圖是下方置中(docs/re/164 §4)。
+const BoardW = 31
+
+// BoardH 是高度。⚠ **未解**(docs/re/164 §5):原版的通行判定讀格值(< 33),
+// 沒有任何座標界限的字面值可以量。這裡取正方形,是**具名假設**。
+const BoardH = BoardW
+
+// ViewW / ViewH 是畫面上看得到的視窗。手冊 p.33:
+// 「位置會被放大成 **15×15 格**的戰鬥畫面」—— 那一句講的是畫面,不是陣列。
+//
+// ⚠ 視窗**跟著誰捲動**沒有讀到(docs/re/164 §6),引擎跟著目前行動的單位。
+const (
+	ViewW = 15
+	ViewH = 15
+)
+
+// ViewOrigin 回傳以 (cx,cy) 為中心的視窗左上角,夾在盤內。
+func ViewOrigin(cx, cy int) (x0, y0 int) {
+	clamp := func(v, view, size int) int {
+		v -= view / 2
+		if v < 0 {
+			return 0
+		}
+		if v > size-view {
+			return size - view
+		}
+		return v
+	}
+	return clamp(cx, ViewW, BoardW), clamp(cy, ViewH, BoardH)
+}
 
 // OnEdge 回傳這一格是不是最外圈(踩上去可以離場)。
+//
+// ⚠ 原版**不是這樣判的** —— 它讀格陣列 `ds:6AD4` 的值(docs/re/164 §5),
+// 而那份內容是執行期建的,靜態讀不到。用座標近似是**實作決定**。
 func OnEdge(x, y int) bool {
-	return x == 0 || y == 0 || x == BoardSize-1 || y == BoardSize-1
+	return x == 0 || y == 0 || x == BoardW-1 || y == BoardH-1
 }
 
 // InBoard 回傳座標是否在盤內。
 func InBoard(x, y int) bool {
-	return x >= 0 && x < BoardSize && y >= 0 && y < BoardSize
+	return x >= 0 && x < BoardW && y >= 0 && y < BoardH
 }
 
 // delta 回傳朝向的位移。Absent(0)沒有方向。
@@ -175,15 +211,22 @@ func PartyOffset(i int) (dx, dy int) {
 	return n%PartyRowWidth - 1, n / PartyRowWidth
 }
 
+// PartyBaseX / PartyBaseY 是隊伍陣型的基準,**兩軸共用同一個字面值 13**
+// (docs/re/164 §2:`add bx, 0Dh` 出現在欄與列兩條路徑上)。
+const (
+	PartyBaseX = 13
+	PartyBaseY = 13
+)
+
 // Place 把單位擺到初始位置。
 //
-// 隊伍的陣型是**讀出來的**(docs/re/160):每列三個。
-// ⚠ 陣型的**基準列**(原版 `ds:94C2`)未解 —— 它只把整塊陣型上下平移,
-// 這裡取「下半、避開最外圈」:一開始就站在圓點上等於還沒開打就能逃。
+// 隊伍是**讀出來的**(docs/re/160 的陣型 + docs/re/164 的基準 13)。
 //
-// ⚠ **怪物那一半仍是佔位** —— 原版怪物的佈陣沒有讀到。
+// ⚠ **怪物那一半是近似**:原版是「擲一組隨機座標 → 查格值是不是空的 →
+// 不合就重擲」(docs/re/164 §3),而兩個擲骰範圍是執行期變數,未解。
+// 這裡用可預測的排列填,**不假裝那是原版的分佈**。
 func (f *Field) Place() {
-	const baseX, baseY = 7, BoardSize - 4 // 基準:置中偏下
+	const baseX, baseY = PartyBaseX, PartyBaseY
 	slot := 1
 	for i := PartyBase; i < PartyBase+PartyMax; i++ {
 		if !f.Units[i].Alive() {
@@ -194,7 +237,7 @@ func (f *Field) Place() {
 		f.Units[i].Facing = North
 		slot++
 	}
-	mx, my := 5, 2
+	mx, my := PartyBaseX-4, PartyBaseY-6
 	for i := MonsterBase; i < MonsterBase+MonsterMax; i++ {
 		if !f.Units[i].Alive() {
 			continue
@@ -202,8 +245,8 @@ func (f *Field) Place() {
 		f.Units[i].X, f.Units[i].Y = mx, my
 		f.Units[i].Facing = South
 		mx++
-		if mx >= BoardSize-1 {
-			mx, my = 5, my+1
+		if mx > PartyBaseX+4 {
+			mx, my = PartyBaseX-4, my+1
 		}
 	}
 }

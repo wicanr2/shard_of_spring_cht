@@ -117,11 +117,11 @@ func (g *Game) cursorKey(k ebiten.Key) bool {
 	if cu.y < 0 {
 		cu.y = 0
 	}
-	if cu.x >= combat.BoardSize {
-		cu.x = combat.BoardSize - 1
+	if cu.x >= combat.BoardW {
+		cu.x = combat.BoardW - 1
 	}
-	if cu.y >= combat.BoardSize {
-		cu.y = combat.BoardSize - 1
+	if cu.y >= combat.BoardH {
+		cu.y = combat.BoardH - 1
 	}
 	return true
 }

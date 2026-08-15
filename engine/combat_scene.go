@@ -199,13 +199,20 @@ func (g *Game) endTurn() {
 	}
 }
 
-// drawBoard 畫 15×15 的戰場。
+// drawBoard 畫戰場的 15×15 視窗(docs/re/164 §4:陣列 31 寬,畫面 15×15)。
 func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 	f, p := g.field, g.panel
 	lh := p.LineHeight()
 	cell := lh * 0.9
-	for y := 0; y < combat.BoardSize; y++ {
-		for x := 0; x < combat.BoardSize; x++ {
+	// 視窗跟著目前行動的單位;沒有人能動時跟著隊伍的基準格。
+	cx, cy := combat.PartyBaseX, combat.PartyBaseY
+	if g.actor >= 0 && g.actor < len(f.Units) {
+		cx, cy = f.Units[g.actor].X, f.Units[g.actor].Y
+	}
+	ox, oy := combat.ViewOrigin(cx, cy)
+	for vy := 0; vy < combat.ViewH; vy++ {
+		for vx := 0; vx < combat.ViewW; vx++ {
+			x, y := ox+vx, oy+vy
 			ch := "·" // 空格
 			if combat.OnEdge(x, y) {
 				ch = "○" // 圓點 = 出口(手冊 p.33)
@@ -221,10 +228,10 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 					ch = "人"
 				}
 			}
-			p.Draw(dst, ch, x0+float64(x)*cell, y0+float64(y)*cell)
+			p.Draw(dst, ch, x0+float64(vx)*cell, y0+float64(vy)*cell)
 		}
 	}
-	return y0 + float64(combat.BoardSize)*cell
+	return y0 + float64(combat.ViewH)*cell
 }
 
 // drawCombat 在主視野畫戰鬥的狀態與訊息。

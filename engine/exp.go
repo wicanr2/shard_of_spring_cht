@@ -47,6 +47,5 @@ func (g *Game) awardExp(units []combat.Unit) (int, string) {
 		g.members[i].Exp += float64(share)
 		g.syncMember(g.members[i])
 	}
-	return share, fmt.Sprintf("獲得經驗 %d,每人 %d(%s)",
-		total, share, combat.ExpSplitAssumption)
+	return share, fmt.Sprintf("獲得經驗 %d,每人 %d(%d 人分)", total, share, len(idx))
 }

@@ -234,10 +234,15 @@ remake 的畫面與原版不是一對一(例如原版把提示放側欄、本專
 `MID$(rec,90,4)` + `CVS` → 再讀位移 40 的等級 → 以等級索引門檻表 → 相減 →
 印 ` experience before gaining a level.`。
 
-經驗值的來源是 `MONSTERS.DAT` 欄 8(位移 31,[`formats/03`](../formats/03-monsters-dat.md))。
-⚠ **怎麼分配未解** —— 本引擎均分,是具名假設(`ExpSplitAssumption`)。
-**分給誰**則是解出來的:朝向 > 0(還在場上)**且** 狀態 < 5(未陣亡)
-([`re/150`](../re/150-experience-is-offset-90.md) §2.1)—— **逃走的人拿不到**。
+經驗值的來源是 `MONSTERS.DAT` 欄 8(位移 31,[`formats/03`](../formats/03-monsters-dat.md)),
+整段算式已讀出([`re/152`](../re/152-experience-settlement-formula.md)):
+
+```
+每人所得 = INT( 九個怪物槽的屬性 19 總和 ÷ 有資格人數 )
+有資格   = 朝向 > 0(還在場上) 且 狀態 < 5(未陣亡)
+```
+
+⚠ 總和**不篩死活** —— 逃走的怪物照樣給經驗。
 
 ⚠ 原版的「零經驗」寫成 `00 00 00 40`(MBF 解出來是 2.7×10⁻²⁰,畫面印 0)。
 存回時**只在值真的變了才覆寫那四個 byte**,否則沒打過仗的存檔會逐位元組改變。

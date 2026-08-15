@@ -1,20 +1,24 @@
 package combat
 
-// 戰利品:經驗值。docs/re/140 §9、docs/formats/03 欄 8。
+// 戰利品:經驗值。整段算式讀出來了 —— docs/re/152。
+//
+//	每人所得 = INT( 九個怪物槽的屬性 19 總和 ÷ 有資格人數 )
+//
+// 經驗值來自 `MONSTERS.DAT` 位移 31(欄 8),開場搬進戰鬥陣列屬性 19。
 
-// TotalExp 回傳被打倒的怪物身上的經驗值總和。
+// TotalExp 回傳這一場戰鬥的經驗總額。
 //
-// 經驗值是 `MONSTERS.DAT` 位移 31(欄 8),docs/formats/03 註明它
-// **在戰鬥中只寫不讀** —— 也就是說它被搬進戰鬥陣列屬性 19 之後就沒人動它,
-// 用途只能是結算。
+// ⚠ **不篩死活。** 原版的累加迴圈跑列 0–8 九個怪物槽,
+// 裡面**沒有任何「這隻死了沒」的判斷**(docs/re/152 §1.1);
+// 屬性 19 全模組只有一個寫入點(開場)與一個讀取點(這裡),
+// 沒有人在怪物死掉時清掉它。
 //
-// ⚠ 只算**倒下的怪物**(`IsMonster && !Alive()`)。
-// 「活著」與「在場」是兩個欄位(docs/spec/07 §6)—— 逃走的怪物 `Alive()` 仍為真,
-// 用 `OnField()` 判斷會把逃走的也算成打倒。
+// 也就是說**逃走的怪物照樣給經驗**。多數戰鬥打到怪物全滅才結束,
+// 所以這個差別在畫面上看不出來 —— 只有怪物逃走的那一場會分岔。
 func TotalExp(units []Unit) int {
 	total := 0
-	for _, u := range units {
-		if !u.IsMonster || u.Alive() {
+	for i, u := range units {
+		if i >= PartyBase || !u.IsMonster {
 			continue
 		}
 		total += u.Exp
@@ -22,22 +26,18 @@ func TotalExp(units []Unit) int {
 	return total
 }
 
-// ExpShare 是分給每個生還隊員的經驗值。
+// ExpShare 是分給每個有資格的隊員的經驗值。
 //
-// ⚠ **怎麼分未解。** 原版沒有讀到分配那一段;可能是每人全額,也可能均分。
-// 這裡選**均分給生還者**,是一個**具名的假設**,不是讀出來的規則 ——
-// 換成全額只要改這一個函式。
+// 整數除法 —— 原版是浮點除完再 `INT()`(docs/re/152 §1.3),
+// 對非負數兩者相同。
 //
-// 生還者為 0 時回 0(全滅就沒有人拿得到)。
-func ExpShare(total, survivors int) int {
-	if survivors <= 0 {
+// 有資格的人數為 0 時回 0(全隊陣亡就沒有人拿得到)。
+func ExpShare(total, eligible int) int {
+	if eligible <= 0 {
 		return 0
 	}
-	return total / survivors
+	return total / eligible
 }
-
-// ExpSplitAssumption 是給畫面顯示用的說明,免得玩家把假設當成原版行為。
-const ExpSplitAssumption = "⚠ 經驗值的分配方式未解,本引擎均分給生還者"
 
 // EarnsExp 回傳這個單位戰後分不分得到經驗。
 //

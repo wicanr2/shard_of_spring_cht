@@ -160,7 +160,7 @@ func (g *Game) castAt(s original.Spell, cx, cy int) {
 	switch s.Effect {
 	case magic.EffRaise, magic.EffCure, magic.EffUnbind, magic.EffProtect:
 		friendly = true
-	case magic.EffAttr3, magic.EffStrength, magic.EffHitPoints, magic.EffSpeed:
+	case magic.EffToHit, magic.EffStrength, magic.EffHitPoints, magic.EffSpeed:
 		friendly = s.Power > 0
 	}
 	if friendly {

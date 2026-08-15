@@ -83,9 +83,12 @@ func TestStatusMagnitudeShrinks(t *testing.T) {
 	}
 }
 
-// 驗收 6:類別 3 與 13 不套用效果,訊息標「未解」。
+// 驗收 6:仍未解的類別不套用效果,訊息標「未解」。
+//
+// ⚠ 類別 3 **已經不在這個清單裡**(docs/re/171 §3:它是命中能力)——
+// 這條測試從三個縮到兩個,是解出來的結果,不是放寬。
 func TestUnresolvedEffectsChangeNothing(t *testing.T) {
-	for _, eff := range []int{EffAttr3, EffTransference, 99} {
+	for _, eff := range []int{EffTransference, 99} {
 		u := combat.Unit{HP: 10, Str: 5, Speed: 7}
 		tgt := u
 		r := Apply(original.Spell{Name: "X", Effect: eff, Power: 5},
@@ -147,9 +150,38 @@ func TestAllShippedSpellsDispatch(t *testing.T) {
 			unresolved++
 		}
 	}
-	// 類別 3 與 13 是已知未解的。數字變了表示資料或規格變了。
-	if unresolved != 4 {
-		t.Errorf("未解的法術 %d 個,docs/spec/09 §3 預期 4"+
-			"(類別 3 有 3 個、類別 13 有 1 個)—— 數字變了要回去看規格", unresolved)
+	// 只剩類別 13(TRANSFERENCE)一個未解。
+	// ⚠ 類別 3 的三個已經解出來了(docs/re/171 §3),所以這裡從 4 變成 1 ——
+	// **數字變了要回去看規格**,這一次規格也跟著改了。
+	if unresolved != 1 {
+		t.Errorf("未解的法術 %d 個,docs/spec/09 §3 預期 1"+
+			"(只剩類別 13)—— 數字變了要回去看規格", unresolved)
 	}
+}
+
+// 類別 3 改的是**命中能力**(docs/re/171 §3),而且與 4/5/6 同一條路徑。
+func TestEffectClassThreeChangesToHit(t *testing.T) {
+	for _, c := range []struct {
+		eff   int
+		field func(combat.Unit) int
+		name  string
+	}{
+		{EffToHit, func(u combat.Unit) int { return u.ToHit }, "命中能力"},
+		{EffStrength, func(u combat.Unit) int { return u.Str }, "力量"},
+		{EffHitPoints, func(u combat.Unit) int { return u.HP }, "生命值"},
+		{EffSpeed, func(u combat.Unit) int { return u.Speed }, "速度"},
+	} {
+		tgt := combat.Unit{HP: 10, Str: 5, Speed: 7, ToHit: 11}
+		before := c.field(tgt)
+		r := Apply(original.Spell{Name: "X", Effect: c.eff, Power: 3},
+			1, &combat.Unit{}, []*combat.Unit{&tgt})
+		if r.Unresolved {
+			t.Errorf("類別 %d 不該再標未解", c.eff)
+		}
+		if got := c.field(tgt); got == before {
+			t.Errorf("類別 %d 應該改動%s,但沒變(%d)", c.eff, c.name, got)
+		}
+	}
+	// ⛔ 這條的依據是**讀到的類別 → 屬性欄對應**,不是從
+	// `Becomes clumsy` 這個名字推的 —— docs/spec/09 §3 當初明文禁止那樣做。
 }

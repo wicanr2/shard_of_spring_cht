@@ -31,21 +31,32 @@ var StormSpell = map[int]int{
 	4: 12, // HAIL STORM
 }
 
-// MonsterSpellFilterUnresolved 記著原版還有一層過濾沒解:
-// 第一回合選完之後會查 `ds:7340[法術編號]`,是 1 就重選(docs/re/170 §2)。
-const MonsterSpellFilterUnresolved = "⚠ 怪物選招的過濾旗標(ds:7340)未解 —— 本引擎不過濾"
+// GroupDamageClass 是「群體傷害」的效果類別(SPELLS.DAT 欄3 = 1)。
+//
+// 原版第一回合選完之後查 `ds:7340[法術編號]`,是 **1** 就重選 ——
+// 而 `ds:7340` 就是欄3(docs/re/171 §1)。所以規則是
+// **第一回合不放群體傷害,第二回合起只放它**。
+//
+// 欄3 = 1 的恰好只有 FIRE STORM / TEMPEST / HAIL STORM 三招,
+// 也就是 StormSpell 那三個 —— 兩邊是同一件事的兩半。
+const GroupDamageClass = 1
 
-// MonsterSpell 回傳這一回合怪物要放的法術編號(**1-based**);0 = 不放。
+// MonsterSpell 回傳這一回合怪物要放的法術編號(**1-based**)。
+//
+// `reroll` 為真表示**這一擲要重來**(第一回合挑到群體傷害,docs/re/171 §2)。
+// `spell` 為 0 表示這個系別在這一回合**沒有東西可放** ——
+// ⚠ **兩者是不同的情況**,不要用同一個 0 表示:
+// 「重擲」是原版的迴圈,「沒東西可放」是原版沒有那一條分支(系別 2 / 5)。
 //
 // roll 是 1…SpellFamilyAttacks[family] 的擲骰結果,由呼叫端給 ——
 // 與 maze.PoolHeal 同一條原則:擲骰交給呼叫端,這裡只做規則。
-func MonsterSpell(family, round, roll int) int {
+func MonsterSpell(family, round, roll int) (spell int, reroll bool) {
 	if round > 1 {
-		return StormSpell[family] // 沒有對應分支的系別回 0
+		return StormSpell[family], false // 系別 2 / 5 沒有分支 → 0
 	}
 	base, ok := SpellFamilyBase[family]
 	if !ok {
-		return 0
+		return 0, false
 	}
 	n := SpellFamilyAttacks[family]
 	if roll < 1 {
@@ -54,5 +65,11 @@ func MonsterSpell(family, round, roll int) int {
 	if roll > n {
 		roll = n
 	}
-	return base + roll
+	got := base + roll
+	// 第一回合挑到群體傷害(SPELLS.DAT 欄3 = 1)就重選。
+	// 每個系別最多只有一招是群體傷害,就是 StormSpell 那一張。
+	if got == StormSpell[family] {
+		return got, true
+	}
+	return got, false
 }

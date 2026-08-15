@@ -109,7 +109,7 @@ type Result struct {
 const (
 	EffGroupDamage  = 1
 	EffSingleDamage = 2
-	EffAttr3        = 3 // ⚠ 影響哪個屬性**未解**
+	EffToHit        = 3 // 命中能力(屬性 9,docs/re/171 §3)
 	EffStrength     = 4
 	EffHitPoints    = 5
 	EffSpeed        = 6
@@ -144,15 +144,15 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		}
 		return Result{Message: fmt.Sprintf("%s 造成 %d 點傷害", name, p)}
 
-	case EffAttr3:
-		// ⚠ 影響哪個屬性未解(docs/spec/09 §3)。**不猜** ——
-		// 猜一個屬性會讓未解項變成看不出來的錯誤。
-		return Result{Unresolved: true,
-			Message: fmt.Sprintf("%s 發動,但效果類別 3 影響哪個屬性未解", name)}
-
-	case EffStrength, EffHitPoints, EffSpeed:
+	case EffToHit, EffStrength, EffHitPoints, EffSpeed:
+		// 類別 → 屬性欄是**讀到的**(docs/re/171 §3):
+		// 3 → 屬性 9(命中能力)、4 → 6(力量)、5 → 3(生命值)、6 → 2(速度)。
+		// ⚠ 四個裡三個本來就確認過,所以第四個的讀法可信 —— 不是從
+		// `Becomes clumsy` 這個名字猜的(docs/spec/09 §3 當初明文禁止那樣做)。
 		for _, t := range targets {
 			switch s.Effect {
+			case EffToHit:
+				t.ToHit += p
 			case EffStrength:
 				t.Str += p
 			case EffHitPoints:

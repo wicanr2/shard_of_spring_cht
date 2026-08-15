@@ -71,7 +71,11 @@ case "${1:-}" in
     # `go test` 結束之後它自己不會退 —— 現象是**容器永遠掛著、零輸出**,
     # 看起來像測試跑很久,實際上 `ps` 裡連 `go` 都沒有了。
     # 自己起 Xvfb 再設 DISPLAY,行為明確得多。
-    run sh -c 'Xvfb :99 -screen 0 640x480x24 -nolisten tcp >/dev/null 2>&1 &
+    # ⚠ 順手建一個空的 .Xauthority:少了它 ebiten 的 XGB 每次都會噴兩行
+    # 「Could not get authority info」——無害,但它出現在每一次 test 輸出裡,
+    # 會蓋掉真正的訊息,也讓人以為 X 沒接上。
+    run sh -c ': > "$HOME/.Xauthority"
+               Xvfb :99 -screen 0 640x480x24 -nolisten tcp >/dev/null 2>&1 &
                for i in $(seq 1 50); do [ -e /tmp/.X11-unix/X99 ] && break; sleep 0.1; done
                DISPLAY=:99 go test ./... "$@"' -- "$@"
     ;;

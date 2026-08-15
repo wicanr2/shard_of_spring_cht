@@ -64,7 +64,14 @@ func (g *Game) openMainMenu() {
 }
 
 // openPartySelect 讀 GROUPS.DAT 的五個槽,進 A3。
+//
+// docs/spec/18 §6:隊伍選擇畫面改吃 JSON 存檔 —— hydrateFromSave 先把
+// saves/<save.DefaultName>.json(如果存在)套進工作用的 .DAT,GROUPS.DAT
+// 於是變成「JSON 存檔的投影」而不是獨立的權威來源。沒有 JSON 存檔時
+// (第一次玩,或測試 fixture 直接寫 .DAT)沿用工作副本原本的內容,
+// 行為與 docs/spec/15 §5 定案時完全一樣。
 func (g *Game) openPartySelect() error {
+	g.hydrateFromSave()
 	slots, err := g.readGroupSlots()
 	if err != nil {
 		return err
@@ -110,6 +117,7 @@ func (g *Game) selectParty(slot int) {
 		g.shell.msg = "載入失敗:" + err.Error()
 		return
 	}
+	g.resumeMaze(slot) // docs/spec/18 §3.2 MazeFile:在迷宮裡存的檔,讀回要回到迷宮裡
 	g.shell.mode = shellPlaying
 }
 
@@ -128,6 +136,11 @@ func (g *Game) returnToMainMenu() {
 	g.party = world.State{}
 	g.mazeState = maze.State{}
 	g.tombs, g.clanRewarded = nil, false
+	// docs/spec/18:同一批「這局還沒存檔就不算數」的暫存狀態,與上面
+	// g.tombs/g.clanRewarded 同一條規則 —— 下次 L)oad 由 hydrateFromSave
+	// 從 JSON 存檔重新套用,不在這裡假裝還記得。
+	g.disabledEvents = nil
+	g.pendingActive, g.pendingMazeFile, g.pendingMazeFacing = 0, "", 0
 	g.warnings, g.saveMsg, g.overlay = nil, "", ""
 	g.bossFight = false
 	g.openMainMenu()

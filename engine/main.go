@@ -14,6 +14,8 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -25,6 +27,8 @@ import (
 	"shardofspring/internal/music"
 	"shardofspring/internal/original"
 	"shardofspring/internal/render"
+	"shardofspring/internal/rules"
+	"shardofspring/internal/save"
 	"shardofspring/internal/world"
 )
 
@@ -115,6 +119,33 @@ type Game struct {
 	// + Siriadne !)。打贏且這個旗標為真 → 結局畫面(docs/spec/15 §7)。
 	bossFight bool
 
+	// M13:引擎自己的存檔格式(docs/spec/18-save-format.md)。取代 M3 把
+	// GROUPS.DAT/CHARS.DAT 當主存檔路徑的做法 —— 那兩個檔仍然是 roster/create
+	// (engine/roster_scene.go、create_scene.go,邊界不准動)在用的**工作副本**,
+	// JSON 存檔(saves/party.json)才是玩家實際看到的「存檔」(docs/spec/18 §5)。
+	saveDir string // saves/*.json 所在目錄。預設在資產目錄旁邊,-save 可覆寫
+
+	// disabledEvents 是已作廢的一次性事件(docs/spec/18 §3.2 的
+	// Progress.DisabledEvents):key = 事件檔編號(original.MazeEntry.TextFile,
+	// 即 DE<N>EFF.BIN 的 N)→ 目標編號集合。
+	//
+	// ⚠ 這是修 docs/re/181 那個真實缺口的關鍵狀態:maze.DisableTarget 只改
+	// 記憶體裡當時載入的 level.events,而 loadLevel 每次進迷宮都重新讀檔 ——
+	// 沒有這份記錄,走出迷宮再走回來,一次性事件就復活了。
+	// loadLevel(maze_scene.go)在讀完事件表之後,把這裡記著的目標重新作廢一次。
+	disabledEvents map[string][]int
+
+	// pendingActive / pendingMazeFile / pendingMazeFacing 是 hydrateFromSave
+	// 從 JSON 存檔讀到、還沒套用的「上次玩到第幾隊、在哪座迷宮的哪個朝向」。
+	// resumeMaze(shell_scene.go 的 selectParty 呼叫)套用之後會清掉這三個欄位。
+	//
+	// ⚠ 只在選到的隊伍剛好是存檔的 Active 那一隊時才套用 —— MazeFile 是
+	// 單一一組欄位(不像 Group.MazeX/MazeY 每隊各有一份),選別隊時沒有對應
+	// 的意義,這是本引擎的簡化,不是 RE 結論(docs/spec/18 沒有規定這件事)。
+	pendingActive     int
+	pendingMazeFile   string
+	pendingMazeFacing int
+
 	// testKeys 是測試用的假輸入佇列(docs/spec/15 §9)。
 	// nil = 正式執行,Update() 照舊呼叫 inpututil 讀真正的鍵盤;
 	// 非 nil(即使是空切片)= 測試模式,底下改用這個切片當「這一格剛按下的鍵」。
@@ -196,6 +227,13 @@ func (g *Game) Update() error {
 		}
 		if g.pressed(ebiten.KeyEscape) && g.field.Outcome() != combat.Ongoing {
 			outcome := g.field.Outcome()
+			// docs/re/181 §4 + docs/spec/18 §1 第 3 項:打完一場由迷宮事件
+			// 引發的戰鬥,要把那個目標的事件作廢,否則走出迷宮再走回來會
+			// 再打一次。要在 g.field 被清成 nil 之前先讀 f.Log[0] ——
+			// combat_scene.go 的 startScriptedCombat 已經把它當「這場是不是
+			// 祭司事件」的識別(rules.PriestEncounterMark 的說明),endTurn()
+			// 顯示祝福文字用的是同一個判準,這裡沿用。
+			f := g.field
 			g.field = nil
 			switch {
 			case outcome == combat.PartyDead:
@@ -212,11 +250,22 @@ func (g *Game) Update() error {
 				// ⚠ g.bossFight 目前沒有任何呼叫端會設成 true —— 見它
 				// 在 Game 結構裡的說明,這裡只是接介面,不是宣告
 				// 「已經打得到最終首領」。
+				//
+				// 533 打完遊戲基本上結束了,但仍然照規則作廢這個目標
+				// (不因為「反正要回主選單了」就跳過)。
+				g.disableMazeEvent(maze.TargetFinalBoss)
 				g.bossFight = false
 				if g.shell != nil {
 					g.shell.mode = shellEnding
 				}
 				g.play(music.Ending)
+			case outcome == combat.MonstersDead && len(f.Log) > 0 && f.Log[0] == rules.PriestEncounterMark:
+				// 山丘巨人挾持祭司(maze.TargetPriest = 204)打贏了 ——
+				// 同一條規則:作廢目標 204,否則可以無限次「救祭司」。
+				g.disableMazeEvent(maze.TargetPriest)
+				// 遭遇倒數重置。⚠ **重置值未解** —— 原版每次遭遇後填什麼
+				// 沒有讀到。這裡沿用出貨存檔的量級,是佔位。
+				g.party.Encounter = 54
 			default:
 				// 遭遇倒數重置。⚠ **重置值未解** —— 原版每次遭遇後填什麼
 				// 沒有讀到。這裡沿用出貨存檔的量級,是佔位。
@@ -303,6 +352,18 @@ func (g *Game) Update() error {
 			// `Q` 是離開遊戲。這裡沿用 ESC 是**本引擎的選擇**,不是原版行為。
 			g.level = nil
 		}
+		// docs/spec/18 §3.2 MazeFile + 驗收 4:原版在迷宮裡也存得了檔
+		// (GROUPS.DAT 位移 79/81 就是為此存在的)。現行引擎先前只有在世界
+		// 地圖上才接 S 鍵,是缺口不是原版限制 —— 補上之後 g.save() 會
+		// 記住現在在哪座迷宮的哪一格(見 save() 的說明)。
+		if g.pressed(ebiten.KeyS) {
+			g.party.Tick()
+			if err := g.save(); err != nil {
+				g.saveMsg = "存檔失敗:" + err.Error()
+			} else {
+				g.saveMsg = fmt.Sprintf("已存到第 %d 隊(%s)", g.slot, g.savePath)
+			}
+		}
 		return nil
 	}
 
@@ -361,11 +422,16 @@ func (g *Game) syncMembers() {
 	}
 }
 
-// save 寫回存檔。**兩個檔一起寫。**
+// save 寫回存檔。**兩個檔一起寫,再寫一份 JSON。**
 //
 // 原版的存檔常式(`USERLIB` 槽 34)在同一段裡開了兩個檔:
 // `#1` = `CHARS.DAT`(記錄 94)、`#2` = `GROUPS.DAT`(記錄 90),docs/re/80 §1。
 // 只寫其中一個會讓兩份資料對不上 —— 隊伍位置前進了,成員的血量卻回到上一次。
+//
+// ⚠ docs/spec/18 §5:**JSON 存檔才是玩家看到的「存檔」**,上面兩個 .DAT
+// 是工作副本 —— roster_scene.go / create_scene.go(邊界不准動)直接讀寫
+// 它們,拿掉會讓那兩支檔案的存檔功能失效。這裡兩層都寫,JSON 是額外多做的,
+// 不是取代(取代做不到,見 docs/spec/18 §5 的邊界:不能動那兩支檔案)。
 func (g *Game) save() error {
 	g.syncMembers()
 	if err := g.writeChars(); err != nil {
@@ -385,6 +451,20 @@ func (g *Game) save() error {
 	grp.Month, grp.Day = g.party.Clock.Month, g.party.Clock.Day
 	grp.Hour, grp.Sub = g.party.Clock.Hour, g.party.Clock.Sub
 	grp.Encounter = g.party.Encounter
+
+	// docs/spec/18 §3.2 MazeFile + 驗收 4:在迷宮裡存檔要記住是哪一座、
+	// 在哪一格,讀回才能回到迷宮裡而不是世界地圖。
+	//
+	// ⚠ 朝向**不能**寫回 grp.Facing —— GROUPS.DAT 位移 41 只有一格,
+	// 存的是世界地圖朝向,離開迷宮回到世界地圖時還要用它;寫進迷宮朝向
+	// 會讓「下次真的走出迷宮」時面向錯的方向。迷宮朝向另外存進
+	// save.Progress.MazeFacing(save.go 的說明)。
+	mazeFile, mazeFacing := "", 0
+	if g.level != nil {
+		grp.MazeX, grp.MazeY = g.mazeState.Major, g.mazeState.Minor
+		mazeFile = strconv.Itoa(g.level.entry.MazeFile)
+		mazeFacing = int(g.mazeState.Facing)
+	}
 	groups[g.slot-1] = grp
 
 	out := make([]byte, 0, len(b))
@@ -394,7 +474,107 @@ func (g *Game) save() error {
 	if len(out) != len(b) {
 		return fmt.Errorf("寫出 %d bytes,原檔 %d", len(out), len(b))
 	}
-	return os.WriteFile(g.savePath, out, 0o644)
+	if err := os.WriteFile(g.savePath, out, 0o644); err != nil {
+		return err
+	}
+	return g.writeSaveFile(groups, mazeFile, mazeFacing)
+}
+
+// writeSaveFile 組一份 save.Save 並寫進 saves/<save.DefaultName>.json。
+// docs/spec/18 §5:這是玩家實際看到的存檔。
+func (g *Game) writeSaveFile(groups []original.Group, mazeFile string, mazeFacing int) error {
+	s := &save.Save{Version: save.CurrentVersion, Active: g.slot}
+	copy(s.Chars[:], g.chars)
+	copy(s.Groups[:], groups)
+	s.Progress = save.Progress{
+		DisabledEvents: g.disabledEvents,
+		ClanRewarded:   g.clanRewarded,
+		MazeFile:       mazeFile,
+		MazeFacing:     mazeFacing,
+	}
+	for n := range g.tombs {
+		s.Progress.Tombs = append(s.Progress.Tombs, n)
+	}
+	sort.Ints(s.Progress.Tombs) // 穩定輸出 —— map 沒有固定順序,不排序的話每次存檔 JSON 都會不一樣
+	return save.Write(save.Path(g.effectiveSaveDir(), save.DefaultName), s)
+}
+
+// effectiveSaveDir 回傳實際要用的存檔目錄。docs/spec/18 §2:預設在資產目錄
+// 旁邊,-save 可覆寫(main() 把覆寫值放進 g.saveDir,loadStatic 把預設值
+// 放進 g.saveDir——正式執行時這裡一定會直接回傳 g.saveDir)。
+//
+// ⚠ **沒有經過 loadStatic 設定過的 *Game(測試直接用struct literal 建構)
+// 不能落回目前工作目錄** —— filepath.Join("", "party.json") 會解成
+// "party.json",相對於 `go test` 的工作目錄(也就是 engine/ 原始碼目錄),
+// 這裡曾經真的把測試 fixture 的存檔寫進 engine/party.json,污染了
+// 下一個測試讀到的資料(TestJoinBlankSlotFromMainMenuAppliesNewPartyDefaults
+// 曾經因此失敗)。改成跟著 g.assets 走(测试 fixture 幾乎都會設 assets),
+// 放進 assets **底下**而不是旁邊,確保落在呼叫端已經準備好、會被清掉的
+// 目錄裡(例如 t.TempDir())。g.assets 也是空字串時才退回相對路徑
+// "saves"——目前沒有任何會呼叫到存讀檔的測試會落到這一支。
+func (g *Game) effectiveSaveDir() string {
+	if g.saveDir != "" {
+		return g.saveDir
+	}
+	if g.assets != "" {
+		return filepath.Join(g.assets, "saves")
+	}
+	return "saves"
+}
+
+// hydrateFromSave 讀 saves/<save.DefaultName>.json,若存在就覆寫工作用的
+// <assets>/save/{CHARS,GROUPS}.DAT,並套用 Progress(docs/spec/18)。
+//
+// 找不到檔案(還沒存過)不是錯誤 —— 沿用目前 <assets>/save/ 底下已經有的資料
+// (出貨資料,或前一輪 cmd/convert 的輸出)。openPartySelect(shell_scene.go)
+// 在列出隊伍槽之前呼叫這支函式,讓「隊伍選擇畫面讀 JSON 存檔」成立
+// (docs/spec/15 §5、docs/spec/18 §6)。
+func (g *Game) hydrateFromSave() {
+	s, err := save.Read(save.Path(g.effectiveSaveDir(), save.DefaultName))
+	if err != nil {
+		if !os.IsNotExist(err) {
+			g.warnings = append(g.warnings, "讀取存檔失敗:"+err.Error())
+		}
+		return
+	}
+	if err := g.applySave(s); err != nil {
+		g.warnings = append(g.warnings, "套用存檔失敗:"+err.Error())
+	}
+}
+
+// applySave 把一份 *save.Save 套進目前的執行狀態。
+func (g *Game) applySave(s *save.Save) error {
+	var charBytes []byte
+	for _, c := range s.Chars {
+		charBytes = append(charBytes, c.Bytes()...)
+	}
+	if err := os.WriteFile(filepath.Join(g.assets, "save", "CHARS.DAT"), charBytes, 0o644); err != nil {
+		return err
+	}
+	parsed, err := original.ParseChars(charBytes)
+	if err != nil {
+		return err
+	}
+
+	var groupBytes []byte
+	for _, grp := range s.Groups {
+		groupBytes = append(groupBytes, grp.Bytes()...)
+	}
+	if err := os.WriteFile(g.savePath, groupBytes, 0o644); err != nil {
+		return err
+	}
+
+	g.chars = parsed
+	g.disabledEvents = s.Progress.DisabledEvents
+	g.tombs = map[int]bool{}
+	for _, n := range s.Progress.Tombs {
+		g.tombs[n] = true
+	}
+	g.clanRewarded = s.Progress.ClanRewarded
+	g.pendingActive = s.Active
+	g.pendingMazeFile = s.Progress.MazeFile
+	g.pendingMazeFacing = s.Progress.MazeFacing
+	return nil
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
@@ -501,6 +681,8 @@ func main() {
 	enc := flag.Int("encounter", -1, "覆寫遭遇倒數(除錯用,只在搭配 -slot 時生效)")
 	x := flag.Int("x", -1, "覆寫起始 x(除錯用,只在搭配 -slot 時生效)")
 	y := flag.Int("y", -1, "覆寫起始 y")
+	saveDir := flag.String("save", "",
+		"存檔目錄(docs/spec/18 §2)。留空 = 資產目錄旁邊的 saves/")
 	flag.Parse()
 
 	g, err := loadStatic(*assets, *fontPath, *seed)
@@ -508,6 +690,9 @@ func main() {
 		fmt.Fprintln(os.Stderr, "載入失敗:", err)
 		fmt.Fprintln(os.Stderr, "請先跑:go run ./cmd/convert -in <原版> -out assets")
 		os.Exit(1)
+	}
+	if *saveDir != "" {
+		g.saveDir = *saveDir
 	}
 
 	if *slot > 0 {
@@ -568,6 +753,8 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 		tiles:  tiles,
 		assets: dir,
 		noSrc:  map[int]bool{},
+		// docs/spec/18 §2:saves/ 預設在資產目錄旁邊,-save 可覆寫(main() 裡)。
+		saveDir: filepath.Join(filepath.Dir(dir), "saves"),
 	}
 	if err := readJSON(filepath.Join(dir, "data", "mazedata.json"), &g.mazeData); err != nil {
 		return nil, err

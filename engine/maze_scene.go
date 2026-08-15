@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -60,7 +61,94 @@ func (g *Game) loadLevel(e original.MazeEntry) (*mazeLevel, error) {
 		fmt.Sprintf("dtext%d.json", e.TextFile)), &lv.text); err != nil {
 		return nil, fmt.Errorf("讀 DT%d:%w", e.TextFile, err)
 	}
+	// docs/re/181 §4 + docs/spec/18 §1 第 3 項:事件表每次都是重新從檔案讀的
+	// (上面三個 readJSON),所以任何一次性事件的作廢都只活在**上一個**
+	// lv.events 裡 —— 這裡把存檔記著的作廢清單重新套用一次,否則走出迷宮
+	// 再走回來,寶箱/劇情戰鬥就復活了。
+	g.applyDisabledEvents(lv)
 	return lv, nil
+}
+
+// applyDisabledEvents 把 g.disabledEvents 記著的、屬於這個事件檔的作廢目標
+// 重新套用到剛讀出來的 lv.events。key 是 original.MazeEntry.TextFile
+// (DE<N>EFF.BIN 的 N),不是 MazeFile —— 兩者在 DG5/DG51 這種情況下不同
+// (docs/re/161 §6 的訂正)。
+func (g *Game) applyDisabledEvents(lv *mazeLevel) {
+	key := strconv.Itoa(lv.entry.TextFile)
+	for _, target := range g.disabledEvents[key] {
+		maze.DisableTarget(lv.events, target)
+	}
+}
+
+// disableMazeEvent 把打贏一場由迷宮事件觸發的戰鬥(目標 204/533)這件事
+// 記下來,讓這個目標**這次立刻**不再觸發(maze.DisableTarget 改
+// g.level.events),並且記進 g.disabledEvents,讓離開迷宮再回來
+// (loadLevel 會整個重讀)、以及存檔讀回之後都不會復活
+// (docs/re/181 §4、docs/spec/18 §3.2)。
+//
+// g.level == nil 時什麼都不做 —— docs/spec/17 的腳本戰鬥測試會直接呼叫
+// startScriptedCombat 而不經過完整的迷宮載入流程,這個保護讓那些測試
+// 不會因為這裡的新行為而 panic 或誤動到不存在的迷宮狀態。
+func (g *Game) disableMazeEvent(target int) {
+	if g.level == nil {
+		return
+	}
+	maze.DisableTarget(g.level.events, target)
+	key := strconv.Itoa(g.level.entry.TextFile)
+	for _, t := range g.disabledEvents[key] {
+		if t == target {
+			return // 已經記過,不重複加
+		}
+	}
+	if g.disabledEvents == nil {
+		g.disabledEvents = map[string][]int{}
+	}
+	g.disabledEvents[key] = append(g.disabledEvents[key], target)
+}
+
+// resumeMaze 套用存檔裡「上次存在迷宮裡的哪一格」(docs/spec/18 §3.2
+// MazeFile、驗收 4)。由 shell_scene.go 的 selectParty 在 loadParty 成功後呼叫。
+//
+// ⚠ 只在選到的隊伍剛好是存檔的 Active 那一隊時才套用 —— g.pendingMazeFile
+// 是單一一組欄位(不像 Group.MazeX/MazeY 每隊各有一份),選別隊時沒有對應
+// 的意義,見 Game 結構裡 pendingActive 的說明。不管有沒有套用,結束時都要
+// 清掉三個 pending 欄位,避免下一次選隊伍誤套用到這次的殘留值。
+func (g *Game) resumeMaze(slot int) {
+	file, facing := g.pendingMazeFile, g.pendingMazeFacing
+	active := g.pendingActive
+	g.pendingActive, g.pendingMazeFile, g.pendingMazeFacing = 0, "", 0
+
+	if file == "" || slot != active {
+		return
+	}
+	n, err := strconv.Atoi(file)
+	if err != nil {
+		g.warnings = append(g.warnings, "存檔的迷宮編號讀不懂:"+file)
+		return
+	}
+	var entry original.MazeEntry
+	found := false
+	for _, e := range g.mazeData {
+		if e.MazeFile == n {
+			entry, found = e, true
+			break
+		}
+	}
+	if !found {
+		g.warnings = append(g.warnings, fmt.Sprintf("存檔記著在 DG%d,但找不到這個地城", n))
+		return
+	}
+	lv, err := g.loadLevel(entry)
+	if err != nil {
+		g.warnings = append(g.warnings, "重新載入迷宮失敗:"+err.Error())
+		return
+	}
+	g.level = lv
+	g.mazeState = maze.State{
+		Major: g.group.MazeX, Minor: g.group.MazeY,
+		Facing: maze.Facing(facing), Visibility: g.group.VisLit,
+	}
+	g.overlay = ""
 }
 
 // stepMaze 處理一次方向輸入,並在**實際位移之後**掃事件(docs/spec/08 §4)。

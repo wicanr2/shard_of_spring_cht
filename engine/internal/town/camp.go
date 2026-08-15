@@ -120,3 +120,53 @@ func CanIdentify(c original.Character, item int) SkillGate {
 	}
 	return SkillOK
 }
+
+// ── 撿道具(docs/re/168)────────────────────────────────────────────
+
+// SetIdentified 設定第 slot 格的「已辨識」旗標(CHARS.DAT 位移 74 + slot)。
+//
+// ⚠ **原版有四個寫入端,其中一個差一格**:撿道具那一個寫 `75 + slot`
+// (docs/re/168 §3)。本引擎一律寫 `74 + slot` —— **這一條刻意不照抄**,
+// 因為它寫壞的是另一個欄位(位移 84 = 狀態效果強度),
+// 照抄會讓我們產出的存檔把破壞帶回原版(docs/re/168 §5)。
+func SetIdentified(c *original.Character, slot int, v bool) {
+	if slot < 0 || slot >= PackSlots {
+		return
+	}
+	f := []byte(c.Identified)
+	for len(f) < PackSlots {
+		f = append(f, '0')
+	}
+	if v {
+		f[slot] = '1'
+	} else {
+		f[slot] = '0'
+	}
+	c.Identified = string(f[:PackSlots])
+}
+
+// IsIdentified 回傳第 slot 格的道具辨識過沒有。
+func IsIdentified(c original.Character, slot int) bool {
+	return slot >= 0 && slot < len(c.Identified) && c.Identified[slot] == '1'
+}
+
+// PickUp 把一件道具塞進隊伍的背包,回傳拿到的人與格號;拿不下回 (-1, -1)。
+//
+// ⚠ **由隊尾往隊首找**(原版的外層迴圈是遞減,docs/re/168 §1)——
+// 與 T)rade / E)quip 的方向相反,而這件事在畫面上分得出來:
+// 東西會先進最後一個隊員的背包。
+//
+// ⚠ 撿到的東西標成**未辨識**,所以要花 I)dentify 才知道是什麼。
+func PickUp(party []original.Character, item int) (who, slot int) {
+	for i := len(party) - 1; i >= 0; i-- {
+		for s := 0; s < PackSlots; s++ {
+			if party[i].Pack[s] != original.NotEquipped {
+				continue
+			}
+			party[i].Pack[s] = item
+			SetIdentified(&party[i], s, false)
+			return i, s
+		}
+	}
+	return -1, -1
+}

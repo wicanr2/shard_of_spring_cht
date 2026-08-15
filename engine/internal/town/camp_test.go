@@ -103,3 +103,44 @@ func TestLoreBoundaryIsAtTheFirstPotion(t *testing.T) {
 		t.Error("編號 > 56 走 Item lore")
 	}
 }
+
+// 撿道具:由隊尾往隊首找空格,而且標成未辨識(docs/re/168 §1/§2)。
+func TestPickUpFillsFromTheBack(t *testing.T) {
+	mk := func() []original.Character {
+		p := make([]original.Character, 3)
+		for i := range p {
+			for s := range p[i].Pack {
+				p[i].Pack[s] = original.NotEquipped
+			}
+			p[i].Identified = "1111111111" // 先全設成已辨識,才看得出被清掉
+		}
+		return p
+	}
+	p := mk()
+	who, slot := PickUp(p, 7)
+	// ⚠ 方向是刻意的:原版的外層迴圈遞減,最後一個隊員先拿。
+	if who != 2 || slot != 0 {
+		t.Errorf("第一件應進最後一個隊員的第 0 格,得 (%d,%d)", who, slot)
+	}
+	if p[2].Pack[0] != 7 {
+		t.Errorf("道具沒放進去:%v", p[2].Pack)
+	}
+	if IsIdentified(p[2], 0) {
+		t.Error("撿來的東西應該是未辨識的")
+	}
+	// 旁邊那一格不能被動到 —— 原版差一格寫的就是這裡(docs/re/168 §4.1)
+	if !IsIdentified(p[2], 1) {
+		t.Error("只能清自己那一格的旗標,不能清下一格")
+	}
+
+	// 全滿時回 (-1,-1),不能靜默塞掉
+	full := mk()
+	for i := range full {
+		for s := range full[i].Pack {
+			full[i].Pack[s] = 1
+		}
+	}
+	if w, s := PickUp(full, 7); w != -1 || s != -1 {
+		t.Errorf("背包全滿應回 (-1,-1),得 (%d,%d)", w, s)
+	}
+}

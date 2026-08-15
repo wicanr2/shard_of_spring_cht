@@ -96,5 +96,8 @@ func TotalGold(units []Unit, r Rand) int {
 }
 
 // GoldAssumption 是給畫面顯示用的說明。
-const GoldAssumption = "⚠ 戰後金幣的四個係數未解(docs/re/152 §2.3)," +
-	"本引擎每隻怪物擲 1…難度階級 —— 形狀對、係數不對"
+//
+// ⚠ **長度要放得下提示列**(976 px ≈ 48 個全形字,docs/spec/04 §2)——
+// 太長會被右邊界切掉,而那在測試裡沒有症狀,只有截圖看得出來。
+const GoldAssumption = "⚠ 金幣公式的組裝順序未解(docs/re/177 §7)——" +
+	"本引擎每隻怪物擲 1…難度階級,形狀對、係數不對"

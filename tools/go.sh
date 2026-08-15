@@ -48,6 +48,7 @@ run() {
     -v "$ROOT/workplace":/workplace \
     -v "$ROOT/game":/game:ro \
     -v "$ROOT/translations":/translations:ro \
+    -v /usr/share/fonts:/usr/share/fonts:ro \
     -v "$CACHE":/gocache \
     -w /src \
     "$IMAGE" "$@"

@@ -61,15 +61,21 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	}
 	py += lh
 	// 未解項在**執行時**也要看得見(docs/spec/07 §3),不是只寫在文件裡。
+	//
+	// ⚠ **畫在下一行,不要跟指令列擠同一行。** 先前是 `px+460` 同一行,
+	// 而指令列本身就超過 460 px —— 兩段字直接疊在一起,誰都讀不出來。
+	// 這是拍 README 截圖時才看見的:UI 的重疊在測試裡沒有症狀。
 	if g.field != nil {
-		for i, u := range combat.Unresolved {
-			g.panel.Draw(dst, "⚠ "+u, px+460, float64(layout.Prompt.Y+ui.PanelPad)+float64(i)*lh)
+		for _, u := range combat.Unresolved {
+			g.panel.Draw(dst, u, px, py) // ⚠ 常數本身已經帶了「⚠ 」,不要再加一個
+			py += lh
 		}
 	}
 	// 治療池的擲骰面數是佔位(docs/re/155 §2.3),只在池邊那一刻標出來。
 	if g.prompt != nil && g.prompt.kind == promptPool {
-		for i, u := range maze.Unresolved {
-			g.panel.Draw(dst, u, px+460, float64(layout.Prompt.Y+ui.PanelPad)+float64(i)*lh)
+		for _, u := range maze.Unresolved {
+			g.panel.Draw(dst, u, px, py)
+			py += lh
 		}
 	}
 	if g.saveMsg != "" {

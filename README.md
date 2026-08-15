@@ -1,107 +1,98 @@
-# Shard of Spring — 逆向工程知識庫
+# 春之石 Shard of Spring — 逆向工程 + Go remake + 繁體中文化
 
-SSI《Shard of Spring》(1986/1987, MS-DOS 版由 Digital Illusions 移植) 的
-逆向工程紀錄,目標是 remake 與繁體中文化。
+SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
+**完整逆向工程紀錄**,以及在其上重寫的引擎與繁體中文翻譯。
 
-**這個 repo 只有分析筆記、規格與工具,不含原版素材。** 玩家自備合法原版。
+**這個 repo 不含原版執行檔、資料檔與美術。** 玩家自備合法原版,用 `cmd/convert`
+自行轉出資產。
+
+---
+
+## 現在長什麼樣
+
+| | |
+|---|---|
+| ![標題](docs/images/01-title.png) | ![主選單](docs/images/02-menu.png) |
+| **標題畫面** | **主選單** —— 逐項對應原版的 `L)oad a Party` / `C)har Utilities` / `P)rogram Notes` / `Q)uit`。⚠ 原版**沒有「開新遊戲」**([`spec/15`](docs/spec/15-game-shell.md) §1)|
+| ![世界地圖](docs/images/03-world.png) | ![城鎮](docs/images/04-town.png) |
+| **世界地圖** —— 121 × 103 格,9×9 視野,圖塊 4× 整數放大 | **城鎮**(翠綠村)—— 建築清單、商店、旅店、酒館、訓練所、治療所 |
+| ![地城](docs/images/05-maze.png) | ![戰鬥](docs/images/06-combat.png) |
+| **地城** —— 六座迷宮、能見度裁視野、事件表 | **最終戰** —— 巨龍 ×2 + 希瑞雅妮。這個組成是[反組譯](docs/re/180-scripted-fight-monster-list.md)與[通關紀錄](docs/re/179-final-battle-composition-from-playthrough.md)**兩條獨立證據鏈**得到的同一個答案 |
+
+> ⚠ **截圖裡的美術來自原版。** 這個 repo 維持 private
+> ([`CLAUDE.md`](CLAUDE.md) §10),與 `translations/` 收錄原版英文文本是同一個理由。
+> ⛔ 不要轉成 public。
+
+---
 
 ## 從哪裡開始讀
 
 | 檔案 | 內容 |
 |---|---|
 | **[`CONTEXT.md`](CONTEXT.md)** | **單一入口** —— 現況、文件索引、術語表、**已被推翻的斷言** |
+| [`docs/spec/14-remake-worklist.md`](docs/spec/14-remake-worklist.md) | **「還剩什麼沒做」的單一真相來源** |
 | [`CLAUDE.md`](CLAUDE.md) | 目標、RE 深度邊界、動工閘門、工具鏈、硬規則 |
-| [`docs/re/`](docs/re/) | 32 篇分析筆記,編號即閱讀順序 |
+| [`docs/re/`](docs/re/) | 181 篇分析筆記,編號即閱讀順序 |
+| [`docs/spec/`](docs/spec/) | 收攏後的實作規格,標 READY 才能動工 |
 
 新接手的人讀 `CONTEXT.md` 就能重建全局。
 
-## 已定案的主要結論
+## 目前狀態
 
-### 檔案與模組架構
+**逆向工程階段已結束** —— [`CLAUDE.md`](CLAUDE.md) §2.2 看板的十二個子系統全部 RE-DONE,
+規格標 READY,動工閘門全開。現在是 remake 實作階段。
 
-- EXE 佈局是 `[模組區][loader stub]`,MZ 的 `CS:IP` 指向 stub
-- 十一支遊戲 EXE **共用同一份 3,047-byte loader stub**(函式大小序列完全相同)
-- stub 依 `PATH=` 載入 `BRUN30.EXE`(執行期)、依 `LIB=` 載入 `USERLIB.EXE`
-- `bz` 模組標頭解出 8 個欄位,其中**六個是節區表**
-- 模組區長度 `+0x16` 有**三個獨立來源 11/11 一致**:
-  `bz` 標頭、IDA 段分析、MZ 的 CS 欄位
-
-### 執行期介面
-
-- 模組用 `INT 3Eh` / `3Fh` 呼叫執行期,固定 3 bytes(參數 ×2 = 派工表索引)
-- `INT 3Dh` 的一種形式會**把自己就地改寫成 far call**(延遲繫結)
-  → 執行中的記憶體映像與磁碟位元組不同
-- 教會 IDA 跳過內嵌參數後,模組反組譯涵蓋率 **0.7% → 40.8%**
-
-### 資料格式
-
-| 格式 | 結論 |
+| | |
 |---|---|
-| `.BIN` 容器 | BASIC `BSAVE`(`0xFD` + seg + off + len + 資料 + `0x1A`),**52/52** |
-| 顯示 | CGA 320×200 2bpp,掃描線兩區交錯 |
-| 圖塊 ×9 | BASIC `GET` 陣列 **17×17**,九個檔**各自畫出自己的名字** |
-| `PICT*.BIN` ×5 | **153×153**,算式零誤差 + 渲染驗證 |
-| `WRLDMAP.BIN` | 每格 2 bytes,**103 × 121** |
-| `MONSTERS.DAT` | **74 筆 × 36 bytes**;`w5` = 怪物圖索引、`w9` = 魔法相關 |
-| `SPELLS.DAT` | 34 筆 × 6 欄;欄 1 = 符文系別(**5/5 對上 EXE 字串,順序相同**) |
-| `ITEMS.DAT` | 57 筆 × 6 欄;欄 1 是**未鑑定名** |
-| `CHARS.DAT` | **25 槽 × 94 bytes**;兩串 `0`/`1` = 20 個技能旗標 |
-| `DG*MAZE.SQZ` | 六檔**一律 82 列**,逐列編碼(規則未解) |
+| 引擎 | Go + Ebitengine,1024×768,美術 4× 整數放大,文字層 TTF |
+| 已實作 | 世界地圖、地城、戰鬥、戰場、法術、道具、城鎮、商店、營地、名冊、創角、訓練、治療、經驗、音樂合成、遊戲外殼、自己的存檔格式 |
+| 中文化 | 439 段上線(怪物 74 / 法術 33 / 道具 57 / 地城 87 / UI);模組內 1,012 段待做 |
+| 還沒做 | 場景架構重構、怪物 AI(⛔ **擋在 RE**,不是 coding)、打包 —— 見 [worklist](docs/spec/14-remake-worklist.md) |
 
-### 中文化落點
+### 怎麼跑
 
-全部可翻譯文字約 **35,800 字元**,分兩層:
+```bash
+# 一律走 docker,不裝系統 Go(CLAUDE.md §8)
+tools/go.sh run ./cmd/convert -in /game/sharspri -out /workplace/assets   # 轉資產
+tools/go.sh build && ./build/shard -assets workplace/assets
+tools/go.sh test -count=1      # ⚠ 一定要帶 -count=1,見下
+```
 
-- **資料檔 16 個,約 21,600 字元(61%)** —— 格式已定,可先做
-- **模組內嵌 362 條,約 14,100 字元(39%)** —— 含結局劇情,需先解字串描述子
+⚠ **測試一定要帶 `-count=1`。** `package main` 匯入 ebiten 會在 `internal/ui`
+的 `init()` 呼叫 `glfw.Init()`,沒有 `DISPLAY` 就 panic —— 那發生在任何測試
+跑起來之前。`tools/go.sh` 已經內建 Xvfb,但**一旦有過一次成功結果進 build cache,
+`go test` 就回 `ok (cached)`,綠燈是快取在說話**。
 
-## 這個知識庫的核心紀律
+---
 
-`CLAUDE.md` §2.1 定義 **RE-DONE** 需要四項條件同時成立:
+## 這個專案的核心紀律
+
+[`CLAUDE.md`](CLAUDE.md) §2.1 定義 **RE-DONE** 要四項條件同時成立:
 在 IDA 讀過原始指令、用 xref 確認讀寫端、**有一份獨立資料互相印證**、
 筆記標明輸入檔與信心等級。
 
 信心等級只有四種寫法:**已確認 / 證據充分 / 假設 / 未知**。
 
+**未解的東西不准填一個看起來合理的值。** 用具名常數 + 註明是假設,
+並且在**執行時**把它顯示在畫面上 —— 上面戰鬥截圖底部那行
+「金幣公式的組裝順序未解」就是這條紀律的樣子。
+
 ### 已被推翻的斷言
 
-[`CONTEXT.md` §6](CONTEXT.md) 有 **23 條**推翻紀錄,每條附錯法。
+[`CONTEXT.md` §6](CONTEXT.md) 有一張推翻紀錄表,每條附**錯法**。
 那張表記的不是「哪裡錯了」,是**「在哪些地方容易推錯」**,
 對接手的人比正文更有用。反覆出現的形狀:
 
 - **切分單位錯**(算術全都成立,但真正的格數不同)
 - **起點偏移一個 byte**(讓交錯資料整個換半邊)
 - **值域對不等於語意對**
-- **格式跨組不通用**(在 N 個檔上成立只證明適用於那 N 個檔)
-- **工具的中間產物不是結論**
-- **分類按檔名語感而非結構**
+- **拿飽和的兩端去驗尺度參數**(端點在任何尺度下都一樣,驗不出東西)
+- **把「觀察到的最小值」當成分佈的下界**(沒算那個端點在這個樣本數下看得到的機率)
 
-## 目前進度
-
-十二個子系統(A–L)全部**進行中**,多數**尚未達到 RE-DONE** ——
-缺條件 1、2(讀取端與 xref)。各子系統的讀取端已縮到模組層級,
-見 [`docs/re/23`](docs/re/23-module-datafile-map.md)。
-
-純程式碼側的項目(戰鬥公式、命中判定、傷害計算)沒有資料側入口,
-仍受限於模組程式碼涵蓋率(下界 5.4% / 上界 40.8%)。
-
-## 工具
-
-```
-tools/ida.sh                   IDA Pro 9.4 headless 包裝
-tools/ida/export_inventory.py  清冊匯出
-tools/ida/unlock_module.py     線性掃描解鎖(上界)
-tools/ida/trace_module.py      流程追蹤(下界)⚠ 會洗掉 unlock 的成果
-tools/ida/dump_func.py         函式反組譯
-tools/ida/dump_range.py        位址範圍反組譯
-tools/ida/find_imm.py          立即數掃描
-tools/ida/range_xref.py        逐 byte xref
-```
-
-IDAPython 需要修正過的 image,原理與實測矩陣見
-`~/.claude/knowledge-base/retro/ida-pro-9.4.md`。
+---
 
 ## 授權與邊界
 
-只做靜態分析、格式保存與互通性研究。不散布原版執行檔、資料檔或美術。
-不協助破解 DRM 或修改付費驗證。
+- 引擎程式碼與翻譯文本是本專案的產出
+- **原版執行檔、資料檔、美術一律不散布**;`game/`、`original/` 進 `.gitignore`
+- 不協助破解 DRM 或修改付費驗證

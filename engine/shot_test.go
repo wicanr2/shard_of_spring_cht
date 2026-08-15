@@ -1,0 +1,126 @@
+package main
+
+// 產生 README 用的畫面截圖。**這不是驗收測試** —— 只在 SHOT_DIR 指定時跑。
+//
+//	SHOT_DIR=/out SHOT_ASSETS=/workplace/assets2 go test -run TestShots -count=1
+//
+// ⚠ **一定要跑 ebiten.RunGame**。先前試過「離屏 NewImage + g.Draw + png.Encode」,
+// 結果是 `panic: ui: ReadPixels cannot be called before the game starts` ——
+// 讀像素需要遊戲迴圈已經啟動,離屏影像也不例外。所以這裡包一層 shotRunner:
+// Update() 擺好要拍的狀態、Draw() 拍完立刻寫檔,拍完最後一張回 Termination。
+import (
+	"image"
+	"image/png"
+	"os"
+	"path/filepath"
+	"testing"
+
+	"github.com/hajimehoshi/ebiten/v2"
+
+	"shardofspring/internal/layout"
+)
+
+type shot struct {
+	name  string
+	setup func(*Game)
+}
+
+type shotRunner struct {
+	g     *Game
+	shots []shot
+	dir   string
+	i     int
+	t     *testing.T
+}
+
+func (r *shotRunner) Update() error {
+	if r.i >= len(r.shots) {
+		return ebiten.Termination
+	}
+	r.shots[r.i].setup(r.g)
+	return nil
+}
+
+func (r *shotRunner) Draw(screen *ebiten.Image) {
+	if r.i >= len(r.shots) {
+		return
+	}
+	r.g.Draw(screen)
+
+	w, h := screen.Bounds().Dx(), screen.Bounds().Dy()
+	buf := make([]byte, 4*w*h)
+	screen.ReadPixels(buf)
+	img := &image.RGBA{Pix: buf, Stride: 4 * w, Rect: image.Rect(0, 0, w, h)}
+
+	f, err := os.Create(filepath.Join(r.dir, r.shots[r.i].name+".png"))
+	if err != nil {
+		r.t.Fatal(err)
+	}
+	defer f.Close()
+	if err := png.Encode(f, img); err != nil {
+		r.t.Fatal(err)
+	}
+	r.t.Log("拍到", r.shots[r.i].name)
+	r.i++
+}
+
+func (r *shotRunner) Layout(int, int) (int, int) { return layout.ScreenW, layout.ScreenH }
+
+func TestShots(t *testing.T) {
+	outDir, assets := os.Getenv("SHOT_DIR"), os.Getenv("SHOT_ASSETS")
+	if outDir == "" || assets == "" {
+		t.Skip("沒有 SHOT_DIR / SHOT_ASSETS —— 這不是驗收測試,平常不跑")
+	}
+	if err := os.MkdirAll(outDir, 0o755); err != nil {
+		t.Fatal(err)
+	}
+	g, err := loadStatic(assets, "", 20260815)
+	if err != nil {
+		t.Fatal("載入資產失敗:", err)
+	}
+	// ⚠ **一定要關掉聲音**。容器裡沒有音訊裝置,而 ebiten 的 audio context
+	// 會把 oto 的 ALSA 錯誤丟回遊戲迴圈 —— RunGame 直接以錯誤結束,
+	// 只拍得到第一張。docs/spec/13 說「沒有音訊裝置時只記警告」,
+	// 那是指 initSound 的 recover;**播放時的錯誤是另一條路,它會中斷迴圈**。
+	g.sound = nil
+
+	shots := []shot{
+		{"01-title", func(g *Game) {}},
+		{"02-menu", func(g *Game) { g.openMainMenu() }},
+		{"03-world", func(g *Game) {
+			if err := g.loadParty(5); err != nil {
+				t.Fatal("載入 PARTY #5 失敗:", err)
+			}
+			g.shell.mode = shellPlaying
+		}},
+		{"04-town", func(g *Game) {
+			if len(g.townSites) == 0 {
+				return
+			}
+			s := g.townSites[0]
+			g.party.X, g.party.Y = s.X, s.Y
+			g.enterTown(s.X, s.Y)
+		}},
+		{"05-maze", func(g *Game) {
+			g.town = nil
+			if len(g.mazeData) == 0 {
+				return
+			}
+			e := g.mazeData[0]
+			g.party.X, g.party.Y = e.WorldX, e.WorldY
+			g.enterMaze(e.WorldX, e.WorldY)
+			g.overlay = ""
+		}},
+		{"06-combat", func(g *Game) {
+			if !g.startScriptedCombat(533) {
+				t.Log("⚠ 腳本戰鬥開不起來")
+			}
+			g.overlay = ""
+		}},
+	}
+
+	ebiten.SetWindowSize(layout.ScreenW, layout.ScreenH)
+	if err := ebiten.RunGame(&shotRunner{g: g, shots: shots, dir: outDir, t: t}); err != nil {
+		t.Fatal(err)
+	}
+}

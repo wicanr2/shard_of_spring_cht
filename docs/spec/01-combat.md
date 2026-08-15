@@ -112,7 +112,12 @@ BASIC 二維陣列 `A%(單位, 屬性)`,**行主序**:位址 = `屬性 × 15 + �
 
 ## 未解
 
-屬性 14 / 18 的語意;先攻是否每回合重排;魔法道具發動判定的原始碼位置。
+屬性 **14** 的語意;先攻是否每回合重排。
+
+屬性 **18** 有形狀了([`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md)):
+每單位一份的 **±1 偏好**,開場 0、第一次用時擲 50% 硬幣定值(值定了就不再重擲),
+遇到某條件會取負。它在移動常式裡選兩條對稱分支中的一條。
+⚠ 兩條分支各自做什麼**沒讀完** —— 不要據此實作。
 
 出處:[`re/43`](../re/43-common-block-and-array-indexing.md)、[`73`](../re/73-monster-columns-to-combat-array.md)、
 [`76`](../re/76-to-hit-formula.md)、[`79`](../re/79-alignment-resolved-damage-formula.md)、

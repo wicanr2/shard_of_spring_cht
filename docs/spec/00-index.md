@@ -57,7 +57,7 @@
 
 | 洞 | 出處 |
 |---|---|
-| 戰鬥屬性 **14 / 18** 的語意 | [`spec/01`](01-combat.md) §9;屬性 14 決定要不要查空手道旗標([`re/153`](../re/153-damage-formula-closed.md) §5)|
+| 戰鬥屬性 **14** 的語意 | [`spec/01`](01-combat.md) §9;它決定要不要查空手道旗標([`re/153`](../re/153-damage-formula-closed.md) §5)。⚠ 屬性 **18** 已有形狀([`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md))|
 | 法術效果類別 **3** | [`spec/09`](09-magic-items.md) |
 | 先攻是否**每回合重排** | [`spec/01`](01-combat.md) §2 |
 | 屬性算式的兩個常數 `A` / `B` | [`spec/11`](11-town-camp-roster.md) §5;**形狀已讀出**([`re/156`](../re/156-attribute-roll-shape.md)),只剩值 |

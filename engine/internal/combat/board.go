@@ -159,23 +159,40 @@ func (f *Field) StrikeFront(p *Points, i int) ActResult {
 	return ActOK
 }
 
+// PartyRowWidth 是隊伍佈陣的每列人數。原版 `CMBT 0x11783` 的
+// `mov cx, 3` + `idiv` —— **那個 3 是直接讀到的**(docs/re/160)。
+const PartyRowWidth = 3
+
+// PartyOffset 回傳第 i 位隊員(i 從 1 起)相對於陣型基準的欄 / 列偏移。
+//
+//	欄 = (i−1) mod 3 − 1     → −1 / 0 / 1
+//	列 = (i−1) ÷ 3
+//
+// 五個人因此排成上排三個、下排靠左兩個 —— 與原版截圖逐格吻合
+// (docs/re/160 §2)。
+func PartyOffset(i int) (dx, dy int) {
+	n := i - 1
+	return n%PartyRowWidth - 1, n / PartyRowWidth
+}
+
 // Place 把單位擺到初始位置。
 //
-// ⚠ **原版的初始佈陣未解**(`CMBT.EXE` 裡有一組陣型座標字串,
-// 但沒有讀到誰用它)。這裡把隊伍排在下半、怪物排在上半,
-// 兩邊都避開最外圈 —— 一開始就站在圓點上等於還沒開打就能逃。
+// 隊伍的陣型是**讀出來的**(docs/re/160):每列三個。
+// ⚠ 陣型的**基準列**(原版 `ds:94C2`)未解 —— 它只把整塊陣型上下平移,
+// 這裡取「下半、避開最外圈」:一開始就站在圓點上等於還沒開打就能逃。
+//
+// ⚠ **怪物那一半仍是佔位** —— 原版怪物的佈陣沒有讀到。
 func (f *Field) Place() {
-	px, py := 5, BoardSize-3
+	const baseX, baseY = 7, BoardSize - 4 // 基準:置中偏下
+	slot := 1
 	for i := PartyBase; i < PartyBase+PartyMax; i++ {
 		if !f.Units[i].Alive() {
 			continue
 		}
-		f.Units[i].X, f.Units[i].Y = px, py
+		dx, dy := PartyOffset(slot)
+		f.Units[i].X, f.Units[i].Y = baseX+dx, baseY+dy
 		f.Units[i].Facing = North
-		px++
-		if px >= BoardSize-1 {
-			px, py = 5, py-1
-		}
+		slot++
 	}
 	mx, my := 5, 2
 	for i := MonsterBase; i < MonsterBase+MonsterMax; i++ {

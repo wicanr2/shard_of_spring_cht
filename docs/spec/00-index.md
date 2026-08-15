@@ -31,7 +31,7 @@
 | [`10-localization.md`](10-localization.md) | **中文化上線**(轉檔期併入、破格的定義與預算)|
 | [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 旅店 / 酒館 / 訓練所 / 治療所 / 營地 / 名冊 / 角色創造**;⚠ 屬性算式的兩個常數未解|
 | [`13-sound.md`](13-sound.md) | **聲音**(`PLAY` 巨集的解析與方波合成);⚠ 十五段樂譜的**用途**是位置上的推測 |
-| [`12-combat-board.md`](12-combat-board.md) | **戰場**(15×15、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 初始佈陣與怪物 AI 是佔位 |
+| [`12-combat-board.md`](12-combat-board.md) | **戰場**(15×15、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 怪物佈陣與 AI 是佔位(隊伍佈陣已解) |
 
 ## ⚠ 實作前必讀的六條
 
@@ -60,7 +60,7 @@
 | 戰鬥屬性 **14** 的語意 | [`spec/01`](01-combat.md) §9;它決定要不要查空手道旗標([`re/153`](../re/153-damage-formula-closed.md) §5)。⚠ 屬性 **18** 已有形狀([`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md))|
 | 法術效果類別 **3** | [`spec/09`](09-magic-items.md) |
 | 屬性算式的兩個常數 `A` / `B` | [`spec/11`](11-town-camp-roster.md) §5;**形狀已讀出**([`re/156`](../re/156-attribute-roll-shape.md)),只剩值 |
-| 戰場的**初始佈陣與怪物 AI** | [`spec/12`](12-combat-board.md) §5 |
+| 戰場的**怪物佈陣與 AI** | [`spec/12`](12-combat-board.md) §5;⚠ **隊伍的佈陣已解**([`re/160`](../re/160-party-deploys-three-per-row.md))|
 | 迷宮的**寶石謎題 / 治療池觸發點** | [`spec/08`](08-maze-scene.md) §5.5;規則已解,是哪一筆事件叫起它們未解 |
 | 戰後**金幣**的四個常數 | [`re/152`](../re/152-experience-settlement-formula.md) §2.3;**管線形狀已通**(含兩次次方),⚠ 手冊沒寫金幣 → **唯一的路是 oracle 實測**。引擎已發金幣,走具名佔位 |
 | 營地的 `H)unt` / `I)dentify` / `T)rade` / `R)eorder` | [`spec/11`](11-town-camp-roster.md) §4 |

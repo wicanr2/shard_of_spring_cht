@@ -155,3 +155,45 @@ func TestBoardIsReproducible(t *testing.T) {
 		t.Errorf("同種子兩次的位置不同:%v vs %v", a, b)
 	}
 }
+
+// 佈陣:每列三個,欄偏移 −1/0/1(docs/re/160)。
+//
+// ⚠ 對照的是原版截圖的形狀:上排三個、下排**靠左**兩個 ——
+// 不是置中。置中在畫面上也很合理,而那正是分不開的地方,所以要逐格對。
+func TestPartyOffsetThreePerRow(t *testing.T) {
+	want := []struct{ dx, dy int }{
+		{-1, 0}, {0, 0}, {1, 0}, // 上排三個
+		{-1, 1}, {0, 1}, // 下排靠左兩個
+		{1, 1}, {-1, 2},
+	}
+	for i, w := range want {
+		dx, dy := PartyOffset(i + 1)
+		if dx != w.dx || dy != w.dy {
+			t.Errorf("第 %d 位偏移 (%d,%d),應為 (%d,%d)", i+1, dx, dy, w.dx, w.dy)
+		}
+	}
+}
+
+// 佈陣不可以把人放到最外圈 —— 站在圓點上等於還沒開打就能離場。
+func TestPlaceKeepsPartyOffTheRim(t *testing.T) {
+	f := &Field{}
+	for i := PartyBase; i < PartyBase+PartyMax; i++ {
+		f.Units[i] = Unit{HP: 5, Facing: South}
+	}
+	f.Place()
+	for i := PartyBase; i < PartyBase+PartyMax; i++ {
+		u := f.Units[i]
+		if u.X <= 0 || u.X >= BoardSize-1 || u.Y <= 0 || u.Y >= BoardSize-1 {
+			t.Errorf("第 %d 位站在 (%d,%d) —— 那是最外圈", i-PartyBase+1, u.X, u.Y)
+		}
+	}
+	// 兩個人不可以站同一格
+	seen := map[[2]int]bool{}
+	for i := PartyBase; i < PartyBase+PartyMax; i++ {
+		k := [2]int{f.Units[i].X, f.Units[i].Y}
+		if seen[k] {
+			t.Errorf("兩個單位站在同一格 %v", k)
+		}
+		seen[k] = true
+	}
+}

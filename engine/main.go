@@ -22,6 +22,7 @@ import (
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
 	"shardofspring/internal/maze"
+	"shardofspring/internal/music"
 	"shardofspring/internal/original"
 	"shardofspring/internal/render"
 	"shardofspring/internal/world"
@@ -101,12 +102,59 @@ type Game struct {
 	castList []original.Spell
 	// cursor 非 nil = 施法的**選格階段**(手冊 p.34 的 I/J/K/M + 空白鍵)
 	cursor *castCursor
+
+	// M12:遊戲外殼(docs/spec/15-game-shell.md)。標題/主選單/隊伍選擇/全滅/結局。
+	shell     *shellState
+	titleFont *render.Painter // 標題用 32px(docs/spec/04 §4)
+
+	// bossFight:目前這場戰鬥是不是迷宮事件目標 533(maze.TargetFinalBoss,
+	// 最終首領 Siriadne)引發的劇情戰鬥。
+	//
+	// ⚠ **目前沒有任何呼叫端會把它設成 true** —— 那場戰鬥的怪物組成未解
+	// (docs/re/161 §4),maze_prompt.go 的 fireTrigger 明講「不要在這裡
+	// 自己安排一場戰鬥,那會是編的,不是原版的」。這個欄位只是結局畫面
+	// (docs/spec/15 §7)的介接點:一旦 RE 解出怪物組成,呼叫端在觸發
+	// 那場戰鬥時把它設成 true,勝負判定與轉場已經現成,不必再動這裡。
+	bossFight bool
+
+	// testKeys 是測試用的假輸入佇列(docs/spec/15 §9)。
+	// nil = 正式執行,Update() 照舊呼叫 inpututil 讀真正的鍵盤;
+	// 非 nil(即使是空切片)= 測試模式,底下改用這個切片當「這一格剛按下的鍵」。
+	//
+	// ⚠ 只為了這件事才加這層:ebitengine 在沒有 X11 display 的環境
+	// 連套件初始化都會 panic(glfw.Init 需要 display),而 inpututil 的
+	// 「剛按下」狀態本來就是靠 RunGame 的事件迴圈在更新 —— 不跑 RunGame,
+	// 不管有沒有 display,永遠讀不到任何鍵。沒有這層接縫,
+	// docs/spec/15 §9 要求的「不開視窗、直接呼叫 Update()」測試做不到。
+	testKeys []ebiten.Key
+}
+
+// pressedKeys / pressed 包一層 inpututil,讓 g.testKeys 非 nil 時可以
+// 用假輸入取代真正的鍵盤(見上面 testKeys 的說明)。
+func (g *Game) pressedKeys() []ebiten.Key {
+	if g.testKeys != nil {
+		return g.testKeys
+	}
+	return inpututil.AppendJustPressedKeys(nil)
+}
+
+func (g *Game) pressed(k ebiten.Key) bool {
+	if g.testKeys != nil {
+		for _, tk := range g.testKeys {
+			if tk == k {
+				return true
+			}
+		}
+		return false
+	}
+	return inpututil.IsKeyJustPressed(k)
 }
 
 func (g *Game) Update() error {
-	// 覆蓋層開著時吃掉所有按鍵(docs/spec/04 §3:出現時遊戲暫停)
+	// 覆蓋層開著時吃掉所有按鍵(docs/spec/04 §3:出現時遊戲暫停)。
+	// 這個機制同時被 A6 按鍵表(docs/spec/15 §8)借用 —— 不專屬迷宮敘述。
 	if g.overlay != "" {
-		if len(inpututil.AppendJustPressedKeys(nil)) > 0 {
+		if len(g.pressedKeys()) > 0 {
 			g.overlay = ""
 		}
 		return nil
@@ -148,17 +196,39 @@ func (g *Game) Update() error {
 				return nil
 			}
 		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) &&
-			g.field.Outcome() != combat.Ongoing {
+		if g.pressed(ebiten.KeyEscape) && g.field.Outcome() != combat.Ongoing {
+			outcome := g.field.Outcome()
 			g.field = nil
-			// 遭遇倒數重置。⚠ **重置值未解** —— 原版每次遭遇後填什麼
-			// 沒有讀到。這裡沿用出貨存檔的量級,是佔位。
-			g.party.Encounter = 54
+			switch {
+			case outcome == combat.PartyDead:
+				// A4 全滅(docs/spec/15 §6)。**不能帶著死掉的隊伍回世界
+				// 地圖繼續走路** —— 直接進全滅畫面,按鍵後回主選單。
+				// 死亡曲(music.Userlib)已經在 endTurn() 判定 PartyDead
+				// 的那一刻放過(combat_scene.go),這裡不重放。
+				if g.shell != nil {
+					g.shell.mode = shellWipe
+				}
+			case outcome == combat.MonstersDead && g.bossFight:
+				// A5 結局(docs/spec/15 §7):這場戰鬥是迷宮事件目標 533
+				// (maze.TargetFinalBoss)引發的劇情戰鬥,打贏了。
+				// ⚠ g.bossFight 目前沒有任何呼叫端會設成 true —— 見它
+				// 在 Game 結構裡的說明,這裡只是接介面,不是宣告
+				// 「已經打得到最終首領」。
+				g.bossFight = false
+				if g.shell != nil {
+					g.shell.mode = shellEnding
+				}
+				g.play(music.Ending)
+			default:
+				// 遭遇倒數重置。⚠ **重置值未解** —— 原版每次遭遇後填什麼
+				// 沒有讀到。這裡沿用出貨存檔的量級,是佔位。
+				g.party.Encounter = 54
+			}
 		}
 		return nil
 	}
 
-	if inpututil.IsKeyJustPressed(ebiten.KeyN) {
+	if (g.shell == nil || g.shell.mode == shellPlaying) && g.pressed(ebiten.KeyN) {
 		g.openRoster() // N)ames —— 名冊(docs/spec/11 §5)
 		return nil
 	}
@@ -180,12 +250,22 @@ func (g *Game) Update() error {
 		return nil
 	}
 
-	// 名冊中
+	// 名冊中。docs/spec/15 §4:ESC 回哪裡由 g.shell.mode 決定,
+	// rosterKey 本身不記「是從哪裡打開的」——見 openMainMenu 的說明。
 	if g.roster != nil && g.roster.open {
-		for _, k := range inpututil.AppendJustPressedKeys(nil) {
+		for _, k := range g.pressedKeys() {
 			g.rosterKey(k)
 		}
 		return nil
+	}
+
+	// 外殼接管畫面:標題 / 主選單 / 隊伍選擇 / 全滅 / 結局(docs/spec/15)。
+	// ⚠ 放在 create/roster 之後 —— C)har Utilities 蓋在主選單上時,
+	// 上面兩個檢查已經先接手,不會落到這裡;roster 關閉後(ESC)
+	// g.shell.mode 沒被動過,下一輪 Update() 才會再落到這裡,
+	// 也就自然「回到主選單」。
+	if g.shell != nil && g.shell.mode != shellPlaying {
+		return g.shellUpdate()
 	}
 
 	// 城鎮中
@@ -322,6 +402,15 @@ func (g *Game) save() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(cgaBlack)
 
+	// 外殼接管畫面時,把整個畫布讓給它(docs/spec/15)。
+	// drawOverlay 仍要呼叫 —— A6 按鍵表(P 鍵)借用的是敘述覆蓋層的機制,
+	// 蓋在主選單上。
+	if g.shell != nil && g.shell.mode != shellPlaying {
+		g.drawShell(screen)
+		g.drawOverlay(screen)
+		return
+	}
+
 	// 戰鬥與迷宮各自接管主視野。
 	inCombat := g.field != nil
 	inMaze := g.level != nil && !inCombat
@@ -406,19 +495,42 @@ func (g *Game) Layout(int, int) (int, int) { return layout.ScreenW, layout.Scree
 
 func main() {
 	assets := flag.String("assets", "assets", "資產資料夾(由 cmd/convert 產生)")
-	slot := flag.Int("slot", 5, "隊伍存檔槽 1–5(出貨磁片組好的是 #5)")
+	// docs/spec/15 §1:預設走標題 → 主選單 → 隊伍選擇。-slot 只是除錯捷徑。
+	slot := flag.Int("slot", 0,
+		"除錯捷徑:跳過標題/主選單/隊伍選擇,直接進第幾隊(1–5)。0 = 預設,走標題流程")
 	fontPath := flag.String("font", "", "字型檔;留空則依序試內建候選")
 	seed := flag.Uint64("seed", 1, "戰鬥亂數種子(docs/spec/07 §2:同種子可重現)")
-	enc := flag.Int("encounter", -1, "覆寫遭遇倒數(除錯用)")
-	x := flag.Int("x", -1, "覆寫起始 x(除錯用;預設用存檔裡的座標)")
+	enc := flag.Int("encounter", -1, "覆寫遭遇倒數(除錯用,只在搭配 -slot 時生效)")
+	x := flag.Int("x", -1, "覆寫起始 x(除錯用,只在搭配 -slot 時生效)")
 	y := flag.Int("y", -1, "覆寫起始 y")
 	flag.Parse()
 
-	g, err := load(*assets, *slot, *fontPath, *seed, *x, *y, *enc)
+	g, err := loadStatic(*assets, *fontPath, *seed)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "載入失敗:", err)
 		fmt.Fprintln(os.Stderr, "請先跑:go run ./cmd/convert -in <原版> -out assets")
 		os.Exit(1)
+	}
+
+	if *slot > 0 {
+		// 除錯捷徑(docs/spec/15 §1):略過標題/主選單/隊伍選擇,直接進遊戲。
+		if err := g.loadParty(*slot); err != nil {
+			fmt.Fprintln(os.Stderr, "載入隊伍失敗:", err)
+			os.Exit(1)
+		}
+		// 除錯用的座標/遭遇倒數覆寫。**預設不覆寫** —— 存檔裡的值才是真相。
+		if *x >= 0 {
+			g.party.X = *x
+		}
+		if *y >= 0 {
+			g.party.Y = *y
+		}
+		if *enc >= 0 {
+			g.party.Encounter = *enc
+		}
+		g.shell.mode = shellPlaying
+	} else {
+		g.openTitle() // A1(docs/spec/15 §3)
 	}
 
 	ebiten.SetWindowSize(layout.ScreenW, layout.ScreenH)
@@ -428,7 +540,11 @@ func main() {
 	}
 }
 
-func load(dir string, slot int, fontPath string, seed uint64, x, y, enc int) (*Game, error) {
+// loadStatic 讀開局前就需要的靜態資產:世界地圖、圖塊、迷宮資料、規則表、
+// 名冊、字型、音訊。**不載入任何一支隊伍** —— docs/spec/15 §1:
+// 隊伍要選了才載入,所以拆成「載入靜態資產」與「載入某一支隊伍」兩段
+// (後者是 loadParty)。
+func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	// ⚠ 每個欄位要有自己的 tag。寫成 `W, H int `json:"w"`` 會讓兩個欄位
 	// 共用同一個 tag,H 永遠是 0 —— 而 JSON 解碼**不會報錯**。
 	var wm struct {
@@ -460,18 +576,18 @@ func load(dir string, slot int, fontPath string, seed uint64, x, y, enc int) (*G
 	}
 	// 迷宮圖塊:MAZEITEM.PIC 第 k 行 = 格值 k(偏移 0)。
 	g.mazeTiles = loadTiles(filepath.Join(dir, "gfx", "maze"), 32)
-	if err := g.loadParty(dir, slot); err != nil {
+
+	// 名冊獨立於隊伍槽:C)har Utilities 從主選單就能進去,不必先 L)oad
+	// 一支隊伍(docs/spec/15 §4)。GROUPS.DAT 的路徑也在這裡定案,
+	// 隊伍選擇畫面(A3)與 loadParty 都靠它。
+	g.savePath = filepath.Join(dir, "save", "GROUPS.DAT")
+	cb, err := os.ReadFile(filepath.Join(dir, "save", "CHARS.DAT"))
+	if err != nil {
 		return nil, err
 	}
-	// 除錯用的座標覆寫。**預設不覆寫** —— 存檔裡的座標才是真相。
-	if x >= 0 {
-		g.party.X = x
-	}
-	if y >= 0 {
-		g.party.Y = y
-	}
-	if enc >= 0 {
-		g.party.Encounter = enc
+	g.chars, err = original.ParseChars(cb)
+	if err != nil {
+		return nil, err
 	}
 
 	if err := g.loadCombat(dir, seed); err != nil {
@@ -486,27 +602,23 @@ func load(dir string, slot int, fontPath string, seed uint64, x, y, enc int) (*G
 	g.panel = render.NewPainter(src, 20, cgaWhite)
 	// 敘述覆蓋層用 24 px(docs/spec/04 §4 的主要閱讀字級)。
 	g.overlayFont = render.NewPainter(src, 24, cgaWhite)
+	// 標題用 32px(docs/spec/04 §4)。
+	g.titleFont = render.NewPainter(src, 32, cgaWhite)
 	g.initSound() // docs/spec/13:失敗只記警告,不影響遊戲
+	g.shell = &shellState{mode: shellTitle}
 	return g, nil
 }
 
-// loadParty 讀 CHARS.DAT / GROUPS.DAT。docs/spec/06。
+// loadParty 選一支隊伍進遊戲。docs/spec/15 §5 = 開局的唯一入口。
 //
 // ⚠ 讀的是 <assets>/save/ 底下的**複本**,不是 game/sharspri/ ——
 // 存檔要寫回去,而原版目錄是唯讀的(CLAUDE.md §8)。
-func (g *Game) loadParty(dir string, slot int) error {
+// 呼叫前 g.chars 必須已經由 loadStatic 讀好 —— CHARS.DAT 與隊伍槽無關。
+func (g *Game) loadParty(slot int) error {
 	if slot < 1 || slot > original.GroupSlots {
 		return fmt.Errorf("存檔槽 %d 超出 1–%d", slot, original.GroupSlots)
 	}
-	cb, err := os.ReadFile(filepath.Join(dir, "save", "CHARS.DAT"))
-	if err != nil {
-		return err
-	}
-	chars, err := original.ParseChars(cb)
-	if err != nil {
-		return err
-	}
-	gb, err := os.ReadFile(filepath.Join(dir, "save", "GROUPS.DAT"))
+	gb, err := os.ReadFile(g.savePath)
 	if err != nil {
 		return err
 	}
@@ -514,22 +626,21 @@ func (g *Game) loadParty(dir string, slot int) error {
 	if err != nil {
 		return err
 	}
-	g.slot = slot
-	g.savePath = filepath.Join(dir, "save", "GROUPS.DAT")
 	grp := groups[slot-1]
 	if grp.Blank() {
-		return fmt.Errorf("第 %d 隊還沒建立(記錄整份是空白)—— 出貨磁片組好的是第 5 隊", slot)
+		return fmt.Errorf("第 %d 隊還沒建立(記錄整份是空白)", slot)
 	}
 
-	g.chars = chars
+	g.slot = slot
+	g.members = nil
 	// 以 GROUPS.DAT 的成員槽為準(docs/spec/06 §1)
 	for _, id := range grp.MemberIDs() {
-		if id < 1 || id > len(chars) {
+		if id < 1 || id > len(g.chars) {
 			g.warnings = append(g.warnings,
-				fmt.Sprintf("成員編號 %d 超出名冊 1–%d", id, len(chars)))
+				fmt.Sprintf("成員編號 %d 超出名冊 1–%d", id, len(g.chars)))
 			continue
 		}
-		c := chars[id-1]
+		c := g.chars[id-1]
 		if !c.Occupied() {
 			g.warnings = append(g.warnings, fmt.Sprintf("成員編號 %d 指向空槽", id))
 			continue

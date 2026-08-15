@@ -222,13 +222,13 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 
 // ItemTriggers 判定一件魔法道具這次有沒有發動(docs/spec/09 §5)。
 //
-// ⚠ **分母未解。** 先前用 `combat.DamageFaces`(26),理由是「與傷害公式的骰面
-// 同一個數」—— 而那個 26 是幻影:它來自把 `mov bx, 1Ah` 讀成面數,
-// 0x1A 其實是浮點累加器的位址(docs/re/153 §9)。
+// **分母是 100,欄6 就是百分比**(docs/re/157):原版在 CMBT 0x17C67 擲
+// `INT(RND × ds:977E) + 1` 再比 `≤ 欄6`,而 ds:977E = 100(docs/re/154)。
 //
-// 這裡改用 `combat.ToHitFaces`(原版 ds:977Eh)—— 那是**原版唯一的一顆骰**:
-// 命中、狂暴門檻、`CMBT 0x1505A` 都擲它。**但這一條的原始碼還沒讀到**,
-// 所以它是一個有理由的選擇,不是讀出來的規則。
+// ⚠ 這裡曾經用 26,理由是「與傷害公式的骰面同一個數」—— 而那個 26 是幻影
+// (`mov bx, 1Ah` 的 0x1A 是浮點累加器的位址,docs/re/153 §9)。
+// 借用 ToHitFaces 那一版**碰巧是對的**,但當時沒有依據:
+// 借錯了不會有任何症狀。
 func ItemTriggers(itemIndex, successRate int, r combat.Rand) bool {
 	if itemIndex <= MagicItemMin {
 		return false // 不是魔法道具

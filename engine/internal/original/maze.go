@@ -131,7 +131,13 @@ func MazeDrawn(v int) (int, bool) {
 // ⚠ 起始位置的兩欄是 **(Major, Minor)**,與事件表和 GROUPS.DAT **同一個順序**
 // (docs/re/137:12/12 對 10/12)。
 type MazeEntry struct {
-	WorldX, WorldY int // 欄 0 / 1
+	// ⚠ **欄 0 是南北、欄 1 是東西** —— 與 docs/re/141 訂正過的兩軸一致。
+	// 判別法是正對照:把兩欄直接當 (x,y) 去查地形,**11 個入口 0 個命中**;
+	// 對調之後 **11/11 都落在入口圖塊(24/25/27/28)上**。
+	//
+	// ⚠ 這裡曾經寫反,而症狀是**地城完全進不去** ——
+	// 沒有錯誤訊息,只是走到入口格什麼都不會發生。
+	WorldX, WorldY int // 欄 1 / 欄 0
 	StartMajor     int // 欄 2 —— 乘 81 的那一個
 	StartMinor     int // 欄 3
 	Facing         int // 欄 4(值域只有 {1, 3},原因未解)
@@ -157,7 +163,7 @@ func ParseMazeData(d []byte) ([]MazeEntry, error) {
 	col := func(c, i int) int { return int(int16(w[c*n+i])) }
 	for i := range out {
 		out[i] = MazeEntry{
-			WorldX: col(0, i), WorldY: col(1, i),
+			WorldX: col(1, i), WorldY: col(0, i),
 			StartMajor: col(2, i), StartMinor: col(3, i),
 			Facing:   col(4, i),
 			TextFile: col(5, i), MazeFile: col(6, i), TextCount: col(7, i),

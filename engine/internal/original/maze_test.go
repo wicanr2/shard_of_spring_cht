@@ -243,3 +243,41 @@ func TestNegativeTilesAreCrossLevel(t *testing.T) {
 		t.Errorf("判成跨關卡的 %d 個,應為 4", crossLevel)
 	}
 }
+
+// 地城入口的座標必須落在入口圖塊(24/25/27/28)上。
+//
+// ⚠ 這條是**正對照**:兩欄直接當 (x,y) 讀是 **0/11 命中**、對調是 **11/11**。
+// 而寫反了的症狀是**地城完全進不去** —— 沒有錯誤訊息,
+// 走到入口格什麼都不會發生,看起來就像「那一格本來就沒東西」。
+func TestMazeEntrancesLandOnEntranceTiles(t *testing.T) {
+	ents, err := ParseMazeData(read(t, "MAZEDATA.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cells, err := DecodeWorldMap(read(t, "WRLDMAP.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	at := func(x, y int) int {
+		if x < 0 || x >= WorldW || y < 0 || y >= WorldH {
+			return -1
+		}
+		return int(cells[x*WorldH+y])
+	}
+	isEntrance := map[int]bool{24: true, 25: true, 27: true, 28: true}
+	hit, total := 0, 0
+	for _, e := range ents {
+		if e.WorldX == 0 && e.WorldY == 0 {
+			continue // 第 0 列是全零的哨兵
+		}
+		total++
+		if isEntrance[at(e.WorldX, e.WorldY)] {
+			hit++
+		}
+	}
+	// ⚠ 12 筆非零裡有 1 筆落在別的圖塊上 —— docs/re/51 §2 早就標出那一筆特殊。
+	// 這裡要求的是「絕大多數命中」,而**對調之後會掉到 0**。
+	if hit < total-1 {
+		t.Errorf("%d/%d 個入口落在入口圖塊上 —— 兩欄可能又接反了", hit, total)
+	}
+}

@@ -161,7 +161,7 @@ func (g *Game) stepMaze(dir maze.Facing) {
 		// 走出邊界 → 回世界地圖。原版在這一刻印 `Leaving maze ..`
 		// (docs/re/147:實跑從入口那一格往外走一步就出去了)。
 		g.level = nil
-		g.overlay = "離開迷宮……"
+		g.overlay = "離開地城……" // MAZEMOVE:88
 		return
 	case maze.Moved:
 	default:

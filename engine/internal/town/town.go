@@ -54,12 +54,15 @@ const (
 	BuyPackFull
 )
 
+// docs/spec/19-module-text.md(F1):字面照 translations/module-text/TOWN.tsv——
+// BuyNoGold 是 TOWN:76+77(「You don't have」+「enough gold!」),
+// BuyPackFull 是 TOWN:19(「No more room!」)。
 func (r BuyResult) String() string {
 	switch r {
 	case BuyNoGold:
-		return "金幣不足"
+		return "你沒有足夠的金幣!"
 	case BuyPackFull:
-		return "背包已滿"
+		return "沒有空間了!"
 	}
 	return ""
 }

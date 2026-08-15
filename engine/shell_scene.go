@@ -183,7 +183,10 @@ func writeGroups(path string, groups []original.Group) error {
 // original.Group.Blank() 就是這個判定。
 func (g *Game) selectParty(slot int) {
 	if slot < 1 || slot > len(g.shell.slots) || g.shell.slots[slot-1].Blank() {
-		g.shell.msg = fmt.Sprintf("第 %d 隊還沒有資料 —— 先去 C)har Utilities 組隊", slot)
+		// MENU:97「I'm sorry, this party does not exist! Use the Utilities
+		// to create it.」
+		g.shell.msg = fmt.Sprintf(
+			"第 %d 隊：很抱歉,這支隊伍不存在!請用角色管理工具建立它。", slot)
 		return
 	}
 	if err := g.loadParty(slot); err != nil {
@@ -418,7 +421,12 @@ func (g *Game) drawTitle(dst *ebiten.Image) {
 		y += g.titleFont.LineHeight() * 2
 	}
 	if g.panel != nil {
-		drawCenter(g.panel, dst, "SSI 1986／Digital Illusions MS-DOS 移植／繁體中文 remake", cx, y)
+		// START:0「(c) 1986-1987 by Strategic Simulations Inc.」+
+		// START:1「MS DOS 版由 Digital Illusions, Inc. 移植」。
+		// ⚠ 沒有讀取畫面,START:0 原文開頭「Loading...」的字樣不套用。
+		drawCenter(g.panel, dst, "(c) 1986-1987 by Strategic Simulations Inc.", cx, y)
+		y += g.panel.LineHeight() * 1.3
+		drawCenter(g.panel, dst, "MS DOS 版由 Digital Illusions, Inc. 移植／繁體中文 remake", cx, y)
 		y += g.panel.LineHeight() * 3
 		drawCenter(g.panel, dst, "── 按任意鍵繼續 ──", cx, y)
 	}

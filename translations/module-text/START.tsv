@@ -1,3 +1,3 @@
-row	addr	original	orig_bytes	translation	trans_bytes	fits	note
-0	ds:4F1A	Loading the Shard of Spring, (c) 1986-1987 by Strategic Simulations Inc.	72	正在載入《春之石》,(c) 1986-1987 by Strategic Simulations Inc.	62	Y	
-1	ds:4F66	MS DOS version by Digital Illusions, Inc.	41	MS DOS 版由 Digital Illusions, Inc. 移植	40	Y	
+row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
+0	ds:4F1A	Loading the Shard of Spring, (c) 1986-1987 by Strategic Simulations Inc.	72	正在載入《春之石》,(c) 1986-1987 by Strategic Simulations Inc.	62	Y		
+1	ds:4F66	MS DOS version by Digital Illusions, Inc.	41	MS DOS 版由 Digital Illusions, Inc. 移植	40	Y		engine/shell_scene.go

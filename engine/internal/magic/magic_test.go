@@ -23,8 +23,8 @@ func TestCastGates(t *testing.T) {
 		invest int
 		want   Fail
 	}{
-		{"法師 + 有技能 + 夠力", wizard("1000000000"), 4, OK},
-		{"不是法師", original.Character{Class: '1', SP: 100, Skills: "1111111111"}, 4, FailNotWizard},
+		{"巫師 + 有技能 + 夠力", wizard("1000000000"), 4, OK},
+		{"不是巫師", original.Character{Class: '1', SP: 100, Skills: "1111111111"}, 4, FailNotWizard},
 		{"技能旗標關著", wizard("0111111111"), 4, FailNoSkill},
 		{"法力不足", func() original.Character { c := wizard("1000000000"); c.SP = 2; return c }(), 4, FailNoPoints},
 		{"投不到一級", wizard("1000000000"), 1, FailBelowOneLevel},

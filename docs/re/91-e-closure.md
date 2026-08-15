@@ -84,7 +84,7 @@
 |---|---|---|
 | 1 | IDA 讀原始指令 | 三個 `OPEN` + 讀取迴圈([`72`](72-e-file-formats-from-readers.md));欄位去處([`73`](73-monster-columns-to-combat-array.md));使用端([`74`](74-spell-and-item-columns.md)/[`76`](76-to-hit-formula.md)/[`83`](83-hp-is-attribute-3.md));欄6 的亂數比較(§1)|
 | 2 | 讀寫端點 | 三個檔是**唯讀**資料,讀端全部讀出;沒有寫入端 |
-| 3 | 獨立資料印證 | 檔案大小零誤差(2350/94、450/90、1256、1870、2664/36);法師/戰士 20/20 分群;三組等級碰撞;跨檔 28+6 交叉驗證 |
+| 3 | 獨立資料印證 | 檔案大小零誤差(2350/94、450/90、1256、1870、2664/36);巫師/戰士 20/20 分群;三組等級碰撞;跨檔 28+6 交叉驗證 |
 | 4 | 筆記 | [`72`](72-e-file-formats-from-readers.md)–[`74`](74-spell-and-item-columns.md)、[`82`](82-monster-columns-semantics.md)、[`83`](83-hp-is-attribute-3.md)、[`90`](90-monster-column-9-is-a-tier.md)、本篇 |
 
 **E = RE-DONE。** 看板 **10/12**,剩 D、J。

@@ -158,7 +158,9 @@ var (
 	raceName = map[byte]string{
 		'H': "人類", 'T': "巨魔", 'D': "矮人", 'E': "精靈", 'G': "地精",
 	}
-	className = map[byte]string{'1': "戰士", '2': "法師"}
+	// CHARUTIL:48「Hero」→「戰士」、CHARUTIL:49「Wizard」→「巫師」
+	// (translations/module-text/CHARUTIL.tsv,glossary.md「WIZARD」條)。
+	className = map[byte]string{'1': "戰士", '2': "巫師"}
 	// 狀態。translations/glossary.md「狀態」表,0 起算。
 	// ⚠ 0(OK)在狀態欄顯示**空白**,不顯示「正常」——
 	// 五個人都正常時整欄空著,異常才跳出來(docs/spec/06 §5)。

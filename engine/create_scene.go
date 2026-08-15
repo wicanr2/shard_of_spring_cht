@@ -168,11 +168,11 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 		line("選種族:")
 		for _, r := range []rules.Race{rules.Human, rules.Dwarf, rules.Troll, rules.Elf, rules.Gnome} {
 			info := rules.Races[r]
-			cls := "戰士／法師"
+			cls := "戰士／巫師"
 			if len(info.Classes) == 1 && info.Classes[0] == rules.ClassHero {
 				cls = "只能戰士"
 			} else if len(info.Classes) == 1 {
-				cls = "只能法師"
+				cls = "只能巫師"
 			}
 			line(fmt.Sprintf("%c) %s　%s", r, info.Name, cls))
 		}
@@ -212,7 +212,7 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 		line(fmt.Sprintf("第 %d 輪調整:按 1–5 選要重擲的項目,ESC 執行;", c.round))
 		line("沒選任何一項時按 ESC 進到下一步。")
 	case stepClass:
-		line("選職業:F) 戰士　W) 法師")
+		line("選職業:F) 戰士　W) 巫師")
 	case stepName:
 		line(fmt.Sprintf("名稱(最多 %d 字):%s_", town.NameMaxRunes, c.name))
 		line("Enter 確定,ESC 取消")

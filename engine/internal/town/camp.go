@@ -22,16 +22,20 @@ const (
 	SkillIndoors             // 'You're inside!'
 )
 
+// docs/spec/19-module-text.md(F1):字面照 translations/module-text/CAMP.tsv。
+// ⚠ SkillNoSkill 這裡用的是 H)unt 情境的原文(CAMP:130「You don't have that
+// skill.」);I)dentify 情境原文不同(CAMP:61「You are not trained in that
+// lore!」),那句在呼叫端(town_scene.go 的 identify())另外覆寫,不在這裡合併。
 func (g SkillGate) String() string {
 	switch g {
 	case SkillNoSkill:
-		return "他沒有這項技能。"
+		return "你沒有那項技能。"
 	case SkillNotWizard:
-		return "他不是法師。"
+		return "這位角色不是巫師。"
 	case SkillSpent:
-		return "他今天已經用過技能了。"
+		return "你今天已經用過那項技能了。"
 	case SkillDisabled:
-		return "他現在動不了。"
+		return "這位角色行動不能。"
 	case SkillIndoors:
 		return "你在室內!"
 	}
@@ -41,7 +45,7 @@ func (g SkillGate) String() string {
 // 技能旗標的編號(1–10),與 CAMP.EXE 自己印的技能表一致(docs/re/166 §2/§3)。
 const (
 	SkillHunting    = 9 // 戰士表:位移 50
-	SkillWeaponLore = 6 // 法師表:位移 47
+	SkillWeaponLore = 6 // 巫師表:位移 47
 	SkillPotionLore = 7 // 位移 48
 	SkillItemLore   = 8 // 位移 49
 )

@@ -28,7 +28,7 @@ type RaceInfo struct {
 	// Classes 是可選的職業。長度 2 表示兩種都可以。
 	Classes []Class
 	// Skills 是附贈的技能編號(1–10,對照 docs/formats/01 的技能表)。
-	// ⚠ 同一個編號在戰士表與法師表是**不同的技能**,所以這裡的編號
+	// ⚠ 同一個編號在戰士表與巫師表是**不同的技能**,所以這裡的編號
 	// 只有配上該種族的職業才有意義。
 	Skills []int
 	// 屬性修正。手冊寫的是 Spd/Str/Int/End/Sk 五項。
@@ -53,12 +53,12 @@ var Races = map[Race]RaceInfo{
 	},
 	Elf: {
 		Name: "精靈", Classes: []Class{ClassWizard},
-		Skills: []int{8, 6}, // Item lore、Weapon lore(法師表)
+		Skills: []int{8, 6}, // Item lore、Weapon lore(巫師表)
 		Speed:  5, Str: -3, Int: 3, End: -3, Skill: -2,
 	},
 	Gnome: {
 		Name: "地精", Classes: []Class{ClassWizard},
-		Skills: []int{5}, // Spirit runes(法師表)
+		Skills: []int{5}, // Spirit runes(巫師表)
 		Speed:  2, Str: -2, Int: 5, Skill: -2,
 	},
 }

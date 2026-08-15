@@ -48,7 +48,7 @@
 
 ```
 'Character # to cast spell'  → 選施法者
-'Cast what spell?'           → 選法術(法師才有;'(ENTER exits)')
+'Cast what spell?'           → 選法術(巫師才有;'(ENTER exits)')
 'Spell Pts ?'                → 投入點數(§1)
 'That is a combat spell !'   → ⚠ 戰鬥法術不能在營地放
 'You don't know that spell'  → 沒學那一系

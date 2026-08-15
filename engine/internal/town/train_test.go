@@ -54,16 +54,16 @@ func TestTrainAddsGrowthWithoutHealingOldWounds(t *testing.T) {
 	}
 }
 
-// 法師才有法力成長。這條擋的是「兩張表用錯欄」——
-// 用戰士欄給法師加血,數字仍然合理,畫面上看不出來。
+// 巫師才有法力成長。這條擋的是「兩張表用錯欄」——
+// 用戰士欄給巫師加血,數字仍然合理,畫面上看不出來。
 func TestWizardGrowsSPAndUsesWizardColumn(t *testing.T) {
 	c := original.Character{
 		Name: "法", Class: byte(rules.ClassWizard), Level: 1,
 		End: 10, Int: 12, MaxHP: 8, HP: 8, MaxSP: 5, SP: 5,
 	}
 	Train(&c, 300, 1, capped())
-	if c.MaxHP != 8+5 { // 體質 10 的**法師**欄是 5,不是戰士的 7
-		t.Errorf("法師最大生命應為 8+5=13,得 %d", c.MaxHP)
+	if c.MaxHP != 8+5 { // 體質 10 的**巫師**欄是 5,不是戰士的 7
+		t.Errorf("巫師最大生命應為 8+5=13,得 %d", c.MaxHP)
 	}
 	if c.MaxSP != 5+8 { // 智力 12 → 8
 		t.Errorf("最大法力應為 5+8=13,得 %d", c.MaxSP)
@@ -83,7 +83,7 @@ func TestGuildTeaches(t *testing.T) {
 		t.Error("位移 36 = 0 應是武術(戰士)")
 	}
 	if GuildTeaches(1) != byte(rules.ClassWizard) {
-		t.Error("位移 36 = 1 應是魔法(法師)")
+		t.Error("位移 36 = 1 應是魔法(巫師)")
 	}
 }
 

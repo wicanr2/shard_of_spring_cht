@@ -130,7 +130,7 @@ const KarateSkill = 4
 // 但那兩類是什麼行為**未解**,所以這裡只具名讀得出來的兩個。
 const (
 	ActionFighter = 1 // 戰士(`CHARS.DAT` 位移 15 = '1');圖組 41
-	ActionWizard  = 2 // 法師(位移 15 = '2');圖組 57
+	ActionWizard  = 2 // 巫師(位移 15 = '2');圖組 57
 )
 
 // ActionKind 圖組:同一個分支順手設的屬性 11(docs/re/163 §1)。
@@ -142,7 +142,7 @@ const (
 // PartyAction 回傳一個隊員的行動類型。
 //
 // ⚠ 原版是**字串比較**:`MID$(記錄, 15, 1) = "1"`。
-// 不相等的一律走法師那一支 —— 所以未知的職業字元會被當成法師,照抄。
+// 不相等的一律走巫師那一支 —— 所以未知的職業字元會被當成巫師,照抄。
 func PartyAction(class byte) int {
 	if class == '1' {
 		return ActionFighter
@@ -220,7 +220,7 @@ func Damage(atk, def Unit, weapon, armor Item, r Rand) int {
 		faces, strBonus = atk.Str, 0
 		// ⚠ 原版是**兩層閘門**:先看屬性 14 == 1(行動類型 = 戰士),
 		// 才去讀角色記錄的空手道旗標(docs/re/153 §5、163 §4)。
-		// 少了外層,法師空手也會走空手道那條式子。
+		// 少了外層,巫師空手也會走空手道那條式子。
 		if atk.Action == ActionFighter && atk.Karate > 0 {
 			faces = atk.ToHit - 5
 		}
@@ -266,5 +266,5 @@ func Apply(def *Unit, dmg int) {
 // CMBT 的 DGROUP 常數 `ds:94B8` 初值 = 5(docs/re/178 §2)。
 //
 // 對怪物而言屬性 14 是**法術系別 1–5**(docs/re/170),
-// 對隊員而言是職業(1 = 戰士、2 = 法師)—— 同一個欄位、兩種語意。
+// 對隊員而言是職業(1 = 戰士、2 = 巫師)—— 同一個欄位、兩種語意。
 const MonsterActionFaces = 5

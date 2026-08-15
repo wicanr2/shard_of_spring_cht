@@ -1,16 +1,16 @@
-row	addr	original	orig_bytes	translation	trans_bytes	fits	note
-9	ds:6C72	(Press a key)	13	(按任意鍵)	10	Y	
-11	ds:6C96	    Main Menu    	17	主選單	6	Y	
-13	ds:6CC2	L)oad a Party.   	17	L)讀取隊伍。	12	Y	
-14	ds:6CD8	C)har Utilities. 	17	C)角色管理工具。	16	Y	
-17	ds:6D1A	P)rogram Notes.  	17	P)製作者的話。	14	Y	
-18	ds:6D30	Q)uit the Game.  	17	Q)結束遊戲。	12	Y	
-93	ds:75F6	    Dedicated to Lori Proudfoot.                   Developed with Applied Computing Services, Inc.              Written entirely in Microsoft QuickBasic v3.0.	158	謹以此獻給 Lori Proudfoot。與 Applied Computing Services, Inc. 共同開發完成。全部使用 Microsoft QuickBasic v3.0 撰寫。	118	Y	Lori Proudfoot / Applied Computing Services 為真實人名與公司,非遊戲世界專有名詞,不套用 glossary 對照格式。
-94	ds:76A0	Which party do you wish to use (1-5,0 Quits) ?	46	要使用哪一支隊伍?(1–5,0離開)	28	Y	
-95	ds:76DA	Please use a party numbered between 1 and 5 !	45	請使用編號 1 到 5 之間的隊伍!	29	Y	
-97	ds:7726	I'm sorry, this party does not exist !  Use the Utilities to create it.	71	很抱歉,這支隊伍不存在!請用角色管理工具建立它。	46	Y	
-99	ds:7792	Parties of dead characters are not allowed !!! 	47	全滅的隊伍不能選!!!	19	Y	
-100	ds:77CE	# CHARACTER HP  SP	18	# 角色　　　生命　法力	22	22	
-104	ds:7806	Gold:	5	金幣:	5	Y	
-105	ds:7810	Provisions:	11	食糧:	5	Y	
-148	ds:7F50	Don, Leslie, and Martin thank you for playing the Shard of Spring.	66	唐(Don)、萊斯莉(Leslie)與馬丁(Martin)感謝你遊玩《春之石》。	59	Y	Don/Leslie/Martin 為真實開發者,非遊戲世界專有名詞;沿用「中文(英文)」格式僅為可讀性,非 glossary 硬規則4 的適用範圍。
+row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
+9	ds:6C72	(Press a key)	13	(按任意鍵)	10	Y		
+11	ds:6C96	    Main Menu    	17	主選單	6	Y		engine/shell_scene.go
+13	ds:6CC2	L)oad a Party.   	17	L)讀取隊伍。	12	Y		
+14	ds:6CD8	C)har Utilities. 	17	C)角色管理工具。	16	Y		
+17	ds:6D1A	P)rogram Notes.  	17	P)製作者的話。	14	Y		
+18	ds:6D30	Q)uit the Game.  	17	Q)結束遊戲。	12	Y		
+93	ds:75F6	    Dedicated to Lori Proudfoot.                   Developed with Applied Computing Services, Inc.              Written entirely in Microsoft QuickBasic v3.0.	158	謹以此獻給 Lori Proudfoot。與 Applied Computing Services, Inc. 共同開發完成。全部使用 Microsoft QuickBasic v3.0 撰寫。	118	Y	Lori Proudfoot / Applied Computing Services 為真實人名與公司,非遊戲世界專有名詞,不套用 glossary 對照格式。	
+94	ds:76A0	Which party do you wish to use (1-5,0 Quits) ?	46	要使用哪一支隊伍?(1–5,0離開)	28	Y		
+95	ds:76DA	Please use a party numbered between 1 and 5 !	45	請使用編號 1 到 5 之間的隊伍!	29	Y		
+97	ds:7726	I'm sorry, this party does not exist !  Use the Utilities to create it.	71	很抱歉,這支隊伍不存在!請用角色管理工具建立它。	46	Y		engine/shell_scene.go
+99	ds:7792	Parties of dead characters are not allowed !!! 	47	全滅的隊伍不能選!!!	19	Y		
+100	ds:77CE	# CHARACTER HP  SP	18	# 角色　　　生命　法力	22	22		
+104	ds:7806	Gold:	5	金幣:	5	Y		
+105	ds:7810	Provisions:	11	食糧:	5	Y		
+148	ds:7F50	Don, Leslie, and Martin thank you for playing the Shard of Spring.	66	唐(Don)、萊斯莉(Leslie)與馬丁(Martin)感謝你遊玩《春之石》。	59	Y	Don/Leslie/Martin 為真實開發者,非遊戲世界專有名詞;沿用「中文(英文)」格式僅為可讀性,非 glossary 硬規則4 的適用範圍。	

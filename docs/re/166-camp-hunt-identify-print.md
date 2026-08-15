@@ -12,7 +12,7 @@
 | 1 | `CHARS.DAT` **位移 86 = 今天已經用過技能**(`'1'` = 用過)。`H)unt` 與 `I)dentify` 共用 | **已確認** |
 | 2 | `H)unt`:要在**野外**(`ds:3534 ≥ 99`)、要是**戰士**、要有**技能旗標第 9 格**(位移 50 = `Hunting`)| **已確認** |
 | 3 | 打獵成功會加**補給品**(`GROUPS.DAT` 位移 23),**夾在上限** `ds:6F10` | **已確認** |
-| 4 | `I)dentify`:要是**法師**、狀態 ≤ 1、依道具編號選三個 lore 技能之一(位移 47 / 48 / 49)| **已確認** |
+| 4 | `I)dentify`:要是**巫師**、狀態 ≤ 1、依道具編號選三個 lore 技能之一(位移 47 / 48 / 49)| **已確認** |
 | 5 | 三個 lore 的分界是 **`≤ 20` / `21–56` / 其餘**,`99` = 空格 | **已確認**(讀到的常數)|
 | 6 | 背包存的是 **0-based** 編號,所以第一段(`≤ 20`)= 全部 21 件武器與護甲 | **已確認**([`167`](167-record-field-accessor-and-identified-flags.md) §3)|
 | 7 | 服務呼叫**操作碼 38 = 取角色狀態**;`> 1` → `That character is incapacitated.` | 證據充分 |
@@ -54,7 +54,7 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 0111F5  jl  → 'You're inside!'       ; ★ 只能在野外打獵
 011222  提示 'Character # to hunt ? (ESC exits)' → ds:7072 = 角色編號(0 = 離開)
 011242  記錄 = ds:34E0[編號]         ; 每個角色 4 bytes 的字串描述子
-01125E  MID$(記錄, 15, 1) == '2'     ; 職業:法師?
+01125E  MID$(記錄, 15, 1) == '2'     ; 職業:巫師?
 011278  MID$(記錄, 50, 1) == '0'     ; ★ 技能旗標第 9 格 = Hunting
 01128A  or / and → 兩者任一成立 → 'You don't have that skill.'
 011299  MID$(記錄, 86, 1) == '1'     → 'You have used that skill today.'
@@ -92,7 +92,7 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 `0x10F8F`–`0x11130`:
 
 ```
-010FC9  MID$(記錄, 15, 1) == '1'  → 'That character is not a wizard.'   ; ★ 只有法師
+010FC9  MID$(記錄, 15, 1) == '1'  → 'That character is not a wizard.'   ; ★ 只有巫師
 010FE7  MID$(記錄, 86, 1) == '1'  → 'You have used that skill today.'
 010FFC  操作碼 38(取狀態);> 1 → incapacitated
 01101C  提示 'Item to ID ?' → ds:7294 = 道具編號

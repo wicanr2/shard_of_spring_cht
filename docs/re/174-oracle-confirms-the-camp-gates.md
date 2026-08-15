@@ -10,7 +10,7 @@
 | # | 結果 | 信心 |
 |---|---|---|
 | 1 | `H)unt` 在野外**不擋**,選完人才判技能 —— 閘門順序與 [`166`](166-camp-hunt-identify-print.md) §2 一致 | **已確認(實跑)** |
-| 2 | `I)dentify` 對戰士回 `That character is not a wizard.`,對法師走到 `Item to ID ?` | **已確認(實跑)** |
+| 2 | `I)dentify` 對戰士回 `That character is not a wizard.`,對巫師走到 `Item to ID ?` | **已確認(實跑)** |
 | 3 | 世界地圖狀態列直接印 **`Gold:` 與 `Provisions:`** —— 金幣與補給品都是**可觀測的** | **已確認(實跑)** |
 | 4 | 出貨隊伍**沒有人會 `Hunting`**,所以打獵的收穫量在這份存檔上量不到 | **已確認** |
 
@@ -46,7 +46,7 @@ tools/dosbox_run.sh "wait:8;key:Return;wait:3;key:Return;wait:3;type:L;wait:4;ty
 | 選誰 | 畫面 | 對應 |
 |---|---|---|
 | 1 Segrono(戰士)| **`That character is not a wizard.`** | 第一道閘門是**職業**([`166`](166-camp-hunt-identify-print.md) §3)|
-| 4 Fire Hawk(法師)| **`Item to ID ?`** | 通過職業 → 位移 86 → 狀態三關,走到選道具 |
+| 4 Fire Hawk(巫師)| **`Item to ID ?`** | 通過職業 → 位移 86 → 狀態三關,走到選道具 |
 
 Fire Hawk 的背包是空的(十格全 `99`),而原版**仍然問「要辨識哪一件」**
 —— 與 [`166`](166-camp-hunt-identify-print.md) §3 讀到的「編號 `99` → 回選單」

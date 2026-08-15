@@ -37,16 +37,16 @@ func (g *Game) openPrompt(t maze.Trigger) bool {
 	switch t.Kind {
 	case maze.KindGem:
 		g.prompt = &mazePrompt{kind: promptGem,
-			head: "碰哪一顆寶石?(B、G、V、R;ESC 離開)"}
+			head: "輸入要碰觸的寶石(B,G,V,R)或按ESC"} // MAZEMOVE:35+36+37
 	case maze.KindPool:
 		// 先看池子還有沒有水 —— 原版在選人之前就擋掉(docs/re/155 §2.1)。
 		if !maze.PoolAvailable(g.group.PoolUses) {
-			// 原版的 `This pool is empty!`。房間敘述照樣留著。
-			g.overlay = t.Text + "  這座池子已經乾了。"
+			// 原版的 `This pool is empty!`(MAZEMOVE:83)。房間敘述照樣留著。
+			g.overlay = t.Text + "  這座池子已經枯竭!"
 			return true
 		}
 		g.prompt = &mazePrompt{kind: promptPool,
-			head: "要治療哪一位隊員?(0 離開)"}
+			head: "要治療哪位隊員?(0離開)"} // MAZEMOVE:78
 	case maze.KindRiddle:
 		// 三態旗標(docs/re/162 §2)。⚠ 原版把它存在哪**未解**,
 		// 所以本引擎只留在記憶體裡 —— 存檔不會記得你解過了。
@@ -59,7 +59,7 @@ func (g *Game) openPrompt(t maze.Trigger) bool {
 			return true
 		}
 		g.overlay = g.dungeonText(706, "準備好說出氏族的名字了嗎?")
-		g.prompt = &mazePrompt{kind: promptRiddle, head: "兄弟們是:"}
+		g.prompt = &mazePrompt{kind: promptRiddle, head: "這幾位兄弟是:"} // MAZEMOVE:46
 	default:
 		return false
 	}
@@ -143,7 +143,7 @@ func (g *Game) poolKey(k ebiten.Key) {
 	}
 	m := &g.members[i]
 	if !maze.PoolCanHeal(m.Status) {
-		g.overlay = fmt.Sprintf("%s 在這裡幫不上忙。", m.Name)
+		g.overlay = m.Name + "：這位角色在這裡沒辦法治療!" // MAZEMOVE:79
 		g.prompt = nil
 		return
 	}
@@ -154,7 +154,7 @@ func (g *Game) poolKey(k ebiten.Key) {
 	g.group.PoolUses++
 	g.syncMember(*m)
 	g.prompt = nil
-	g.overlay = fmt.Sprintf("%s 回復了 %d 點生命值。", m.Name, got)
+	g.overlay = fmt.Sprintf("%s 已治療 %d 點。", m.Name, got) // MAZEMOVE:80+81
 }
 
 // riddleKey:Enter 收下目前這一個名字,四個收滿才判(docs/re/162 §3)。

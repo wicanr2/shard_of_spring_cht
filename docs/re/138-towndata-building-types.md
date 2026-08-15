@@ -57,7 +57,7 @@
 
 ⚠ 訓練所的位移 36:`College of Magic` 與 `Wizard's Library` 是 **1**,
 其餘四間(`BladeMaster` / `Volir's Academy` / `The Rising Star` / `Balik's Arena`)是 **0**。
-對上 `TOWN.EXE` 的兩張技能清單(戰士十項 / 法師十項)與 `'Not enough IQ !'` ——
+對上 `TOWN.EXE` 的兩張技能清單(戰士十項 / 巫師十項)與 `'Not enough IQ !'` ——
 **0 = 武術、1 = 魔法**。
 
 ## 3. 價格倍率同樣適用於特殊建築

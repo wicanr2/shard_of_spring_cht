@@ -55,7 +55,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 53	menu	Change	6	更改	4	Y	
 54	menu	Choose class	12	選擇職業:	9	Y	
 55	class	A) Warrior	10	A) 戰士	7	Y	精訊 1987 官方譯名;原譯「A) 勇者」已汰換
-56	class	B) Wizard	9	B) 法師	7	Y	
+56	class	B) Wizard	9	B) 巫師	7	Y	
 57	prompt	Enter:	6	輸入:	5	Y	
 58	prompt	# to choose	11	輸入編號選擇	12	N	超出原文 1 bytes
 59	prompt	(or remove)	11	(或移除)	8	Y	

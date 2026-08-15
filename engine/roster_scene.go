@@ -79,7 +79,7 @@ func (g *Game) rosterKey(k ebiten.Key) {
 		}
 		name := c.Name
 		town.Delete(c)
-		r.msg = name + " 已刪除"
+		r.msg = name + " 已刪除!" // CHARUTIL:53
 	}
 }
 
@@ -227,7 +227,7 @@ func applyNewPartyDefaults(grp *original.Group) {
 	// docs/re/134 §2)。填 0 會變成「背包第 0 格那件道具」——
 	// 而那一格通常真的有東西,所以症狀是「新隊伍莫名其妙帶著一盞燈」。
 	grp.LightPick = original.NotEquipped
-	grp.PoolUses = 0   // 治療池一次都還沒用(docs/re/155 §2.1)
+	grp.PoolUses = 0 // 治療池一次都還沒用(docs/re/155 §2.1)
 	grp.MazeX, grp.MazeY = 0, 0
 	grp.Fled = 0 // 上一場沒有逃跑
 }

@@ -17,6 +17,8 @@ const (
 	HealDeath
 )
 
+// docs/spec/19-module-text.md(F1):TOWN:21–24「Healing」/「Unpoison」/
+// 「Unbind」/「Ressurect」→「醫療」/「解毒」/「解除束縛」/「復活」。
 func (k HealKind) String() string {
 	switch k {
 	case HealPoison:
@@ -26,7 +28,7 @@ func (k HealKind) String() string {
 	case HealDeath:
 		return "復活"
 	}
-	return "治療傷勢"
+	return "醫療"
 }
 
 // 狀態碼。定義在 `original`(那是記錄的語意,不是城鎮的),

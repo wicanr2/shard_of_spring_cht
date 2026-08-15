@@ -38,14 +38,18 @@ const (
 	FailBelowOneLevel
 )
 
+// docs/spec/19-module-text.md(F1):FailNotWizard 照 CAMP:133,
+// FailNoSkill 照 CAMP:82(「You don't know that spell!」),
+// FailNoPoints 照 CAMP:85(spec/19 §1.1 的範例句,一字不差)。
+// FailBelowOneLevel 在這批清冊裡沒有對應的原文,沿用既有措辭。
 func (f Fail) String() string {
 	switch f {
 	case FailNotWizard:
-		return "不是法師"
+		return "這位角色不是巫師。"
 	case FailNoSkill:
-		return "沒有這一系的符文技能"
+		return "你不會那個法術!"
 	case FailNoPoints:
-		return "法力不足"
+		return "你需要更多法力點數!"
 	case FailBelowOneLevel:
 		return "投入的點數不足一級"
 	}

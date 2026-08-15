@@ -41,7 +41,7 @@ func TestCreateRefusesForbiddenClass(t *testing.T) {
 	cs := blankRoster()
 	// 巨魔只能當戰士(手冊 p.49)
 	if _, r := Create(cs, rules.Troll, rules.ClassWizard, Rolled{}, "阿魔"); r != CreateBadClass {
-		t.Fatalf("巨魔選法師應被擋,得 %v", r)
+		t.Fatalf("巨魔選巫師應被擋,得 %v", r)
 	}
 	if cs[0].Occupied() {
 		t.Error("被擋下卻寫進名冊了")
@@ -146,7 +146,7 @@ func TestRollStaysInPlausibleRange(t *testing.T) {
 
 func TestCreateGivesRacialSkills(t *testing.T) {
 	cs := blankRoster()
-	// 地精附贈 Spirit runes = 法師技能表第 5 格
+	// 地精附贈 Spirit runes = 巫師技能表第 5 格
 	id, _ := Create(cs, rules.Gnome, rules.ClassWizard, Rolled{End: 8}, "阿地")
 	if got := cs[id-1].Skills; got[4] != '1' {
 		t.Errorf("地精該有第 5 個技能旗標,得 %q", got)
@@ -272,7 +272,7 @@ func TestSkillCostsMatchTitlesDat(t *testing.T) {
 			t.Errorf("戰士技能 %d:得 (%d,%v),應為 %d", i, c, ok, hero[i-1])
 		}
 		if c, ok := SkillCost(rules.ClassWizard, i); !ok || c != wiz[i-1] {
-			t.Errorf("法師技能 %d:得 (%d,%v),應為 %d", i, c, ok, wiz[i-1])
+			t.Errorf("巫師技能 %d:得 (%d,%v),應為 %d", i, c, ok, wiz[i-1])
 		}
 	}
 	// 界外要說「不知道」,不要回一個看起來合理的預設值
@@ -284,17 +284,17 @@ func TestSkillCostsMatchTitlesDat(t *testing.T) {
 	}
 }
 
-// 法師的初始法力 = 智能,戰士 0(手冊 p.12,docs/re/178 §3)。
+// 巫師的初始法力 = 智能,戰士 0(手冊 p.12,docs/re/178 §3)。
 func TestInitialSPIsIntellect(t *testing.T) {
 	cs := blankRoster()
-	// 地精是法師;智能會被種族修正 +5,所以拿建好的角色自己的 Int 比
+	// 地精是巫師;智能會被種族修正 +5,所以拿建好的角色自己的 Int 比
 	id, r := Create(cs, rules.Gnome, rules.ClassWizard, Rolled{Int: 6, End: 8}, "阿地")
 	if r != CreateOK {
 		t.Fatalf("創造失敗:%v", r)
 	}
 	w := cs[id-1]
 	if w.SP != w.Int || w.MaxSP != w.Int {
-		t.Errorf("法師初始法力應 = 智能 %d,得 SP=%d MaxSP=%d", w.Int, w.SP, w.MaxSP)
+		t.Errorf("巫師初始法力應 = 智能 %d,得 SP=%d MaxSP=%d", w.Int, w.SP, w.MaxSP)
 	}
 	id2, _ := Create(cs, rules.Human, rules.ClassHero, Rolled{Int: 6, End: 8}, "阿人")
 	if h := cs[id2-1]; h.SP != 0 || h.MaxSP != 0 {

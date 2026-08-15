@@ -132,7 +132,7 @@ func (g *Game) townKey(k ebiten.Key) {
 			if k == ebiten.KeyR {
 				cost := town.Price(town.TownInnPrice, ts.shop.PriceMult)
 				if float64(cost) > g.group.Gold {
-					ts.msg = "金幣不足"
+					ts.msg = "你沒有足夠的金幣!" // TOWN:76+77
 					return
 				}
 				g.group.Gold -= float64(cost)
@@ -151,7 +151,7 @@ func (g *Game) townKey(k ebiten.Key) {
 			// 1–5 選人,再按 W/P/B/R 選服務(docs/re/142 的四項)。
 			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
 				ts.page = i // 借 page 當「選到第幾個人」
-				ts.msg = g.members[i].Name + ":選 W 治療 / P 解毒 / B 解束縛 / R 復活"
+				ts.msg = g.members[i].Name + ":選 W 醫療 / P 解毒 / B 解除束縛 / R 復活"
 				return
 			}
 			var kind town.HealKind
@@ -213,7 +213,7 @@ func (g *Game) townKey(k ebiten.Key) {
 		case ebiten.KeyE, ebiten.KeyD, ebiten.KeyR, ebiten.KeyT, ebiten.KeyH, ebiten.KeyI,
 			ebiten.KeyC, ebiten.KeyU, ebiten.KeyP:
 			ts.campMode = campLetter(k)
-			ts.msg = "按編號選人"
+			ts.msg = campSelectPrompt(ts.campMode)
 			ts.campWho, ts.campWho2 = -1, -1
 			ts.castStage, ts.castInput = 0, ""
 		case ebiten.Key1, ebiten.Key2, ebiten.Key3, ebiten.Key4, ebiten.Key5:
@@ -323,15 +323,15 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		}
 
 	case townCamp:
-		p.Draw(dst, "營地", x, y)
+		p.Draw(dst, "營地:", x, y) // CAMP:6
 		y += lh * 1.5
 		p.Draw(dst, fmt.Sprintf("S) 睡覺（每人耗 %d 份食糧，回 %d 生命 %d 法力；目前 %d 份）",
 			town.CampSleepFood, town.CampSleepHP, town.CampSleepSP,
 			g.group.Provisions), x, y)
 		y += lh
-		p.Draw(dst, "1–5) 檢視角色　E) 裝備　D) 丟棄　R) 調整隊形　T) 傳遞", x, y)
+		p.Draw(dst, "1–5) 檢視角色　E) 裝備　D) 丟棄　R) 調整隊形　T) 交易", x, y)
 		y += lh
-		p.Draw(dst, "P) 列印角色表　H) 打獵　I) 鑑定　C) 施法　U) 使用道具", x, y)
+		p.Draw(dst, "P) 列印角色卡　H) 打獵　I) 鑑定　C) 施法　U) 使用道具", x, y)
 		y += lh
 		if ts.campMode != 0 {
 			y += lh * 0.5
@@ -380,6 +380,33 @@ func campLetter(k ebiten.Key) byte {
 		return 'P'
 	}
 	return 0
+}
+
+// campSelectPrompt 回傳按下營地指令鍵之後、選人畫面要顯示的提示語,
+// 逐句對應 translations/module-text/CAMP.tsv 的 `Character # to … ?` 系列
+// (docs/spec/19-module-text.md)。
+//
+// ⚠ R)eorder 與 P)rint 在清冊裡沒有對應到這一句原文(P)rint 的原文屬於
+// `na-printer`,不在本輪翻譯範圍;R)eorder 找不到對應的「選人」原句)——
+// 兩者沿用既有的通用措辭,不要硬湊。
+func campSelectPrompt(mode byte) string {
+	switch mode {
+	case 'E':
+		return "哪位角色要裝備?(ESC離開)" // CAMP:39
+	case 'D':
+		return "哪位角色要丟棄道具?(ESC離開)" // CAMP:51
+	case 'T':
+		return "從哪位角色交易?(ESC離開)" // CAMP:34
+	case 'H':
+		return "哪位角色要打獵?(ESC離開)" // CAMP:64
+	case 'I':
+		return "哪位角色要鑑定?(ESC離開)" // CAMP:58
+	case 'C':
+		return "哪位角色要施法?(ESC離開)" // CAMP:75
+	case 'U':
+		return "哪位角色要使用道具?(ESC離開)" // CAMP:88
+	}
+	return "按編號選人"
 }
 
 // campSubKey 處理營地子畫面(裝備 / 檢視 / 丟棄)的按鍵。
@@ -530,7 +557,7 @@ func (g *Game) itemByIndex(n int) (original.Item, bool) {
 func (g *Game) buyProvisions(n int) {
 	price := town.Price(town.TownFoodPrice*n, g.town.shop.PriceMult)
 	if float64(price) > g.group.Gold {
-		g.town.msg = "金幣不足"
+		g.town.msg = "你沒有足夠的金幣!" // TOWN:76+77
 		return
 	}
 	g.group.Gold -= float64(price)
@@ -550,7 +577,7 @@ func (g *Game) healMember(i int, k town.HealKind) {
 		if cost == 0 {
 			g.town.msg = c.Name + " 不需要「" + k.String() + "」"
 		} else {
-			g.town.msg = fmt.Sprintf("金幣不足(需要 %d)", cost)
+			g.town.msg = fmt.Sprintf("你沒有足夠的金幣!(需要 %d)", cost) // TOWN:76+77
 		}
 		return
 	}
@@ -566,6 +593,13 @@ func (g *Game) trainMember(i, guildExtra int) {
 	c := &g.members[i]
 	exp := g.charExp(*c)
 	r := town.Train(c, exp, guildExtra, g.rand)
+	if r == town.TrainNotEnoughExp {
+		// TOWN:40+41「The Guild decides you need N experience before
+		// gaining a level.」——經驗差額由這裡算,TrainResult 本身沒有這個數字。
+		g.town.msg = fmt.Sprintf("%s：公會判定你還需要 %d 點經驗才能升級。",
+			c.Name, town.NeedExp(c.Level)-exp)
+		return
+	}
 	if r != town.TrainOK {
 		g.town.msg = c.Name + ":" + r.String()
 		return
@@ -619,9 +653,9 @@ func (g *Game) campLines(ts *townState) []string {
 		return g.charCard(g.members[ts.campWho])
 	}
 	title := map[byte]string{'E': "裝備", 'W': "拿武器", 'A': "穿防具", 'D': "丟棄",
-		'R': "調整隊形", 'T': "傳遞", 'H': "打獵", 'I': "鑑定"}[ts.campMode]
+		'R': "調整隊形", 'T': "交易", 'H': "打獵", 'I': "鑑定"}[ts.campMode]
 	if ts.campWho < 0 {
-		out := []string{title + "：按編號選人"}
+		out := []string{campSelectPrompt(ts.campMode)}
 		for i, c := range g.members {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, c.Name))
 		}
@@ -691,14 +725,14 @@ func (g *Game) buildingLines(ts *townState) []string {
 		lines := []string{
 			fmt.Sprintf("價格倍率 %.2f　（治療所不受說服技能影響）", ts.shop.PriceMult),
 			"",
-			fmt.Sprintf("治療傷勢　每點生命 %d　　解毒　%d",
+			fmt.Sprintf("醫療　每點生命 %d　　解毒　%d",
 				town.Price(town.HealPerHP, ts.shop.PriceMult),
 				town.Price(town.UnpoisonPrice, ts.shop.PriceMult)),
 			fmt.Sprintf("解除束縛　每級 %d　　復活　每級 %d",
 				town.Price(town.UnbindPerLv, ts.shop.PriceMult),
 				town.Price(town.ResurrectPerLv, ts.shop.PriceMult)),
 			"",
-			"按編號選人，再按 W 治療 / P 解毒 / B 解束縛 / R 復活：",
+			"按編號選人，再按 W 醫療 / P 解毒 / B 解除束縛 / R 復活：",
 		}
 		for i, c := range g.members {
 			lines = append(lines, fmt.Sprintf("%d) %s　生命 %d／%d　%s　治療費 %d",
@@ -722,7 +756,7 @@ func (g *Game) buildingLines(ts *townState) []string {
 	case original.ShopTrainer:
 		art, teaches := "武術", "戰士"
 		if ts.shop.Extra == 1 {
-			art, teaches = "魔法", "法師"
+			art, teaches = "魔法", "巫師"
 		}
 		lines := []string{
 			"專精:" + art + "(位移 36 = " + fmt.Sprint(ts.shop.Extra) + ")，只收" + teaches,
@@ -764,12 +798,13 @@ func (g *Game) hunt(who int) {
 	}
 	c.SkillUsed = true
 	g.syncMember(*c)
-	// ⚠ 收穫 0 是**失敗**,不是「成功但拿 0 份」——原版分成兩句話。
+	// ⚠ 收穫 0 是**失敗**,不是「成功但拿 0 份」——原版分成兩句話
+	// (CAMP:65「The hunt was」+ CAMP:66/67「not successful.」/「successful!」)。
 	if n := town.HuntYield(g.rand); n > 0 {
 		g.group.Provisions += n
-		ts.msg = fmt.Sprintf("%s 打獵成功！補給 +%d（共 %d）", c.Name, n, g.group.Provisions)
+		ts.msg = fmt.Sprintf("%s：這次打獵有收穫！補給 +%d（共 %d）", c.Name, n, g.group.Provisions)
 	} else {
-		ts.msg = c.Name + " 這趟沒有收穫。"
+		ts.msg = c.Name + "：這次打獵沒有收穫。"
 	}
 }
 
@@ -778,7 +813,13 @@ func (g *Game) identify(who, slot int) {
 	c := &g.members[who]
 	item := c.Pack[slot]
 	if gate := town.CanIdentify(*c, item); gate != town.SkillOK {
-		ts.msg = c.Name + "：" + gate.String()
+		// I)dentify 的「沒有技能」原文與 H)unt 不同(CAMP:61 vs CAMP:130),
+		// 兩者共用同一個 SkillGate 值,這裡照呼叫端覆寫成 I)dentify 那句。
+		msg := gate.String()
+		if gate == town.SkillNoSkill {
+			msg = "你沒有受過這方面的知識訓練!"
+		}
+		ts.msg = c.Name + "：" + msg
 		return
 	}
 	c.SkillUsed = true

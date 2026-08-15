@@ -91,11 +91,11 @@ func TestCampCastCheck_ThreeDistinctGateMessages(t *testing.T) {
 		Power: 8, UnitCost: 7}
 
 	hero := testHero("戰士甲")
-	wizardNoSkill := testWizard("法師乙", "0000000000") // 系別 2 的旗標(索引1)是 '0'
+	wizardNoSkill := testWizard("巫師乙", "0000000000") // 系別 2 的旗標(索引1)是 '0'
 
 	notWizard := campCastCheck(hero, buff, 1)
 	noSkill := campCastCheck(wizardNoSkill, buff, 1)
-	combatBlocked := campCastCheck(testWizard("法師丙", "0100000000"), combatSpell, 1)
+	combatBlocked := campCastCheck(testWizard("巫師丙", "0100000000"), combatSpell, 1)
 
 	if notWizard == "" || noSkill == "" || combatBlocked == "" {
 		t.Fatalf("三種都該被擋:notWizard=%q noSkill=%q combat=%q",
@@ -115,7 +115,7 @@ func TestCampCastCheck_InvestGates(t *testing.T) {
 	// 每級單價 5,SP 只有 20。
 	s := original.Spell{Name: "醫療術", School: 5, Effect: magic.EffHitPoints,
 		Power: 3, UnitCost: 5}
-	c := testWizard("法師丁", "0000100000") // 系別 5 → 索引 4
+	c := testWizard("巫師丁", "0000100000") // 系別 5 → 索引 4
 
 	if got := campCastCheck(c, s, 25); got != magic.FailNoPoints.String() {
 		t.Errorf("投超過 SP:got %q,want %q", got, magic.FailNoPoints.String())
@@ -325,7 +325,7 @@ func TestCampPrintLines_NoPrinterMentioned(t *testing.T) {
 func TestCampCastCheck_OK(t *testing.T) {
 	s := original.Spell{Name: "醫療術", School: 5, Effect: magic.EffHitPoints,
 		Power: 3, UnitCost: 1}
-	c := testWizard("法師", "0000100000")
+	c := testWizard("巫師", "0000100000")
 	if got := campCastCheck(c, s, 1); got != "" {
 		t.Errorf("合法的施法不該被擋,got %q", got)
 	}

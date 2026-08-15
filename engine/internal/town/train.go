@@ -8,7 +8,7 @@ import (
 // 訓練所。手冊 p.37(docs/re/140 §6):
 //
 //   - 升級**完全免費**,只看經驗夠不夠
-//   - 戰士的訓練所只收戰士,法師的只收法師(TOWNDATA.DAT 位移 36:0 = 武術、1 = 魔法)
+//   - 戰士的訓練所只收戰士,巫師的只收巫師(TOWNDATA.DAT 位移 36:0 = 武術、1 = 魔法)
 
 // TrainResult 說明一次訓練的結果。
 type TrainResult int
@@ -20,10 +20,14 @@ const (
 	TrainMaxLevel
 )
 
+// docs/spec/19-module-text.md(F1):TrainWrongGuild 照
+// translations/module-text/TOWN.tsv 第 38 列(「You are the wrong class!」)。
+// TrainNotEnoughExp 的完整原文(TOWN:40/41)含經驗差額,由呼叫端
+// (town_scene.go 的 trainMember)另外組字串,不在這裡處理。
 func (r TrainResult) String() string {
 	switch r {
 	case TrainWrongGuild:
-		return "這間訓練所不收這個職業"
+		return "你的職業不對!"
 	case TrainNotEnoughExp:
 		return "經驗還不夠"
 	case TrainMaxLevel:
@@ -33,7 +37,7 @@ func (r TrainResult) String() string {
 }
 
 // GuildTeaches 回傳這間訓練所收哪個職業。
-// extra 是 TOWNDATA.DAT 位移 36:0 = 武術(戰士)、1 = 魔法(法師)。
+// extra 是 TOWNDATA.DAT 位移 36:0 = 武術(戰士)、1 = 魔法(巫師)。
 func GuildTeaches(extra int) byte {
 	if extra == 1 {
 		return byte(rules.ClassWizard)

@@ -3,7 +3,7 @@
 // 來源:docs/re/140-manual-stat-tables.md(手冊 p.47–49)。
 // 證據等級是第 3 級(手冊),其中三項另有反組譯佐證 —— 逐條在下面註明。
 //
-// ⚠ **有封閉式的才寫封閉式。** 法師的生命成長、法力成長與降魔矩陣
+// ⚠ **有封閉式的才寫封閉式。** 巫師的生命成長、法力成長與降魔矩陣
 // 在表上沒有規律,硬湊一條「差不多對」的公式會在少數幾列上錯,
 // 而那幾列在遊戲裡看起來完全正常。照表就不會有這個問題。
 package rules
@@ -143,7 +143,7 @@ func CanLevelUp(level, exp int) bool {
 // 升級的成長上限。docs/re/140 §結論表:兩張都**照表**,不湊公式。
 // ---------------------------------------------------------------------------
 
-// hpGain[END] = {戰士, 法師}。手冊 p.49 `MAX H.P. GAIN PER LEVEL`。
+// hpGain[END] = {戰士, 巫師}。手冊 p.49 `MAX H.P. GAIN PER LEVEL`。
 var hpGain = map[int][2]int{
 	3: {3, 2}, 4: {3, 2}, 5: {4, 3}, 6: {5, 3}, 7: {5, 4},
 	8: {6, 4}, 9: {7, 4}, 10: {7, 5}, 11: {8, 5}, 12: {9, 6},
@@ -160,7 +160,7 @@ var spGain = map[int]int{
 	12: 8, 13: 9, 14: 9, 15: 10, 16: 10, 17: 11, 18: 11, 19: 12, 20: 12,
 }
 
-// MaxHPGain 回傳升一級最多增加多少生命值。wizard 為 true 時走法師欄。
+// MaxHPGain 回傳升一級最多增加多少生命值。wizard 為 true 時走巫師欄。
 func MaxHPGain(endurance int, wizard bool) int {
 	v, ok := hpGain[clamp(endurance, 3, 20)]
 	if !ok {
@@ -172,7 +172,7 @@ func MaxHPGain(endurance int, wizard bool) int {
 	return v[0]
 }
 
-// MaxSPGain 回傳法師升一級最多增加多少法力。戰士沒有這一項。
+// MaxSPGain 回傳巫師升一級最多增加多少法力。戰士沒有這一項。
 func MaxSPGain(intellect int) int { return spGain[clamp(intellect, 3, 20)] }
 
 // ---------------------------------------------------------------------------

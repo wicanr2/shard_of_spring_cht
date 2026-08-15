@@ -63,7 +63,7 @@ func TestHitChanceMatchesManual(t *testing.T) {
 }
 
 func TestHPGainMatchesManual(t *testing.T) {
-	// 手冊 p.49 MAX H.P. GAIN PER LEVEL:{體質, 戰士, 法師}
+	// 手冊 p.49 MAX H.P. GAIN PER LEVEL:{體質, 戰士, 巫師}
 	table := [][3]int{
 		{3, 3, 2}, {4, 3, 2}, {5, 4, 3}, {6, 5, 3}, {7, 5, 4}, {8, 6, 4},
 		{9, 7, 4}, {10, 7, 5}, {11, 8, 5}, {12, 9, 6}, {13, 9, 6}, {14, 10, 7},
@@ -74,7 +74,7 @@ func TestHPGainMatchesManual(t *testing.T) {
 			t.Errorf("體質 %d 戰士生命成長 = %d,手冊 %d", r[0], got, r[1])
 		}
 		if got := MaxHPGain(r[0], true); got != r[2] {
-			t.Errorf("體質 %d 法師生命成長 = %d,手冊 %d", r[0], got, r[2])
+			t.Errorf("體質 %d 巫師生命成長 = %d,手冊 %d", r[0], got, r[2])
 		}
 	}
 }

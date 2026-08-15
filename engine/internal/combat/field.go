@@ -27,14 +27,16 @@ const (
 	PartyRan             // 'PARTY RAN!'
 )
 
+// docs/spec/19-module-text.md(F1):字面照 translations/module-text/CMBT.tsv
+// 第 23/24/29 列(「MONSTERS ALL DEAD」/「PARTY DIES!」/「PARTY RAN!」)。
 func (o Outcome) String() string {
 	switch o {
 	case MonstersDead:
 		return "怪物全滅"
 	case PartyDead:
-		return "全隊陣亡"
+		return "隊伍全滅!"
 	case PartyRan:
-		return "全隊逃離"
+		return "隊伍逃跑了!"
 	}
 	return "進行中"
 }

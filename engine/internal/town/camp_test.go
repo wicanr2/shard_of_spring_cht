@@ -27,10 +27,10 @@ func TestCanHuntGateOrder(t *testing.T) {
 	if g := CanHunt(warrior("0000000000"), true); g != SkillNoSkill {
 		t.Errorf("沒有 Hunting 應擋:得 %v", g)
 	}
-	// 法師就算旗標是 1 也不行 —— 兩張技能表不同,第 9 格對法師是 Monster lore
+	// 巫師就算旗標是 1 也不行 —— 兩張技能表不同,第 9 格對巫師是 Monster lore
 	mage := wizard("000000001 0"[:10])
 	if g := CanHunt(mage, true); g != SkillNoSkill {
-		t.Errorf("法師不能打獵:得 %v", g)
+		t.Errorf("巫師不能打獵:得 %v", g)
 	}
 	spent := hunter
 	spent.SkillUsed = true

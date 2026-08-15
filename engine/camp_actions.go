@@ -32,10 +32,10 @@ import (
 // 這裡只負責「玩家怎麼把投入點數打進去」與「打完之後套哪一個閘門」。
 
 // notWizardMsg 與 magic.Fail 的其他三句共用同一種「原版四句話各自獨立」
-// 的寫法(docs/spec/16 §2)——但「不是法師」本身不是 magic.Fail 的值
+// 的寫法(docs/spec/16 §2)——但「不是巫師」本身不是 magic.Fail 的值
 // (那邊的 Fail 需要先有一個 Spell 才能判),所以另外開一個常數,
 // 兩處(選施法者時的早退、campCastCheck 的完整判斷)共用同一句,不會各寫一次。
-const notWizardMsg = "他不是法師。"
+const notWizardMsg = "這位角色不是巫師。" // CAMP:133
 
 // combatOnlySpell 判斷這個法術算不算「戰鬥法術」——營地放不出來
 // (原版 CAMP.EXE 的 `'That is a combat spell !'`,docs/spec/16 §2)。
@@ -73,7 +73,7 @@ func combatOnlySpell(s original.Spell) bool {
 // 用跟「戰鬥法術」不同的訊息講清楚,不要混成同一句。
 func campSpellAllowed(s original.Spell) string {
 	if combatOnlySpell(s) {
-		return "那是戰鬥法術，營地放不出來！"
+		return "那是戰鬥法術!" // CAMP:81
 	}
 	if s.Effect == magic.EffProtect {
 		return "「" + s.Name + "」的防護效果沒辦法保存到下一場戰鬥，本引擎在營地不支援施放。"
@@ -83,7 +83,7 @@ func campSpellAllowed(s original.Spell) string {
 
 // campCastCheck 是 C)ast spell 在營地能不能放這個法術的完整判斷:
 // 合併 campSpellAllowed(本引擎推的表)與 magic.CanCast 既有的三個閘門
-// (不是法師 / 沒有這一系符文技能 / 法力不足 / 投不到一級)。
+// (不是巫師 / 沒有這一系符文技能 / 法力不足 / 投不到一級)。
 // 回空字串 = 可以放。
 //
 // docs/spec/16 §6 驗收 #1/#2/#3 都靠這個函式的行為,所以它是測試的重點。
@@ -239,7 +239,7 @@ func applyCampUnit(c *original.Character, u combat.Unit) {
 // campCastLines 畫 C)ast spell 各階段的內容。
 func (g *Game) campCastLines(ts *townState) []string {
 	if ts.campWho < 0 {
-		out := []string{"施法：按編號選施法者"}
+		out := []string{campSelectPrompt('C')}
 		for i, c := range g.members {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, c.Name))
 		}
@@ -248,7 +248,7 @@ func (g *Game) campCastLines(ts *townState) []string {
 	caster := g.members[ts.campWho]
 	switch ts.castStage {
 	case 1:
-		out := []string{caster.Name + "：選要施放的法術"}
+		out := []string{caster.Name + "：施放哪個法術?"} // CAMP:76
 		for i, s := range g.spells {
 			if i >= 26 {
 				out = append(out, fmt.Sprintf("…還有 %d 個(未列出)", len(g.spells)-26))
@@ -259,7 +259,7 @@ func (g *Game) campCastLines(ts *townState) []string {
 		return out
 	case 2:
 		return []string{
-			fmt.Sprintf("%s：投入幾點法力？（目前法力 %d／%d）", caster.Name, caster.SP, caster.MaxSP),
+			fmt.Sprintf("%s：花費幾點法力?（目前法力 %d／%d）", caster.Name, caster.SP, caster.MaxSP), // CAMP:83
 			"輸入數字，Enter 確認、Backspace 修改：" + ts.castInput + "_",
 		}
 	case 3:
@@ -367,7 +367,7 @@ func (g *Game) useItem(who, slot int) {
 // campUseLines 畫 U)se an item 的內容。
 func (g *Game) campUseLines(ts *townState) []string {
 	if ts.campWho < 0 {
-		out := []string{"使用道具：按編號選人"}
+		out := []string{campSelectPrompt('U')}
 		for i, c := range g.members {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, c.Name))
 		}
@@ -383,7 +383,7 @@ func (g *Game) campUseLines(ts *townState) []string {
 		out = append(out, fmt.Sprintf("%c) %s", 'A'+i, g.itemDisplayName(c, i)))
 	}
 	if len(out) == n {
-		out = append(out, "（背包是空的）")
+		out = append(out, "這位角色沒有可用的道具!") // CAMP:90
 	}
 	return out
 }

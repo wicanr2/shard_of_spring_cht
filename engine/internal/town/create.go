@@ -131,12 +131,15 @@ const (
 	CreateBadName
 )
 
+// docs/spec/19-module-text.md(F1):CreateNoSlot 照
+// translations/module-text/CHARUTIL.tsv 第 22 列
+// (「You must remove a character before adding any more!」)。
 func (r CreateResult) String() string {
 	switch r {
 	case CreateBadClass:
 		return "這個種族不能選這個職業"
 	case CreateNoSlot:
-		return "名冊已滿"
+		return "必須先移除一位角色才能再新增!"
 	case CreateBadName:
 		return "名稱不能空白"
 	}
@@ -183,7 +186,7 @@ func Create(chars []original.Character, race rules.Race, class rules.Class,
 		// 「體能:…同時,它也是你一開始的生命點數」。
 		// ⚠ 這是**第 3 級證據**(手冊),而初始生命那一條有反組譯佐證、
 		// 這一條沒有 —— 兩者寫在同一行不代表證據等級相同(docs/re/178 §3)。
-		// ⚠ 戰士沒有法力,所以只給法師。
+		// ⚠ 戰士沒有法力,所以只給巫師。
 		MaxSP: wizardSP(class, intel), SP: wizardSP(class, intel),
 		Weapon: original.NotEquipped, Armor: original.NotEquipped,
 		Level:  1,
@@ -200,7 +203,7 @@ func Create(chars []original.Character, race rules.Race, class rules.Class,
 	return slot + 1, CreateOK
 }
 
-// wizardSP 回傳初始法力:法師 = 智能,戰士 0。
+// wizardSP 回傳初始法力:巫師 = 智能,戰士 0。
 func wizardSP(class rules.Class, intel int) int {
 	if class == rules.ClassWizard {
 		return intel
@@ -210,7 +213,7 @@ func wizardSP(class rules.Class, intel int) int {
 
 // raceSkills 回傳十個技能旗標,把種族附贈的技能打開。
 //
-// ⚠ 同一格在戰士表與法師表是**不同的技能**(docs/formats/01),
+// ⚠ 同一格在戰士表與巫師表是**不同的技能**(docs/formats/01),
 // 所以旗標要配上職業才有意義 —— 手冊 p.49 給的附贈技能名已經在
 // rules.Races 裡換算成該職業表的編號。
 func raceSkills(race rules.Race, class rules.Class) string {

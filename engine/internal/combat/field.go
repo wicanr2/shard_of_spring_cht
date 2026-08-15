@@ -48,6 +48,9 @@ func (f *Field) item(id int) Item { return f.Items[id] }
 // 「同一顆種子跑兩次結果相同」就不成立 —— 而那正是 M4 的驗收條件。
 // Go 的 map 迭代是隨機的,所以先攻表**只能從索引順序建**,不能從 map。
 func (f *Field) Sort() {
+	// ⚠ **每次都從索引順序重建**,不是拿上一次的 Order 再排一次
+	// (docs/re/159 §3:原版排序前先把順序表填成 0…13)。
+	// 穩定排序下兩者不同 —— 沿用舊順序會讓上一回合的次序變成同速時的排法。
 	f.Order = f.Order[:0]
 	for i := range f.Units {
 		u := f.Units[i]

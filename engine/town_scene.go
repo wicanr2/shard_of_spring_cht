@@ -38,6 +38,10 @@ type townState struct {
 	shop  original.Shop   // 進去的那一間
 	page  int             // 商品分頁(原版有 `+ for next page`,手冊 p.31)
 	msg   string
+	// 營地的子畫面。手冊 p.38–39 列了十個指令,這裡先做三個
+	// (裝備 / 檢視 / 丟棄)—— 那三個是「買了東西之後玩得下去」的最短路徑。
+	campWho  int  // 選到第幾位成員
+	campMode byte // 0 = 選單、'W' 裝武器、'A' 裝防具、'I' 檢視、'D' 丟棄
 }
 
 // shopPageSize 是一頁的商品數。主視野高 612、行高 26 → 扣掉標題約 20 列。
@@ -204,7 +208,15 @@ func (g *Game) townKey(k ebiten.Key) {
 			ts.mode, ts.msg = townBuildings, ""
 		}
 	case townCamp:
+		if ts.campMode != 0 {
+			g.campSubKey(k)
+			return
+		}
 		switch k {
+		case ebiten.KeyW, ebiten.KeyA, ebiten.KeyI, ebiten.KeyD:
+			ts.campMode = campLetter(k)
+			ts.msg = "按編號選人"
+			ts.campWho = -1
 		case ebiten.KeyR:
 			g.members = town.Rest(g.members)
 			g.party.Clock.Tick()
@@ -319,7 +331,17 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			g.group.Provisions), x, y)
 		y += lh
 		p.Draw(dst, "R) 休息一會兒（本引擎自訂，非原版動作）", x, y)
-		y += lh * 2
+		y += lh
+		p.Draw(dst, "W) 拿武器　A) 穿防具　I) 檢視背包　D) 丟棄　（手冊 p.38–39 的十個指令做了四個）", x, y)
+		y += lh
+		if ts.campMode != 0 {
+			y += lh * 0.5
+			for _, ln := range g.campLines(ts) {
+				p.Draw(dst, ln, x, y)
+				y += lh
+			}
+		}
+		y += lh
 		for _, u := range town.Unresolved {
 			p.Draw(dst, "⚠ "+u, x, y)
 			y += lh
@@ -334,6 +356,94 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			my += lh
 		}
 	}
+}
+
+// campLetter 把按鍵換成營地子畫面的代號。
+// ⚠ **武器與防具分成兩個指令**,不是選了格子再判斷是哪一種 ——
+// `ITEMS.DAT` **沒有**「這是武器還是防具」的欄位
+// (docs/formats/04:「分類不在資料裡,在呼叫端」)。
+// 用編號範圍去猜會在資料外的編號上默默猜錯,而畫面上看不出來。
+func campLetter(k ebiten.Key) byte {
+	switch k {
+	case ebiten.KeyW:
+		return 'W'
+	case ebiten.KeyA:
+		return 'A'
+	case ebiten.KeyI:
+		return 'I'
+	case ebiten.KeyD:
+		return 'D'
+	}
+	return 0
+}
+
+// campSubKey 處理營地子畫面(裝備 / 檢視 / 丟棄)的按鍵。
+//
+// 流程:先按編號選人,再按背包格的字母。
+// ⚠ 裝備欄存的是**背包格號**不是物品編號(docs/formats/01 位移 34/36)——
+// 兩者都是小整數,寫錯不會報錯,只會讓角色拿著背包裡另一件東西打人。
+func (g *Game) campSubKey(k ebiten.Key) {
+	ts := g.town
+	if k == ebiten.KeyEscape {
+		ts.campMode, ts.msg = 0, ""
+		return
+	}
+	if ts.campWho < 0 {
+		if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
+			ts.campWho = i
+			ts.msg = ""
+		}
+		return
+	}
+	slot := int(k - ebiten.KeyA)
+	if slot < 0 || slot >= town.PackSlots {
+		return
+	}
+	c := &g.members[ts.campWho]
+	if c.Pack[slot] == 0 {
+		ts.msg = "那一格是空的"
+		return
+	}
+	switch ts.campMode {
+	case 'W', 'A':
+		it, ok := g.itemByIndex(c.Pack[slot])
+		if !ok {
+			ts.msg = "這件東西的資料查不到"
+			return
+		}
+		armor := ts.campMode == 'A'
+		town.Equip(c, slot, armor)
+		kind := "當武器"
+		if armor {
+			kind = "當防具"
+		}
+		ts.msg = fmt.Sprintf("%s 把 %s %s", c.Name, it.Name, kind)
+	case 'D':
+		it, _ := g.itemByIndex(c.Pack[slot])
+		// 丟掉的東西拿不回來(手冊 p.39)。卸下同一格的裝備,
+		// 否則裝備欄會指向一個空格 —— 那個錯誤不會報錯。
+		if c.Weapon == slot {
+			c.Weapon = original.NotEquipped
+		}
+		if c.Armor == slot {
+			c.Armor = original.NotEquipped
+		}
+		c.Pack[slot] = 0
+		ts.msg = fmt.Sprintf("%s 丟掉了 %s(拿不回來)", c.Name, it.Name)
+	}
+	if c.ID >= 1 && c.ID <= len(g.chars) {
+		g.chars[c.ID-1] = *c
+	}
+}
+
+// itemByIndex 查一件道具。
+func (g *Game) itemByIndex(n int) (original.Item, bool) {
+	for _, it := range g.itemList {
+		if it.Index == n {
+			return it, true
+		}
+	}
+	return original.Item{}, false
 }
 
 // buyProvisions 在酒館買食糧。手冊 p.37(docs/re/140 §6)。
@@ -388,6 +498,41 @@ func (g *Game) trainMember(i, guildExtra int) {
 	}
 	g.town.msg = fmt.Sprintf("%s 升到第 %d 級(生命 %d／法力 %d)",
 		c.Name, c.Level, c.MaxHP, c.MaxSP)
+}
+
+// campLines 回傳營地子畫面的內容。
+func (g *Game) campLines(ts *townState) []string {
+	title := map[byte]string{'W': "拿武器", 'A': "穿防具", 'I': "檢視背包", 'D': "丟棄"}[ts.campMode]
+	if ts.campWho < 0 {
+		out := []string{title + "：按編號選人"}
+		for i, c := range g.members {
+			out = append(out, fmt.Sprintf("%d) %s", i+1, c.Name))
+		}
+		return out
+	}
+	c := g.members[ts.campWho]
+	out := []string{fmt.Sprintf("%s 的背包（%s，按字母選格）", c.Name, title)}
+	for i, n := range c.Pack {
+		if n == 0 {
+			continue
+		}
+		name := "（編號 " + fmt.Sprint(n) + "，查不到）"
+		if it, ok := g.itemByIndex(n); ok {
+			name = it.Name
+		}
+		mark := ""
+		if c.Weapon == i {
+			mark = "　←武器"
+		}
+		if c.Armor == i {
+			mark = "　←防具"
+		}
+		out = append(out, fmt.Sprintf("%c) %s%s", 'A'+i, name, mark))
+	}
+	if len(out) == 1 {
+		out = append(out, "（背包是空的）")
+	}
+	return out
 }
 
 // buildingLines 回傳特殊建築畫面的內容。docs/re/138。

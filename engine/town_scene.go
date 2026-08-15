@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
@@ -592,6 +593,7 @@ func (g *Game) healMember(i int, k town.HealKind) {
 func (g *Game) trainMember(i, guildExtra int) {
 	c := &g.members[i]
 	exp := g.charExp(*c)
+	before := town.AttrSnapshot(*c)
 	r := town.Train(c, exp, guildExtra, g.rand)
 	if r == town.TrainNotEnoughExp {
 		// TOWN:40+41「The Guild decides you need N experience before
@@ -608,8 +610,22 @@ func (g *Game) trainMember(i, guildExtra int) {
 	if c.ID >= 1 && c.ID <= len(g.chars) {
 		g.chars[c.ID-1] = *c
 	}
-	g.town.msg = fmt.Sprintf("%s 升到第 %d 級(生命 %d／法力 %d)",
+	// TOWN.tsv「Stats are up by:」——原版升級除了長生命/法力還會加屬性
+	// (docs/re/183)。長了哪幾項要印出來,否則玩家看不到這條規則存在。
+	var ups []string
+	for k, d := range town.AttrGrowth(before, *c) {
+		if d > 0 {
+			ups = append(ups, fmt.Sprintf("%s+%d", town.AttrNames[k], d))
+		}
+	}
+	msg := fmt.Sprintf("%s 升到第 %d 級(生命 %d／法力 %d)",
 		c.Name, c.Level, c.MaxHP, c.MaxSP)
+	if len(ups) > 0 {
+		msg += "，屬性成長：" + strings.Join(ups, "、")
+	}
+	// TOWN.tsv「You have N points left.」——技能點會累積(docs/re/183 §6)。
+	msg += fmt.Sprintf("，技能點 %d", c.SkillPts)
+	g.town.msg = msg
 }
 
 // charCard 是原版 `#)inspect char` 的角色卡(docs/re/150 §1.1)。

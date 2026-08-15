@@ -72,7 +72,59 @@ func Train(c *original.Character, exp, guildExtra int, r Roller) TrainResult {
 		c.MaxSP += gainSP
 		c.SP += gainSP
 	}
+	intBefore := c.Int
+	GrowAttributes(c, r)
+	// 升級發的技能點 = 舊的剩餘 + 智能成長 + 1(docs/re/183 §6)。
+	// ⚠ 順序有意義:要在屬性成長**之後**才知道智能長了多少。
+	c.SkillPts += (c.Int - intBefore) + SkillPtsPerLevel
 	return TrainOK
+}
+
+// SkillPtsPerLevel 是每級無條件發的技能點。
+//
+// `TOWN.EXE 0x1140C` 的 `inc ax` —— **無條件**,不看職業也不看等級
+// (docs/re/183 §6)。智能在這一級被屬性成長選中的話還會再多拿。
+const SkillPtsPerLevel = 1
+
+// ── 升級的屬性成長(docs/re/183)──────────────────────────────────
+
+// AttrGrowthRolls / AttrGrowthPick / AttrGrowthCap 是屬性成長的三個常數,
+// **全部是讀出來的**(docs/re/183 §2/§3):
+//
+//	3   `TOWN.EXE 0x113D6 cmp ax, 3` —— 迴圈上界的**立即數**,
+//	    不看等級、種族、職業(兩個職業在 0x11301 匯流後才進迴圈)
+//	5   `ds:724C` 的 DGROUP 初值(MBF 5),`INT(RND(1) × 5)` 的乘數
+//	20  `0x11366 cmp ax, 14h` —— 超過就寫回 20
+const (
+	AttrGrowthRolls = 3
+	AttrGrowthPick  = 5
+	AttrGrowthCap   = 20
+)
+
+// attrSlots 是 `roll×2 + 16` 掃過的五格,順序就是 CHARS.DAT 的排列順序
+// (位移 16/18/20/22/24)。⚠ **順序不能改** —— roll 是位移的來源,
+// 換順序等於換成長機率的對象。
+func attrSlots(c *original.Character) [AttrGrowthPick]*int {
+	return [AttrGrowthPick]*int{&c.Speed, &c.Str, &c.Int, &c.End, &c.ToHit}
+}
+
+// GrowAttributes 執行升級的屬性成長:**擲 3 次,每次五選一 +1,夾 20**。
+//
+// ⚠ **有放回、無排重** —— 同一次升級可以讓同一項加到 +2 或 +3
+// (機率見 docs/re/183 §5:三項各 +1 佔 48%,某項 +2 也佔 48%)。
+// 這是原版的行為,不是可以「順手修掉」的重複。
+//
+// ⚠ **已經滿 20 的屬性照樣會被選中**,那一次擲骰就白費 ——
+// 所以高等級角色的成長會自然變慢。⛔ 不要改成「重骰直到選中沒滿的」,
+// 那會發明一條原版沒有的規則。
+func GrowAttributes(c *original.Character, r Roller) {
+	slots := attrSlots(c)
+	for i := 0; i < AttrGrowthRolls; i++ {
+		p := slots[r.Roll(AttrGrowthPick)-1] // Roll 回 1…5,原版是 0…4
+		if *p < AttrGrowthCap {
+			*p++
+		}
+	}
 }
 
 // LevelGain 回傳升一級實際加多少點:**擲骰,超過上限就用上限**。
@@ -109,6 +161,33 @@ func LevelGain(r Roller, attr, cap int) int {
 		return v
 	}
 	return cap
+}
+
+// AttrNames 是五項屬性的顯示名,順序同 attrSlots(CHARS.DAT 位移 16–24)。
+// 譯名照 translations/glossary.md。
+//
+// ⚠ 原版印的名字來自執行期填的查表 `ds:6D28 + (roll+20)×4`,靜態讀不到內容
+// (docs/re/183 §6),所以這裡用的是角色表已經在用的那組名字。
+var AttrNames = [AttrGrowthPick]string{"速度", "力量", "智能", "體能", "命中"}
+
+// AttrSnapshot 取五項屬性的當下值,配 AttrGrowth 用來算「長了哪幾項」。
+func AttrSnapshot(c original.Character) [AttrGrowthPick]int {
+	s := attrSlots(&c)
+	var out [AttrGrowthPick]int
+	for i, p := range s {
+		out[i] = *p
+	}
+	return out
+}
+
+// AttrGrowth 回傳升級後五項各長了多少(對應 'Stats are up by:')。
+func AttrGrowth(before [AttrGrowthPick]int, c original.Character) [AttrGrowthPick]int {
+	after := AttrSnapshot(c)
+	var d [AttrGrowthPick]int
+	for i := range d {
+		d[i] = after[i] - before[i]
+	}
+	return d
 }
 
 // GrowthNote 是訓練所畫面的說明。

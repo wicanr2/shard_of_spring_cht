@@ -8,9 +8,18 @@ import (
 	"shardofspring/internal/rules"
 )
 
+// maxRoll 永遠骰到**該次的最大面**。
+//
+// ⚠ 不能寫成「永遠回 99」—— `Train` 除了成長還會跑屬性成長
+// (`GrowAttributes`,面數 5),而 99 超出 `Roller` 的契約(回 1…faces),
+// 會拿去當索引。回 `faces` 同時滿足兩邊:對成長一定夾到上限,對五選一是合法索引。
+type maxRoll struct{}
+
+func (maxRoll) Roll(faces int) int { return faces }
+
 // capped 是「一定骰到夾上限」的來源 —— 讓那些在驗**上限表**的測試
 // 不受骰子影響。⚠ 分開兩件事:哪張表、夾不夾,各自有自己的測試。
-func capped() *combat.ScriptRand { return &combat.ScriptRand{Values: []int{99}} }
+func capped() Roller { return maxRoll{} }
 
 func hero(level, end int) original.Character {
 	return original.Character{
@@ -75,6 +84,121 @@ func TestTrainIsFreeOfCharge(t *testing.T) {
 	c := hero(1, 10)
 	if Train(&c, 300, 0, capped()) != TrainOK {
 		t.Error("升級不該需要金幣")
+	}
+}
+
+// ── 屬性成長(docs/re/183)────────────────────────────────────────
+
+// 三個常數各自能獨立弄錯,所以分開驗。
+func TestGrowAttributesRollsThreeTimesOnFive(t *testing.T) {
+	r := &combat.ScriptRand{Values: []int{1, 3, 5}}
+	c := original.Character{Speed: 8, Str: 8, Int: 8, End: 8, ToHit: 8}
+	GrowAttributes(&c, r)
+	if len(r.Faces) != AttrGrowthRolls {
+		t.Fatalf("應擲 %d 次,得 %d 次", AttrGrowthRolls, len(r.Faces))
+	}
+	for i, f := range r.Faces {
+		if f != AttrGrowthPick {
+			t.Errorf("第 %d 次的面數應為 %d,得 %d", i+1, AttrGrowthPick, f)
+		}
+	}
+	// roll 1/3/5 → 位移 16/20/24 = 速度/智能/命中能力
+	if c.Speed != 9 || c.Int != 9 || c.ToHit != 9 {
+		t.Errorf("速度/智能/命中能力應各 +1,得 %d/%d/%d", c.Speed, c.Int, c.ToHit)
+	}
+	if c.Str != 8 || c.End != 8 {
+		t.Errorf("沒被選中的不該動,得 力量 %d、體能 %d", c.Str, c.End)
+	}
+}
+
+// 順序是位移順序,換一格不會壞掉但會加錯屬性 —— 所以逐格釘住。
+func TestGrowAttributesSlotOrderMatchesCharsDat(t *testing.T) {
+	for _, tc := range []struct {
+		roll int
+		get  func(original.Character) int
+		name string
+	}{
+		{1, func(c original.Character) int { return c.Speed }, "速度(位移16)"},
+		{2, func(c original.Character) int { return c.Str }, "力量(位移18)"},
+		{3, func(c original.Character) int { return c.Int }, "智能(位移20)"},
+		{4, func(c original.Character) int { return c.End }, "體能(位移22)"},
+		{5, func(c original.Character) int { return c.ToHit }, "命中能力(位移24)"},
+	} {
+		c := original.Character{Speed: 1, Str: 1, Int: 1, End: 1, ToHit: 1}
+		GrowAttributes(&c, &combat.ScriptRand{Values: []int{tc.roll}})
+		if tc.get(c) != 1+AttrGrowthRolls {
+			t.Errorf("roll=%d 三次都該加在%s,得 %d", tc.roll, tc.name, tc.get(c))
+		}
+	}
+}
+
+// **有放回**:同一項可以被選中多次。⛔ 不要「修掉」這個重複。
+func TestGrowAttributesHasReplacement(t *testing.T) {
+	c := original.Character{Str: 5}
+	GrowAttributes(&c, &combat.ScriptRand{Values: []int{2}})
+	if c.Str != 8 {
+		t.Errorf("同一項連中三次應為 5+3=8,得 %d", c.Str)
+	}
+}
+
+// 已經滿 20 的照樣會被選中,那一次就白費 —— 不是重骰。
+func TestGrowAttributesWastesRollsOnMaxedStats(t *testing.T) {
+	c := original.Character{Str: AttrGrowthCap, End: 5}
+	// 兩次選力量(已滿)、一次選體能
+	GrowAttributes(&c, &combat.ScriptRand{Values: []int{2, 2, 4}})
+	if c.Str != AttrGrowthCap {
+		t.Errorf("滿的屬性不該超過 %d,得 %d", AttrGrowthCap, c.Str)
+	}
+	if c.End != 6 {
+		t.Errorf("白費的兩次不該補到別項:體能應為 6,得 %d", c.End)
+	}
+}
+
+// 升級本身要帶動屬性成長 —— 少接這一條的話,上面四個測試全過但遊戲裡不會長。
+func TestTrainGrowsAttributes(t *testing.T) {
+	c := hero(1, 10)
+	c.Speed, c.Str, c.Int, c.End, c.ToHit = 8, 8, 8, 8, 8
+	before := c.Speed + c.Str + c.Int + c.End + c.ToHit
+	Train(&c, 300, 0, &combat.ScriptRand{Values: []int{1}})
+	after := c.Speed + c.Str + c.Int + c.End + c.ToHit
+	if after-before != AttrGrowthRolls {
+		t.Errorf("升一級應總共加 %d 點屬性,得 %d", AttrGrowthRolls, after-before)
+	}
+}
+
+// 技能點:每級 +1,智能被選中就再多拿,而且會累積(docs/re/183 §6)。
+func TestTrainAwardsSkillPoints(t *testing.T) {
+	// roll 1 = 速度,智能沒長 → 只拿保底的 1 點
+	c := hero(1, 10)
+	c.Int, c.SkillPts = 12, 4
+	Train(&c, 300, 0, &combat.ScriptRand{Values: []int{1}})
+	if c.SkillPts != 4+1 {
+		t.Errorf("智能沒長時應為 4+1=5,得 %d", c.SkillPts)
+	}
+
+	// roll 3 = 智能,三次都中 → 智能 +3,技能點 +3+1
+	d := hero(1, 10)
+	d.Int, d.SkillPts = 12, 0
+	Train(&d, 300, 0, &combat.ScriptRand{Values: []int{3}})
+	if d.Int != 15 {
+		t.Fatalf("測試前提壞了:智能應為 15,得 %d", d.Int)
+	}
+	if d.SkillPts != 3+1 {
+		t.Errorf("智能長 3 時應為 3+1=4,得 %d", d.SkillPts)
+	}
+}
+
+// 智能已滿 20 的話成長是 0,技能點只拿保底 1 點 ——
+// 「白費的擲骰」在這裡也要真的白費,不能因為選中就給點。
+func TestTrainSkillPointsFollowActualGrowthNotTheRoll(t *testing.T) {
+	c := hero(1, 10)
+	c.Int, c.SkillPts = AttrGrowthCap, 0
+	Train(&c, 300, 0, &combat.ScriptRand{Values: []int{3}}) // 三次都選智能
+	if c.Int != AttrGrowthCap {
+		t.Fatalf("智能不該超過 %d,得 %d", AttrGrowthCap, c.Int)
+	}
+	if c.SkillPts != SkillPtsPerLevel {
+		t.Errorf("智能沒真的長,應只有保底 %d 點,得 %d", SkillPtsPerLevel, c.SkillPts)
 	}
 }
 

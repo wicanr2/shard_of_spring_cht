@@ -83,7 +83,8 @@ func AllowsClass(r Race, c Class) bool {
 // ⚠ 這裡曾經有一個 `CreationUnresolved` 字串,寫著「骰法未解」。
 // 形狀解出來之後那句話就成了假斷言,而它會被畫面照著印
 // (rulebook/63:**現在式的教訓會在修好那一刻變成假斷言**)。
-// 現在只剩兩個常數是假設,說明由 `town.AttrRollAssumption` 負責。
+// 兩個常數後來也讀出來了(docs/re/178),所以畫面上不再有任何關於
+// 屬性擲骰的免責說明 —— 沒有未解項就不要留說明。
 
 // ApplyRaceModifiers 把種族修正加到一組基礎屬性上。
 func ApplyRaceModifiers(r Race, speed, str, intel, end, skill int) (int, int, int, int, int) {

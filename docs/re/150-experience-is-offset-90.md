@@ -161,7 +161,7 @@ INT 3D:0A / INT 3D:19            ; 經驗值
 mov ds:66D0h, 28h                ; 位移 40
 call loc_10079                   ; CVI → 等級
 …                                ; 以等級索引一張表
-INT 3D:03                        ; 相減
+INT 3D:03                        ; INT()(向下取整),不是相減 —— 見 re/152 §3
 ```
 
 接著印 ` experience before gaining a level.`(字串在 `0x7180`)。

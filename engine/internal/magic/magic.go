@@ -100,8 +100,8 @@ func StatusMagnitude(s original.Spell, invest int) int {
 
 // Result 是一次施法的結果。
 type Result struct {
-	Fail      Fail
-	Message   string
+	Fail       Fail
+	Message    string
 	Unresolved bool // 效果未解 —— 訊息會標出來,而且不套用任何數值
 }
 

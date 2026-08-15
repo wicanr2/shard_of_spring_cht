@@ -17,9 +17,9 @@ func TestPartyRowFits(t *testing.T) {
 		name string
 		hp   int
 	}{
-		{"Richtatha", 15},    // 出貨資料裡最長的
-		{"0123456789", 999},  // 欄位上限 + 三位數 HP
-		{"中文名字五", 999}, // 5 個全形 = 10 欄
+		{"Richtatha", 15},   // 出貨資料裡最長的
+		{"0123456789", 999}, // 欄位上限 + 三位數 HP
+		{"中文名字五", 999},      // 5 個全形 = 10 欄
 	} {
 		if slack := PanelSlack(c.name, len(fmt.Sprint(c.hp))); slack < 1 {
 			t.Errorf("名稱 %q(%d 欄)+ HP %d:剩 %d 欄,至少要留 1 欄間隔",

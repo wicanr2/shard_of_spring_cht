@@ -21,7 +21,7 @@ import (
 type townMode int
 
 const (
-	townClosed townMode = iota
+	townClosed    townMode = iota
 	townBuildings          // 建築清單
 	townShop               // 商店品項
 	townCamp               // 營地
@@ -125,11 +125,27 @@ func (g *Game) townKey(k ebiten.Key) {
 	case townInn, townHealer, townTavern, townTrainer:
 		if k == ebiten.KeyEscape {
 			ts.mode, ts.msg = townBuildings, ""
+			return
 		}
-		if ts.mode == townInn && k == ebiten.KeyR {
-			g.members = town.Rest(g.members)
-			g.party.Clock.Tick()
-			ts.msg = "住了一晚。⚠ 房價的基準價未解(docs/re/138 §3)"
+		switch ts.mode {
+		case townInn:
+			// 手冊 p.37:睡一晚回 2 HP、10 SP,而且供餐(不耗食糧)。
+			if k == ebiten.KeyR {
+				g.members = town.InnSleep(g.members)
+				g.party.Clock.Tick()
+				ts.msg = fmt.Sprintf("住了一晚,全隊回 %d 生命 %d 法力。⚠ 房價未解",
+					town.InnHealHP, town.InnHealSP)
+			}
+		case townTavern:
+			// ⚠ 食糧買在**酒館**,不是旅店(手冊 p.37,docs/re/140 §6)。
+			if k == ebiten.KeyF {
+				g.buyProvisions(1)
+			}
+		case townTrainer:
+			// 選成員的編號升級。訓練免費(手冊 p.37)。
+			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
+				g.trainMember(i, ts.shop.Extra)
+			}
 		}
 
 	case townShop:
@@ -156,13 +172,22 @@ func (g *Game) townKey(k ebiten.Key) {
 			ts.mode, ts.msg = townBuildings, ""
 		}
 	case townCamp:
-		if k == ebiten.KeyR {
+		switch k {
+		case ebiten.KeyR:
 			g.members = town.Rest(g.members)
 			g.party.Clock.Tick()
-			ts.msg = "全隊休息了一會兒(恢復量未解,每次 " +
+			ts.msg = "全隊休息了一會兒(這個動作原版沒有,恢復量是本引擎自訂的 " +
 				fmt.Sprint(town.CampRestHeal) + " 點)"
-		}
-		if k == ebiten.KeyEscape {
+		case ebiten.KeyS:
+			// 手冊 p.38:每人耗 1 份食糧,回 1 HP、5 SP;沒得吃的人扣 1 HP。
+			before := g.group.Provisions
+			g.members, g.group.Provisions = town.CampSleep(g.members, before)
+			for i := 0; i < town.CampSleepHours; i++ {
+				g.party.Clock.Tick()
+			}
+			ts.msg = fmt.Sprintf("睡了一晚,吃掉 %d 份食糧(剩 %d)",
+				before-g.group.Provisions, g.group.Provisions)
+		case ebiten.KeyEscape:
 			ts.mode, ts.msg = townBuildings, ""
 		}
 	}
@@ -257,7 +282,11 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	case townCamp:
 		p.Draw(dst, "營地", x, y)
 		y += lh * 1.5
-		p.Draw(dst, "R) 休息", x, y)
+		p.Draw(dst, fmt.Sprintf("S) 睡覺（每人耗 %d 份食糧，回 %d 生命 %d 法力；目前 %d 份）",
+			town.CampSleepFood, town.CampSleepHP, town.CampSleepSP,
+			g.group.Provisions), x, y)
+		y += lh
+		p.Draw(dst, "R) 休息一會兒（本引擎自訂，非原版動作）", x, y)
 		y += lh * 2
 		for _, u := range town.Unresolved {
 			p.Draw(dst, "⚠ "+u, x, y)
@@ -275,6 +304,36 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	}
 }
 
+// buyProvisions 在酒館買食糧。手冊 p.37(docs/re/140 §6)。
+//
+// ⚠ 食糧是**隊伍層級**的(GROUPS.DAT 位移 23),不是每個人各自帶。
+func (g *Game) buyProvisions(n int) {
+	price := town.Price(town.TownFoodPrice*n, g.town.shop.PriceMult)
+	if float64(price) > g.group.Gold {
+		g.town.msg = "金幣不足"
+		return
+	}
+	g.group.Gold -= float64(price)
+	g.group.Provisions += n
+	g.town.msg = fmt.Sprintf("買了 %d 份食糧,花 %d 金幣(⚠ 單價未解)", n, price)
+}
+
+// trainMember 讓第 i 位成員在訓練所升級。
+func (g *Game) trainMember(i, guildExtra int) {
+	c := &g.members[i]
+	exp := g.charExp(*c)
+	r := town.Train(c, exp, guildExtra)
+	if r != town.TrainOK {
+		g.town.msg = c.Name + ":" + r.String()
+		return
+	}
+	// 名冊裡的那一份也要跟著改,否則存檔寫回去的是舊的
+	if c.ID >= 1 && c.ID <= len(g.chars) {
+		g.chars[c.ID-1] = *c
+	}
+	g.town.msg = fmt.Sprintf("%s 升到第 %d 級(生命 %d／法力 %d)",
+		c.Name, c.Level, c.MaxHP, c.MaxSP)
+}
 
 // buildingLines 回傳特殊建築畫面的內容。docs/re/138。
 func (g *Game) buildingLines(ts *townState) []string {
@@ -283,30 +342,47 @@ func (g *Game) buildingLines(ts *townState) []string {
 		return []string{
 			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
 			"R) 住一晚",
-			"⚠ 住宿的**基準價**未解(docs/re/138 §3)——" +
-				"倍率讀得出來，乘的那個數字還沒定位。",
+			fmt.Sprintf("睡一晚回 %d 生命、%d 法力，並供餐（手冊 p.37）。",
+				town.InnHealHP, town.InnHealSP),
+			"⚠ 住宿的**基準價**未解 —— 倍率讀得出來，乘的那個數字還沒定位。",
 		}
 	case original.ShopHealer:
 		return []string{
 			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
-			"⚠ 治療的基準價與恢復量未解，本畫面只顯示不施作。",
+			"治癒傷勢的費用依傷害程度、解毒是定價、解束縛與復活依等級（手冊 p.37）。",
+			"⚠ 這四項的**金額**都未解，本畫面只顯示不施作。",
 		}
 	case original.ShopTavern:
+		lines := []string{
+			fmt.Sprintf("F) 買 1 份食糧　目前 %d 份（⚠ 單價未解）", g.group.Provisions),
+			"",
+		}
 		if r, ok := g.rumors[ts.shop.Extra]; ok {
-			return []string{r}
+			return append(lines, r)
 		}
-		return []string{fmt.Sprintf(
+		return append(lines, fmt.Sprintf(
 			"⚠ 第 %d 段傳聞未定位(docs/re/138 §4:找到 10 段、索引有 11 個)。"+
-				"⛔ 這裡不拿別段頂替。", ts.shop.Extra)}
+				"⛔ 這裡不拿別段頂替。", ts.shop.Extra))
 	case original.ShopTrainer:
-		art := "武術"
+		art, teaches := "武術", "戰士"
 		if ts.shop.Extra == 1 {
-			art = "魔法"
+			art, teaches = "魔法", "法師"
 		}
-		return []string{
-			"專精:" + art + "(位移 36 = " + fmt.Sprint(ts.shop.Extra) + ")",
-			"⚠ 升級規則未解（需要的經驗值與技能點成本都還沒解出來）。",
+		lines := []string{
+			"專精:" + art + "(位移 36 = " + fmt.Sprint(ts.shop.Extra) + ")，只收" + teaches,
+			"訓練免費，只看經驗夠不夠（手冊 p.37）。按編號選人：",
+			"",
 		}
+		for i, c := range g.members {
+			need := town.NeedExp(c.Level)
+			state := fmt.Sprintf("%d／%d", g.charExp(c), need)
+			if need == 0 {
+				state = "已達最高等級"
+			}
+			lines = append(lines, fmt.Sprintf("%d) %s　%s　第 %d 級　經驗 %s",
+				i+1, c.Name, c.ClassName(), c.Level, state))
+		}
+		return append(lines, "", town.GrowthAssumption)
 	}
 	return nil
 }

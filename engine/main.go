@@ -63,22 +63,28 @@ type Game struct {
 	field    *combat.Field // nil = 不在戰鬥中
 
 	// M5:迷宮(docs/spec/08)
-	assets    string
-	mazeData  []original.MazeEntry
-	mazeTiles map[int]*ebiten.Image
-	level     *mazeLevel // nil = 不在迷宮中
-	mazeState maze.State
-	overlay   string // 非空 = 敘述覆蓋層開著
+	assets      string
+	mazeData    []original.MazeEntry
+	mazeTiles   map[int]*ebiten.Image
+	level       *mazeLevel // nil = 不在迷宮中
+	mazeState   maze.State
+	overlay     string // 非空 = 敘述覆蓋層開著
 	overlayFont *render.Painter
 
 	// M8:城鎮與名冊(docs/spec/11)
-	chars    []original.Character
-	roster   *rosterState
+	chars  []original.Character
+	roster *rosterState
 
 	shops    []original.Shop
 	itemList []original.Item
 	town     *townState
 	rumors   map[int]string // 酒館傳聞:位移 36 → 文字(docs/re/138 §4)
+
+	// 經驗值。⚠ **不寫進 CHARS.DAT** —— 它在原版記錄裡的位移未解
+	// (docs/re/140 §9),猜一個位移寫下去會壞掉原版讀得到的欄位,
+	// 而往返測試看不見。索引 = 角色槽號 − 1。
+	exp     [original.CharSlots]int
+	expPath string // <assets>/save/exp.json
 
 	// M6:法術(docs/spec/09)
 	spells   []original.Spell
@@ -426,6 +432,8 @@ func (g *Game) loadParty(dir string, slot int) error {
 	}
 	g.slot = slot
 	g.savePath = filepath.Join(dir, "save", "GROUPS.DAT")
+	g.expPath = filepath.Join(dir, "save", "exp.json")
+	g.loadExp()
 	grp := groups[slot-1]
 	if grp.Blank() {
 		return fmt.Errorf("第 %d 隊還沒建立(記錄整份是空白)—— 出貨磁片組好的是第 5 隊", slot)
@@ -463,7 +471,6 @@ func (g *Game) loadParty(dir string, slot int) error {
 	}
 	return nil
 }
-
 
 // loadCombat 讀 M4 需要的資料表。docs/spec/07。
 func (g *Game) loadCombat(dir string, seed uint64) error {
@@ -511,7 +518,6 @@ func readJSON(path string, v any) error {
 	return json.Unmarshal(b, v)
 }
 
-
 // loadTiles 讀 <dir>/t00.png … t<max>.png。讀不到的編號不進 map ——
 // 執行期會畫佔位符,讓「沒有來源」在畫面上看得見(docs/spec/05 §4)。
 func loadTiles(dir string, max int) map[int]*ebiten.Image {
@@ -529,7 +535,6 @@ func loadTiles(dir string, max int) map[int]*ebiten.Image {
 	}
 	return out
 }
-
 
 // writeChars 把名冊寫回 <assets>/save/CHARS.DAT。
 //

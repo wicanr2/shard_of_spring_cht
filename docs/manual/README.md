@@ -73,6 +73,9 @@
 
 | 位置 | 情況 | 裁決 |
 |---|---|---|
+| p.51 `OUTSIDE OPTIONS` | 寫 `←`/`→` 轉向、`<RETURN>` 前進 | **DOS 版不是這樣**:方向鍵先轉再走,`<RETURN>` 無作用([`re/139`](../re/139-oracle-reaches-gameplay.md) §4 實測)|
+| p.50 命中 | 說明文字寫 `A +3 to hit`,p.49 的表寫 `+12` | 以**表**為準(表與反組譯同值,[`re/140`](../re/140-manual-stat-tables.md) §3)|
+| p.47 經驗表 | 第 1 列 `INCREASE` 寫 200,與累計欄 300 不自洽 | 累計欄可用,`INCREASE` 第 1 列是印刷錯誤 |
 | `MAGIC TORCH` 消耗 | p.26 正文寫 2、p.28 表格寫 3 | 資料檔是 **2** → p.28 表格印刷錯誤 |
 | `RESURRECT` 拼法 | p.28 拼 `Resurrect`、p.29 拼 `RESSURECT` | 資料檔是 `RESURRECT` |
 | p.39 | 印成「睦過覺」 | 應為「睡過覺」,照原樣抄 |
@@ -96,25 +99,18 @@
 | `SPELLS.DAT` 欄 5 = 最低消耗點數,**33/33 印證** | [`re/125`](../re/125-manual-confirms-spells.md) |
 | 命中公式的 `× 4` 與背後攻擊 `+ 12`,**兩個獨立來源吻合** | [`re/125`](../re/125-manual-confirms-spells.md) |
 | **新發現**:`TOWNDATA.DAT` 位移 38 = 商店價格倍率;`ITEMS.DAT` 欄 3 是基準價不是售價 | [`re/126`](../re/126-shop-price-multiplier.md) |
+| 曆法(22 月 / 34 天 / 26 小時)對上 `GROUPS.DAT` 時鐘的三個上限 | [`re/140`](../re/140-manual-stat-tables.md) §4 |
+| 行動點數 = 速度,前進 2 / 轉向 1 / 攻擊 3;速度表由此推出,18 列全中 | [`re/140`](../re/140-manual-stat-tables.md) §1 |
+| 食糧買在**酒館**、旅店回 2 HP+10 SP、營地睡覺耗 1 食糧回 1 HP+5 SP、訓練免費 | [`re/140`](../re/140-manual-stat-tables.md) §6 |
 
-## 還沒拿去核的表
+## p.47–49 的附錄表:已經核過
 
-p.47–49 的附錄表格數量最多,**都還沒逐項對照資料檔**:
+七張表全部化成公式或直接照表,結果在
+[`re/140`](../re/140-manual-stat-tables.md);其中三張與反組譯互相印證。
 
-- 經驗等級表(`Experience Levels`)
-- 速度 → 移動數 / 攻擊次數(`Effects of Speed`)
-- 力量 → 傷害加值(`Bonus Damage by Strength`)
-- 智力 → 法力成長上限(`Max S.P. Gain per Level`)
-- 耐力 → 生命成長上限(`Max H.P. Gain per Level`)
-- 降魔成功率矩陣(`% Chance of Priest Dispelling`)
-- 五種族的職業限制與屬性加值(`Race Advantages/Disadvantages`)
-
-⚠ 其中**力量 → 傷害加值**最值得先核:
-[`spec/01-combat.md`](../spec/01-combat.md) §5 的傷害公式有兩個係數
-`k₁`/`k₂`「來源未解」,而手冊這張表給了一個具體的候選形狀
-(`bonus = floor((STR − 7) / 2)`,3–20 全部吻合)。
-**但那只是形狀吻合,還沒回 IDA 確認 `ds:9464h` 是不是從屬性 6(力量)算出來的**
-—— 在讀到那段程式碼之前,這仍然是**假設**。
+⚠ **力量 → 傷害加值仍然不能拿去裁決 `k₁`**:
+`k₁`(`ds:9460h`)在反組譯裡走**乘法**,而力量加值是**加**項,形狀不合
+([`re/140`](../re/140-manual-stat-tables.md) §2)。這張表落在傷害公式的哪一項**未解**。
 
 ## 譯名:1987 年的官方前例與本專案 glossary 衝突
 

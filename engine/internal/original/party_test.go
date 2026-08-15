@@ -13,10 +13,10 @@ func TestParseCharsShipped(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := []struct {
-		name               string
-		race, class        byte
-		spd, str, in, en   int
-		hp, sp, lv         int
+		name             string
+		race, class      byte
+		spd, str, in, en int
+		hp, sp, lv       int
 	}{
 		{"Segrono", 'H', '1', 11, 10, 9, 9, 9, 0, 1},
 		{"Hard Axe", 'D', '1', 11, 13, 7, 12, 12, 0, 1},
@@ -122,7 +122,7 @@ func TestGroupsShippedRecords(t *testing.T) {
 		}
 	}
 	for _, c := range []struct {
-		name string
+		name      string
 		got, want int
 	}{
 		{"世界 x", g.WorldX, 8}, {"世界 y", g.WorldY, 8},
@@ -262,5 +262,27 @@ func TestCharRoundTrip(t *testing.T) {
 				}
 			}
 		}
+	}
+}
+
+// 驗收 11(docs/spec/11 §9):寫回時**不能動到未解的尾端位移 86–94**。
+//
+// 經驗值的落點未解(docs/re/140 §9),而 86–94 是僅存的候選區。
+// 這個測試擋的是「順手找個空位存經驗值」——
+// 那種改動不會報錯,原版照樣開得起來,只是某個欄位悄悄變了值。
+func TestBytesLeavesUnresolvedTailUntouched(t *testing.T) {
+	raw := make([]byte, CharRecLen)
+	for i := range raw {
+		raw[i] = 0x20
+	}
+	copy(raw[1:], "測試      ")
+	// 尾端擺一組可辨識的值
+	tail := []byte{0x20, 0x20, 0x20, 0x01, 0x00, 0x00, 0x00, 0x40, 0x00}
+	copy(raw[85:], tail)
+
+	c := Character{Name: "測試", Raw: raw}
+	out := c.Bytes()
+	if got := out[85:94]; string(got) != string(tail) {
+		t.Errorf("位移 86–94 被改動了:%X → %X", tail, got)
 	}
 }

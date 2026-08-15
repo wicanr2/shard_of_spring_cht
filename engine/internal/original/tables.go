@@ -18,16 +18,16 @@ const monsterRecLen = 36
 type Monster struct {
 	Index  int    `json:"index"`
 	Name   string `json:"name"`
-	Speed  int    `json:"speed"`   // 欄1 位移17 → 戰鬥屬性 2(乘亂數後存入)
-	Str    int    `json:"str"`     // 欄2 位移19 → 屬性 6
-	ToHit  int    `json:"to_hit"`  // 欄3 位移21 → 屬性 9
-	HPDie  int    `json:"hp_die"`  // 欄4 位移23 → 屬性 3(生命值的骰基,乘亂數)
-	Weapon int    `json:"weapon"`  // 欄5 位移25 → 屬性 4(0 → 60 = 赤手)
-	Class  int    `json:"class"`   // 欄6 位移27 → 屬性 11(類別 / 圖組)
-	Armor  int    `json:"armor"`   // 欄7 位移29 → 屬性 5
-	Exp    int    `json:"exp"`     // 欄8 位移31 → 屬性 19
-	Tier   int    `json:"tier"`    // 欄9 位移33 → 屬性 13
-	SP     int    `json:"sp"`      // 欄10 位移35 → 屬性 7
+	Speed  int    `json:"speed"`  // 欄1 位移17 → 戰鬥屬性 2(乘亂數後存入)
+	Str    int    `json:"str"`    // 欄2 位移19 → 屬性 6
+	ToHit  int    `json:"to_hit"` // 欄3 位移21 → 屬性 9
+	HPDie  int    `json:"hp_die"` // 欄4 位移23 → 屬性 3(生命值的骰基,乘亂數)
+	Weapon int    `json:"weapon"` // 欄5 位移25 → 屬性 4(0 → 60 = 赤手)
+	Class  int    `json:"class"`  // 欄6 位移27 → 屬性 11(類別 / 圖組)
+	Armor  int    `json:"armor"`  // 欄7 位移29 → 屬性 5
+	Exp    int    `json:"exp"`    // 欄8 位移31 → 屬性 19
+	Tier   int    `json:"tier"`   // 欄9 位移33 → 屬性 13
+	SP     int    `json:"sp"`     // 欄10 位移35 → 屬性 7
 }
 
 func ParseMonsters(d []byte) ([]Monster, error) {
@@ -63,11 +63,11 @@ func ParseMonsters(d []byte) ([]Monster, error) {
 type Spell struct {
 	Index    int    `json:"index"`
 	Name     string `json:"name"`
-	School   int    `json:"school"`     // 欄2:1–5,= 命中後的狀態編號
-	Effect   int    `json:"effect"`     // 欄3:效果類別 1–13
-	Power    int    `json:"power"`      // 欄4:每點威力(類別 3–6 時正負決定增減)
-	UnitCost int    `json:"unit_cost"`  // 欄5:每一級的法力單價;等級 = INT(投入 / 這個值)
-	HitMsg   string `json:"hit_msg"`    // 欄6:命中訊息
+	School   int    `json:"school"`    // 欄2:1–5,= 命中後的狀態編號
+	Effect   int    `json:"effect"`    // 欄3:效果類別 1–13
+	Power    int    `json:"power"`     // 欄4:每點威力(類別 3–6 時正負決定增減)
+	UnitCost int    `json:"unit_cost"` // 欄5:每一級的法力單價;等級 = INT(投入 / 這個值)
+	HitMsg   string `json:"hit_msg"`   // 欄6:命中訊息
 }
 
 // Item 的欄 4/5/6 是雙重身分,分類不在資料裡在呼叫端(docs/formats/04)。
@@ -173,9 +173,9 @@ func (k ShopKind) String() string {
 }
 
 type Shop struct {
-	Index int     `json:"index"`
-	Town  string  `json:"town"`
-	Name  string  `json:"name"`
+	Index int    `json:"index"`
+	Town  string `json:"town"`
+	Name  string `json:"name"`
 	// Kind:位移 34 為負時是建築類別,≥ 0 時是 ShopGoods(docs/re/138)。
 	Kind ShopKind `json:"kind"`
 	// First / Last:賣的道具編號範圍(含)。只在 Kind == ShopGoods 時有意義。

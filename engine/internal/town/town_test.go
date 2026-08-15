@@ -180,3 +180,55 @@ func TestShippedAttrRange(t *testing.T) {
 	t.Logf("出貨五人的屬性範圍:%d–%d(3d6 是 3–18 —— 相容但不等價,"+
 		"所以不能寫成 3d6)", lo, hi)
 }
+
+// --- 睡覺與休息(手冊 p.37/p.38,docs/re/140 §6)---------------------------
+
+func sleeper(hp, maxhp, sp, maxsp int) original.Character {
+	return original.Character{Name: "睡", HP: hp, MaxHP: maxhp, SP: sp, MaxSP: maxsp}
+}
+
+func TestInnSleepHealsTwoAndTen(t *testing.T) {
+	p := []original.Character{sleeper(1, 20, 0, 30)}
+	p = InnSleep(p)
+	if p[0].HP != 3 || p[0].SP != 10 {
+		t.Errorf("旅店應回 2 HP / 10 SP,得 %d/%d", p[0].HP, p[0].SP)
+	}
+}
+
+func TestCampSleepEatsOnePerPerson(t *testing.T) {
+	p := []original.Character{sleeper(1, 20, 0, 30), sleeper(1, 20, 0, 30)}
+	p, left := CampSleep(p, 5)
+	if left != 3 {
+		t.Errorf("兩個人應吃掉 2 份,剩 3,得 %d", left)
+	}
+	for i := range p {
+		if p[i].HP != 2 || p[i].SP != 5 {
+			t.Errorf("第 %d 人應回 1 HP / 5 SP,得 %d/%d", i+1, p[i].HP, p[i].SP)
+		}
+	}
+}
+
+// 食糧不夠時,扣血的是**吃不到的那個人**,不是全隊。
+func TestCampSleepStarvesOnlyTheOnesWithoutFood(t *testing.T) {
+	p := []original.Character{sleeper(5, 20, 0, 30), sleeper(5, 20, 0, 30)}
+	p, left := CampSleep(p, 1)
+	if left != 0 {
+		t.Errorf("只有 1 份,應該用光,得 %d", left)
+	}
+	if p[0].HP != 6 {
+		t.Errorf("吃到的人應回 1 HP → 6,得 %d", p[0].HP)
+	}
+	if p[1].HP != 4 {
+		t.Errorf("沒吃到的人應扣 1 HP → 4,得 %d", p[1].HP)
+	}
+}
+
+// 中毒的人睡覺是淨損失(手冊 p.38:每小時扣 1,睡八小時)。
+func TestCampSleepIsNetLossWhenPoisoned(t *testing.T) {
+	c := sleeper(20, 20, 0, 30)
+	c.Status = 1 // 中毒
+	p, _ := CampSleep([]original.Character{c}, 9)
+	if p[0].HP != 20+CampSleepHP-CampSleepHours {
+		t.Errorf("中毒者應為 20+1−8=13,得 %d", p[0].HP)
+	}
+}

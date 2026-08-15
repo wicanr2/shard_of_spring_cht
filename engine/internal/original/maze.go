@@ -75,7 +75,7 @@ func DecodeSQZ(d []byte) (*Maze, error) {
 	if len(rows) == 0 {
 		return nil, fmt.Errorf(".SQZ 解出 0 列")
 	}
-	
+
 	// 解碼出來的每一段就是一個 major(段內依序是 minor)。
 	m := &Maze{Majors: len(rows), Cells: make([]int, len(rows)*MazeRows)}
 	for a, seg := range rows {

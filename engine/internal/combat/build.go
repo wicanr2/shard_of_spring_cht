@@ -35,7 +35,7 @@ func Build(party []original.Character, monsters []original.Monster,
 			break
 		}
 		f.Units[PartyBase+i] = Unit{
-			Name: c.Name,
+			Name:  c.Name,
 			Speed: c.Speed, HP: c.HP,
 			Weapon: c.Weapon, Armor: c.Armor,
 			Str: c.Str, SP: c.SP, Status: c.Status, ToHit: c.ToHit,

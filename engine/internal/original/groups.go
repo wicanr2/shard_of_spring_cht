@@ -52,9 +52,9 @@ type Group struct {
 	// **保留原始值而不是過濾後的清單** —— 槽號是有意義的,而且存檔要寫回。
 	Members [MemberSlots]int
 
-	Gold       float64 // 位移 19–22,MBF 單精度 —— **不是 int16**
-	Provisions int
-	Encounter  int
+	Gold                  float64 // 位移 19–22,MBF 單精度 —— **不是 int16**
+	Provisions            int
+	Encounter             int
 	Month, Day, Hour, Sub int
 	WorldX, WorldY        int
 	Facing                int

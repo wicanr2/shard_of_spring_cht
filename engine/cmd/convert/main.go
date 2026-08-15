@@ -391,7 +391,6 @@ func writePNG(path string, img image.Image) error {
 	return png.Encode(f, img)
 }
 
-
 // langTables 是所有譯文表。docs/spec/10 §2。
 type langTables struct {
 	monsters, spells, items original.Lang

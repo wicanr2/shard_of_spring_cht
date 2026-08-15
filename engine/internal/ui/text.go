@@ -28,11 +28,11 @@ func RuneCols(r rune) int {
 	case r < 0x1100:
 		return 1
 	case unicode.Is(unicode.Han, r), // 漢字
-		r >= 0x3000 && r <= 0x303F,  // CJK 標點
-		r >= 0xFF01 && r <= 0xFF60,  // 全形 ASCII
-		r >= 0xFFE0 && r <= 0xFFE6,  // 全形符號
-		r >= 0x3040 && r <= 0x30FF,  // 假名
-		r >= 0xAC00 && r <= 0xD7A3:  // 諺文
+		r >= 0x3000 && r <= 0x303F, // CJK 標點
+		r >= 0xFF01 && r <= 0xFF60, // 全形 ASCII
+		r >= 0xFFE0 && r <= 0xFFE6, // 全形符號
+		r >= 0x3040 && r <= 0x30FF, // 假名
+		r >= 0xAC00 && r <= 0xD7A3: // 諺文
 		return 2
 	}
 	return 1

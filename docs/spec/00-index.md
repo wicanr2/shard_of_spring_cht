@@ -62,7 +62,7 @@
 | 屬性算式的兩個常數 `A` / `B` | [`spec/11`](11-town-camp-roster.md) §5;**形狀已讀出**([`re/156`](../re/156-attribute-roll-shape.md)),只剩值 |
 | 戰場的**初始佈陣與怪物 AI** | [`spec/12`](12-combat-board.md) §5 |
 | 迷宮的**寶石謎題 / 治療池觸發點** | [`spec/08`](08-maze-scene.md) §5.5;規則已解,是哪一筆事件叫起它們未解 |
-| 戰後**金幣**的算式 | [`re/152`](../re/152-experience-settlement-formula.md) §2 |
+| 戰後**金幣**的四個常數 | [`re/152`](../re/152-experience-settlement-formula.md) §2.3;**管線形狀已通**(含兩次次方),⚠ 手冊沒寫金幣 → **唯一的路是 oracle 實測** |
 | 營地的 `H)unt` / `I)dentify` / `T)rade` / `R)eorder` | [`spec/11`](11-town-camp-roster.md) §4 |
 
 **已經填掉的**(不要再照舊引用):傷害公式的兩個係數(`k₁` = 0.5、`k₂` 折進 `Roll`)、

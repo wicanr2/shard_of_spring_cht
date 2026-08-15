@@ -14,7 +14,7 @@
 | 3 | 打獵成功會加**補給品**(`GROUPS.DAT` 位移 23),**夾在上限** `ds:6F10` | **已確認** |
 | 4 | `I)dentify`:要是**法師**、狀態 ≤ 1、依道具編號選三個 lore 技能之一(位移 47 / 48 / 49)| **已確認** |
 | 5 | 三個 lore 的分界是 **`≤ 20` / `21–56` / 其餘**,`99` = 空格 | **已確認**(讀到的常數)|
-| 6 | ⚠ 哪些道具落在哪一段,取決於背包存的是 0-based 還是 1-based 編號 —— **未解**(§4.1)| **未解** |
+| 6 | 背包存的是 **0-based** 編號,所以第一段(`≤ 20`)= 全部 21 件武器與護甲 | **已確認**([`167`](167-record-field-accessor-and-identified-flags.md) §3)|
 | 7 | 服務呼叫**操作碼 38 = 取角色狀態**;`> 1` → `That character is incapacitated.` | 證據充分 |
 
 > ✅ **這兩道閘門後來用實跑驗過**([`174`](174-oracle-confirms-the-camp-gates.md)):
@@ -76,8 +76,10 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 所以「成功機率多少、加幾份」不知道。讀到的是**形狀**(擲一次、夾在 ≥ 0、
 0 就是失敗)與**上限存在**。
 
-⚠ `ds:3534 ≥ 99` 讀成「在野外」是**從語意推的**(那一支印 `You're inside!`),
-沒有讀到 `ds:3534` 在別處被填什麼。
+`ds:3534` 是**當前迷宮編號**,`99` = 不在任何迷宮
+([`169`](169-encounter-zone-selects-the-monster.md) §4:`MAZEMOVE` 把同一個變數
+與迷宮編號 1–12 比)。實跑也對上了 —— 在世界地圖進營地按 `H` 不會印
+`You're inside!`([`174`](174-oracle-confirms-the-camp-gates.md) §2)。
 
 ## 3. `I)dentify`
 
@@ -103,24 +105,21 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 手冊 p.39 也對得上:「WEAPON LORE 可以辨別武器和護甲,ITEM LORE 可以辨別
 各項特殊物品,POTION LORE 可以辨別各種藥劑」。
 
-### 3.1 ⚠ 分界的兩個讀法都各壞一半
+### 3.1 分界落在哪:背包存的是 0-based 編號
 
-`ITEMS.DAT` 有 **57 列**。背包格存的是 0-based 還是 1-based 編號**沒有讀到**,
-而兩種讀法各自撞到一個問題:
+`TOWNDATA` 的販售範圍最小值是 **0**,而「藥水舖」賣 **21–26** =
+`ITEMS.DAT` 第 22–27 列,第 22 列正是 `Heal potion`
+([`167`](167-record-field-accessor-and-identified-flags.md) §3)。所以:
 
-| 讀法 | 第一段(Weapon lore)| 第三段(Item lore)|
+| 編號 | `ITEMS.DAT` 的列 | 技能 |
 |---|---|---|
-| **0-based**(編號 0–56 = 第 1–57 列)| 第 1–21 列 = **全部武器與護甲** ✓ 與手冊一致 | 空的 —— 沒有任何道具落進來 ✗ |
-| **1-based**(編號 1–57)| 第 1–20 列 —— **少了 `Plate +2`**,一件護甲要用 Potion lore ✗ | 第 57 列 `Teleporter, paper dove` = 特殊物品 ✓ |
+| 0–20 | 1–21 = **全部 21 件武器與護甲** | `Weapon lore` |
+| 21–56 | 22–57 = 藥水 + 任務道具 | `Potion lore` |
+| > 56 | **沒有真實道具** | `Item lore` |
 
-**兩邊都有一個乾淨的段和一個壞掉的段**,所以不裁決。
-要裁決得讀「背包格怎麼填」那一段(`E)quip` 或商店的購買路徑),
-或用 DOSBox 拿一件 `Plate +2` 去 ID 一次。
-
-⚠ 這正是 [`159`](159-initiative-resorts-every-round.md) §2「死分支不該存在」
-**不適用**的場合:第三段在 0-based 下雖然接不到真道具,
-但它接得到保留編號(`59`/`60` = 無防具/無武器,[`formats/04`](../formats/04-spells-items-dat.md)),
-所以不是死碼,只是防禦性的。**判準要看它有沒有別的可達路徑。**
+第一段與手冊「WEAPON LORE 可以辨別武器和護甲」完全吻合,
+⚠ 但 **`Item lore` 對玩家而言是一個永遠用不到的技能**
+([`167`](167-record-field-accessor-and-identified-flags.md) §4)。
 
 ## 4. `P)rint`:輸出角色表到印表機
 
@@ -156,8 +155,8 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 |---|---|
 | 誰把位移 86 清回 `'0'` | **未解**(§1)|
 | 打獵的擲骰:`INT 3D:33` 的參數、`ds:731E`、上限 `ds:6F10` | **未解**(§2)|
-| `ds:3534` 在別處被填什麼 | 未讀(§2)|
-| 背包格是 0-based 還是 1-based | **未解 —— 擋住 §3.1 的分界** |
+| ~~`ds:3534` 在別處被填什麼~~ | **已解**:當前迷宮編號([`169`](169-encounter-zone-selects-the-monster.md) §4)|
+| ~~背包格是 0-based 還是 1-based~~ | **已解**:0-based([`167`](167-record-field-accessor-and-identified-flags.md) §3)|
 | `I)dentify` 的 `Failed` 分支(擲骰)| **未讀** |
 | `P)rint` 的程式碼 | 未讀(§4,依 §1.2 不影響 remake)|
 | `S)leep` 的 `dies in the night.` 條件 | **未解**(§5)|

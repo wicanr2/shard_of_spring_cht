@@ -39,11 +39,11 @@ const (
 	// offPoolUses 是迷宮治療池的已使用次數(docs/re/155 §2.1)。
 	// `< 11` 才能用,用完原版印 `This pool is empty!`。
 	// ⚠ **跨迷宮共用一個計數器** —— 它存在隊伍記錄裡,不在迷宮資料裡。
-	offPoolUses = 63
-	offMazeX      = 79
-	offMazeY      = 81
-	offLightPick  = 83
-	offFled       = 85
+	offPoolUses  = 63
+	offMazeX     = 79
+	offMazeY     = 81
+	offLightPick = 83
+	offFled      = 85
 )
 
 // NoLight 是位移 83 的哨兵值:沒有攜帶光源(docs/re/134 §2)。

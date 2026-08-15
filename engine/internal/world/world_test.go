@@ -267,7 +267,7 @@ func TestMountainMoveCost(t *testing.T) {
 	set(13, 10, 1) // 平地
 
 	cases := []struct {
-		name                   string
+		name                 string
 		fx, fy, tx, ty, want int
 	}{
 		{"平→平", 10, 10, 10, 10, 1},

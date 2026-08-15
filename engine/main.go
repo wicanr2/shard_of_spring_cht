@@ -73,6 +73,13 @@ type Game struct {
 	mazeState   maze.State
 	overlay     string // 非空 = 敘述覆蓋層開著
 	overlayFont *render.Painter
+	// 迷宮機關的互動狀態(docs/re/161 §3 的五個目標編號)。
+	prompt *mazePrompt
+	// tombs 記著踩過哪幾座墓(事件 701–704),餵 Eldron 謎題的進度旗標。
+	tombs map[int]bool
+	// clanRewarded:謎題解過了。⚠ **原版把這個旗標存在哪未解**
+	// (docs/re/162 §5)—— 所以它只活在記憶體裡,存檔不會記得。
+	clanRewarded bool
 
 	// M8:城鎮與名冊(docs/spec/11)
 	chars  []original.Character
@@ -189,6 +196,18 @@ func (g *Game) Update() error {
 				break
 			}
 			g.townKey(k)
+		}
+		return nil
+	}
+
+	// 迷宮機關問問題中(蓋在迷宮之上)
+	if g.prompt != nil {
+		g.promptRunes(ebiten.AppendInputChars(nil))
+		for _, k := range inpututil.AppendJustPressedKeys(nil) {
+			g.promptKey(k)
+			if g.prompt == nil {
+				break
+			}
 		}
 		return nil
 	}
@@ -364,6 +383,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawCombat(screen)
 	g.drawCastMenu(screen)
 	g.drawOverlay(screen)
+	g.drawPrompt(screen)
 
 	// M2 還沒有字型(docs/spec/04 §4 的 TTF 是 M3 之後),
 	// 所以狀態暫時走 Ebitengine 的除錯字。**這不是最終呈現。**

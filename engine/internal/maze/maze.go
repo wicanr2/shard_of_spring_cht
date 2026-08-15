@@ -104,7 +104,29 @@ const (
 	KindText                   // 顯示房間敘述
 	KindTeleport               // 同一層內傳送
 	KindCrossLevel             // 跨關卡 —— 目標編號查不到文字
+	KindPool                   // 治療池(目標 518)
+	KindGem                    // 寶石謎題(目標 532)
+	KindRiddle                 // Eldron 的氏族謎題(目標 705)
+	KindScript                 // 劇情段落(目標 204 / 533),內容未解
 )
+
+// special 把五個「多做了事」的目標編號翻成 TriggerKind(docs/re/161 §3)。
+//
+// ⚠ 這五個編號**同時也有 DT 文字**,原版是先印文字再做事,
+// 所以呼叫端仍然要把 Trigger.Text 顯示出來。
+func special(target int) TriggerKind {
+	switch target {
+	case TargetPool:
+		return KindPool
+	case TargetGem:
+		return KindGem
+	case TargetRiddle:
+		return KindRiddle
+	case TargetPriest, TargetFinalBoss:
+		return KindScript
+	}
+	return KindNone
+}
 
 // Scan 掃事件表,回傳第一個命中的事件。
 //
@@ -125,7 +147,11 @@ func Scan(evs []original.Event, s State, text map[int]string) Trigger {
 			return Trigger{Kind: KindTeleport, Major: e.Target, Minor: e.DestMinor}
 		}
 		if t, ok := text[e.Target]; ok {
-			return Trigger{Kind: KindText, Text: t, Number: e.Target}
+			kind := KindText
+			if k := special(e.Target); k != KindNone {
+				kind = k
+			}
+			return Trigger{Kind: kind, Text: t, Number: e.Target}
 		}
 		// 目標 ≥ 100 但查不到文字 → 跨關卡(docs/spec/08 §5,4/4 零例外)
 		return Trigger{Kind: KindCrossLevel, Number: e.Target}
@@ -151,6 +177,19 @@ func Visible(s State, major, minor int) bool {
 	}
 	return dM <= s.Visibility
 }
+
+// ── 機關的觸發點:事件目標編號本身(docs/re/161 §3)──────────────────
+//
+// 原版沒有「機關」這個型別:每個事件目標編號各有一段自己的程式,
+// 絕大多數只印文字,下面這五個編號的那一段多做了事。
+// 所以觸發點不是座標、不是格值,**就是目標編號**。
+const (
+	TargetPool      = 518 // DE5EFF 格 54/42、朝向 4 —— 治療池
+	TargetGem       = 532 // DE51EFF 格 30/42、朝向 3 —— 寶石謎題
+	TargetRiddle    = 705 // DE7EFF 格 24/33、朝向 3 —— Eldron 的氏族謎題
+	TargetPriest    = 204 // DE2EFF 格 57/14、朝向 1 —— 山丘巨人挾持祭司
+	TargetFinalBoss = 533 // DE51EFF 格 36/38、朝向 3 —— 最終首領 Siriadne
+)
 
 // ── 迷宮裡的兩個機關(docs/re/155)────────────────────────────────────
 
@@ -191,6 +230,19 @@ func PoolAvailable(uses int) bool { return uses < PoolLimit }
 // PoolCanHeal 回傳這個狀態碼的人能不能在池邊被治療。
 func PoolCanHeal(status int) bool { return status <= PoolMaxStatus }
 
+// PoolRollFaces 是治療量擲骰的面數 `ds:950A`。
+//
+// ⚠ **未解**(docs/re/155 §2.3)。這是一個**具名佔位**,不是 RE 結論;
+// 解出來時改這一個常數。加號後面的 1 則是讀出來的:
+// 全遊戲的擲骰成語都是 `INT(RND × N) + 1`(docs/re/152 §3)。
+const PoolRollFaces = 8
+
+// PoolRollAssumption 讓上面那個佔位在**執行時**也看得見。
+const PoolRollAssumption = "⚠ 治療池的治療量面數未解(ds:950A)—— 暫用 d8"
+
+// Unresolved 是要顯示在訊息列的未解項。
+var Unresolved = []string{PoolRollAssumption}
+
 // PoolHeal 回傳實際回復的生命值:擲骰結果夾在「離滿血還差多少」。
 //
 // 原版:`治療量 = INT(RND × N) + M`,若 `當前 + 治療量 ≥ 最大` 就改成
@@ -206,4 +258,47 @@ func PoolHeal(hp, maxHP, roll int) int {
 		return maxHP - hp
 	}
 	return roll
+}
+
+// ── Eldron 的氏族謎題(docs/re/162)──────────────────────────────────
+
+// ClanNames 是四座墓裡的名字,順序照原版字串常數的排法
+// (ds:91FE / 920A / 9216 / 9222)。
+var ClanNames = [4]string{"MURTHIN", "CERCION", "LOTHIAN", "VANDIGUARD"}
+
+// ClanRiddle* 是進度旗標 ds:91E4 的三個值(docs/re/162 §2)。
+const (
+	ClanUnmet    = 0 // 還沒見過 Eldron → 訊息 707
+	ClanReady    = 1 // 可以作答       → 訊息 706 + 出題
+	ClanRewarded = 2 // 已經拿到戒指   → 訊息 705
+)
+
+// TombTargets 是四座墓的事件目標編號(docs/re/162 §1)。
+var TombTargets = [4]int{701, 702, 703, 704}
+
+// RiddleReadyOnAllTombs:踩過四座墓之後才能作答。
+//
+// ⚠ **實作決定,不是 RE 結論。** 原版旗標 `ds:91E4` 的 0 → 1 由誰設
+// 沒有讀到(docs/re/162 §2)。選這個讀法的理由是訊息 707 明講
+// 「去搜 Moonglow 氏族的墓,知道名字再回來」—— 但那是文字,不是程式碼。
+const RiddleReadyOnAllTombs = true
+
+// ClanCheckCountsDuplicates 記著原版判定的漏洞:它是 4×4 全對全,
+// 只數「對得上幾組」湊滿 4,**沒有記哪個名字用過**。
+//
+// 所以同一個名字打四次也會過(docs/re/162 §3)。這是原版行為,照抄。
+const ClanCheckCountsDuplicates = true
+
+// ClanSolved 判定四個回答對不對。照抄原版的雙重迴圈:
+// 順序不拘,而且重複的名字會重複計分。
+func ClanSolved(answers [4]string) bool {
+	matched := 0
+	for _, a := range answers {
+		for _, n := range ClanNames {
+			if a == n {
+				matched++
+			}
+		}
+	}
+	return matched == len(ClanNames)
 }

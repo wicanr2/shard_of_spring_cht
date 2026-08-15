@@ -96,9 +96,9 @@ func TestAttributeRollShape(t *testing.T) {
 		a, b float64
 		want int
 	}{
-		{0, 0, AttrOffsetB},                          // 兩次都擲到 0 → 下界就是 B
+		{0, 0, AttrOffsetB}, // 兩次都擲到 0 → 下界就是 B
 		{0.999, 0.999, int(2*AttrRangeA) + AttrOffsetB - 1}, // 逼近上界
-		{0.5, 0.5, int(AttrRangeA) + AttrOffsetB},    // 兩次半 → A + B
+		{0.5, 0.5, int(AttrRangeA) + AttrOffsetB},           // 兩次半 → A + B
 		{0.3, 0.3, int(0.6*AttrRangeA) + AttrOffsetB},
 	} {
 		r := &fixedFloat{seq: []float64{c.a, c.b}}

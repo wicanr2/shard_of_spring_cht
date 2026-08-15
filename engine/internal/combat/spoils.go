@@ -55,7 +55,6 @@ func (u Unit) EarnsExp() bool { return !u.IsMonster && u.OnField() && u.Status <
 // 這裡不 import original,戰鬥層只認屬性編號。
 const StatusDead = 5
 
-
 // TotalGold 回傳這一場戰鬥的金幣。
 //
 // ⚠ **這是具名的佔位,不是原版的公式。**

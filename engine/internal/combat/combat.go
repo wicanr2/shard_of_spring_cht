@@ -32,27 +32,27 @@ const (
 
 // Unit 是單位陣列的一列。欄位名對應 docs/spec/01 §1 的屬性編號。
 type Unit struct {
-	X, Y      int    // 屬性 0/1:戰場座標。⚠ M4 只存不用(docs/spec/07 §7)
-	Speed     int    // 屬性 2
-	HP        int    // 屬性 3
-	Weapon    int    // 屬性 4:武器編號
-	Armor     int    // 屬性 5:防具編號
-	Str       int    // 屬性 6
-	SP        int    // 屬性 7
-	Status    int    // 屬性 8:= 法術系別編號
-	ToHit     int    // 屬性 9
-	Facing    Facing // 屬性 10
-	Kind      int    // 屬性 11:怪物類別 / 圖組
-	StatMag   int    // 屬性 12:狀態效果強度
-	Tier      int    // 屬性 13:難度階級(角色固定 99)
-	Target    int    // 屬性 15
-	Berserk   int    // 屬性 16(僅 Hero)
-	ArmSkin   int    // 屬性 17(僅 Hero)—— ⚠ 傷害公式減的就是這一項
-	Exp       int    // 屬性 19
+	X, Y    int    // 屬性 0/1:戰場座標。⚠ M4 只存不用(docs/spec/07 §7)
+	Speed   int    // 屬性 2
+	HP      int    // 屬性 3
+	Weapon  int    // 屬性 4:武器編號
+	Armor   int    // 屬性 5:防具編號
+	Str     int    // 屬性 6
+	SP      int    // 屬性 7
+	Status  int    // 屬性 8:= 法術系別編號
+	ToHit   int    // 屬性 9
+	Facing  Facing // 屬性 10
+	Kind    int    // 屬性 11:怪物類別 / 圖組
+	StatMag int    // 屬性 12:狀態效果強度
+	Tier    int    // 屬性 13:難度階級(角色固定 99)
+	Target  int    // 屬性 15
+	Berserk int    // 屬性 16(僅 Hero)
+	ArmSkin int    // 屬性 17(僅 Hero)—— ⚠ 傷害公式減的就是這一項
+	Exp     int    // 屬性 19
 	// Karate **不是原版的戰鬥屬性** —— 原版空手時去讀角色記錄的位移 45
 	// (技能旗標第 4 格),不是讀陣列(docs/re/153 §5)。
 	// 這裡先搬進來,免得傷害公式要回頭去查記錄。
-	Karate int
+	Karate    int
 	Name      string // 顯示用,不是原版屬性
 	IsMonster bool
 }

@@ -84,13 +84,32 @@ func (g *Game) stepMaze(dir maze.Facing) {
 
 func (g *Game) fireTrigger(t maze.Trigger) {
 	switch t.Kind {
-	case maze.KindText:
-		g.overlay = t.Text
 	case maze.KindTeleport:
 		g.mazeState.Major, g.mazeState.Minor = t.Major, t.Minor
+		return
 	case maze.KindCrossLevel:
 		g.crossLevel(t.Number)
+		return
 	}
+	// 五個機關同時也有 DT 文字,原版是**先印文字再做事**(docs/re/161 §3)。
+	g.overlay = t.Text
+	if g.tombs == nil {
+		g.tombs = map[int]bool{}
+	}
+	for _, n := range maze.TombTargets {
+		if t.Number == n {
+			g.tombs[n] = true
+		}
+	}
+	if t.Kind == maze.KindScript {
+		// 目標 204 / 533 —— 劇情段落。⚠ **內容未解**(docs/re/161 §4):
+		// 讀到的只有「有一段專屬程式」與 DT 文字,沒有讀到怪物組成。
+		// ⛔ 不要在這裡自己安排一場戰鬥 —— 那會是編的,不是原版的。
+		g.warnings = append(g.warnings,
+			fmt.Sprintf("劇情事件 %d 的內容未解(docs/re/161 §4)", t.Number))
+		return
+	}
+	g.openPrompt(t)
 }
 
 // crossLevel 走跨關卡的樓梯。
@@ -201,5 +220,38 @@ func (g *Game) drawOverlay(dst *ebiten.Image) {
 		y += lh
 	}
 	g.overlayFont.Draw(dst, "（按任意鍵繼續）",
+		float64(rc.X+pad), float64(rc.Y+rc.H-pad)-lh)
+}
+
+// drawPrompt 畫迷宮機關的問題。與覆蓋層同一個框,但**不吃「按任意鍵」** ——
+// 它在等特定的輸入。
+func (g *Game) drawPrompt(dst *ebiten.Image) {
+	if g.prompt == nil || g.overlay != "" || g.panel == nil {
+		return
+	}
+	rc := layout.Overlay
+	vector.DrawFilledRect(dst, float32(rc.X), float32(rc.Y),
+		float32(rc.W), float32(rc.H), cgaBlack, false)
+	vector.StrokeRect(dst, float32(rc.X), float32(rc.Y),
+		float32(rc.W), float32(rc.H), 2, cgaWhite, false)
+
+	const pad, cols = 32, 60
+	lh := g.overlayFont.LineHeight()
+	y := float64(rc.Y + pad)
+	for _, ln := range g.prompt.lines() {
+		for _, w := range ui.Wrap(ln, cols) {
+			g.overlayFont.Draw(dst, w, float64(rc.X+pad), y)
+			y += lh
+		}
+	}
+	if g.prompt.kind == promptPool {
+		for i, m := range g.members {
+			g.overlayFont.Draw(dst,
+				fmt.Sprintf("%d) %-10s %3d/%3d", i+1, m.Name, m.HP, m.MaxHP),
+				float64(rc.X+pad), y)
+			y += lh
+		}
+	}
+	g.overlayFont.Draw(dst, "（ESC 離開）",
 		float64(rc.X+pad), float64(rc.Y+rc.H-pad)-lh)
 }

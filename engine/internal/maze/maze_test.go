@@ -76,6 +76,53 @@ func TestScanClassifiesEvents(t *testing.T) {
 	}
 }
 
+// 五個機關的觸發點是**目標編號**,不是座標(docs/re/161 §3)。
+// 它們同時也有 DT 文字,所以 Text 必須照樣帶出來。
+func TestScanClassifiesSpecialTargets(t *testing.T) {
+	for _, c := range []struct {
+		target int
+		kind   TriggerKind
+	}{
+		{TargetPool, KindPool},
+		{TargetGem, KindGem},
+		{TargetRiddle, KindRiddle},
+		{TargetPriest, KindScript},
+		{TargetFinalBoss, KindScript},
+		{519, KindText}, // 相鄰的普通編號不該被誤判
+	} {
+		text := map[int]string{c.target: "敘述"}
+		evs := []original.Event{{Major: 1, Minor: 2, Dir: 0, Target: c.target}}
+		tr := Scan(evs, State{Major: 1, Minor: 2, Facing: North}, text)
+		if tr.Kind != c.kind {
+			t.Errorf("目標 %d:得 %v,應為 %v", c.target, tr.Kind, c.kind)
+		}
+		if tr.Text != "敘述" {
+			t.Errorf("目標 %d:文字被吃掉了", c.target)
+		}
+	}
+}
+
+// 氏族謎題:順序不拘,而且原版的漏洞要照抄(docs/re/162 §3)。
+func TestClanSolved(t *testing.T) {
+	for _, c := range []struct {
+		name    string
+		answers [4]string
+		want    bool
+	}{
+		{"照順序", [4]string{"MURTHIN", "CERCION", "LOTHIAN", "VANDIGUARD"}, true},
+		{"打亂", [4]string{"VANDIGUARD", "LOTHIAN", "MURTHIN", "CERCION"}, true},
+		{"少一個", [4]string{"MURTHIN", "CERCION", "LOTHIAN", "ELDRON"}, false},
+		{"全空", [4]string{}, false},
+		// ⚠ 這一條**不是**期望的遊戲行為,是原版判定的漏洞:
+		// 它只數對得上幾組,沒有記哪個名字用過。
+		{"同一個名字四次也會過", [4]string{"MURTHIN", "MURTHIN", "MURTHIN", "MURTHIN"}, true},
+	} {
+		if got := ClanSolved(c.answers); got != c.want {
+			t.Errorf("%s:得 %v,應為 %v", c.name, got, c.want)
+		}
+	}
+}
+
 // 視野半徑用切比雪夫距離(方形視野,不是圓形)。
 func TestVisibilityIsChebyshev(t *testing.T) {
 	s := State{Major: 10, Minor: 10, Visibility: 3}

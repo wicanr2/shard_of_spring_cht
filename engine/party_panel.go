@@ -7,6 +7,7 @@ import (
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
+	"shardofspring/internal/maze"
 	"shardofspring/internal/ui"
 )
 
@@ -63,6 +64,12 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	if g.field != nil {
 		for i, u := range combat.Unresolved {
 			g.panel.Draw(dst, "⚠ "+u, px+460, float64(layout.Prompt.Y+ui.PanelPad)+float64(i)*lh)
+		}
+	}
+	// 治療池的擲骰面數是佔位(docs/re/155 §2.3),只在池邊那一刻標出來。
+	if g.prompt != nil && g.prompt.kind == promptPool {
+		for i, u := range maze.Unresolved {
+			g.panel.Draw(dst, u, px+460, float64(layout.Prompt.Y+ui.PanelPad)+float64(i)*lh)
 		}
 	}
 	if g.saveMsg != "" {

@@ -75,11 +75,11 @@ type Character struct {
 	Level    int    // 位移 40
 	Skills   string // 位移 42–51:十個 '0'/'1',**表由職業決定**
 	Pack     [PackSlots]int
-	Flags2   string // 位移 74–83:第二串十個旗標,**語意未解**(docs/re/144 §6)
-	StatMag  int    // 位移 84:狀態效果強度
-	SkillPts int    // 位移 89:剩餘技能點數(docs/re/144 §4)
+	Flags2   string  // 位移 74–83:第二串十個旗標,**語意未解**(docs/re/144 §6)
+	StatMag  int     // 位移 84:狀態效果強度
+	SkillPts int     // 位移 89:剩餘技能點數(docs/re/144 §4)
 	Exp      float64 // 位移 90–93:經驗值,MBF 單精度(docs/re/150)
-	Raw      []byte // 原始 94 bytes —— 存檔往返要逐位元組保留未解欄位
+	Raw      []byte  // 原始 94 bytes —— 存檔往返要逐位元組保留未解欄位
 }
 
 // Occupied 回傳這一槽是否有角色。

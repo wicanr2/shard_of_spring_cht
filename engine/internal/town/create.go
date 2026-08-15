@@ -38,8 +38,8 @@ type Roller interface {
 // 把它們約束到 B = 4、A ≈ 4.9;取整數 A = 5 → 支撐集 4…13、平均 8.5。
 // 這兩個數字是**具名的假設**,形狀不是。
 const (
-	AttrRangeA = 5.0 // ds:6C2A
-	AttrOffsetB = 4  // ds:6C2E
+	AttrRangeA  = 5.0 // ds:6C2A
+	AttrOffsetB = 4   // ds:6C2E
 )
 
 // AttrRollAssumption 是給畫面顯示用的說明。

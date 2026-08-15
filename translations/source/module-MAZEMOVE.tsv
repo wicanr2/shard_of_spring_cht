@@ -1,0 +1,93 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:67E0	ds:67DC	0	1	data	
+1	ds:67E6	ds:67E2	9	1	data	
+2	ds:67F6	ds:67F2	  	2	data	
+3	ds:6806	ds:6802	-	1	data	
+4	ds:6820	ds:681C	 	1	data	
+5	ds:8DDA	ds:8DD6	Chirp I say.  Chirp.  DATA ERROR	32	na-debug	
+6	ds:8E02	ds:8DFE	C	1	data	
+7	ds:8E08	ds:8E04	P	1	data	
+8	ds:8E0E	ds:8E0A	S	1	data	
+9	ds:8E14	ds:8E10	Q	1	data	
+10	ds:8E1A	ds:8E16	1	1	data	
+11	ds:8E20	ds:8E1C	2	1	data	
+12	ds:8E26	ds:8E22	3	1	data	
+13	ds:8E2C	ds:8E28	4	1	data	
+14	ds:8E54	ds:8E50	CAMP	4	data	
+15	ds:8E5E	ds:8E5A	WRLDMOVE	8	data	
+16	ds:8E80	ds:8E7C	CMBT	4	data	
+17	ds:8E98	ds:8E94	DEAD	4	ui	
+18	ds:8EA0	ds:8E9C	mazeitem.PIC	12	data	
+19	ds:8EB0	ds:8EAC	mazewall.bin	12	data	
+20	ds:8EC0	ds:8EBC	WRLD	4	data	
+21	ds:8ED0	ds:8ECC	MAZE	4	data	
+22	ds:8ED8	ds:8ED4	N	1	data	
+23	ds:8F0C	ds:8F08	DATA FILE ERROR	15	na-debug	
+24	ds:8F20	ds:8F1C	WRLDMOVE	8	data	
+25	ds:8F30	ds:8F2C	WRLDMOVE	8	data	
+26	ds:8F8E	ds:8F8A	pict1	5	data	
+27	ds:8F9C	ds:8F98	pict2	5	data	
+28	ds:9052	ds:904E	WRLDMOVE	8	data	
+29	ds:9062	ds:905E	One momement..	14	ui	原文拼字錯誤 'momement',譯文取正確語意('moment')。
+30	ds:9074	ds:9070	DE5EFF.BIN	10	data	
+31	ds:9086	ds:9082	              	14	data	
+32	ds:9098	ds:9094	One momement..	14	ui	原文拼字錯誤 'momement',譯文取正確語意('moment')。
+33	ds:90AA	ds:90A6	DE51EFF.BIN	11	data	
+34	ds:90BE	ds:90BA	              	14	data	
+35	ds:9164	ds:9160	Enter gem to	12	ui	
+36	ds:9174	ds:9170	touch (B,G,V,R)	15	ui	
+37	ds:9188	ds:9184	or ESC	6	ui	
+38	ds:9192	ds:918E	....	4	data	
+39	ds:919A	ds:9196	? 	2	data	
+40	ds:91A8	ds:91A4	BBRG	4	data	謎題(碰觸寶石順序)的內部比對字串,非顯示文字
+41	ds:91CA	ds:91C6	pict8	5	data	
+42	ds:9202	ds:91FE	MURTHIN	7	ui	glossary §6 硬規則4 已有譯名
+43	ds:920E	ds:920A	CERCION	7	ui	glossary §6 硬規則4 已有譯名
+44	ds:921A	ds:9216	LOTHIAN	7	ui	glossary §6 硬規則4 已有譯名
+45	ds:9226	ds:9222	VANDIGUARD	10	ui	glossary §6 硬規則4 已有譯名
+46	ds:9234	ds:9230	The brothers are:	17	ui	
+47	ds:924C	ds:9248	#1 	3	ui	
+48	ds:9254	ds:9250	#2 	3	ui	
+49	ds:925C	ds:9258	#3 	3	ui	
+50	ds:9264	ds:9260	#4 	3	ui	
+51	ds:9294	ds:9290	The priest thanks you for freeing him from his giant captor and blesses the party.	82	ui	
+52	ds:933E	ds:933A	pict6.BIN	9	data	
+53	ds:934C	ds:9348	MB T108 O3 L8	13	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+54	ds:935E	ds:935A	MB T108 O3 L16	14	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+55	ds:9370	ds:936C	MB T108 O3 L8 E F#GD	20	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+56	ds:9388	ds:9384	MB T108 O3 L2 G	15	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+57	ds:939C	ds:9398	MB T108 O4 L8 CC	16	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+58	ds:93B0	ds:93AC	MB T108 O4 L4 E	15	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+59	ds:93C4	ds:93C0	MB T108 O4 L8 DC	16	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+60	ds:93D8	ds:93D4	MB T108 O3 L8 BA	16	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+61	ds:93EC	ds:93E8	O3 L8 G	7	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+62	ds:93F8	ds:93F4	O3 L3 G	7	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+63	ds:9404	ds:9400	G	1	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+64	ds:940A	ds:9406	GA	2	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+65	ds:9410	ds:940C	L8	2	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+66	ds:9416	ds:9412	BG	2	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+67	ds:941C	ds:9418	AG	2	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+68	ds:9422	ds:941E	F#D	3	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+69	ds:942A	ds:9426	A	1	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+70	ds:9430	ds:942C	L2	2	data	PLAY 巨集(音樂,BASIC PLAY 語法:MB=背景音樂/T=速度/O=八度/L=音長/A-G=音名/#=升半音),不是句子,⛔ 不譯
+71	ds:9444	ds:9440	WRLDMOVE	8	data	
+72	ds:9454	ds:9450	MAZE.SQZ	8	data	檔名/模組名,不是句子,⛔ 不譯 — MAZE.SQZ(檔名字尾,非完整檔名)
+73	ds:9460	ds:945C	EFF.BIN	7	data	檔名/模組名,不是句子,⛔ 不譯 — EFF.BIN(檔名字尾)
+74	ds:946C	ds:9468	TEXT.DAT	8	data	檔名/模組名,不是句子,⛔ 不譯 — TEXT.DAT(檔名字尾)
+75	ds:9478	ds:9474	DG	2	data	
+76	ds:947E	ds:947A	DE	2	data	
+77	ds:9484	ds:9480	DT	2	data	
+78	ds:9494	ds:9490	Which party member do you wish to heal? (0 exits) 	50	ui	spec/19 §1.1 範例句
+79	ds:94D4	ds:94D0	That character can't be helped here !	37	ui	
+80	ds:9512	ds:950E	healed	6	ui	
+81	ds:951C	ds:9518	 pts.	5	ui	
+82	ds:9526	ds:9522	 is	3	ui	
+83	ds:952E	ds:952A	This pool is empty!	19	ui	
+84	ds:9552	ds:954E	found an item.	14	ui	
+85	ds:9568	ds:9564	Your party is full of items, please discard some from Camp.	59	ui	spec/19 §1.1 範例句,一字不差
+86	ds:95BC	ds:95B8	.BIN	4	data	
+87	ds:95D0	ds:95CC	WRLDMOVE	8	data	
+88	ds:95DC	ds:95D8	Leaving maze ..     	20	ui	
+89	ds:95FC	ds:95F8	Making Camp..       	20	ui	
+90	ds:9614	ds:9610	    C O M B A T !   	20	ui	
+91	ds:962C	ds:9628	    B A T T L E !   	20	ui	

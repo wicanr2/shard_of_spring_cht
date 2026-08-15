@@ -1,0 +1,63 @@
+row	addr	original	orig_bytes	translation	trans_bytes	fits	note
+5	ds:6DA2	Choose building to enter,  # to inspect character, (ESC exits)	62	選擇要進入的建築物,# 查看角色,(ESC離開)	39	Y	
+7	ds:6DF2	The party leaves..	18	隊伍離開了……	12	Y	
+10	ds:6E4C	Item to buy, ESC to leave, any key to page.	43	選購道具,ESC離開,任意鍵翻頁。	29	Y	
+11	ds:6E7C	[MORE]	6	【更多】	8	8	
+12	ds:6E8A	Item to buy, ESC to leave.	26	選購道具,ESC離開。	18	Y	
+14	ds:6EBC	Cost is 	8	價格為 	7	Y	
+15	ds:6EC8	Give to char #	14	交給角色 #	10	Y	
+16	ds:6EDA	(ESC to exit)	13	(ESC離開)	9	Y	
+17	ds:6EF2	 ok!	4	 好!	4	Y	
+19	ds:6F02	No more room!	13	沒有空間了!	11	Y	
+20	ds:6F14	Done!	5	完成!	5	Y	
+21	ds:6F20	Healing	7	醫療	4	Y	
+22	ds:6F2C	Unpoison	8	解毒	4	Y	
+23	ds:6F38	Unbind	6	解除束縛	8	8	
+24	ds:6F42	Ressurect	9	復活	4	Y	
+25	ds:6F64	/lvl	4	/等級	5	5	
+26	ds:6F6C	Enter character # to be healed, (ESC exits)	43	輸入要醫療的角色編號,(ESC離開)	30	Y	
+27	ds:6FAE	That will cost   	17	這將花費   	11	Y	
+28	ds:6FC4	 gold, Pay (Y/N)?	17	 金幣,付款嗎?(Y/N)	18	18	
+30	ds:6FEA	Your rooms will cost	20	房間將花費	10	Y	
+31	ds:7002	 gold each night.  How many nights do you wish to sleep (1-9, 0 exits) ?	72	 金幣一晚。要住幾晚?(1–9,0離開)	31	Y	
+32	ds:705A	You sleep...	12	你們睡了一覺……	14	14	
+34	ds:7078	Welcome to the	14	歡迎來到	8	Y	
+35	ds:708A	Fighter's Guild.	16	戰士公會。	10	Y	
+36	ds:70A0	Wizard's Guild.	15	巫師公會。	10	Y	
+37	ds:70B4	Which character # seeks advancement in his art (ESC exits) ?	60	哪位角色要精進技藝?(ESC離開)	28	Y	
+38	ds:70FC	You are the wrong class!	24	你的職業不對!	13	Y	
+39	ds:712A	This character is incapacitated!	32	這位角色行動不能!	17	Y	
+40	ds:7166	The Guild decides you need	26	公會判定你還需要	16	Y	spec/19 §1.1 範例句
+41	ds:7184	 experience before gaining a level.	35	 點經驗才能升級。	17	Y	spec/19 §1.1 範例句
+42	ds:71CA	You made a level!  You gain	27	你升級了!你獲得	15	Y	
+43	ds:71EA	 hit points.	12	 點生命點數。	13	13	
+44	ds:7202	You also gain	13	你還獲得	8	Y	
+45	ds:7214	 Spell Points!	14	 點法力點數!	12	Y	
+46	ds:7238	Stats are up by:	16	屬性提升:	9	Y	
+47	ds:7254	1 pt of 	8	1 點	4	Y	
+48	ds:726E	* 	2	* 	2	Y	
+49	ds:7274	You have	8	你還剩	6	Y	
+50	ds:7280	points left.	12	點可分配。	10	Y	
+51	ds:7290	Enter skill,	12	輸入技能,	9	Y	
+52	ds:72A0	(0 exits) 	10	(0離開) 	8	Y	
+54	ds:72B8	Not enough IQ !	15	智能不夠!	9	Y	
+55	ds:72CE	Do you wish to: T)alk with other adventurers, B)uy food? (ESC to exit)	70	你想要:T)與其他冒險者交談,B)購買食糧?(ESC離開)	46	Y	
+58	ds:732E	One day's food for the party costs	34	隊伍一天的食糧花費	18	Y	
+59	ds:7354	 gold.  How many rations (1-9, 0 exits) ?	41	 金幣。要買幾份口糧?(1–9,0離開)	31	Y	
+60	ds:738E	Done!	5	完成!	5	Y	
+75	ds:7B80	Aack!, There is something wrong with your disks!	48	啊咧!你的磁片好像有問題!	24	Y	
+76	ds:7BC6	You don't have	14	你沒有	6	Y	與 CAMP #85 同義,合併對照 spec/19 §1.1
+77	ds:7BD8	enough gold!	12	足夠的金幣!	11	Y	
+81	ds:7C20	dies in the night.	18	在夜裡死去。	12	Y	
+82	ds:7C3A	 LVL: 	6	 等級: 	7	7	
+83	ds:7C4E	H.P.   	7	生命 	5	Y	
+84	ds:7C5A	S.P.   	7	法力 	5	Y	
+86	ds:7C6C	Exp.  	6	經驗 	5	Y	
+87	ds:7C76	Stat.  	7	屬性 	5	Y	
+88	ds:7C84	      Skills:	13	      技能:	11	Y	
+89	ds:7C9C	      Items:	12	      道具:	11	Y	
+90	ds:7CB4	Human	5	人類	4	Y	
+92	ds:7CC8	Troll	5	巨魔	4	Y	
+93	ds:7CD2	Dwarf	5	矮人	4	Y	
+95	ds:7CE2	Elf	3	精靈	4	4	
+96	ds:7CEA	Gnome	5	地精	4	Y	

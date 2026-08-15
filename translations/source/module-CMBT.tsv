@@ -1,0 +1,194 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:67E0	ds:67DC	0	1	data	
+1	ds:67E6	ds:67E2	9	1	data	
+2	ds:67F6	ds:67F2	  	2	data	
+3	ds:6806	ds:6802	-	1	data	
+4	ds:6820	ds:681C	 	1	data	
+5	ds:92DC	ds:92D8	Hands	5	ui	
+6	ds:92E6	ds:92E2	Fangs	5	ui	
+7	ds:92F0	ds:92EC	Hands	5	ui	
+8	ds:932E	ds:932A	S	1	data	
+9	ds:9338	ds:9334	None	4	ui	
+10	ds:9340	ds:933C	Bite	4	ui	
+11	ds:936C	ds:9368	fastcmbt.bin	12	data	
+12	ds:937E	ds:937A	SPELLS.DAT	10	data	
+13	ds:938C	ds:9388	ITEMS.DAT	9	data	
+14	ds:939C	ds:9398	MAZE	4	data	
+15	ds:944C	ds:9448	rndmonst.bin	12	data	
+16	ds:9470	ds:946C	monst2.bin	10	data	
+17	ds:947E	ds:947A	monst4.bin	10	data	
+18	ds:948E	ds:948A	monst	5	data	
+19	ds:949A	ds:9496	.bin	4	data	
+20	ds:94AA	ds:94A6	monst	5	data	
+21	ds:94D0	ds:94CC	1	1	data	
+22	ds:94DE	ds:94DA	Item Breaks !	13	ui	
+23	ds:9500	ds:94FC	MONSTERS ALL DEAD	17	ui	
+24	ds:951A	ds:9516	PARTY DIES!	11	ui	
+25	ds:952A	ds:9526	WRLDMOVE	8	data	
+26	ds:953A	ds:9536	DEAD	4	ui	
+27	ds:9542	ds:953E	WRLD	4	data	
+28	ds:954A	ds:9546	MAZEMOVE	8	data	
+29	ds:955A	ds:9556	PARTY RAN!	10	ui	
+30	ds:956A	ds:9566	N	1	data	
+31	ds:9576	ds:9572	KEYPAD TEMPLATE	15	ui	與 docs/spec/15 §8 A6 按鍵表候選內容,建議一併核對。
+32	ds:958A	ds:9586	[ESC]	5	data	
+33	ds:9594	ds:9590	][ ][	5	data	
+34	ds:959E	ds:959A	[ATK]	5	data	
+35	ds:95A8	ds:95A4	[D][	4	data	
+36	ds:95B0	ds:95AC	][?]	4	data	
+37	ds:95B8	ds:95B4	[	1	data	
+38	ds:95BE	ds:95BA	]	1	data	
+39	ds:95C4	ds:95C0	[C][	4	data	
+40	ds:95CC	ds:95C8	][U]	4	data	
+41	ds:95D4	ds:95D0	FACING 	7	ui	
+42	ds:95E0	ds:95DC	MP=	3	ui	
+43	ds:95F2	ds:95EE	3	1	data	
+44	ds:95F8	ds:95F4	2	1	data	
+45	ds:95FE	ds:95FA	4	1	data	
+46	ds:9604	ds:9600	D	1	data	
+47	ds:960A	ds:9606	?	1	data	
+48	ds:9610	ds:960C	C	1	data	
+49	ds:9616	ds:9612	U	1	data	
+50	ds:961C	ds:9618	A	1	data	
+51	ds:9626	ds:9622	/	1	data	
+52	ds:963A	ds:9636	Sound is now on.	16	ui	
+53	ds:9652	ds:964E	Sound is now off.	17	ui	
+54	ds:9670	ds:966C	a$	2	data	
+55	ds:967A	ds:9676	BP	2	data	
+56	ds:9688	ds:9684	Experience:	11	ui	
+57	ds:9698	ds:9694	 (per character)	16	ui	
+58	ds:96C2	ds:96BE	Gold:	5	ui	
+59	ds:96CC	ds:96C8	Gold:	5	ui	
+60	ds:96D8	ds:96D4	 found 	7	ui	
+61	ds:96F6	ds:96F2	finds	5	ui	
+62	ds:9700	ds:96FC	Do you take it?	15	ui	
+63	ds:9714	ds:9710	(Y/N)	5	ui	
+64	ds:971E	ds:971A	.	1	data	
+65	ds:9728	ds:9724	Y	1	data	
+66	ds:972E	ds:972A	WRLDMOVE	8	data	
+67	ds:973E	ds:973A	CMBT	4	data	
+68	ds:9746	ds:9742	MAZEMOVE	8	data	
+69	ds:9758	ds:9754	attacks 	8	ui	
+70	ds:9764	ds:9760	with	4	ui	
+71	ds:976E	ds:976A	and missed!	11	ui	
+72	ds:978E	ds:978A	for no damage.	14	ui	
+73	ds:97A4	ds:97A0	HK	2	data	
+74	ds:97AA	ds:97A6	and hacks for 	14	ui	
+75	ds:97C0	ds:97BC	HT	2	data	
+76	ds:97C6	ds:97C2	and hits for 	13	ui	
+77	ds:97D8	ds:97D4	 damage.	8	ui	
+78	ds:97E6	ds:97E2	     	5	data	
+79	ds:97F0	ds:97EC	and is poisoned!	16	ui	
+80	ds:980A	ds:9806	P	1	data	
+81	ds:9810	ds:980C	 He Dies!	9	ui	
+82	ds:981E	ds:981A	 It dies!	9	ui	
+83	ds:9832	ds:982E	All Monsters Dead	17	ui	
+84	ds:9868	ds:9864	is not a	8	ui	
+85	ds:9874	ds:9870	wizard	6	ui	
+86	ds:987E	ds:987A	and cannot	10	ui	
+87	ds:988C	ds:9888	cast spells.	12	ui	
+88	ds:989E	ds:989A	Which spell do	14	ui	
+89	ds:98B0	ds:98AC	you wish to cast?	17	ui	
+90	ds:98C6	ds:98C2	 (ENTER exits)	14	ui	
+91	ds:98DE	ds:98DA	 There is no     	17	ui	
+92	ds:98F4	ds:98F0	 such spell!     	17	ui	
+93	ds:990C	ds:9908	 That is not a   	17	ui	
+94	ds:9922	ds:991E	 combat spell!   	17	ui	
+95	ds:993A	ds:9936	 You don't know  	17	ui	
+96	ds:9950	ds:994C	 that spell!     	17	ui	
+97	ds:9968	ds:9964	You will not be  	17	ui	
+98	ds:997E	ds:997A	prepared for that	17	ui	
+99	ds:9994	ds:9990	spell until the  	17	ui	
+100	ds:99AA	ds:99A6	next round.	11	ui	
+101	ds:99BC	ds:99B8	 # SP ? 	8	ui	
+102	ds:99C8	ds:99C4	 You don't have	15	ui	
+103	ds:99DC	ds:99D8	 that many!	11	ui	
+104	ds:99EE	ds:99EA	That spell	10	ui	
+105	ds:99FC	ds:99F8	requires at least	17	ui	
+106	ds:9A12	ds:9A0E	 S.P.	5	ui	
+107	ds:9A1E	ds:9A1A	   	3	data	
+108	ds:9A2E	ds:9A2A	NO TARGET	9	ui	
+109	ds:9A3C	ds:9A38	SELECTED!	9	ui	
+110	ds:9A4E	ds:9A4A	Use arrow keys to	17	ui	
+111	ds:9A64	ds:9A60	position cursor.	16	ui	
+112	ds:9A78	ds:9A74	]   [	5	data	
+113	ds:9A82	ds:9A7E	Hit PgDn key	12	ui	
+114	ds:9A92	ds:9A8E	(ESC to Exit)	13	ui	
+115	ds:9AA4	ds:9AA0	Who do you want	15	ui	
+116	ds:9AB8	ds:9AB4	to use it on?	13	ui	
+117	ds:9ACA	ds:9AC6	to use.	7	ui	
+118	ds:9AD6	ds:9AD2	Where do you want	17	ui	
+119	ds:9AEC	ds:9AE8	to cast it?	11	ui	
+120	ds:9AFC	ds:9AF8	to cast.	8	ui	
+121	ds:9B24	ds:9B20	PS	2	data	
+122	ds:9B38	ds:9B34	and Dies!	9	ui	
+123	ds:9B46	ds:9B42	     	5	data	
+124	ds:9B56	ds:9B52	NO ONE IN	9	ui	
+125	ds:9B64	ds:9B60	TARGET AREA	11	ui	
+126	ds:9B8C	ds:9B88	and Dies	8	ui	
+127	ds:9B9C	ds:9B98	     	5	data	
+128	ds:9BAC	ds:9BA8	notices no	10	ui	
+129	ds:9BBA	ds:9BB6	difference.	11	ui	
+130	ds:9BD0	ds:9BCC	Breaks free!	12	ui	
+131	ds:9BE2	ds:9BDE	B	1	data	
+132	ds:9BE8	ds:9BE4	notices no	10	ui	
+133	ds:9BF6	ds:9BF2	difference.	11	ui	
+134	ds:9C0C	ds:9C08	is not bound in	15	ui	
+135	ds:9C20	ds:9C1C	chains and	10	ui	
+136	ds:9C2E	ds:9C2A	still air and	13	ui	
+137	ds:9C40	ds:9C3C	ice and	7	ui	
+138	ds:9C4C	ds:9C48	notices no effect	17	ui	
+139	ds:9C68	ds:9C64	FL	2	data	
+140	ds:9C6E	ds:9C6A	Item Fails	10	ui	
+141	ds:9C7C	ds:9C78	Spell Fails	11	ui	
+142	ds:9C92	ds:9C8E	does not have	13	ui	
+143	ds:9CA4	ds:9CA0	the Priesthood	14	ui	
+144	ds:9CB6	ds:9CB2	and cannot	10	ui	
+145	ds:9CC4	ds:9CC0	dispell.	8	ui	
+146	ds:9CD2	ds:9CCE	has already	11	ui	
+147	ds:9CE2	ds:9CDE	dispelled	9	ui	
+148	ds:9CF0	ds:9CEC	this combat.	12	ui	
+149	ds:9D02	ds:9CFE	is not a	8	ui	
+150	ds:9D0E	ds:9D0A	wizard	6	ui	
+151	ds:9D18	ds:9D14	and cannot	10	ui	
+152	ds:9D26	ds:9D22	dispell.	8	ui	
+153	ds:9D36	ds:9D32	None of these	13	ui	
+154	ds:9D48	ds:9D44	monsters are	12	ui	
+155	ds:9D58	ds:9D54	undead!	7	ui	
+156	ds:9D68	ds:9D64	Attempting	10	ui	
+157	ds:9D76	ds:9D72	dispell	7	ui	
+158	ds:9D84	ds:9D80	Ignores priest.	15	ui	
+159	ds:9DA0	ds:9D9C	dies.	5	ui	
+160	ds:9DE0	ds:9DDC	)	1	data	
+161	ds:9DE6	ds:9DE2	*	1	data	
+162	ds:9DF0	ds:9DEC	This character has no items to use!	35	ui	
+163	ds:9E20	ds:9E1C	Use:  (ESC exits)	17	ui	
+164	ds:9E38	ds:9E34	Not a valid magical item!	25	ui	
+165	ds:9E60	ds:9E5C	Do you wish to use the potion on Y)ourself or T)oss it to another character?       	83	ui	spec/19 §1.1 範例句(CMBT 版:T)oss;CAMP #92 是同一句的 G)ive 版)
+166	ds:9EB8	ds:9EB4	                 	17	data	
+167	ds:9ECE	ds:9ECA	 (ESC cancels)	14	ui	
+168	ds:9EE8	ds:9EE4	Toss it to which	16	ui	
+169	ds:9EFC	ds:9EF8	character?	10	ui	
+170	ds:9F0A	ds:9F06	char #: 	8	ui	
+171	ds:9F18	ds:9F14	T	1	data	
+172	ds:9F20	ds:9F1C	Aack!  There is something wrong with the data files, please restore!	68	ui	
+173	ds:9F70	ds:9F6C	MONSTERS.DAT	12	data	檔名/模組名,不是句子,⛔ 不譯 — MONSTERS.DAT
+174	ds:9F88	ds:9F84	R	1	data	
+175	ds:9FBA	ds:9FB6	BR	2	data	
+176	ds:9FC0	ds:9FBC	DD	2	data	
+177	ds:9FDE	ds:9FDA	0   0  	7	data	
+178	ds:9FEA	ds:9FE6	0      	7	data	
+179	ds:9FF6	ds:9FF2	Status: 	8	ui	
+180	ds:A002	ds:9FFE	Seeks> 	7	ui	
+181	ds:A012	ds:A00E	YES	3	ui	
+182	ds:A01A	ds:A016	no	2	ui	
+183	ds:A020	ds:A01C	Speed:    	10	ui	
+184	ds:A02E	ds:A02A	Skill:    	10	ui	
+185	ds:A03C	ds:A038	Strength: 	10	ui	
+186	ds:A04A	ds:A046	Magical:  	10	ui	
+187	ds:A058	ds:A054	Armor rating:	13	ui	
+188	ds:A06A	ds:A066	Attacks with:	13	ui	
+189	ds:A07C	ds:A078	 * 	3	data	
+190	ds:A084	ds:A080	 *	2	data	
+191	ds:A08A	ds:A086	(ESC, 	6	ui	
+192	ds:A094	ds:A090	 scrolls)	9	ui	

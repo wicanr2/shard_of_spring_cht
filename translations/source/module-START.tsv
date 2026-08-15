@@ -1,0 +1,4 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:4F1A	ds:4F16	Loading the Shard of Spring, (c) 1986-1987 by Strategic Simulations Inc.	72	ui	
+1	ds:4F66	ds:4F62	MS DOS version by Digital Illusions, Inc.	41	ui	
+2	ds:4F94	ds:4F90	MENU	4	data	鏈結至 MENU.EXE 的模組名,非句子

@@ -214,10 +214,15 @@ lore 的分界已定案([`re/167`](../re/167-record-field-accessor-and-identifie
 把破壞帶回原版([`re/168`](../re/168-loot-pickup-and-an-off-by-one.md) §5)。
 ⚠ 這個差異**沒有實測過**,持有原版的人跑一次就能裁決。
 
-### 仍未實作的三個
+### `P)rint` / `C)ast spell` / `U)se an item`
 
-`P)rint char(s)`、`C)ast spell`、`U)se an item` —— 選單上列出來並標「未實作」,
-不要假裝它們不存在。少一個指令的選單看起來很正常,**沒有人會發現漏了什麼**。
+三項都已實作,規格在 [`16-camp-actions.md`](16-camp-actions.md)。
+
+⚠ **`U)se an item` 少了一個分支**:原版問
+`Do you wish to use the potion on Y)ourself or G)ive it to another character?`,
+引擎固定用在自己身上,而且**戰鬥中沒有 `U)se` 這個鍵**(原版有,
+`CMBT` 的字串裡有 `T)oss it to another character`)。
+另外 `That is a Combat Item!` 這道閘門也不存在。見 [`19-coverage.md`](19-coverage.md)。
 
 ⚠ `P)rint` 是驅動 1986 年的並列埠印表機。依 [`CLAUDE.md`](../../CLAUDE.md) §1.2
 的邊界(答案不會改變 remake 的行為就不必解),**不解也不做** ——
@@ -355,7 +360,19 @@ remake 的畫面與原版不是一對一(例如原版把提示放側欄、本專
 ⚠ 手冊 p.47 那張表的 `INCREASE FROM LAST LEVEL` 欄**第 1 列不自洽**
 (寫 200,而累計欄是 300)。第 2 列起 18 列全部自洽 → **只用累計欄**。
 
-#### 成長量:擲骰後夾上限
+#### ⚠ 升級**不只長生命與法力**
+
+`TOWN.EXE` 有一句 `'Stats are up by:'`(DGROUP `ds:7234`)——
+**原版升級還會加屬性**,而引擎的 `Train()` 只動 `MaxHP`/`HP`/`MaxSP`/`SP`。
+
+⚠ **這條規則從來沒有被記錄過**:`docs/re/` 與 `docs/spec/` 全文查過,
+所有關於「升級成長」的討論講的都是 HP/SP。**是 F1 的覆蓋率稽核翻出來的**
+([`19-coverage.md`](19-coverage.md))—— 原版的字串是現成的檢查表。
+
+⛔ **在 RE 解出來之前不要實作**([`CLAUDE.md`](../../CLAUDE.md) §2 的閘門):
+加幾點、加哪幾項、機率多少,一個都不知道。
+
+#### 成長量(生命與法力):擲骰後夾上限
 
 ```
 成長 = min(擲骰(屬性), 上限)          生命骰體能、法力骰智能

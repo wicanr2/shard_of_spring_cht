@@ -1,0 +1,150 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:66E0	ds:66DC	0	1	data	
+1	ds:66E6	ds:66E2	9	1	data	
+2	ds:67F6	ds:67F2	  	2	data	
+3	ds:6806	ds:6802	-	1	data	
+4	ds:6820	ds:681C	 	1	data	
+5	ds:6C4A	ds:6C46	config.sos	10	data	檔名/模組名,不是句子,⛔ 不譯 — config.sos
+6	ds:6C58	ds:6C54	:	1	data	
+7	ds:6C62	ds:6C5E	v1.0	4	data	
+8	ds:6C6A	ds:6C66	UTIL	4	data	
+9	ds:6C72	ds:6C6E	(Press a key)	13	ui	
+10	ds:6C84	ds:6C80	             	13	data	
+11	ds:6C96	ds:6C92	    Main Menu    	17	ui	
+12	ds:6CAC	ds:6CA8	                 	17	data	
+13	ds:6CC2	ds:6CBE	L)oad a Party.   	17	ui	
+14	ds:6CD8	ds:6CD4	C)har Utilities. 	17	ui	
+15	ds:6CEE	ds:6CEA	R)estore Mazes.  	17	na-disk	
+16	ds:6D04	ds:6D00	I)nstall Game.   	17	na-disk	
+17	ds:6D1A	ds:6D16	P)rogram Notes.  	17	ui	
+18	ds:6D30	ds:6D2C	Q)uit the Game.  	17	ui	
+19	ds:6D52	ds:6D4E	A	1	data	
+20	ds:6D5C	ds:6D58	L	1	data	
+21	ds:6D62	ds:6D5E	C	1	data	
+22	ds:6D68	ds:6D64	Please leave the GAME disk in place until you quit the game.	60	na-disk	
+23	ds:6DAC	ds:6DA8	Please replace the BOOT disk with the GAME disk.	48	na-disk	
+24	ds:6DEC	ds:6DE8	Please insert the GAME disk in drive B:.	40	na-disk	
+25	ds:6E20	ds:6E1C	B	1	data	
+26	ds:6E2A	ds:6E26	CHARUTIL	8	data	檔名/模組名,不是句子,⛔ 不譯 — CHARUTIL(模組名,鏈結用)
+27	ds:6E36	ds:6E32	R	1	data	
+28	ds:6E40	ds:6E3C	Please have your GAME and BOOT disks ready, you will be asked to swap disks several times. Ready (Y/N) ?	104	na-disk	
+29	ds:6EB4	ds:6EB0	Y	1	data	
+30	ds:6EC0	ds:6EBC	51	2	data	
+31	ds:6EC6	ds:6EC2	Insert BOOT disk for file #	27	na-disk	
+32	ds:6EE6	ds:6EE2	 of 9	5	na-disk	
+33	ds:6EF8	ds:6EF4	eff.mst	7	data	
+34	ds:6F04	ds:6F00	de	2	data	
+35	ds:6F0A	ds:6F06	Insert GAME disk for file #	27	na-disk	
+36	ds:6F2A	ds:6F26	 of 9	5	na-disk	
+37	ds:6F3C	ds:6F38	eff.bin	7	data	
+38	ds:6F4C	ds:6F48	:de	3	data	
+39	ds:6F54	ds:6F50	Restoration complete!  Please insert the BOOT disk.	51	na-disk	
+40	ds:6F94	ds:6F90	Place your GAME disk in drive B: and your BOOT disk in A:.  Ready (Y/N) ?	73	na-disk	
+41	ds:6FEA	ds:6FE6	eff.mst	7	data	
+42	ds:6FF6	ds:6FF2	File #	6	na-disk	
+43	ds:7000	ds:6FFC	 of 9	5	na-disk	
+44	ds:700A	ds:7006	eff.bin	7	data	
+45	ds:7016	ds:7012	Restoration complete!	21	na-disk	
+46	ds:7038	ds:7034	Your fixed disk files will be updated.  Please  insert your BOOT disk in drive A: Ready (Y/N) ?	95	na-disk	
+47	ds:70A4	ds:70A0	eff.mst	7	data	
+48	ds:70B0	ds:70AC	A:de	4	data	
+49	ds:70B8	ds:70B4	File #	6	na-disk	
+50	ds:70C2	ds:70BE	 of 9	5	na-disk	
+51	ds:70CC	ds:70C8	eff.bin	7	data	
+52	ds:70D8	ds:70D4	Restoration complete! You may remove the BOOT disk.	51	na-disk	
+53	ds:7118	ds:7114	I	1	data	
+54	ds:7122	ds:711E	,	1	data	
+55	ds:712C	ds:7128	Shard of Spring Installation Menu	33	na-disk	
+56	ds:7152	ds:714E	Please change those options you desire, press 'F' when finished.	64	na-disk	
+57	ds:7196	ds:7192	Currently: 	11	na-disk	
+58	ds:71A6	ds:71A2	0) Hard Disk     	17	na-disk	
+59	ds:71BC	ds:71B8	1) One Floppy    	17	na-disk	
+60	ds:71D2	ds:71CE	2) Two Floppies  	17	na-disk	
+61	ds:71E8	ds:71E4	M) Monitor is LCD or EGA (in emulation)	39	na-disk	
+62	ds:7214	ds:7210	T) Adjust Time Delay	20	na-disk	
+63	ds:722C	ds:7228	E) Exit Game	12	na-disk	
+64	ds:723C	ds:7238	F) Finished	11	na-disk	
+65	ds:724C	ds:7248	Selection ?	11	na-disk	
+66	ds:7260	ds:725C	E	1	data	
+67	ds:7266	ds:7262	To install the Shard of Spring on your hard disk, you will need	63	na-disk	
+68	ds:72AA	ds:72A6	to create a subdirectory (if you don't know how, see your DOS manual).	70	na-disk	
+69	ds:72F4	ds:72F0	Simply copy the contents of your BOOT disk and then your GAME disk	66	na-disk	
+70	ds:733A	ds:7336	into the subdirectory.	22	na-disk	
+71	ds:7354	ds:7350	 An example for a subdirectory called SHARD would be:	53	na-disk	
+72	ds:738E	ds:738A	              C>copy A:*.* C:\shard  FOR YOUR BOOT DISK	55	na-disk	
+73	ds:73CA	ds:73C6	              C>copy A:*.* C:\shard  FOR YOUR GAME DISK	55	na-disk	
+74	ds:7406	ds:7402	Which hard disk drive are you going use (C/D/E...) ?	52	na-disk	
+75	ds:743E	ds:743A	1	1	data	
+76	ds:7444	ds:7440	2	1	data	
+77	ds:744A	ds:7446	M	1	data	
+78	ds:7450	ds:744C	Do you have either a LCD or EGA (in emulation) monitor (Y/N) 	61	na-disk	
+79	ds:7492	ds:748E	F	1	data	
+80	ds:7498	ds:7494	CONFIG.SOS	10	data	檔名/模組名,不是句子,⛔ 不譯 — CONFIG.SOS
+81	ds:74A6	ds:74A2	T	1	data	
+82	ds:74AC	ds:74A8	To adjust the delay on messages so you can read them	52	na-disk	
+83	ds:74E4	ds:74E0	enter a number between 1000 and 30000.  When you like	53	na-disk	
+84	ds:751E	ds:751A	the delay answer 'Y', otherwise answer 'N' to try again.	56	na-disk	
+85	ds:755A	ds:7556	'Q' will bring you back to the menu above.	42	na-disk	
+86	ds:758A	ds:7586	New Delay, between 1000 and 30000 	34	na-disk	
+87	ds:75B0	ds:75AC	DELAY OF	8	na-disk	
+88	ds:75BC	ds:75B8	                	16	data	
+89	ds:75D0	ds:75CC	OK (Y/N/Q) 	11	na-disk	
+90	ds:75E0	ds:75DC	Q	1	data	
+91	ds:75E6	ds:75E2	P	1	data	
+92	ds:75EC	ds:75E8	      	6	data	
+93	ds:75F6	ds:75F2	    Dedicated to Lori Proudfoot.                   Developed with Applied Computing Services, Inc.              Written entirely in Microsoft QuickBasic v3.0.	158	ui	Lori Proudfoot / Applied Computing Services 為真實人名與公司,非遊戲世界專有名詞,不套用 glossary 對照格式。
+94	ds:76A0	ds:769C	Which party do you wish to use (1-5,0 Quits) ?	46	ui	
+95	ds:76DA	ds:76D6	Please use a party numbered between 1 and 5 !	45	ui	
+96	ds:7714	ds:7710	GROUPS.DAT	10	data	檔名/模組名,不是句子,⛔ 不譯 — GROUPS.DAT
+97	ds:7726	ds:7722	I'm sorry, this party does not exist !  Use the Utilities to create it.	71	ui	
+98	ds:777C	ds:7778	CHARS.DAT	9	data	檔名/模組名,不是句子,⛔ 不譯 — CHARS.DAT
+99	ds:7792	ds:778E	Parties of dead characters are not allowed !!! 	47	ui	
+100	ds:77CE	ds:77CA	# CHARACTER HP  SP	18	ui	
+101	ds:77E8	ds:77E4	D	1	data	
+102	ds:77EE	ds:77EA	WRLDMOVE	8	data	檔名/模組名,不是句子,⛔ 不譯 — WRLDMOVE(模組名)
+103	ds:77FA	ds:77F6	MAZEMOVE	8	data	檔名/模組名,不是句子,⛔ 不譯 — MAZEMOVE(模組名)
+104	ds:7806	ds:7802	Gold:	5	ui	
+105	ds:7810	ds:780C	Provisions:	11	ui	
+106	ds:7820	ds:781C	MENU	4	data	檔名/模組名,不是句子,⛔ 不譯 — MENU(模組名)
+107	ds:7828	ds:7824	BM	2	data	
+108	ds:782E	ds:782A	walkdraw.pic	12	data	
+109	ds:7842	ds:783E	bm	2	data	
+110	ds:7848	ds:7844	mazedata.bin	12	data	
+111	ds:7858	ds:7854	startup.bin	11	data	
+112	ds:786E	ds:786A	Please check this disk, I think it is the wrong one.	52	na-disk	
+113	ds:78AE	ds:78AA	Please check the drive door, I think you have it open.	54	na-disk	
+114	ds:78F0	ds:78EC	I'm awfully sorry, but your machine is having I/O problems.	59	na-disk	
+115	ds:7938	ds:7934	I'm not feeling well #	22	na-disk	
+116	ds:7968	ds:7964	What is the maximum value for any statistic without magical aid (Traits, pg 3)	78	na-disk	
+117	ds:79C0	ds:79BC	What is the maximum number of characters you can store on disk (Character,      L)ist, pg 3)	92	na-disk	
+118	ds:7A24	ds:7A20	The bonus a Gnome character gets to his Int (Racial Modifiers Chart, pg 3)	74	na-disk	
+119	ds:7A76	ds:7A72	What is the maximum damage of a Small Axe (Weapons Chart, pg 7)	63	na-disk	
+120	ds:7ABE	ds:7ABA	What is the Protection of Chain Armor (Armor Chart, pg 7)	57	na-disk	
+121	ds:7B00	ds:7AFC	What is the cost of an Oil Lantern (Miscellaneous Items, pg 7)	62	na-disk	
+122	ds:7B46	ds:7B42	What is the Movement Point Cost to Attack an object in front of you ('A' Key,   Chart, pg 8)	92	na-disk	
+123	ds:7BAA	ds:7BA6	What is the minimum Spell Points to cast a Flame Shield (Minimum Spell Points   Chart, pg 11)	93	na-disk	
+124	ds:7C10	ds:7C0C	What is the Bonus Damage by Strength for a character with a Strength of 20      (Chart, pg 11)	94	na-disk	
+125	ds:7C72	ds:7C6E	What is the Maximum S.P. gain per level for a Wizard with an Intellect of 19    (Chart, pg 12)	94	na-disk	
+126	ds:7CD4	ds:7CD0	The Shard of Spring	19	na-disk	
+127	ds:7CEC	ds:7CE8	(0 Exits)	9	na-disk	
+128	ds:7D02	ds:7CFE	 ? 	3	na-disk	
+129	ds:7D0E	ds:7D0A	I'm sorry, try again later....	30	na-disk	
+130	ds:7D30	ds:7D2C	That is not correct, please try again...	40	na-disk	
+131	ds:7D68	ds:7D64	You do not have enough memory (	31	na-disk	
+132	ds:7D8C	ds:7D88	K) to run this game	19	na-disk	
+133	ds:7DA4	ds:7DA0	256K is required, 320K is prefered. Press any key...	52	na-disk	
+134	ds:7DDC	ds:7DD8	Microsoft has recommended that this product be run	50	na-disk	
+135	ds:7E12	ds:7E0E	with at least 320K of RAM, preferably 384K.	43	na-disk	
+136	ds:7E42	ds:7E3E	Press any key...	16	na-disk	
+137	ds:7E5C	ds:7E58	You can not run Shard of Spring, you don't	42	na-disk	
+138	ds:7E8A	ds:7E86	have a graphics monitor!!!!  Press any key...	45	na-disk	
+139	ds:7EC0	ds:7EBC	One floppy,	11	na-disk	
+140	ds:7ED0	ds:7ECC	Two floppies,	13	na-disk	
+141	ds:7EE2	ds:7EDE	Z	1	data	
+142	ds:7EE8	ds:7EE4	Fixed or RAM disk (	19	na-disk	
+143	ds:7F00	ds:7EFC	:),	3	data	
+144	ds:7F08	ds:7F04	? disks,	8	na-disk	
+145	ds:7F14	ds:7F10	 CRT monitor.	13	na-disk	
+146	ds:7F2A	ds:7F26	 LCD or EGA display.	20	na-disk	
+147	ds:7F42	ds:7F3E	 delay of	9	na-disk	
+148	ds:7F50	ds:7F4C	Don, Leslie, and Martin thank you for playing the Shard of Spring.	66	ui	Don/Leslie/Martin 為真實開發者,非遊戲世界專有名詞;沿用「中文(英文)」格式僅為可讀性,非 glossary 硬規則4 的適用範圍。

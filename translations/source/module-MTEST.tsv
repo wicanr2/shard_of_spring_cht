@@ -1,0 +1,6 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:5256	ds:5252	monst	5	na-debug	MTEST.EXE 整支視為開發期測試程式(docs/spec/19 前提;檔名 monst/.bin 為除錯用途)
+1	ds:5260	ds:525C	.bin	4	na-debug	
+2	ds:526E	ds:526A	hit any key for next screen	27	na-debug	
+3	ds:5292	ds:528E	monst	5	na-debug	
+4	ds:529C	ds:5298	hit any key	11	na-debug	

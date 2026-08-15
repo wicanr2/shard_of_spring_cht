@@ -1,0 +1,102 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:67E0	ds:67DC	0	1	data	
+1	ds:67E6	ds:67E2	9	1	data	
+2	ds:67F6	ds:67F2	  	2	data	
+3	ds:6806	ds:6802	-	1	data	
+4	ds:6820	ds:681C	 	1	data	
+5	ds:6DA2	ds:6D9E	Choose building to enter,  # to inspect character, (ESC exits)	62	ui	
+6	ds:6DEC	ds:6DE8	A	1	data	
+7	ds:6DF2	ds:6DEE	The party leaves..	18	ui	
+8	ds:6E08	ds:6E04	WRLDMOVE	8	data	檔名/模組名,不是句子,⛔ 不譯 — WRLDMOVE(模組名)
+9	ds:6E16	ds:6E12	TOWN	4	data	檔名/模組名,不是句子,⛔ 不譯 — TOWN(模組名)
+10	ds:6E4C	ds:6E48	Item to buy, ESC to leave, any key to page.	43	ui	
+11	ds:6E7C	ds:6E78	[MORE]	6	ui	
+12	ds:6E8A	ds:6E86	Item to buy, ESC to leave.	26	ui	
+13	ds:6EB4	ds:6EB0	@	1	data	
+14	ds:6EBC	ds:6EB8	Cost is 	8	ui	
+15	ds:6EC8	ds:6EC4	Give to char #	14	ui	
+16	ds:6EDA	ds:6ED6	(ESC to exit)	13	ui	
+17	ds:6EF2	ds:6EEE	 ok!	4	ui	
+18	ds:6EFC	ds:6EF8	1	1	data	
+19	ds:6F02	ds:6EFE	No more room!	13	ui	
+20	ds:6F14	ds:6F10	Done!	5	ui	
+21	ds:6F20	ds:6F1C	Healing	7	ui	
+22	ds:6F2C	ds:6F28	Unpoison	8	ui	
+23	ds:6F38	ds:6F34	Unbind	6	ui	
+24	ds:6F42	ds:6F3E	Ressurect	9	ui	
+25	ds:6F64	ds:6F60	/lvl	4	ui	
+26	ds:6F6C	ds:6F68	Enter character # to be healed, (ESC exits)	43	ui	
+27	ds:6FAE	ds:6FAA	That will cost   	17	ui	
+28	ds:6FC4	ds:6FC0	 gold, Pay (Y/N)?	17	ui	
+29	ds:6FE2	ds:6FDE	Y	1	data	
+30	ds:6FEA	ds:6FE6	Your rooms will cost	20	ui	
+31	ds:7002	ds:6FFE	 gold each night.  How many nights do you wish to sleep (1-9, 0 exits) ?	72	ui	
+32	ds:705A	ds:7056	You sleep...	12	ui	
+33	ds:7070	ds:706C	N	1	data	
+34	ds:7078	ds:7074	Welcome to the	14	ui	
+35	ds:708A	ds:7086	Fighter's Guild.	16	ui	
+36	ds:70A0	ds:709C	Wizard's Guild.	15	ui	
+37	ds:70B4	ds:70B0	Which character # seeks advancement in his art (ESC exits) ?	60	ui	
+38	ds:70FC	ds:70F8	You are the wrong class!	24	ui	
+39	ds:712A	ds:7126	This character is incapacitated!	32	ui	
+40	ds:7166	ds:7162	The Guild decides you need	26	ui	spec/19 §1.1 範例句
+41	ds:7184	ds:7180	 experience before gaining a level.	35	ui	spec/19 §1.1 範例句
+42	ds:71CA	ds:71C6	You made a level!  You gain	27	ui	
+43	ds:71EA	ds:71E6	 hit points.	12	ui	
+44	ds:7202	ds:71FE	You also gain	13	ui	
+45	ds:7214	ds:7210	 Spell Points!	14	ui	
+46	ds:7238	ds:7234	Stats are up by:	16	ui	
+47	ds:7254	ds:7250	1 pt of 	8	ui	
+48	ds:726E	ds:726A	* 	2	ui	
+49	ds:7274	ds:7270	You have	8	ui	
+50	ds:7280	ds:727C	points left.	12	ui	
+51	ds:7290	ds:728C	Enter skill,	12	ui	
+52	ds:72A0	ds:729C	(0 exits) 	10	ui	
+53	ds:72B0	ds:72AC	    	4	data	
+54	ds:72B8	ds:72B4	Not enough IQ !	15	ui	
+55	ds:72CE	ds:72CA	Do you wish to: T)alk with other adventurers, B)uy food? (ESC to exit)	70	ui	
+56	ds:7320	ds:731C	T	1	data	
+57	ds:7326	ds:7322	B	1	data	
+58	ds:732E	ds:732A	One day's food for the party costs	34	ui	
+59	ds:7354	ds:7350	 gold.  How many rations (1-9, 0 exits) ?	41	ui	
+60	ds:738E	ds:738A	Done!	5	ui	
+61	ds:739E	ds:739A	D	1	data	
+62	ds:73A4	ds:73A0	You hear that a priest has been kidnapped and is being held prisoner in Blackfort by Devir the Destroyer. Blackfort was built in the forest southeast of the river by Galin the Good, but taken over by Devir.	206	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+63	ds:7476	ds:7472	A woman from east of the mountains says that she has been terrorized by Edrin, a powerful friend of Siriadne's. She overheard two men saying there is a secret passage in the corridor on the second level.	203	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+64	ds:7546	ds:7542	A greying old wizard sitting by the fire is talking about magical staves. He says there are five kinds, one for each of the 5 elements of Fire, Metal, Wind, Ice, and Spirit. They are rare and powerful artifacts indeed...	220	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+65	ds:7626	ds:7622	A muscular dwarf with big, beady eyes says he was attacked by Shamblers, horrible swamp monsters made by performing ancient magical rituals on dead swamp matter molded into human form...	186	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+66	ds:76E4	ds:76E0	The gate leading into Siriadne's fortress is magically bound and cannot be opened.	82	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+67	ds:773A	ds:7736	You hear a whisper from behind you: 'A band of rebels that despises the evil Siriadne has taken refuge in the hills to the southwest.'	134	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+68	ds:77C4	ds:77C0	An ancient looking elvin wizard in the corner beckons you. He tells you in a shaky voice the second word in the name of the Ancient spell: 'Reveli'	147	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+69	ds:785C	ds:7858	A gnomish wizard is talking about elementals: unnatural, magical beings summoned by great wizards. They are five: one for each element. The Fire elemental is a being of pure fire, the Spirit elemental is mystical and feared.	224	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+70	ds:7940	ds:793C	The Arena is fine if you are a fighter, but a wizard need go to Terynor for his training. Terynor is nestled in the mountains far to the northeast and is rich in magical items.	176	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+71	ds:79F4	ds:79F0	Years ago Islanda was ruled by the evil Moonglow family. Because of them the land is still terrorized by evil monsters. Eldron Greyhair ended thier reign and still holds a great treasure for adventurers on a worthy mission.	223	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+72	ds:7AD8	ds:7AD4	* Coming soon * From the makers of The Shard of Spring ... an adventure set in the midst of a greater evil...	109	ui	已譯,見 translations/module-text/TOWN-rumors.tsv
+73	ds:7B4A	ds:7B46	towndata.bin	12	data	檔名/模組名,不是句子,⛔ 不譯 — towndata.bin
+74	ds:7B5A	ds:7B56	towndata.dat	12	data	檔名/模組名,不是句子,⛔ 不譯 — towndata.dat
+75	ds:7B80	ds:7B7C	Aack!, There is something wrong with your disks!	48	ui	
+76	ds:7BC6	ds:7BC2	You don't have	14	ui	與 CAMP #85 同義,合併對照 spec/19 §1.1
+77	ds:7BD8	ds:7BD4	enough gold!	12	ui	
+78	ds:7BE8	ds:7BE4	ITEMS.DAT	9	data	檔名/模組名,不是句子,⛔ 不譯 — ITEMS.DAT
+79	ds:7C12	ds:7C0E	   	3	data	
+80	ds:7C1A	ds:7C16	2	1	data	
+81	ds:7C20	ds:7C1C	dies in the night.	18	ui	
+82	ds:7C3A	ds:7C36	 LVL: 	6	ui	
+83	ds:7C4E	ds:7C4A	H.P.   	7	ui	
+84	ds:7C5A	ds:7C56	S.P.   	7	ui	
+85	ds:7C66	ds:7C62	/	1	data	
+86	ds:7C6C	ds:7C68	Exp.  	6	ui	
+87	ds:7C76	ds:7C72	Stat.  	7	ui	
+88	ds:7C84	ds:7C80	      Skills:	13	ui	
+89	ds:7C9C	ds:7C98	      Items:	12	ui	
+90	ds:7CB4	ds:7CB0	Human	5	ui	
+91	ds:7CC2	ds:7CBE	H	1	data	
+92	ds:7CC8	ds:7CC4	Troll	5	ui	
+93	ds:7CD2	ds:7CCE	Dwarf	5	ui	
+94	ds:7CDC	ds:7CD8	E	1	data	
+95	ds:7CE2	ds:7CDE	Elf	3	ui	
+96	ds:7CEA	ds:7CE6	Gnome	5	ui	
+97	ds:7CF4	ds:7CF0	G	1	data	
+98	ds:7CFA	ds:7CF6	error	5	na-debug	
+99	ds:7D0E	ds:7D0A	)	1	data	
+100	ds:7D16	ds:7D12	*	1	data	

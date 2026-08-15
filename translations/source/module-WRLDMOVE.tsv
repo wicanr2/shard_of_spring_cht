@@ -1,0 +1,47 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:67E0	ds:67DC	0	1	data	
+1	ds:67E6	ds:67E2	9	1	data	
+2	ds:67F6	ds:67F2	  	2	data	
+3	ds:6806	ds:6802	-	1	data	
+4	ds:6820	ds:681C	 	1	data	
+5	ds:CD6E	ds:CD6A	C	1	data	
+6	ds:CD74	ds:CD70	P	1	data	
+7	ds:CD7A	ds:CD76	S	1	data	
+8	ds:CD80	ds:CD7C	Q	1	data	
+9	ds:CD86	ds:CD82	1	1	data	
+10	ds:CD8C	ds:CD88	2	1	data	
+11	ds:CD92	ds:CD8E	3	1	data	
+12	ds:CD98	ds:CD94	4	1	data	
+13	ds:CDBE	ds:CDBA	CAMP	4	data	
+14	ds:CDC6	ds:CDC2	J	1	data	
+15	ds:CDCC	ds:CDC8	MAZEMOVE	8	data	
+16	ds:CDDC	ds:CDD8	MAZEMOVE	8	data	
+17	ds:CDF0	ds:CDEC	TOWN	4	data	
+18	ds:CDF8	ds:CDF4	Before you is an archway set into a stone gate.  Beyond the archway can be seen a vast array of islands and the paths of land twisting to the horizon.  Large Gothic letters carved over the archway read, 'ISLANDA'	212	ui	拱門刻字 'ISLANDA' 照原文大寫拼法保留(glossary §6 硬規則4:加註採該處原文拼法)。
+19	ds:CEDC	ds:CED8	Thank you for visiting Islandia. Good Hunting.	46	ui	⚠ 原版拼字不一致:此處寫 'Islandia',#18 刻字寫 'ISLANDA',glossary 譯名條目是 'Islanda'(伊斯蘭達)——三種拼法指同一地名,疑似原版筆誤。譯名沿用該處原文拼法音譯,未統一改字。
+20	ds:CF26	ds:CF22	CMBT	4	data	
+21	ds:CF32	ds:CF2E	wrldmap.bin	11	data	檔名/模組名,不是句子,⛔ 不譯 — wrldmap.bin
+22	ds:CF42	ds:CF3E	wrlditem.pic	12	data	檔名/模組名,不是句子,⛔ 不譯 — wrlditem.pic
+23	ds:CF52	ds:CF4E	fastwrld.bin	12	data	檔名/模組名,不是句子,⛔ 不譯 — fastwrld.bin
+24	ds:CF66	ds:CF62	WRLD	4	data	
+25	ds:CF72	ds:CF6E	MAZE	4	data	
+26	ds:CF7A	ds:CF76	MENU	4	data	
+27	ds:CF82	ds:CF7E	DEAD	4	ui	
+28	ds:CF9E	ds:CF9A	bu16c1r	7	data	
+29	ds:CFB6	ds:CFB2	d1R	3	data	
+30	ds:CFBE	ds:CFBA	u1R	3	data	
+31	ds:CFC6	ds:CFC2	be16c1d	7	data	
+32	ds:CFD2	ds:CFCE	l1D	3	data	
+33	ds:CFDA	ds:CFD6	r1D	3	data	
+34	ds:CFE2	ds:CFDE	br16c1l	7	data	
+35	ds:CFEE	ds:CFEA	u1L	3	data	
+36	ds:CFF6	ds:CFF2	d1L	3	data	
+37	ds:CFFE	ds:CFFA	C1U	3	data	
+38	ds:D006	ds:D002	r1U	3	data	
+39	ds:D00E	ds:D00A	l1U	3	data	
+40	ds:D026	ds:D022	Welcome to ...	14	ui	
+41	ds:D03C	ds:D038	MAZEMOVE	8	data	
+42	ds:D048	ds:D044	Entering ...	12	ui	
+43	ds:D058	ds:D054	Making Camp..	13	ui	
+44	ds:D06A	ds:D066	    C O M B A T !	17	ui	
+45	ds:D080	ds:D07C	    B A T T L E !	17	ui	

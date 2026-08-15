@@ -1,0 +1,4 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:53EA	ds:53E6	fastwrld.bin	12	data	
+1	ds:5512	ds:550E	Capture or Load image now...	28	na-debug	'Capture or Load image now...':開發期擷圖工具
+2	ds:5538	ds:5534	fastwrld.bin	12	data	

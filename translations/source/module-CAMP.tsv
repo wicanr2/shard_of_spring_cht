@@ -1,0 +1,153 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:67E0	ds:67DC	0	1	data	
+1	ds:67E6	ds:67E2	9	1	data	
+2	ds:67F6	ds:67F2	  	2	data	
+3	ds:6806	ds:6802	-	1	data	
+4	ds:6820	ds:681C	 	1	data	
+5	ds:6F1A	ds:6F16	CR	2	data	
+6	ds:6F2A	ds:6F26	      Camp:	11	ui	
+7	ds:6F3A	ds:6F36	 P)rint char(s)	15	ui	
+8	ds:6F4E	ds:6F4A	 S)leep	7	ui	
+9	ds:6F5A	ds:6F56	 #)inspect char 	16	ui	
+10	ds:6F6E	ds:6F6A	 C)ast spell	12	ui	
+11	ds:6F7E	ds:6F7A	 R)eorder	9	ui	
+12	ds:6F8C	ds:6F88	 T)rade	7	ui	
+13	ds:6F98	ds:6F94	 D)rop	6	ui	
+14	ds:6FA2	ds:6F9E	 E)quip	7	ui	
+15	ds:6FAE	ds:6FAA	 H)unt	6	ui	
+16	ds:6FB8	ds:6FB4	 I)dentify	10	ui	
+17	ds:6FC6	ds:6FC2	 U)se an item	13	ui	
+18	ds:6FD8	ds:6FD4	 ESC to leave	13	ui	
+19	ds:6FEA	ds:6FE6	Breaking Camp..	15	ui	
+20	ds:6FFE	ds:6FFA	WRLDMOVE	8	data	
+21	ds:7012	ds:700E	CAMP	4	data	
+22	ds:7022	ds:701E	WRLD	4	data	
+23	ds:702A	ds:7026	MAZEMOVE	8	data	
+24	ds:703A	ds:7036	S	1	data	
+25	ds:7040	ds:703C	C	1	data	
+26	ds:7046	ds:7042	R	1	data	
+27	ds:704C	ds:7048	T	1	data	
+28	ds:7052	ds:704E	E	1	data	
+29	ds:7058	ds:7054	H	1	data	
+30	ds:705E	ds:705A	I	1	data	
+31	ds:7064	ds:7060	D	1	data	
+32	ds:706A	ds:7066	U	1	data	
+33	ds:7070	ds:706C	P	1	data	
+34	ds:7078	ds:7074	Character # to trade from ?, (ESC exits)	40	ui	
+35	ds:70A8	ds:70A4	Trade which ?	13	ui	
+36	ds:70C8	ds:70C4	    Give to ? 	14	ui	
+37	ds:70E0	ds:70DC	NO ROOM !	9	ui	
+38	ds:70F2	ds:70EE	 OK	3	ui	
+39	ds:70FA	ds:70F6	Character # to equip ? (ESC exits)	34	ui	
+40	ds:7124	ds:7120	Weapon? 	8	ui	
+41	ds:7130	ds:712C	 skips.	7	ui	
+42	ds:7140	ds:713C	No Weapon	9	ui	
+43	ds:7152	ds:714E	NO SKILL !	10	ui	
+44	ds:7160	ds:715C	2	1	data	
+45	ds:7166	ds:7162	          	10	data	
+46	ds:7174	ds:7170	*	1	data	
+47	ds:717A	ds:7176	Armor?  	8	ui	
+48	ds:7186	ds:7182	 skips.	7	ui	
+49	ds:7192	ds:718E	No Armor  	10	ui	
+50	ds:71A0	ds:719C	OK !	4	ui	
+51	ds:71A8	ds:71A4	Character # dropping item ? (ESC exits)	39	ui	
+52	ds:71D8	ds:71D4	Item to drop ?	14	ui	
+53	ds:71F2	ds:71EE	Dropped ! 	10	ui	
+54	ds:7200	ds:71FC	You have slept !	16	ui	
+55	ds:7216	ds:7212	You are not tired	17	ui	
+56	ds:722C	ds:7228	You sleep...	12	ui	
+57	ds:7242	ds:723E	N	1	data	
+58	ds:724A	ds:7246	Character # wishing to identify? (ESC exits)	44	ui	
+59	ds:727E	ds:727A	1	1	data	
+60	ds:7284	ds:7280	Item to ID ?	12	ui	
+61	ds:729C	ds:7298	You are not trained in that lore!	33	ui	
+62	ds:72DA	ds:72D6	Failed	6	ui	
+63	ds:72E4	ds:72E0	You're inside!	14	ui	
+64	ds:72F6	ds:72F2	Character # to hunt ? (ESC exits)	33	ui	spec/19 §1.1 H)unt 打獵閘門相關句
+65	ds:7326	ds:7322	The hunt was	12	ui	
+66	ds:7336	ds:7332	not successful.	15	ui	
+67	ds:734A	ds:7346	successful!	11	ui	
+68	ds:735C	ds:7358	Enter new 	10	ui	
+69	ds:736A	ds:7366	position for:	13	ui	
+70	ds:737C	ds:7378	 Letter?	8	ui	
+71	ds:7388	ds:7384	  A B C 	8	ui	
+72	ds:7394	ds:7390	  D E F 	8	ui	
+73	ds:73A0	ds:739C	  G H I 	8	ui	
+74	ds:73B0	ds:73AC	A	1	data	
+75	ds:73BC	ds:73B8	Character # to cast spell ? (ESC exits)	39	ui	
+76	ds:73EC	ds:73E8	Cast what spell?	16	ui	
+77	ds:7400	ds:73FC	(ENTER exits)	13	ui	
+78	ds:7412	ds:740E	DAZA REVELI	11	ui	⛔ 不譯:玩家要打回去的通關咒語(glossary 硬規則5)。
+79	ds:7422	ds:741E	The gate opens	14	ui	
+80	ds:7436	ds:7432	Mumble, mumble, what spell did you say ?	40	ui	保留戲謔語氣('Mumble, mumble'),spec/19 §6 明訂範例。
+81	ds:746A	ds:7466	That is a combat spell !	24	ui	
+82	ds:7498	ds:7494	You don't know that spell!	26	ui	
+83	ds:74BE	ds:74BA	Spell Pts ?	11	ui	
+84	ds:74D0	ds:74CC	You don't have that many!	25	ui	
+85	ds:74F8	ds:74F4	You need more spell points than that!	37	ui	spec/19 §1.1 範例句,一字不差
+86	ds:752A	ds:7526	   	3	data	
+87	ds:7532	ds:752E	Aack!  there is something wrong with the data files, please restore!	68	ui	
+88	ds:7582	ds:757E	Character # to use item ?  (ESC exits)	38	ui	
+89	ds:75B0	ds:75AC	Use Item:	9	ui	
+90	ds:75C2	ds:75BE	This character has no items to use!	35	ui	
+91	ds:75F2	ds:75EE	You really can't make use of this!	34	ui	
+92	ds:7628	ds:7624	Do you wish to use the potion on Y)ourself or G)ive it to another character?       	83	ui	spec/19 §1.1 範例句(CAMP 版:G)ive;CMBT #165 是同一句的 T)oss 版)
+93	ds:7680	ds:767C	                  (ESC cancels)	31	ui	
+94	ds:76AC	ds:76A8	G	1	data	
+95	ds:76B2	ds:76AE	Give it to which	16	ui	
+96	ds:76C6	ds:76C2	character?	10	ui	
+97	ds:76D4	ds:76D0	char #: 	8	ui	
+98	ds:76E2	ds:76DE	    	4	data	
+99	ds:76EA	ds:76E6	Y	1	data	
+100	ds:76F0	ds:76EC	That is a Combat Item!	22	ui	spec/19 §1.1 範例句,一字不差
+101	ds:7712	ds:770E	Character # to cast on ?  (ESC exits)	37	ui	
+102	ds:774A	ds:7746	 pts!	5	ui	
+103	ds:7754	ds:7750	Character # to cast on ?  (ESC exits)	37	ui	
+104	ds:7786	ds:7782	Lives !	7	ui	
+105	ds:7796	ds:7792	Is cured.	9	ui	
+106	ds:77A4	ds:77A0	Notices no change	17	ui	
+107	ds:77BA	ds:77B6	Character # to cast on ?  (ESC exits)	37	ui	
+108	ds:77E8	ds:77E4	 notices no change!	19	ui	
+109	ds:780A	ds:7806	A roaring blast of wind buffets the party and when the noise subsides...	72	ui	
+110	ds:785E	ds:785A	WRLDMOVE	8	data	
+111	ds:7872	ds:786E	Enter number of character you wish to print. 	45	na-printer	
+112	ds:78A4	ds:78A0	(ESC to exit, or 9 to print entire party)	41	na-printer	
+113	ds:78DC	ds:78D8	/	1	data	
+114	ds:78E2	ds:78DE	:	1	data	
+115	ds:78E8	ds:78E4	Make sure that your printer is ready and paper is properly positioned.	70	na-printer	
+116	ds:793A	ds:7936	Wilderness	10	na-printer	
+117	ds:794C	ds:7948	Party #	7	na-printer	
+118	ds:7958	ds:7954	    Location: 	14	na-printer	
+119	ds:797E	ds:797A	Skills:	7	na-printer	
+120	ds:798A	ds:7986	Items:	6	na-printer	
+121	ds:799A	ds:7996	Level:     	11	na-printer	
+122	ds:79AC	ds:79A8	Hit Pts.   	11	na-printer	
+123	ds:79BC	ds:79B8	Spell Pts. 	11	na-printer	
+124	ds:79CC	ds:79C8	Experience	10	na-printer	
+125	ds:79DA	ds:79D6	Status     	11	na-printer	
+126	ds:79F6	ds:79F2	   (ESC exits) 	15	na-printer	
+127	ds:7A18	ds:7A14	Item Breaks !	13	ui	
+128	ds:7A2A	ds:7A26	Spell Fails !	13	ui	
+129	ds:7A48	ds:7A44	spells.dat	10	data	
+130	ds:7A58	ds:7A54	You don't have that skill.	26	ui	檔名/模組名,不是句子,⛔ 不譯 — spells.dat
+131	ds:7A7E	ds:7A7A	That character is incapacitated.	32	ui	
+132	ds:7AAA	ds:7AA6	You have used that skill today.	31	ui	
+133	ds:7AD6	ds:7AD2	That character is not a wizard.	31	ui	
+134	ds:7B02	ds:7AFE	You now have about	18	ui	
+135	ds:7B18	ds:7B14	 turns of light.	16	ui	
+136	ds:7B34	ds:7B30	ITEMS.DAT	9	data	檔名/模組名,不是句子,⛔ 不譯 — ITEMS.DAT
+137	ds:7B5E	ds:7B5A	dies in the night.	18	ui	
+138	ds:7B78	ds:7B74	 LVL: 	6	ui	
+139	ds:7B8C	ds:7B88	H.P.   	7	ui	
+140	ds:7B98	ds:7B94	S.P.   	7	ui	
+141	ds:7BA4	ds:7BA0	Exp.  	6	ui	
+142	ds:7BAE	ds:7BAA	Stat.  	7	ui	
+143	ds:7BBC	ds:7BB8	      Skills:	13	ui	
+144	ds:7BD4	ds:7BD0	      Items:	12	ui	
+145	ds:7BEC	ds:7BE8	Human	5	ui	
+146	ds:7BFA	ds:7BF6	Troll	5	ui	
+147	ds:7C04	ds:7C00	Dwarf	5	ui	
+148	ds:7C0E	ds:7C0A	Elf	3	ui	
+149	ds:7C16	ds:7C12	Gnome	5	ui	
+150	ds:7C20	ds:7C1C	error	5	na-debug	
+151	ds:7C34	ds:7C30	)	1	data	

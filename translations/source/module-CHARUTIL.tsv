@@ -1,0 +1,72 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:67E0	ds:67DC	0	1	data	
+1	ds:67E6	ds:67E2	9	1	data	
+2	ds:67F6	ds:67F2	  	2	data	
+3	ds:6806	ds:6802	-	1	data	
+4	ds:6820	ds:681C	 	1	data	
+5	ds:683A	ds:6836	UTIL	4	data	
+6	ds:6AC6	ds:6AC2	N	1	data	
+7	ds:6ACC	ds:6AC8	Which character to rename ?	27	ui	
+8	ds:6AEC	ds:6AE8	Please enter the new name (9 char max): 	40	ui	⚠ 與 TITLES.DAT 第89列 'name (10 char)' 矛盾,見 docs/spec/19-module-text.md §4;裁決前不動引擎現行的 10。
+9	ds:6B20	ds:6B1C	J	1	data	
+10	ds:6B26	ds:6B22	F	1	data	
+11	ds:6B2C	ds:6B28	D	1	data	
+12	ds:6B32	ds:6B2E	I	1	data	
+13	ds:6B38	ds:6B34	R	1	data	
+14	ds:6B3E	ds:6B3A	C	1	data	
+15	ds:6B44	ds:6B40	CHARS.DAT	9	data	檔名/模組名,不是句子,⛔ 不譯 — CHARS.DAT
+16	ds:6B52	ds:6B4E	GROUPS.DAT	10	data	檔名/模組名,不是句子,⛔ 不譯 — GROUPS.DAT
+17	ds:6B66	ds:6B62	E	1	data	
+18	ds:6B70	ds:6B6C	Please insert the BOOT floppy in the drive,	43	na-disk	
+19	ds:6BA0	ds:6B9C	and press any key..	19	na-disk	
+20	ds:6BB8	ds:6BB4	A	1	data	
+21	ds:6BBE	ds:6BBA	:menu	5	data	
+22	ds:6BCC	ds:6BC8	You must remove a character before adding any more!	51	ui	
+23	ds:6C06	ds:6C02	(ESC exits) ?	13	ui	
+24	ds:6C1C	ds:6C18	H	1	data	
+25	ds:6C22	ds:6C1E	T	1	data	
+26	ds:6C28	ds:6C24	G	1	data	
+27	ds:6C3C	ds:6C38	         	9	data	
+28	ds:6C4A	ds:6C46	B	1	data	
+29	ds:6C52	ds:6C4E	+	1	data	
+30	ds:6C58	ds:6C54	Skills left:	12	ui	
+31	ds:6C72	ds:6C6E	*	1	data	
+32	ds:6C7E	ds:6C7A	Skills left:	12	ui	
+33	ds:6C96	ds:6C92	Do you wish to keep this character (Y/N) ?	42	ui	
+34	ds:6CC8	ds:6CC4	>	1	data	
+35	ds:6CCE	ds:6CCA	Y	1	data	
+36	ds:6CD8	ds:6CD4	1	1	data	
+37	ds:6CDE	ds:6CDA	2	1	data	
+38	ds:6D04	ds:6D00	0000000000	10	data	
+39	ds:6D18	ds:6D14	Party #	7	ui	
+40	ds:6D24	ds:6D20	Gold:	5	ui	
+41	ds:6D2E	ds:6D2A	 Provisions:	12	ui	
+42	ds:6D3E	ds:6D3A	Saved in the month of the 	26	ui	
+43	ds:6D5C	ds:6D58	Wilderness	10	ui	
+44	ds:6D6E	ds:6D6A	maze: 	6	ui	
+45	ds:6D78	ds:6D74	Currently in the 	17	ui	
+46	ds:6D8E	ds:6D8A	#) Name        Race   Class   Level   Status	44	ui	
+47	ds:6DC6	ds:6DC2	) 	2	data	
+48	ds:6DD0	ds:6DCC	Hero	4	ui	
+49	ds:6DD8	ds:6DD4	Wizard	6	ui	
+50	ds:6DE4	ds:6DE0	Any key to continue, (Q quits)...	33	ui	
+51	ds:6E0A	ds:6E06	Q	1	data	
+52	ds:6E10	ds:6E0C	(0 exits) ? 	12	ui	
+53	ds:6E20	ds:6E1C	Is deleted !	12	ui	
+54	ds:6E30	ds:6E2C	(0 exits) ?	11	ui	
+55	ds:6E42	ds:6E3E	 #	2	data	
+56	ds:6E48	ds:6E44	   	3	data	
+57	ds:6E50	ds:6E4C	#	1	data	
+58	ds:6E5A	ds:6E56	No party #	10	ui	
+59	ds:6E68	ds:6E64	to disband !	12	ui	
+60	ds:6E78	ds:6E74	CHARS.DAT	9	data	
+61	ds:6E88	ds:6E84	GROUPS.DAT	10	data	檔名/模組名,不是句子,⛔ 不譯 — CHARS.DAT
+62	ds:6E98	ds:6E94	titles.DAT	10	data	檔名/模組名,不是句子,⛔ 不譯 — GROUPS.DAT
+63	ds:6EA8	ds:6EA4	Human	5	ui	
+64	ds:6EB6	ds:6EB2	Troll	5	ui	
+65	ds:6EC0	ds:6EBC	Dwarf	5	ui	
+66	ds:6ECA	ds:6EC6	Elf	3	ui	
+67	ds:6ED2	ds:6ECE	Gnome	5	ui	
+68	ds:6EDC	ds:6ED8	error	5	na-debug	
+69	ds:6EE6	ds:6EE2	 #) Name       Party         #) Name       Party	48	ui	
+70	ds:6F2A	ds:6F26	(0 exits) ? 	12	ui	

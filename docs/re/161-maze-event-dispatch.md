@@ -151,9 +151,9 @@ mov ax, ds:3532h / mov ds:8DD0h, ax / call <顯示>
 腳本把怪物編號寫進 `ds:372C + 2i`(哨兵 99),`CMBT` 讀到就跳過隨機挑怪 ——
 204 是 1 隻 `Hill Giant`,533 是 2 隻 `Great Dragon` + `Siriadne !`。
 
-⚠ **祝福的實際效果仍然沒有讀到**,而且 `0x131D0` 起那一長串
-`INT 3F:61` 是**結局文字的排版**,不是怪物設定
-([`180`](180-scripted-fight-monster-list.md) 那一輪先排除掉的)。
+⚠ **祝福的實際效果仍然沒有讀到**。而 `0x131D0` 起那一長串 `INT 3F:61`
+是在**組裝結局配樂**(18 段 `PLAY` 巨集,[`182`](182-ending-music-is-assembled-at-runtime.md))——
+不是怪物設定,怪物清單在 `ds:372C`([`180`](180-scripted-fight-monster-list.md))。
 
 ## 5. `ds:66C8` / `66CA` 是服務呼叫的引數槽
 

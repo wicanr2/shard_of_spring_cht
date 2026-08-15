@@ -1,0 +1,29 @@
+row	addr	original	orig_bytes	translation	trans_bytes	fits	note
+17	ds:8E98	DEAD	4	死亡	4	Y	
+29	ds:9062	One momement..	14	稍候……	6	Y	原文拼字錯誤 'momement',譯文取正確語意('moment')。
+32	ds:9098	One momement..	14	稍候……	6	Y	原文拼字錯誤 'momement',譯文取正確語意('moment')。
+35	ds:9164	Enter gem to	12	輸入要碰觸的	12	Y	
+36	ds:9174	touch (B,G,V,R)	15	寶石(B,G,V,R)	13	Y	
+37	ds:9188	or ESC	6	或按ESC	7	7	
+42	ds:9202	MURTHIN	7	莫辛(Murthin)	13	13	glossary §6 硬規則4 已有譯名
+43	ds:920E	CERCION	7	瑟西恩(Cercion)	15	15	glossary §6 硬規則4 已有譯名
+44	ds:921A	LOTHIAN	7	洛西安(Lothian)	15	15	glossary §6 硬規則4 已有譯名
+45	ds:9226	VANDIGUARD	10	范迪加德(Vandiguard)	20	20	glossary §6 硬規則4 已有譯名
+46	ds:9234	The brothers are:	17	這幾位兄弟是:	13	Y	
+47	ds:924C	#1 	3	#1 	3	Y	
+48	ds:9254	#2 	3	#2 	3	Y	
+49	ds:925C	#3 	3	#3 	3	Y	
+50	ds:9264	#4 	3	#4 	3	Y	
+51	ds:9294	The priest thanks you for freeing him from his giant captor and blesses the party.	82	祭司感謝你們從巨人囚禁中救出他,並祝福了這支隊伍。	49	Y	
+78	ds:9494	Which party member do you wish to heal? (0 exits) 	50	要治療哪位隊員?(0離開)	22	Y	spec/19 §1.1 範例句
+79	ds:94D4	That character can't be helped here !	37	這位角色在這裡沒辦法治療!	25	Y	
+80	ds:9512	healed	6	已治療	6	Y	
+81	ds:951C	 pts.	5	 點。	5	Y	
+82	ds:9526	 is	3	 是	3	Y	
+83	ds:952E	This pool is empty!	19	這座池子已經枯竭!	17	Y	
+84	ds:9552	found an item.	14	找到了一件道具。	16	16	
+85	ds:9568	Your party is full of items, please discard some from Camp.	59	隊伍的道具已經滿了,請在營地丟棄一些。	37	Y	spec/19 §1.1 範例句,一字不差
+88	ds:95DC	Leaving maze ..     	20	離開地城……	10	Y	
+89	ds:95FC	Making Camp..       	20	紮營中……	8	Y	
+90	ds:9614	    C O M B A T !   	20	　　戰　鬥　！　　	18	Y	
+91	ds:962C	    B A T T L E !   	20	　　交　戰　！　　	18	Y	

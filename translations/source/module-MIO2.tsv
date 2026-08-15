@@ -1,0 +1,14 @@
+row	addr	desc_addr	original	byte_len	category	note
+0	ds:5258	ds:5254	load picture file #	19	na-debug	MIO2.EXE:美術驗圖用開發工具('load picture file #' 等)
+1	ds:5270	ds:526C	     	5	na-debug	
+2	ds:527A	ds:5276	and hit any key to continue    	31	na-debug	
+3	ds:529E	ds:529A	now saving monst??.bin files   	31	na-debug	
+4	ds:53CE	ds:53CA	mon	3	na-debug	
+5	ds:53D6	ds:53D2	.bin	4	na-debug	
+6	ds:53E0	ds:53DC	hit any key to continue        	31	na-debug	
+7	ds:5406	ds:5402	monst	5	na-debug	
+8	ds:5414	ds:5410	verify your pictures              	34	na-debug	
+9	ds:543A	ds:5436	hit any key to continue           	34	na-debug	
+10	ds:5464	ds:5460	monst	5	na-debug	
+11	ds:546E	ds:546A	verify your pictures              	34	na-debug	
+12	ds:5494	ds:5490	hit any key to continue           	34	na-debug	

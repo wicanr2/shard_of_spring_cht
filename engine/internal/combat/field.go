@@ -69,9 +69,17 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 		f.Log = append(f.Log, a.Name+" 攻擊 "+d.Name+"，落空")
 		return roll, false, 0
 	}
-	dmg = Damage(a, d, aw, f.item(d.Armor), f.Rand)
+	dmg = Damage(a, d, aw, da, f.Rand)
+	// 狂暴:同一次攻擊的**第二次擲骰** > 75 且攻擊者有屬性 16(docs/re/153 §7)。
+	// 原版把兩次擲骰都算在同一次攻擊裡,所以這裡一定要再擲一次,
+	// 不能沿用命中那一次的值 —— 沿用會讓「命中很險」與「打得很重」綁在一起。
+	verb := " 擊中 "
+	if second := f.Rand.Roll(ToHitFaces); Berserk(a, second) {
+		dmg *= 2
+		verb = " 劈中 " // 原版:'and hacks for' ↔ 'and hits for'
+	}
 	Apply(&f.Units[def], dmg)
-	msg := a.Name + " 擊中 " + d.Name
+	msg := a.Name + verb + d.Name
 	if f.Units[def].HP == 0 {
 		msg += FullComma + d.Name + " 倒下"
 	}

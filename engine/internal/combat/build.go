@@ -43,7 +43,7 @@ func Build(party []original.Character, monsters []original.Monster,
 			Tier:    99, // 角色固定 99(docs/spec/01 §1)
 			StatMag: c.StatMag,
 			// 屬性 16/17 只有 Hero 有(位移 49/48 的技能旗標)
-			Berserk: skill(c, 8), ArmSkin: skill(c, 7),
+			Berserk: skill(c, 8), ArmSkin: skill(c, 7), Karate: skill(c, KarateSkill),
 		}
 	}
 	f.Sort()

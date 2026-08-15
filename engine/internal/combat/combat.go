@@ -4,7 +4,10 @@
 // **規格改了才改這裡**;每一條規則在下面註明章節。
 package combat
 
-import "strconv"
+import (
+	"math"
+	"strconv"
+)
 
 // 單位陣列的槽位配置。docs/spec/07 §1。
 //
@@ -49,6 +52,10 @@ type Unit struct {
 	Berserk   int    // 屬性 16(僅 Hero)
 	ArmSkin   int    // 屬性 17(僅 Hero)—— ⚠ 傷害公式減的就是這一項
 	Exp       int    // 屬性 19
+	// Karate **不是原版的戰鬥屬性** —— 原版空手時去讀角色記錄的位移 45
+	// (技能旗標第 4 格),不是讀陣列(docs/re/153 §5)。
+	// 這裡先搬進來,免得傷害公式要回頭去查記錄。
+	Karate int
 	Name      string // 顯示用,不是原版屬性
 	IsMonster bool
 }
@@ -73,11 +80,17 @@ type Item struct {
 // (docs/spec/01 §5)。
 const BareHandMin = 60
 
-// DamageK1 是傷害公式的乘數(原版 ds:9460h)。**未解**(docs/re/136)。
+// DamageK1 是力量加值的乘數(原版 ds:9460h)。
 //
-// ⛔ 1 是**單位元**,不是原版的值。不要因為「打起來手感不錯」就換一組數字 ——
-// 那會讓未解項變成看起來已解的錯誤結論。解出來只要改這裡。
-const DamageK1 = 1.0
+// 原版算的是 `INT((力量 − 7) × ds:9460h)`,而手冊 p.11 的力量加值是
+// `INT((力量 − 7) / 2)` —— **兩者要相等,它只能是 0.5**(docs/re/153 §6.1)。
+//
+// ⚠ 它乘的是**力量那一項**,不是整個括號。先前的實作乘在括號上,
+// 而那樣算出來的傷害同樣「看起來合理」。
+//
+// ⚠ 值本身仍然沒有從檔案的位元組讀出來,信心是**證據充分**:
+// `−7` 這個偏移是讀到的,而手冊的公式也是 `−7`。
+const DamageK1 = 0.5
 
 // DamageK2 是傷害公式的加數(原版 ds:9464h)。
 //
@@ -86,17 +99,27 @@ const DamageK1 = 1.0
 // 而本引擎的 Roll(n) 直接回 1…n,**偏移已經折進去了**,再加一次會多算。
 const DamageK2 = 0.0
 
-// ToHitFaces 是命中擲骰的面數(原版 ds:977Eh)。**未解**(docs/re/136 §7)。
+// ToHitFaces 是命中擲骰的面數(原版 ds:977Eh)。**仍未解**,但有下界。
+//
+// 同一個擲骰也用在狂暴的門檻上(`> 75`,docs/re/153 §7)。
+// 狂暴是矮人的種族附贈技能,不可能是死碼 —— **所以面數 ≥ 76**。
+// 配上「門檻寫 75」這個形狀,100 是最自然的候選。
 //
 // ⛔ 這個數字決定整個命中率的尺度 —— 填錯會讓 docs/spec/01 §4 的
 // `×4` 與 `+30` 全部失去意義,而畫面上只會看到「好像太容易打中」。
-// 100 是**佔位**,挑它只因為命中值的量級看起來是百分比。
 const ToHitFaces = 100
+
+// BerserkThreshold 是狂暴加倍的門檻:同一次攻擊的第二次擲骰**大於**它
+// (原版 `cmp ds:977Ah, 4Bh` + `jle`,docs/re/153 §7)。
+const BerserkThreshold = 75
+
+// KarateSkill 是空手道在戰士技能表裡的編號(docs/formats/01)。
+// 空手時若攻擊者有這一項,傷害改走「命中能力 − 5」那條式子。
+const KarateSkill = 4
 
 // Unresolved 是要顯示在訊息列的未解項,讓它們在**執行時**也看得見。
 var Unresolved = []string{
-	"傷害乘數 k1 未解(暫用 1)",
-	"命中擲骰面數未解(暫用 " + strconv.Itoa(ToHitFaces) + ")",
+	"命中擲骰面數未解(已知 ≥ 76,暫用 " + strconv.Itoa(ToHitFaces) + ")",
 }
 
 // ReorderEachRound:先攻是否每回合重排。
@@ -112,9 +135,10 @@ const ReorderEachRound = true
 // 以及測試可以餵腳本化的序列來逐項驗公式。
 type Rand interface{ Roll(faces int) int }
 
-// DamageFaces 是傷害公式兩個亂數的面數,原版都是常數 26
-// (docs/re/78:`mov bx, 1Ah` 出現兩次)。
-const DamageFaces = 26
+// 這裡曾經有一個 `DamageFaces = 26`。**那個面數不存在**:
+// 它來自把 `mov bx, 1Ah` 讀成「26 面骰」,而 0x1A 是浮點累加器的**位址**
+// (docs/re/152 §3、153 §9)。傷害擲骰的面數是**武器傷害本身**
+// (或力量、或命中能力 − 5),每條分支各不相同。
 
 // ToHit 回傳命中門檻。docs/spec/01 §4。
 //
@@ -141,26 +165,55 @@ func Hits(atk, def Unit, atkWeapon, defArmor Item, r Rand, faces int) (int, bool
 	return roll, roll <= ToHit(atk, def, atkWeapon, defArmor)
 }
 
-// Damage 回傳一次命中的傷害。docs/spec/01 §5。
+// Damage 回傳一次命中的傷害。docs/re/153。
 //
-//	傷害 = (武器傷害 × R₁ − 屬性17[防] − 防具值) × k₁ + R₂ + k₂
+//	持武器  傷害 = 擲骰(武器傷害) − 護甲技能 − 防具值 + floor((力量 − 7) × k₁)
+//	赤手    傷害 = 擲骰(力量)     − 護甲技能 − 防具值
+//	空手道  傷害 = 擲骰(命中能力 − 5) − 護甲技能 − 防具值
 //
-// 全程浮點,最後轉整數(原版走 MBF 單精度,docs/re/79)。
-// ⚠ 括號位置是從運算順序推的,不是從括號本身讀出(docs/re/79 §3)。
+// 原版寫的是 `INT(N × RND) + 1`,而 Roll(n) 直接回 1…n —— 同一件事。
+// 所以 k₂(ds:9464h)不出現在這裡,它的 +1 已經折進 Roll。
+//
+// ⚠ **力量加值先前整個漏掉了**,而 k₁ 被乘在整個括號上。
+// 兩種寫法算出來的傷害都在合理範圍,分不開 —— 要讀程式才知道。
+//
+// ⚠ 力量 < 7 時加值是**負的**,而且是 `floor` 不是截斷:
+// `floor(-0.5) = -1`,`int(-0.5) = 0`。BASIC 的 INT() 是 floor。
 func Damage(atk, def Unit, weapon, armor Item, r Rand) int {
-	dmg := float64(weapon.Main)
+	faces := weapon.Main
+	strBonus := int(math.Floor(float64(atk.Str-7) * DamageK1))
 	if atk.Weapon >= BareHandMin {
-		dmg = 1 // 赤手空拳
+		// 赤手:面數換成力量,而且**沒有**力量加值那一項
+		faces, strBonus = atk.Str, 0
+		if atk.Karate > 0 {
+			faces = atk.ToHit - 5
+		}
 	}
-	v := dmg*float64(r.Roll(DamageFaces)) -
-		float64(def.ArmSkin) - float64(armor.Main)
-	v = v*DamageK1 + float64(r.Roll(DamageFaces)) + DamageK2
-	if v < 0 {
-		// ⚠ 原版是否夾在 0 **未讀到**。這裡夾住是為了不讓負傷害變成治療;
-		// 若之後讀到原版允許負值,改這一行。
+	if faces < 1 {
+		// 擲骰面數 < 1 在原版是 `INT(負數 × RND)`,不會是正的傷害。
+		// 夾在 0 讓 Roll 不必處理非正的面數。
+		faces = 0
+	}
+	roll := 0
+	if faces > 0 {
+		roll = r.Roll(faces)
+	}
+	dmg := roll - def.ArmSkin - armor.Main + strBonus
+	if dmg < 1 {
+		// 原版:`cmp ds:9786h, 1` / `jl` → 印 'for no damage.',不扣血
+		// (docs/re/153 §8)。**讀到了,不是推的。**
 		return 0
 	}
-	return int(v)
+	return dmg
+}
+
+// Berserk 回傳這一擊要不要加倍,以及該用哪一種訊息。
+//
+// 原版:攻擊者的屬性 16(狂暴)非 0,**且**同一次攻擊的第二次擲骰 > 75
+// (docs/re/153 §7)。加倍那一邊印 `and hacks for`,另一邊印 `and hits for`
+// —— 語意與數值互相印證。
+func Berserk(atk Unit, secondRoll int) bool {
+	return atk.Berserk != 0 && secondRoll > BerserkThreshold
 }
 
 // Apply 把傷害套到防禦者身上。docs/spec/01 §6。

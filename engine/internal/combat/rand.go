@@ -41,10 +41,15 @@ func (r *SeededRand) Roll(faces int) int {
 // 有了它,公式的每一項都可以獨立驗 —— 不必去猜某顆種子會擲出什麼。
 type ScriptRand struct {
 	Values []int
-	i      int
+	// Faces 記下每次被要求的面數 —— 傷害公式的「面數是哪一項」
+	// 本身就是規則的一部分(武器傷害 / 力量 / 命中能力 − 5,docs/re/153),
+	// 而只看回傳值分不出這三條分支。
+	Faces []int
+	i     int
 }
 
 func (r *ScriptRand) Roll(faces int) int {
+	r.Faces = append(r.Faces, faces)
 	if len(r.Values) == 0 {
 		return 1
 	}

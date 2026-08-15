@@ -111,7 +111,7 @@ func TestMagicItemThreshold(t *testing.T) {
 	if !ItemTriggers(27, 26, always) {
 		t.Error("編號 27 且成功率 26 應必定發動")
 	}
-	never := &combat.ScriptRand{Values: []int{combat.DamageFaces}}
+	never := &combat.ScriptRand{Values: []int{combat.ToHitFaces}}
 	if ItemTriggers(27, 1, never) {
 		t.Error("擲出最大值且成功率 1,不該發動")
 	}

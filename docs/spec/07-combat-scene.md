@@ -113,6 +113,11 @@ type Rand interface { Roll(faces int) int }   // 回 1..faces
 ⚠ **一場遭遇有幾隻怪、怎麼決定,未讀**([`re/169`](../re/169-encounter-zone-selects-the-monster.md) §6)。
 引擎目前一場一隻。
 
+**最終首領永遠不會隨機出現**:`Siriadne !` 的難度階級是 **13**,
+而區域最大是 9(`|13 − 9| = 4 > 1`)—— 她由事件 533 的腳本放上場
+([`re/161`](../re/161-maze-event-dispatch.md) §4)。
+⚠ 階級 **10** 的十二隻(元素生物、Great Dragon、Titan…)**在區域 9 挑得到**。
+
 ### 行動點數
 
 [`01`](01-combat.md) §3:轉身 1 點、其他 3 點。

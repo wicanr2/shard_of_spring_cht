@@ -54,3 +54,35 @@ func TestZoneAcceptsIsSymmetric(t *testing.T) {
 		}
 	}
 }
+
+// 七個實際用到的區域,每一個都必須有候選 —— 原版的重擲沒有上限,
+// 一個區域湊不到就會當掉(docs/re/169 §1.1)。
+//
+// ⚠ 這條測試用的是**出貨資料的階級分佈**(docs/formats/03 欄9:1–10、13),
+// 不是硬編的名單 —— 欄位讀錯時它會失敗。
+func TestEveryZoneHasCandidates(t *testing.T) {
+	// MONSTERS.DAT 的欄9 分佈(74 筆)
+	tiers := map[int]int{1: 10, 2: 6, 3: 8, 4: 6, 5: 6, 6: 4, 7: 12, 8: 4, 9: 5, 10: 12, 13: 1}
+	for _, zone := range []int{1, 2, 3, 5, 6, 8, 9} {
+		n := 0
+		for tier, count := range tiers {
+			if ZoneAccepts(zone, tier) {
+				n += count
+			}
+		}
+		if n == 0 {
+			t.Errorf("區域 %d 沒有候選怪物 —— 原版會在這裡無限重擲", zone)
+		}
+	}
+	// ⚠ 階級 13 只有 Siriadne,而區域最大是 9 → 她永遠不會隨機出現。
+	// 她由事件 533 的腳本放上場(docs/re/161 §4)。
+	for zone := 1; zone <= 9; zone++ {
+		if ZoneAccepts(zone, 13) {
+			t.Errorf("區域 %d 挑得到階級 13 —— 最終首領不該隨機出現", zone)
+		}
+	}
+	// 但階級 10 在區域 9 挑得到 —— 只有 13 是例外
+	if !ZoneAccepts(9, 10) {
+		t.Error("區域 9 應該挑得到階級 10(元素生物、Great Dragon 那一批)")
+	}
+}

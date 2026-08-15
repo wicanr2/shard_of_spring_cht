@@ -392,30 +392,3 @@ func TestShippedExpDisplaysZero(t *testing.T) {
 		}
 	}
 }
-
-// 戰後分經驗的資格:HP > 0 **且** 狀態 < 5(docs/re/150 §2)。
-//
-// ⚠ 兩個條件要分開測。只測「死人不分」的話,`HP > 0` 單獨一條也會通過 ——
-// 出貨資料上死人的 HP 也是 0,兩個條件在那裡永遠一起成立。
-func TestEarnsExpNeedsBothConditions(t *testing.T) {
-	cases := []struct {
-		name string
-		hp   int
-		st   int
-		want bool
-	}{
-		{"活著又正常", 5, StatusOK, true},
-		{"中毒但活著", 5, StatusPoisoned, true},
-		{"束縛但活著", 5, StatusBound, true},
-		{"冰封但活著", 5, StatusFrozen, true},
-		{"HP 0", 0, StatusOK, false},
-		{"狀態死亡但 HP 還有值", 5, StatusDead, false},
-		{"兩個都不合格", 0, StatusDead, false},
-	}
-	for _, c := range cases {
-		got := Character{HP: c.hp, Status: c.st}.EarnsExp()
-		if got != c.want {
-			t.Errorf("%s(HP %d、狀態 %d)= %v,應為 %v", c.name, c.hp, c.st, got, c.want)
-		}
-	}
-}

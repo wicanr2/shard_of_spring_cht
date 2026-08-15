@@ -22,13 +22,12 @@ func (g *Game) charExp(c original.Character) int { return int(c.Exp) }
 
 // awardExp 把一場戰鬥的經驗值分給有資格的成員。
 //
-// 資格是原版結算迴圈的兩個條件 `and` 起來(docs/re/150 §2):
+// 資格由**戰場上的單位**決定,不是由名冊決定(docs/re/150 §2.1):
+// 朝向 > 0(還在場上)且 狀態 < 5(未陣亡)。
 //
-//	當前生命值 > 0   且   狀態 < 5(未陣亡)
-//
-// ⚠ **不是「還活著的人」而已** —— 中毒、束縛、凝滯、冰封的人照分,
-// 只有狀態 5(死亡)不分。把它寫成 `HP > 0` 在出貨資料上看不出差別,
-// 因為死人的 HP 也是 0;要到「HP 0 但狀態不是 5」那種狀態才會分岔。
+// ⚠ **逃走的人拿不到。** 逃跑在原版是「把朝向清成 0」(docs/re/103),
+// 而逃走的人**生命值仍然大於 0** —— 用生命值判斷會多發給他們,
+// 而畫面上完全看不出來。
 //
 // 回傳分給每個人的數量與說明文字。
 func (g *Game) awardExp(units []combat.Unit) (int, string) {
@@ -37,8 +36,9 @@ func (g *Game) awardExp(units []combat.Unit) (int, string) {
 		return 0, ""
 	}
 	var idx []int // 有資格的成員在 g.members 裡的索引
-	for i, c := range g.members {
-		if c.EarnsExp() {
+	for u := combat.PartyBase; u < combat.PartyBase+combat.PartyMax; u++ {
+		i := u - combat.PartyBase
+		if u < len(units) && i < len(g.members) && units[u].EarnsExp() {
 			idx = append(idx, i)
 		}
 	}

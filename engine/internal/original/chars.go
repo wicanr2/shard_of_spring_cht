@@ -89,15 +89,6 @@ type Character struct {
 // 都是空槽 —— 這條判定因此不依賴那個未解項。
 func (c Character) Occupied() bool { return strings.TrimSpace(c.Name) != "" }
 
-// EarnsExp 回傳戰後這個角色分不分得到經驗。
-//
-// 原版的結算迴圈把兩個條件 `and` 起來(docs/re/150 §2):
-// **當前生命值 > 0 且 狀態 < 5**。
-//
-// ⚠ 兩個條件都要,不能只留其中一個 —— 中毒、束縛、凝滯、冰封的人**照分**,
-// 而在出貨資料上「死了」與「HP 0」永遠同時成立,少寫一個看不出差別。
-func (c Character) EarnsExp() bool { return c.HP > 0 && c.Status < StatusDead }
-
 // InParty 回傳這個角色是否編在某一隊,以及隊號(1–5)。
 func (c Character) InParty() (int, bool) {
 	if !c.Occupied() || c.Party < '1' || c.Party > '5' {

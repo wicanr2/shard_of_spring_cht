@@ -45,6 +45,7 @@ type Unit struct {
 	Kind    int    // 屬性 11:怪物類別 / 圖組
 	StatMag int    // 屬性 12:狀態效果強度
 	Tier    int    // 屬性 13:難度階級(角色固定 99)
+	Action  int    // 屬性 14:行動類型(docs/re/163)
 	Target  int    // 屬性 15
 	Berserk int    // 屬性 16(僅 Hero)
 	ArmSkin int    // 屬性 17(僅 Hero)—— ⚠ 傷害公式減的就是這一項
@@ -122,6 +123,33 @@ const BerserkThreshold = 75
 // 空手時若攻擊者有這一項,傷害改走「命中能力 − 5」那條式子。
 const KarateSkill = 4
 
+// 屬性 14 的行動類型(docs/re/163)。隊員由 `CHARS.DAT` 位移 15 的職業字元決定;
+// 怪物則擲 `INT(RND × N) + 1`。
+//
+// ⚠ **值域不只 1 / 2** —— 行動選擇那一段還分別比 3 與 4,
+// 但那兩類是什麼行為**未解**,所以這裡只具名讀得出來的兩個。
+const (
+	ActionFighter = 1 // 戰士(`CHARS.DAT` 位移 15 = '1');圖組 41
+	ActionWizard  = 2 // 法師(位移 15 = '2');圖組 57
+)
+
+// ActionKind 圖組:同一個分支順手設的屬性 11(docs/re/163 §1)。
+const (
+	KindFighter = 41
+	KindWizard  = 57
+)
+
+// PartyAction 回傳一個隊員的行動類型。
+//
+// ⚠ 原版是**字串比較**:`MID$(記錄, 15, 1) = "1"`。
+// 不相等的一律走法師那一支 —— 所以未知的職業字元會被當成法師,照抄。
+func PartyAction(class byte) int {
+	if class == '1' {
+		return ActionFighter
+	}
+	return ActionWizard
+}
+
 // Unresolved 是要顯示在訊息列的未解項,讓它們在**執行時**也看得見。
 var Unresolved = []string{GoldAssumption}
 
@@ -190,7 +218,10 @@ func Damage(atk, def Unit, weapon, armor Item, r Rand) int {
 	if atk.Weapon >= BareHandMin {
 		// 赤手:面數換成力量,而且**沒有**力量加值那一項
 		faces, strBonus = atk.Str, 0
-		if atk.Karate > 0 {
+		// ⚠ 原版是**兩層閘門**:先看屬性 14 == 1(行動類型 = 戰士),
+		// 才去讀角色記錄的空手道旗標(docs/re/153 §5、163 §4)。
+		// 少了外層,法師空手也會走空手道那條式子。
+		if atk.Action == ActionFighter && atk.Karate > 0 {
 			faces = atk.ToHit - 5
 		}
 	}

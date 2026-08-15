@@ -57,8 +57,12 @@ func TestDamageBranchesPickDifferentFaces(t *testing.T) {
 	}{
 		{"持武器", Unit{Weapon: 3, Str: 11}, Item{Main: 7}, 7, 5 + 2},
 		{"赤手", Unit{Weapon: BareHandMin, Str: 9}, Item{Main: 7}, 9, 5},
-		{"空手道", Unit{Weapon: BareHandMin, Str: 9, ToHit: 12, Karate: 1},
-			Item{Main: 7}, 12 - 5, 5},
+		{"空手道", Unit{Weapon: BareHandMin, Str: 9, ToHit: 12, Karate: 1,
+			Action: ActionFighter}, Item{Main: 7}, 12 - 5, 5},
+		// ⚠ 外層閘門是**屬性 14 == 1**(docs/re/163 §4)。行動類型不是戰士時,
+		// 就算技能旗標是 1 也不走空手道那一支 —— 少了這一層,法師會用到戰士的式子。
+		{"法師空手(技能旗標無效)", Unit{Weapon: BareHandMin, Str: 9, ToHit: 12,
+			Karate: 1, Action: ActionWizard}, Item{Main: 7}, 9, 5},
 	}
 	for _, c := range cases {
 		r := &ScriptRand{Values: []int{5}}

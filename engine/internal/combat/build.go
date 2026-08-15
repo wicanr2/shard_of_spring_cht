@@ -27,6 +27,10 @@ func Build(party []original.Character, monsters []original.Monster,
 			Status: 0,     // 常數 0
 			Facing: South, // 常數 3 —— 出場時全部面南(docs/re/96)
 			Kind:   m.Class, Tier: m.Tier, Exp: m.Exp,
+			// ⚠ 屬性 14(行動類型)在原版是擲出來的:`INT(RND × ds:94B8) + 1`,
+			// 而 **`ds:94B8` 未解**(docs/re/163 §2)。這裡留 0 ——
+			// 目前只有空手道閘門讀它,而怪物沒有技能旗標,所以留 0 不影響任何數字。
+			// ⛔ 怪物 AI 要用到它的時候**先把面數解出來**,不要在這裡填一個數。
 		}
 	}
 
@@ -39,8 +43,11 @@ func Build(party []original.Character, monsters []original.Monster,
 			Speed: c.Speed, HP: c.HP,
 			Weapon: c.Weapon, Armor: c.Armor,
 			Str: c.Str, SP: c.SP, Status: c.Status, ToHit: c.ToHit,
-			Facing:  North,
-			Tier:    99, // 角色固定 99(docs/spec/01 §1)
+			Facing: North,
+			Tier:   99, // 角色固定 99(docs/spec/01 §1)
+			// 屬性 14 / 11 由職業字元一起決定(docs/re/163 §1)
+			Action:  PartyAction(c.Class),
+			Kind:    partyKind(c.Class),
 			StatMag: c.StatMag,
 			// 屬性 16/17 只有 Hero 有(位移 49/48 的技能旗標)
 			Berserk: skill(c, 8), ArmSkin: skill(c, 7), Karate: skill(c, KarateSkill),
@@ -48,6 +55,15 @@ func Build(party []original.Character, monsters []original.Monster,
 	}
 	f.Sort()
 	return f
+}
+
+// partyKind 是隊員的圖組(屬性 11)。原版與屬性 14 在同一個分支裡設
+// (docs/re/163 §1),所以兩者一定同號。
+func partyKind(class byte) int {
+	if PartyAction(class) == ActionFighter {
+		return KindFighter
+	}
+	return KindWizard
 }
 
 // skill 讀第 n 個技能旗標(1-based,docs/formats/01 位移 41+n)。

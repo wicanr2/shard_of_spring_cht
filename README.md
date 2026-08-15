@@ -19,9 +19,10 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | ![地城](docs/images/05-maze.png) | ![戰鬥](docs/images/06-combat.png) |
 | **地城** —— 六座迷宮、能見度裁視野、事件表 | **最終戰** —— 巨龍 ×2 + 希瑞雅妮。這個組成是[反組譯](docs/re/180-scripted-fight-monster-list.md)與[通關紀錄](docs/re/179-final-battle-composition-from-playthrough.md)**兩條獨立證據鏈**得到的同一個答案 |
 
-> ⚠ **截圖裡的美術來自原版。** 這個 repo 維持 private
-> ([`CLAUDE.md`](CLAUDE.md) §10),與 `translations/` 收錄原版英文文本是同一個理由。
-> ⛔ 不要轉成 public。
+> ⚠ **截圖裡的美術來自原版**,收錄在 private repo 裡是專案負責人裁定的
+> ([`CLAUDE.md`](CLAUDE.md) §8),與 `translations/` 收錄原版英文文本同一個理由。
+> ⛔ **這讓「repo 維持 private」(§10)變得更吃重,不是更寬鬆。**
+> 例外只涵蓋渲染出來的畫面 —— `cmd/convert` 轉出的素材仍然不進版控。
 
 ---
 

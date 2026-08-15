@@ -29,6 +29,10 @@ result.txt
 *.gif
 *.mp4
 !docs/images/*.png
+!docs/images/**/*.png
+# ⚠ 上面兩行是 CLAUDE.md §8 的例外:引擎畫面的截圖可以進版控,即使含原版美術。
+# ⛔ 例外只涵蓋**渲染出來的畫面**。cmd/convert 轉出的素材(圖塊 / 怪物圖 / PICT)
+#    仍然一律 gitignore —— 判準是「可不可以拿去重建原版」。
 
 # 一般
 .DS_Store

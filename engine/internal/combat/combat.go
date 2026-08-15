@@ -261,3 +261,10 @@ func Apply(def *Unit, dmg int) {
 		def.HP = 0
 	}
 }
+
+// MonsterActionFaces 是怪物擲屬性 14 的面數,**讀出來的**:
+// CMBT 的 DGROUP 常數 `ds:94B8` 初值 = 5(docs/re/178 §2)。
+//
+// 對怪物而言屬性 14 是**法術系別 1–5**(docs/re/170),
+// 對隊員而言是職業(1 = 戰士、2 = 法師)—— 同一個欄位、兩種語意。
+const MonsterActionFaces = 5

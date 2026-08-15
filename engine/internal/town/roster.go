@@ -81,13 +81,13 @@ func Delete(c *original.Character) {
 	c.Party = original.NoParty
 }
 
-// CreateUnresolved 是角色創造規則的未解說明(docs/spec/11 §5)。
+// ShippedAttrRange 回傳出貨五個角色的屬性範圍。
 //
-// ⛔ 屬性怎麼決定沒有讀出來。**不要因為「看起來像 3d6」就寫成 3d6** ——
-// 出貨五人的屬性是 3–16,3d6 的範圍是 3–18,兩者相容但不等價。
-const CreateUnresolved = "角色創造的屬性規則未解,暫用出貨五人的分佈"
-
-// ShippedAttrRange 回傳出貨五個角色的屬性範圍,給創造畫面當暫用依據。
+// 現在只給測試當**健全性檢查**用:擲骰公式的支撐集(2…13)加上種族修正
+// 之後,要涵蓋得住出貨五人實際擁有的值(docs/re/178 §4)。
+//
+// ⚠ 這個檢查**不能拿來裁決常數** —— 舊的 A=5/B=4 與新的 A=6/B=2 都涵蓋得住。
+// 涵蓋是必要條件不是充分條件。
 func ShippedAttrRange(chars []original.Character) (lo, hi int) {
 	lo, hi = 99, 0
 	for _, c := range chars {

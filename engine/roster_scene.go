@@ -35,7 +35,7 @@ func (g *Game) openRoster() {
 		g.roster = &rosterState{}
 	}
 	g.roster.open = true
-	g.roster.msg = town.CreateUnresolved
+	g.roster.msg = ""
 }
 
 // rosterKey 處理名冊畫面的按鍵。

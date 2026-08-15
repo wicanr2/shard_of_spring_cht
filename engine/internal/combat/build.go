@@ -27,10 +27,13 @@ func Build(party []original.Character, monsters []original.Monster,
 			Status: 0,     // 常數 0
 			Facing: South, // 常數 3 —— 出場時全部面南(docs/re/96)
 			Kind:   m.Class, Tier: m.Tier, Exp: m.Exp,
-			// ⚠ 屬性 14(行動類型)在原版是擲出來的:`INT(RND × ds:94B8) + 1`,
-			// 而 **`ds:94B8` 未解**(docs/re/163 §2)。這裡留 0 ——
-			// 目前只有空手道閘門讀它,而怪物沒有技能旗標,所以留 0 不影響任何數字。
-			// ⛔ 怪物 AI 要用到它的時候**先把面數解出來**,不要在這裡填一個數。
+			// 屬性 14 對怪物而言是**法術系別 1–5**(docs/re/170),
+			// 原版擲 `INT(RND × ds:94B8) + 1`,而 `ds:94B8` 的初值就是 **5**
+			// (docs/re/178 §2 從 DGROUP 讀出來的,先前是從行為推的)。
+			//
+			// ⚠ 系別 1 與 ActionFighter 同值。**這不會誤觸空手道閘門** ——
+			// 那個閘門的第二層要技能旗標,而怪物沒有技能旗標(Karate 恆為 0)。
+			Action: r.Roll(MonsterActionFaces),
 		}
 	}
 

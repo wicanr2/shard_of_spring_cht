@@ -254,18 +254,21 @@ func PoolAvailable(uses int) bool { return uses < PoolLimit }
 // PoolCanHeal 回傳這個狀態碼的人能不能在池邊被治療。
 func PoolCanHeal(status int) bool { return status <= PoolMaxStatus }
 
-// PoolRollFaces 是治療量擲骰的面數 `ds:950A`。
+// PoolRollFaces 是治療量擲骰的面數 `ds:950A`,**讀出來的**:
+// MAZEMOVE 的 DGROUP 常數,初值是 MBF 5.0(docs/re/178 §2)。
+// 加號後面的 1 也是讀出來的 —— 全遊戲的擲骰成語都是
+// `INT(RND × N) + 1`(docs/re/152 §3)。
 //
-// ⚠ **未解**(docs/re/155 §2.3)。這是一個**具名佔位**,不是 RE 結論;
-// 解出來時改這一個常數。加號後面的 1 則是讀出來的:
-// 全遊戲的擲骰成語都是 `INT(RND × N) + 1`(docs/re/152 §3)。
-const PoolRollFaces = 8
+// ⚠ 先前這裡是 8,一個具名佔位。
+const PoolRollFaces = 5
 
-// PoolRollAssumption 讓上面那個佔位在**執行時**也看得見。
-const PoolRollAssumption = "⚠ 治療池的治療量面數未解(ds:950A)—— 暫用 d8"
+// PoolRollNote 是站在池邊時的提示。**這不是免責聲明** —— 面數已經解出來了。
+const PoolRollNote = "治療池:每次 INT(RND × 5) + 1 點,夾在離滿血還差多少"
 
-// Unresolved 是要顯示在訊息列的未解項。
-var Unresolved = []string{PoolRollAssumption}
+// Unresolved 是要顯示在訊息列的未解項。⚠ **目前是空的** ——
+// 迷宮這一層沒有未解到會影響玩家的規則。⛔ 不要為了「有東西可顯示」
+// 把已經解出來的規則塞回來當免責聲明(rulebook/63)。
+var Unresolved []string
 
 // PoolHeal 回傳實際回復的生命值:擲骰結果夾在「離滿血還差多少」。
 //

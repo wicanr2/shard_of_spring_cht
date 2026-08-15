@@ -218,8 +218,6 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 		line("Enter 確定,ESC 取消")
 	}
 	y += lh * 0.5
-	line(town.AttrRollAssumption)
-	line(town.InitialSPUnresolved)
 	if c.msg != "" {
 		line("⚠ " + c.msg)
 	}

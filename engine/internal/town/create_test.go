@@ -99,7 +99,7 @@ func TestAttributeRollShape(t *testing.T) {
 		{0, 0, AttrOffsetB}, // 兩次都擲到 0 → 下界就是 B
 		{0.999, 0.999, int(2*AttrRangeA) + AttrOffsetB - 1}, // 逼近上界
 		{0.5, 0.5, int(AttrRangeA) + AttrOffsetB},           // 兩次半 → A + B
-		{0.3, 0.3, int(0.6*AttrRangeA) + AttrOffsetB},
+		{0.3, 0.3, 5}, // 1.8 + 1.8 + 2 = 5.6 → 取整一次 → 5
 	} {
 		r := &fixedFloat{seq: []float64{c.a, c.b}}
 		if got := RollAttribute(r); got != c.want {
@@ -113,14 +113,12 @@ func TestAttributeRollShape(t *testing.T) {
 // 這條測的是 `INT(x+y+B)` 與 `INT(x)+INT(y)+B` 的差別 ——
 // 兩者的支撐集幾乎一樣,只有小數部分會相加進位的那些點分岔。
 func TestAttributeRollFloorsOnce(t *testing.T) {
-	// 0.6×5 = 3.0、0.19×5 = 0.95 → 和 3.95 + 4 = 7.95 → 7
-	// 若各自取整:3 + 0 + 4 = 7 —— 相同,換一組會分開的
-	// 0.5×5 = 2.5、0.7×5 = 3.5 → 和 6.0 + 4 = 10
-	// 各自取整:2 + 3 + 4 = 9   ← 分岔
-	r := &fixedFloat{seq: []float64{0.5, 0.7}}
-	if got := RollAttribute(r); got != 10 {
-		t.Errorf("INT(2.5 + 3.5 + 4) 應為 10,得 %d "+
-			"—— 得 9 表示各自取整了(docs/re/156 §1)", got)
+	// 0.25×6 = 1.5、0.75×6 = 4.5 → 和 6.0 + 2 = 8
+	// 各自取整:1 + 4 + 2 = 7            ← 分岔
+	r := &fixedFloat{seq: []float64{0.25, 0.75}}
+	if got := RollAttribute(r); got != 8 {
+		t.Errorf("INT(1.5 + 4.5 + 2) 應為 8,得 %d "+
+			"—— 得 7 表示各自取整了(docs/re/156 §1)", got)
 	}
 }
 
@@ -262,4 +260,44 @@ func emptyPackChar() original.Character {
 	}
 	c.Weapon, c.Armor = original.NotEquipped, original.NotEquipped
 	return c
+}
+
+// 技能成本:20 項全部有值,而且**戰士表的前五項**與實跑觀察到的一致
+// (docs/re/178 §1 —— 那五項是這張表的正對照)。
+func TestSkillCostsMatchTitlesDat(t *testing.T) {
+	hero := [10]int{2, 2, 1, 2, 2, 2, 4, 3, 2, 2}
+	wiz := [10]int{5, 5, 5, 5, 5, 2, 2, 2, 2, 3}
+	for i := 1; i <= 10; i++ {
+		if c, ok := SkillCost(rules.ClassHero, i); !ok || c != hero[i-1] {
+			t.Errorf("戰士技能 %d:得 (%d,%v),應為 %d", i, c, ok, hero[i-1])
+		}
+		if c, ok := SkillCost(rules.ClassWizard, i); !ok || c != wiz[i-1] {
+			t.Errorf("法師技能 %d:得 (%d,%v),應為 %d", i, c, ok, wiz[i-1])
+		}
+	}
+	// 界外要說「不知道」,不要回一個看起來合理的預設值
+	if _, ok := SkillCost(rules.ClassHero, 0); ok {
+		t.Error("技能 0 不存在,應回 ok=false")
+	}
+	if _, ok := SkillCost(rules.ClassHero, 11); ok {
+		t.Error("技能 11 不存在,應回 ok=false")
+	}
+}
+
+// 法師的初始法力 = 智能,戰士 0(手冊 p.12,docs/re/178 §3)。
+func TestInitialSPIsIntellect(t *testing.T) {
+	cs := blankRoster()
+	// 地精是法師;智能會被種族修正 +5,所以拿建好的角色自己的 Int 比
+	id, r := Create(cs, rules.Gnome, rules.ClassWizard, Rolled{Int: 6, End: 8}, "阿地")
+	if r != CreateOK {
+		t.Fatalf("創造失敗:%v", r)
+	}
+	w := cs[id-1]
+	if w.SP != w.Int || w.MaxSP != w.Int {
+		t.Errorf("法師初始法力應 = 智能 %d,得 SP=%d MaxSP=%d", w.Int, w.SP, w.MaxSP)
+	}
+	id2, _ := Create(cs, rules.Human, rules.ClassHero, Rolled{Int: 6, End: 8}, "阿人")
+	if h := cs[id2-1]; h.SP != 0 || h.MaxSP != 0 {
+		t.Errorf("戰士不該有法力,得 SP=%d MaxSP=%d", h.SP, h.MaxSP)
+	}
 }

@@ -65,7 +65,8 @@ MID$(角色記錄, 86, 1) == '1'  →  call 0x12DB7  →  'You have used that sk
 01134D  補給品 ← min(補給品 + ds:731C, ds:6F10)    ; 操作碼 23
 ```
 
-技能編號對得上:`CAMP` 自己的技能表字串寫著 `9)  Hunting  (2)`,
+技能編號對得上:技能表寫著 `9)  Hunting         (2)`
+(在 **`TITLES.DAT` 第 75 列**,不在執行檔裡 —— 見 [`178`](178-settings-from-three-sources.md) §1),
 而技能旗標在 `CHARS.DAT` **位移 41 + n**([`formats/01`](../formats/01-chars-dat.md)),
 `41 + 9 = 50` ✓。
 

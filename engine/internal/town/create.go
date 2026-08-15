@@ -34,17 +34,16 @@ type Roller interface {
 // 先前用 `4d3`(四顆骰的和)支撐集也吻合,但峰度明顯更高 ——
 // **支撐集相同而分佈不同,玩起來只覺得「極端值比較少」**,沒有人會發現。
 //
-// A 與 B 的**值**仍未解(執行期變數)。15 個實測樣本(4…12、平均 8.4)
-// 把它們約束到 B = 4、A ≈ 4.9;取整數 A = 5 → 支撐集 4…13、平均 8.5。
-// 這兩個數字是**具名的假設**,形狀不是。
+// A 與 B 都是**讀出來的**:CHARUTIL 的 DGROUP 常數 `ds:6C2A` 與 `ds:6C2E`
+// 有編譯期初值,直接躺在檔案裡(docs/re/178)。支撐集 2…13、平均 7.5。
+//
+// ⚠ 先前這裡寫 `A = 5、B = 4`,是從 15 個實測樣本(4…12)反推的 ——
+// **那個反推把「觀察到的最小值」當成了下界**。真正的下界 2 只有
+// 5.6% 的機率出現,15 個樣本裡看不到它一點也不奇怪。
 const (
-	AttrRangeA  = 5.0 // ds:6C2A
-	AttrOffsetB = 4   // ds:6C2E
+	AttrRangeA  = 6.0 // ds:6C2A
+	AttrOffsetB = 2   // ds:6C2E
 )
-
-// AttrRollAssumption 是給畫面顯示用的說明。
-const AttrRollAssumption = "⚠ 屬性算式的形狀已解(兩個亂數相加再取整一次)," +
-	"但兩個常數未解 —— 本引擎用 A=5、B=4(docs/re/156)"
 
 // SkillPoints 回傳創造時可用的技能點數。
 //
@@ -54,22 +53,31 @@ func SkillPoints(intellect int) int { return intellect }
 
 // SkillCost 回傳一項技能的點數成本。
 //
-// ⚠ **只觀察到戰士表的前五項**(劍 2 / 斧 2 / 釘錘 1 / 空手 2 / 夜視 2)。
-// 其餘五項與法師的十項**未解** —— 回 DefaultSkillCost 並在畫面上標出來,
-// ⛔ 不要把「沒觀察到」填成 1 或 2 裝作已知。
+// **兩張表都是讀出來的**:`TITLES.DAT` 第 67–86 列就是創造畫面印出來的技能表,
+// 每一列尾端括號裡的數字就是成本(docs/re/178 §1)。
+//
+//	"1)  Sword           (2)"   →  1 號技能,成本 2
+//
+// ⚠ 先前這裡只有戰士表的前五項(從實跑觀察到的),其餘十五項回一個佔位值 ——
+// 那五項與本表**逐項吻合**,所以它同時是這張表的正對照。
 func SkillCost(class rules.Class, n int) (int, bool) {
-	if class == rules.ClassHero {
-		if c, ok := heroSkillCost[n]; ok {
-			return c, true
-		}
+	t := heroSkillCost
+	if class == rules.ClassWizard {
+		t = wizardSkillCost
 	}
-	return DefaultSkillCost, false
+	if n < 1 || n > len(t) {
+		return 0, false
+	}
+	return t[n-1], true
 }
 
-// DefaultSkillCost 是未觀察到成本時的佔位值。
-const DefaultSkillCost = 2
-
-var heroSkillCost = map[int]int{1: 2, 2: 2, 3: 1, 4: 2, 5: 2}
+// 技能成本。索引 = 技能編號 − 1。⚠ 同一格在兩張表裡是不同的技能。
+var (
+	// 劍 斧 釘錘 空手 夜視 策略 護甲 技擊 打獵 說服
+	heroSkillCost = [10]int{2, 2, 1, 2, 2, 2, 4, 3, 2, 2}
+	// 火 金 風 冰 靈 武器知識 藥水知識 物品知識 怪物知識 降魔
+	wizardSkillCost = [10]int{5, 5, 5, 5, 5, 2, 2, 2, 2, 3}
+)
 
 // FloatRoller 是能給 [0,1) 浮點的亂數來源。原版的屬性算式要的是浮點,
 // 不是骰子(docs/re/156)。
@@ -139,8 +147,8 @@ func (r CreateResult) String() string {
 //
 // ⚠ **初始生命值 = 體能**(手冊 p.13「它也是你一開始的生命點數」;
 // 創造畫面上 `Endurance 5` 對應 `H.P.: 5`,兩個來源一致)。
-// ⚠ 初始法力值**未解** —— 法師的 `S.P.` 在創造畫面上是空的,
-// 手冊只說「智能決定巫師一開始的法力點數」而沒給算式。這裡填 0 並標出來。
+// **初始法力值 = 智能**(手冊 p.12,與初始生命同一組句子)。
+// ⚠ 證據等級比初始生命低一級 —— 見 struct 裡的註解。
 func Create(chars []original.Character, race rules.Race, class rules.Class,
 	v Rolled, name string) (int, CreateResult) {
 
@@ -170,6 +178,13 @@ func Create(chars []original.Character, race rules.Race, class rules.Class,
 		Race:  byte(race), Class: byte(class),
 		Speed: spd, Str: str, Int: intel, End: end, ToHit: skill,
 		MaxHP: end, HP: end, // 初始生命 = 體能
+		// 初始法力 = 智能。手冊 p.12 把兩者寫在同一組句子裡:
+		// 「智能:學技能時所擁有的點數**及巫師一開始時的法力點數**」、
+		// 「體能:…同時,它也是你一開始的生命點數」。
+		// ⚠ 這是**第 3 級證據**(手冊),而初始生命那一條有反組譯佐證、
+		// 這一條沒有 —— 兩者寫在同一行不代表證據等級相同(docs/re/178 §3)。
+		// ⚠ 戰士沒有法力,所以只給法師。
+		MaxSP: wizardSP(class, intel), SP: wizardSP(class, intel),
 		Weapon: original.NotEquipped, Armor: original.NotEquipped,
 		Level:  1,
 		Skills: raceSkills(race, class),
@@ -185,8 +200,13 @@ func Create(chars []original.Character, race rules.Race, class rules.Class,
 	return slot + 1, CreateOK
 }
 
-// InitialSPUnresolved 給畫面用。
-const InitialSPUnresolved = "⚠ 法師的初始法力值未解 —— 這裡填 0"
+// wizardSP 回傳初始法力:法師 = 智能,戰士 0。
+func wizardSP(class rules.Class, intel int) int {
+	if class == rules.ClassWizard {
+		return intel
+	}
+	return 0
+}
 
 // raceSkills 回傳十個技能旗標,把種族附贈的技能打開。
 //

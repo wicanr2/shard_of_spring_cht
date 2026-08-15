@@ -37,11 +37,18 @@ type townState struct {
 	page  int             // 商品分頁(原版有 `+ for next page`,手冊 p.31)
 	msg   string
 	// 營地的子畫面。原版選單有 11 個指令(docs/re/150 §5.2),
-	// 這裡做了五個:角色卡、裝備、丟棄、調整隊形、傳遞。
-	// 其餘的規則還沒解,選單上標「未實作」。
+	// 11 個全部做了:角色卡、裝備、丟棄、調整隊形、傳遞、睡覺、
+	// 打獵、鑑定,加上 docs/spec/16 補上的施法、使用道具、列印。
 	campWho  int  // 選到第幾位成員
 	campWho2 int  // 第二位(R)eorder / T)rade 用)
-	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別、'R' 調隊形、'T' 傳遞
+	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別、'R' 調隊形、'T' 傳遞、'C' 施法、'U' 使用道具、'P' 列印
+
+	// C)ast spell 的子階段(docs/spec/16 §1/§2)。campWho 借來當施法者;
+	// 選目標另外用 campWho2 —— 與 R)eorder / T)rade 共用同一個欄位,
+	// 但那兩個模式不會跟 'C' 同時開著,不會互相污染。
+	castStage int            // 0=選施法者(用 campWho) 1=選法術 2=輸入投入點數 3=選目標(用 campWho2)
+	castSpell original.Spell // 選定的法術
+	castInput string         // 投入點數的數字輸入緩衝(docs/spec/16 §1 的 'Spell Pts ?')
 }
 
 // shopPageSize 是一頁的商品數。主視野高 612、行高 26 → 扣掉標題約 20 列。
@@ -197,17 +204,23 @@ func (g *Game) townKey(k ebiten.Key) {
 			return
 		}
 		switch k {
-		case ebiten.KeyE, ebiten.KeyD, ebiten.KeyR, ebiten.KeyT:
+		// ⚠ H)unt 與 I)dentify 原本沒列在這裡 —— campLetter() 早就把它們對到
+		// 'H'/'I',hunt()/identify() 也早就寫好了,但因為這個 switch 沒把
+		// KeyH/KeyI 分到這一支,兩個鍵一直落進下面「未實作」那支,訊息還是空的
+		// (campUnimplemented 沒收這兩個鍵)。這是既有的接線漏洞,不是規則沒解——
+		// 修 C/U/P 一定要動這個 switch(Go 不准同一個鍵在兩個 case 出現),
+		// 順手把 H/I 接回去。
+		case ebiten.KeyE, ebiten.KeyD, ebiten.KeyR, ebiten.KeyT, ebiten.KeyH, ebiten.KeyI,
+			ebiten.KeyC, ebiten.KeyU, ebiten.KeyP:
 			ts.campMode = campLetter(k)
 			ts.msg = "按編號選人"
 			ts.campWho, ts.campWho2 = -1, -1
+			ts.castStage, ts.castInput = 0, ""
 		case ebiten.Key1, ebiten.Key2, ebiten.Key3, ebiten.Key4, ebiten.Key5:
 			// 原版是 `#)inspect char` —— 直接按編號。
 			if i := int(k - ebiten.Key1); i < len(g.members) {
 				ts.campMode, ts.campWho, ts.msg = '#', i, ""
 			}
-		case ebiten.KeyP, ebiten.KeyH, ebiten.KeyI, ebiten.KeyC, ebiten.KeyU:
-			ts.msg = campUnimplemented[k] + ":原版有這個指令,但規則還沒解,本引擎未實作"
 		case ebiten.KeyS:
 			// 手冊 p.38:每人耗 1 份食糧,回 1 HP、5 SP;沒得吃的人扣 1 HP。
 			before := g.group.Provisions
@@ -320,8 +333,6 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		y += lh
 		p.Draw(dst, "P) 列印角色表　H) 打獵　I) 鑑定　C) 施法　U) 使用道具", x, y)
 		y += lh
-		p.Draw(dst, "　　（上面這五個原版有，規則未解，本引擎未實作）", x, y)
-		y += lh
 		if ts.campMode != 0 {
 			y += lh * 0.5
 			for _, ln := range g.campLines(ts) {
@@ -346,18 +357,6 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	}
 }
 
-// campUnimplemented 是原版選單上有、但規則還沒解的指令。
-//
-// ⚠ **列出來比隱藏好。** 少一個指令的選單看起來完全正常,
-// 沒有人會發現漏了什麼 —— 而 `R)eorder` 會直接影響戰鬥站位。
-var campUnimplemented = map[ebiten.Key]string{
-	// P)rint 是驅動 1986 年的並列埠印表機。⚠ 依 CLAUDE.md §1.2 的邊界,
-	// 它**不影響 remake 的行為**,所以不解也不做 —— 但選單上要看得到。
-	ebiten.KeyP: "P) 列印角色表(原版輸出到印表機,本引擎不做)",
-	ebiten.KeyC: "C) 施法",
-	ebiten.KeyU: "U) 使用道具",
-}
-
 // campLetter 把按鍵換成營地子畫面的代號。
 func campLetter(k ebiten.Key) byte {
 	switch k {
@@ -373,6 +372,12 @@ func campLetter(k ebiten.Key) byte {
 		return 'H'
 	case ebiten.KeyI:
 		return 'I'
+	case ebiten.KeyC:
+		return 'C'
+	case ebiten.KeyU:
+		return 'U'
+	case ebiten.KeyP:
+		return 'P'
 	}
 	return 0
 }
@@ -386,6 +391,20 @@ func (g *Game) campSubKey(k ebiten.Key) {
 	ts := g.town
 	if k == ebiten.KeyEscape {
 		ts.campMode, ts.msg = 0, ""
+		return
+	}
+	// C)ast spell / U)se an item / P)rint 各有自己的多階段流程
+	// (docs/spec/16),獨立寫在 camp_actions.go,不擠進下面這條
+	// 「先選人、再選背包格」的共用路徑。
+	switch ts.campMode {
+	case 'C':
+		g.campCastKey(k)
+		return
+	case 'U':
+		g.campUseKey(k)
+		return
+	case 'P':
+		g.campPrintKey(k)
 		return
 	}
 	if ts.campWho < 0 {
@@ -587,11 +606,20 @@ func (g *Game) charCard(c original.Character) []string {
 
 // campLines 回傳營地子畫面的內容。
 func (g *Game) campLines(ts *townState) []string {
+	// C)ast / U)se / P)rint 各自的畫面在 camp_actions.go。
+	switch ts.campMode {
+	case 'C':
+		return g.campCastLines(ts)
+	case 'U':
+		return g.campUseLines(ts)
+	case 'P':
+		return g.campPrintLines(ts)
+	}
 	if ts.campMode == '#' && ts.campWho >= 0 && ts.campWho < len(g.members) {
 		return g.charCard(g.members[ts.campWho])
 	}
 	title := map[byte]string{'E': "裝備", 'W': "拿武器", 'A': "穿防具", 'D': "丟棄",
-		'R': "調整隊形", 'T': "傳遞"}[ts.campMode]
+		'R': "調整隊形", 'T': "傳遞", 'H': "打獵", 'I': "鑑定"}[ts.campMode]
 	if ts.campWho < 0 {
 		out := []string{title + "：按編號選人"}
 		for i, c := range g.members {

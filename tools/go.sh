@@ -19,7 +19,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE="${GO_IMAGE:-shard-go-build:3}"
+IMAGE="${GO_IMAGE:-shard-go-build:4}"
 CACHE="$ROOT/workplace/gocache"
 
 mkdir -p "$CACHE/build" "$CACHE/mod" "$ROOT/build"
@@ -63,7 +63,17 @@ case "${1:-}" in
   test)
     shift
     NET_ARGS=(--network none)
-    run go test ./... "$@"
+    # ⚠ 測試需要一個 X server:`package main` 匯入 ebiten 時,`internal/ui` 的
+    # `init()` 會呼叫 glfw.Init(),沒有 DISPLAY 就 panic —— 那發生在任何測試
+    # 跑起來之前,連空測試都擋。細節見 Dockerfile.go-build 的註解。
+    #
+    # ⚠ **不要用 `xvfb-run`。** 它是個 shell script,在容器裡當 PID 1 時
+    # `go test` 結束之後它自己不會退 —— 現象是**容器永遠掛著、零輸出**,
+    # 看起來像測試跑很久,實際上 `ps` 裡連 `go` 都沒有了。
+    # 自己起 Xvfb 再設 DISPLAY,行為明確得多。
+    run sh -c 'Xvfb :99 -screen 0 640x480x24 -nolisten tcp >/dev/null 2>&1 &
+               for i in $(seq 1 50); do [ -e /tmp/.X11-unix/X99 ] && break; sleep 0.1; done
+               DISPLAY=:99 go test ./... "$@"' -- "$@"
     ;;
   tidy)
     shift

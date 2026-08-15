@@ -8,8 +8,20 @@
 # `Package 'alsa', required by 'virtual:world', not found`,
 # 而那個訊息**看起來像 pkg-config 壞了**,不像少一個 dev 套件。
 #
+# ⚠ **測試期還要 Xvfb**。`package main` 匯入 ebiten 時,
+# `internal/ui` 的 `init()` 會呼叫 `glfw.Init()`,**沒有 DISPLAY 就 panic**:
+#   glfw: X11: The DISPLAY environment variable is missing
+#   panic: glfw: The GLFW library is not initialized
+# 這發生在**任何**測試跑起來之前(是 package init,不是測試內容),
+# 所以連一個空的 `func TestX(t *testing.T){}` 都跑不了。
+# `tools/go.sh test` 因此把 `go test` 包在 `xvfb-run` 裡。
+#
+# ⚠ 沒修之前這個坑會**假裝自己不存在**:package main 一旦有過一次成功的
+# 測試結果進 build cache,之後 `go test` 會回 `ok (cached)` ——
+# **綠燈是快取在說話,不是測試真的跑過**。用 `-count=1` 才看得到真相。
+#
 # 建置:tools/go.sh 會在 image 不存在時自動建
-#   docker build -f tools/Dockerfile.go-build -t shard-go-build:3 tools/
+#   docker build -f tools/Dockerfile.go-build -t shard-go-build:4 tools/
 #
 # ⚠ 這是本專案自己建的 image,清理時只能動它;
 #   禁止對共用資源做 prune / rmi(CLAUDE.md §8)。
@@ -25,4 +37,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libxxf86vm-dev \
         libasound2-dev \
         pkg-config \
+        xvfb \
+        xauth \
     && rm -rf /var/lib/apt/lists/*

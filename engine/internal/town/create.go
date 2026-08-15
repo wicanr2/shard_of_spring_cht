@@ -301,3 +301,32 @@ func Trade(from, to *original.Character, slot int) TradeResult {
 	from.Pack[slot] = original.NotEquipped
 	return TradeOK
 }
+
+// SkillName 回傳一項技能的中文名稱(docs/spec/11 §7,精訊 1987 官方譯名,
+// translations/glossary.md §2/§3)。順序跟 SkillCost 用的是**同一張表**
+// (heroSkillCost / wizardSkillCost 的技能編號),這裡只是配上顯示名稱,
+// 不是另外一份獨立資料 —— 用途是 docs/spec/16 §4 的 `P)rint` 畫面。
+func SkillName(class rules.Class, n int) (string, bool) {
+	t := heroSkillNames
+	if class == rules.ClassWizard {
+		t = wizardSkillNames
+	}
+	if n < 1 || n > len(t) {
+		return "", false
+	}
+	return t[n-1], true
+}
+
+// 技能名稱。索引 = 技能編號 − 1,順序與 heroSkillCost / wizardSkillCost 相同。
+var (
+	// 劍 斧 釘錘 空手 夜視 策略 護甲 技擊 打獵 說服
+	heroSkillNames = [10]string{
+		"劍", "斧", "釘頭鎚", "空手道", "夜視",
+		"策略", "護甲", "技擊術", "打獵", "說服能力",
+	}
+	// 火 金 風 冰 靈 武器知識 藥水知識 物品知識 怪物知識 降魔
+	wizardSkillNames = [10]string{
+		"火誌", "金誌", "風誌", "冰誌", "精神之誌",
+		"武器知識", "藥劑知識", "物品知識", "怪物知識", "降魔術",
+	}
+)

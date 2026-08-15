@@ -1,6 +1,8 @@
 package town
 
 import (
+	"math"
+
 	"shardofspring/internal/original"
 	"shardofspring/internal/rules"
 )
@@ -161,6 +163,20 @@ func clampTotal(v int) int {
 	return v
 }
 
+// toInt 是原版把浮點存回整數變數的行為:**四捨五入**,不是截尾。
+//
+// `INT 3F:77` 有兩種分支,由 `ds:1Fh` 分流:`== 4` 走純 `shr`(截尾)、
+// 其餘走 `shr` + `adc`(四捨五入)。**`BRUN30` 載入映像的 `ds:1Fh` 是 `0x00`**
+// (`seg002` 線性 0x1FE00 → 檔位移 0x10000,`ds:00`–`ds:1F` 整塊為零),
+// 而全 13 支 EXE 掃不到任何一處寫 `ds:1Fh` → 走四捨五入(docs/re/184 §5)。
+//
+// ⚠ **獨立佐證**:全 8 支模組共 72 個 `3F:77`,其中 42 個前面配了顯式
+// `INT 3D:03`。若 `3F:77` 本來就向下取整,那 42 個 `INT()` 全是白打的。
+//
+// ⛔ 所以「用 `int()` 截尾」在這個專案裡是**錯的預設值** ——
+// 原版要向下取整時會自己寫 `INT()`,沒寫就是四捨五入。
+func toInt(x float64) int { return int(math.Floor(x + 0.5)) }
+
 // growthRoll 回傳成長算式用的亂數因子:**兩次 RND 取大**。
 //
 // 原版擲兩次 `RND` 存進 `ds:71B0` / `ds:71B4`,比較後把大的留在 `71B0`
@@ -177,7 +193,7 @@ func growthRoll(r FloatRoller) float64 {
 
 // LevelGainHP 回傳升一級的生命成長。
 //
-//	成長 = INT(體能 × max(R1,R2) × K) + 1      K:戰士 2/3、巫師 1/2.3
+//	成長 = 四捨五入(體能 × max(R1,R2) × K) + 1   K:戰士 2/3、巫師 1/2.3
 //
 // **這是讀出來的算式**(docs/re/184),不是「擲骰後夾上限」的近似。
 // 兩者的關係是:亂數因子趨近 1 時,這條式子的上界正好等於手冊 p.49 那張表 ——
@@ -194,28 +210,27 @@ func LevelGainHP(r FloatRoller, endurance int, wizard bool) int {
 	if endurance < 0 {
 		endurance = 0
 	}
-	return int(float64(endurance)*growthRoll(r)*k) + HPAddend
+	return toInt(float64(endurance)*growthRoll(r)*k) + HPAddend
 }
 
 // LevelGainSP 回傳巫師升一級的法力成長。戰士沒有這一項。
 //
-//	成長 = INT(智能 × max(R1,R2) × 0.5) + 2
+//	成長 = 四捨五入(智能 × max(R1,R2) × 0.5) + 2
 //
-// ⚠ **浮點轉整數是截尾還是四捨五入,未決** —— 這裡用截尾。
-// 差別是**每一級 1 點法力**:智能 20 的巫師,截尾上界 11、四捨五入上界 12。
+// ⚠ **手冊 p.48 那張表對不上**,而且不是「差幾格」的問題:手冊的數字是
+// 設計者紙筆算的 `INT(屬性 × K) + C`,不是量出來的 —— 證據是那張表自己
+// **在智能 11 換了公式**(3–10 用 `INT(I/2)+2`、11–19 用 `INT((I+1)/2)+2`),
+// 量出來的表不會中途換規則(docs/re/184 §4)。
 //
-// ⛔ 這是具名假設,不是 RE 結論。兩種模式在生命那條**分不出來**
-// (戰士係數 0.666667 比 2/3 大,餘裕蓋過 MBF 的 1−r);**只有法力分得出來**,
-// 因為它的係數 0.5 是精確的。裁決方法是**第 1 級證據**:在原版把巫師的智能
-// 練到 20,反覆升級,量最大法力成長是 11 還是 12。
-//
-// ⚠ 手冊 p.48 那張表在兩種模式下都對不上(截尾全表差 1、四捨五入差奇數 ≥ 11 那五格)。
 // 依 CLAUDE.md §6 的證據優先序,反組譯(第 2 級)勝過手冊(第 3 級)。
+//
+// 一次就能定案的實測(第 1 級證據):**智能 10 的巫師**連升 10–15 級 ——
+// 看到過一次「+7」就證實四捨五入(截尾為真時 7 的機率是 0),全程 ≤ 6 就是截尾。
 func LevelGainSP(r FloatRoller, intellect int) int {
 	if intellect < 0 {
 		intellect = 0
 	}
-	return int(float64(intellect)*growthRoll(r)*SPFactor) + SPAddend
+	return toInt(float64(intellect)*growthRoll(r)*SPFactor) + SPAddend
 }
 
 // AttrNames 是五項屬性的顯示名,順序同 attrSlots(CHARS.DAT 位移 16–24)。

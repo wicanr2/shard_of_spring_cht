@@ -57,10 +57,10 @@ func TestTrainNeedsExperience(t *testing.T) {
 
 // 升級只加上限,**當前值一點都不動**(docs/re/184)。
 func TestTrainAddsGrowthToTheCapOnly(t *testing.T) {
-	c := hero(1, 10) // 體能 10 戰士:INT(10 × ~1 × 2/3) + 1 = 7
+	c := hero(1, 10) // 體能 10 戰士:四捨五入(10 × ~1 × 2/3) + 1 = 8
 	Train(&c, 300, 0, capped())
-	if c.MaxHP != 17 {
-		t.Errorf("最大生命應為 10+7=17,得 %d", c.MaxHP)
+	if c.MaxHP != 18 {
+		t.Errorf("最大生命應為 10+8=18,得 %d", c.MaxHP)
 	}
 	if c.HP != 4 {
 		t.Errorf("當前生命不該被動到(應留在 4),得 %d", c.HP)
@@ -78,10 +78,9 @@ func TestWizardGrowsSPAndUsesWizardColumn(t *testing.T) {
 	if c.MaxHP != 8+5 { // 體質 10 的**巫師**欄是 5,不是戰士的 7
 		t.Errorf("巫師最大生命應為 8+5=13,得 %d", c.MaxHP)
 	}
-	// 智能 12:INT(12 × r × 0.5) + 2,r < 1 → 5 + 2 = 7
-	// ⚠ 手冊 p.48 寫 8 —— 見 TestManualSPTableIsOffByOne
-	if c.MaxSP != 5+7 {
-		t.Errorf("最大法力應為 5+7=12,得 %d", c.MaxSP)
+	// 智能 12:四捨五入(12 × r × 0.5) + 2 = 6 + 2 = 8
+	if c.MaxSP != 5+8 {
+		t.Errorf("最大法力應為 5+8=13,得 %d", c.MaxSP)
 	}
 }
 
@@ -226,10 +225,10 @@ func TestLevelGainHPFormula(t *testing.T) {
 		wizard bool
 		want   int
 	}{
-		// 因子取大 = 1.0 的極限 → 上界 INT(體能 × K) + 1
-		{[]float64{0.9, 0.999999}, 20, false, 14}, // INT(20 × 2/3) + 1 = 14
-		{[]float64{0.999999, 0.1}, 20, true, 9},   // INT(20 × 0.434783) + 1 = 9
-		{[]float64{0.5, 0.5}, 20, false, 7},       // INT(20 × 0.5 × 2/3) + 1 = 7
+		// 因子取大 → 上界。⚠ 取整是**四捨五入**(docs/re/184 §5)
+		{[]float64{0.9, 0.999999}, 20, false, 14}, // 四捨五入(13.333) + 1 = 14
+		{[]float64{0.999999, 0.1}, 20, true, 10},  // 四捨五入(8.696) + 1 = 10 ← 手冊寫 9
+		{[]float64{0.5, 0.5}, 20, false, 8},       // 四捨五入(6.667) + 1 = 8
 		{[]float64{0.0, 0.0}, 20, false, 1},       // 因子 0 → 只剩加項
 	} {
 		got := LevelGainHP(&combat.ScriptRand{Floats: c.floats}, c.end, c.wizard)
@@ -257,8 +256,8 @@ func TestLevelGainSPFormula(t *testing.T) {
 		intel  int
 		want   int
 	}{
-		{[]float64{0.999999, 0.1}, 20, 11}, // INT(20 × 0.999999 × 0.5) + 2 = 11
-		{[]float64{0.999999, 0.1}, 11, 7},  // INT(11 × 0.5) + 2 = 7 ← 手冊寫 8
+		{[]float64{0.999999, 0.1}, 20, 12}, // 四捨五入(9.99999) + 2 = 12
+		{[]float64{0.999999, 0.1}, 11, 7},  // 四捨五入(5.49999) + 2 = 7 ← 手冊寫 8
 		{[]float64{0.0, 0.0}, 20, 2},       // 因子 0 → 只剩加項
 	} {
 		got := LevelGainSP(&combat.ScriptRand{Floats: c.floats}, c.intel)
@@ -268,22 +267,40 @@ func TestLevelGainSPFormula(t *testing.T) {
 	}
 }
 
-// ⚠ **手冊 p.48 的 SP 表與本實作全表差 1,而差多少取決於一個未決點。**
+// ⚠ **手冊 p.48/49 那兩張表是設計者紙筆算的 `INT(屬性 × K) + C`,不是量出來的。**
+// 證據:SP 表自己**在智能 11 換了公式**(3–10 用 `INT(I/2)+2`、11–19 用
+// `INT((I+1)/2)+2`)—— 量出來的表不會中途換規則(docs/re/184 §4)。
 //
-// 引擎目前用**截尾**(`int()`)。若原版的浮點轉整數其實是**四捨五入**,
-// 偶數智能會與手冊吻合、只有奇數 ≥ 11 差 1。兩種模式在 HP 那條**分不出來**
-// (戰士係數 0.666667 比 2/3 大,餘裕蓋過 MBF 的 1−r),
-// **只有 SP 分得出來**,因為它的係數 0.5 是精確的。
+// 所以「對不上手冊」是預期結果,不是 bug。這條測試把**對不上的那些格**釘住,
+// 免得下一輪有人「照手冊修正」把讀出來的算式改回去。
 //
-// ⛔ 這條測試釘的是**目前的選擇**,不是已確認的原版行為。
-// 裁決方法(第 1 級證據,一次實測就夠):在原版把巫師的智能練到 20,
-// 反覆升級,量最大法力成長是 **11**(截尾)還是 **12**(四捨五入)。
-func TestManualSPTableIsOffByOne(t *testing.T) {
-	manual := map[int]int{10: 7, 11: 8, 12: 8, 13: 9, 19: 12}
-	for intel, m := range manual {
-		got := LevelGainSP(&combat.ScriptRand{Floats: []float64{0.999999, 0.1}}, intel)
-		if got != m-1 {
-			t.Errorf("智能 %d:本實作應為 %d(手冊 %d),得 %d", intel, m-1, m, got)
+// 一次就能定案的實測(第 1 級證據):智能 10 的巫師連升 10–15 級 ——
+// 看到過一次「+7」就證實四捨五入(截尾為真時 7 的機率是 0)。
+func TestManualTablesDisagreeWhereRoundingDiffers(t *testing.T) {
+	up := func() *combat.ScriptRand {
+		return &combat.ScriptRand{Floats: []float64{0.999999, 0.1}}
+	}
+	// SP:偶數智能與手冊吻合,奇數 ≥ 11 少 1
+	for intel, manual := range map[int]int{10: 7, 12: 8, 20: 12} {
+		if got := LevelGainSP(up(), intel); got != manual {
+			t.Errorf("智能 %d(偶數)應與手冊一致 %d,得 %d", intel, manual, got)
+		}
+	}
+	for intel, manual := range map[int]int{11: 8, 13: 9, 15: 10, 17: 11, 19: 12} {
+		if got := LevelGainSP(up(), intel); got != manual-1 {
+			t.Errorf("智能 %d(奇數 ≥ 11)應比手冊少 1 = %d,得 %d", intel, manual-1, got)
+		}
+	}
+	// HP 戰士:體能 ≡ 1 (mod 3) 那幾格比手冊**多** 1
+	for end, manual := range map[int]int{4: 3, 7: 5, 10: 7, 13: 9, 16: 11, 19: 13} {
+		if got := LevelGainHP(up(), end, false); got != manual+1 {
+			t.Errorf("體能 %d(≡1 mod 3)應比手冊多 1 = %d,得 %d", end, manual+1, got)
+		}
+	}
+	// 其餘體能與手冊一致 —— 差異有結構,不是隨機偏移
+	for end, manual := range map[int]int{3: 3, 6: 5, 12: 9, 18: 13, 20: 14} {
+		if got := LevelGainHP(up(), end, false); got != manual {
+			t.Errorf("體能 %d 應與手冊一致 %d,得 %d", end, manual, got)
 		}
 	}
 }

@@ -204,7 +204,9 @@ func (g *Game) Update() error {
 			}
 		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-			// ⚠ 原版怎麼離開迷宮**未解**(docs/spec/08 §6)。
+			// ⚠ 原版怎麼離開迷宮**未解**(docs/re/146 §2)。
+			// 實跑已經排除 `ESC` 與 `E`(兩者在原版的迷宮裡都沒有作用),
+			// `Q` 是離開遊戲。這裡沿用 ESC 是**本引擎的選擇**,不是原版行為。
 			g.level = nil
 		}
 		return nil

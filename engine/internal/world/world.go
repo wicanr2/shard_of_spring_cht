@@ -202,9 +202,32 @@ func (s *State) Step(dir Facing, m *Map) Result {
 	if nx < 0 || nx >= W || !Passable(m, s.X, s.Y, nx, ny, dir) {
 		return Blocked
 	}
+	cost := MoveCost(m, s.X, s.Y, nx, ny)
 	s.X, s.Y = nx, ny
-	s.tick()
+	for i := 0; i < cost; i++ {
+		s.tick()
+	}
 	return Moved
+}
+
+// Mountain 回傳這個地形值是不是山地(圖塊 7/8/9,docs/spec/05 §2)。
+func Mountain(v int) bool { return v >= 7 && v <= 9 }
+
+// MoveCost 是一步花掉的時鐘格數。
+//
+//	起點或終點是山地 → 2,否則 1
+//
+// 手冊 p.32「在丘陵上行走時間會過得比原來快兩倍」的實際形狀
+// (docs/re/151,四次量測)。⚠ **山→山也是 2,不是 3** ——
+// 「起點 + 終點各加一」那個版本對前三次量測同樣成立,
+// 是第四次(山→山)把它排除的。
+//
+// 轉身與存檔恆為 1,不受地形影響。
+func MoveCost(m *Map, fx, fy, tx, ty int) int {
+	if Mountain(m.At(fx, fy)) || Mountain(m.At(tx, ty)) {
+		return 2
+	}
+	return 1
 }
 
 // Tick 推進時鐘一格並遞減遭遇倒數 —— 給場景層在「非移動的動作」上呼叫

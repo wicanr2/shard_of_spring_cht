@@ -253,3 +253,60 @@ func TestCoastTileBlocksTwoDirections(t *testing.T) {
 		}
 	}
 }
+
+// 山地的移動成本(docs/re/151,DOSBox 四次量測)。
+//
+// ⚠ 四種組合要全測。只測「平→山」的話,「起點+終點各加一」那個錯規則
+// 也會通過 —— 它與正確規則只在**山→山**那一格分岔。
+func TestMountainMoveCost(t *testing.T) {
+	m := &Map{Cells: make([]int, W*H)}
+	set := func(x, y, v int) { m.Cells[x*H+y] = v }
+	set(10, 10, 2) // 平地
+	set(11, 10, 7) // 山
+	set(12, 10, 9) // 山
+	set(13, 10, 1) // 平地
+
+	cases := []struct {
+		name                   string
+		fx, fy, tx, ty, want int
+	}{
+		{"平→平", 10, 10, 10, 10, 1},
+		{"平→山", 10, 10, 11, 10, 2},
+		{"山→平", 11, 10, 10, 10, 2},
+		{"山→山", 11, 10, 12, 10, 2},
+		{"山→平(另一格)", 12, 10, 13, 10, 2},
+	}
+	for _, c := range cases {
+		if got := MoveCost(m, c.fx, c.fy, c.tx, c.ty); got != c.want {
+			t.Errorf("%s = %d,應為 %d", c.name, got, c.want)
+		}
+	}
+}
+
+// 走進山地的那一步,時鐘要跳兩格,遭遇倒數也跟著減兩格 ——
+// 兩者在原版是同一段程式(docs/re/107 §1)。
+func TestStepIntoMountainCostsTwoTicks(t *testing.T) {
+	m := &Map{Cells: make([]int, W*H)}
+	for y := 0; y < H; y++ {
+		for x := 0; x < W; x++ {
+			m.Cells[x*H+y] = 2 // 全平地
+		}
+	}
+	m.Cells[11*H+10] = 7 // 一格山
+
+	s := State{X: 10, Y: 10, Facing: East, Encounter: 54}
+	before := s.Clock
+	if r := s.Step(East, m); r != Moved {
+		t.Fatalf("往東應該走得動,得 %v", r)
+	}
+	if s.Encounter != 52 {
+		t.Errorf("走進山地後遭遇倒數 %d,應為 52(減 2)", s.Encounter)
+	}
+	// 時鐘與倒數必須同步:兩格
+	want := before
+	want.Tick()
+	want.Tick()
+	if s.Clock != want {
+		t.Errorf("時鐘 %+v,應為 %+v —— 時鐘與遭遇倒數要一起推進", s.Clock, want)
+	}
+}

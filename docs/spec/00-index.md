@@ -25,7 +25,7 @@
 | [`04-display-layout.md`](04-display-layout.md) | **顯示層與中文排版**(1024×768、美術 4×、避頭尾)|
 | [`05-world-scene.md`](05-world-scene.md) | **世界地圖場景**(9×9 視野、地形值總表、移動、可通行性八條規則)|
 | [`06-party-and-save.md`](06-party-and-save.md) | **隊伍、角色與存檔**(兩個檔的關係、成員槽、狀態欄)|
-| [`07-combat-scene.md`](07-combat-scene.md) | **戰鬥場景**(單位陣列、先攻、可重現的亂數);⚠ 傷害乘數與命中面數未解 |
+| [`07-combat-scene.md`](07-combat-scene.md) | **戰鬥場景**(單位陣列、先攻、可重現的亂數);傷害公式整段已讀通([`re/153`](../re/153-damage-formula-closed.md))|
 | [`08-maze-scene.md`](08-maze-scene.md) | **迷宮與事件**(Major/Minor 座標、視野、事件三類、跨關卡)|
 | [`09-magic-items.md`](09-magic-items.md) | **法術與道具**(施法閘門、威力、狀態強度、道具發動);⚠ 效果類別 3/13 未解 |
 | [`10-localization.md`](10-localization.md) | **中文化上線**(轉檔期併入、破格的定義與預算)|
@@ -53,8 +53,21 @@
 
 ## ⚠ 標 READY 不等於零疑問
 
-每份規格結尾都有「未解」段。已知的洞:
-傷害公式的兩個係數、戰鬥屬性 14/18、法術效果類別 3、
-`CHARS.DAT` 位移 1、先攻是否每回合重排。
+每份規格結尾都有「未解」段。**目前還開著的洞**(2026-08-15):
+
+| 洞 | 出處 |
+|---|---|
+| 戰鬥屬性 **14 / 18** 的語意 | [`spec/01`](01-combat.md) §9;屬性 14 決定要不要查空手道旗標([`re/153`](../re/153-damage-formula-closed.md) §5)|
+| 法術效果類別 **3** | [`spec/09`](09-magic-items.md) |
+| 先攻是否**每回合重排** | [`spec/01`](01-combat.md) §2 |
+| 角色創造的**屬性骰法** | [`spec/11`](11-town-camp-roster.md) §5;**3d6 已被 15 個實測樣本排除** |
+| 戰場的**初始佈陣與怪物 AI** | [`spec/12`](12-combat-board.md) §5 |
+| 迷宮的**寶石謎題 / 治療池觸發點** | [`spec/08`](08-maze-scene.md) §5.5;規則已解,是哪一筆事件叫起它們未解 |
+| 魔法道具**發動判定的原始碼位置** | [`spec/09`](09-magic-items.md) §5 |
+| 戰後**金幣**的算式 | [`re/152`](../re/152-experience-settlement-formula.md) §2 |
+| 營地的 `H)unt` / `I)dentify` / `T)rade` / `R)eorder` | [`spec/11`](11-town-camp-roster.md) §4 |
+
+**已經填掉的**(不要再照舊引用):傷害公式的兩個係數(`k₁` = 0.5、`k₂` 折進 `Roll`)、
+擲骰面數(= 100)、`CHARS.DAT` 位移 1(= 所屬隊伍)、經驗值的位移與結算算式。
 
 **實作時遇到這些,不要猜 —— 回 `docs/re/` 或回 IDA。**

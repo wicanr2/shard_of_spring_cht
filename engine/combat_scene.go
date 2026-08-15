@@ -213,7 +213,7 @@ func (g *Game) endTurn() {
 	}
 }
 
-// drawBoard 畫戰場的 15×15 視窗(docs/re/164 §4:陣列 31 寬,畫面 15×15)。
+// drawBoard 畫戰場的視窗:**9×9 圖塊**(docs/re/175 實跑量到的),陣列本身 31 寬。
 func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 	f, p := g.field, g.panel
 	lh := p.LineHeight()

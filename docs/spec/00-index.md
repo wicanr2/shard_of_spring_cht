@@ -31,6 +31,7 @@
 | [`10-localization.md`](10-localization.md) | **中文化上線**(轉檔期併入、破格的定義與預算)|
 | [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 旅店 / 酒館 / 訓練所 / 治療所 / 營地 / 名冊 / 角色創造**;⚠ 屬性算式的兩個常數未解|
 | [`13-sound.md`](13-sound.md) | **聲音**(`PLAY` 巨集的解析與方波合成);⚠ 十五段樂譜的**用途**是位置上的推測 |
+| [`14-remake-worklist.md`](14-remake-worklist.md) | **Remake worklist —— 狀態的單一真相來源**。RE 階段結束後「規則實作完 → 遊戲做完」之間的差距,含順序與理由 |
 | [`12-combat-board.md`](12-combat-board.md) | **戰場**(格陣列 31 寬、畫面 15×15 視窗、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 高度與怪物擲骰範圍未解、AI 是佔位 |
 
 ## ⚠ 實作前必讀的六條

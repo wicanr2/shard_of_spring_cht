@@ -7,14 +7,46 @@ import (
 	"image/color"
 )
 
-// Palette 是 CGA 第三調色盤:黑 / 青 / 紅 / 白。
-// docs/formats/07 §5:`0x3D8 = 0x0E`(繪圖模式 + 「黑白」位元);
-// `0x3D9` 從來沒有被任何模組或 BRUN30 寫過,所以背景色是預設的黑。
-var Palette = color.Palette{
-	color.RGBA{0x00, 0x00, 0x00, 0xff},
-	color.RGBA{0x55, 0xff, 0xff, 0xff},
-	color.RGBA{0xff, 0x55, 0x55, 0xff},
-	color.RGBA{0xff, 0xff, 0xff, 0xff},
+// 調色盤有**兩組**,由各模組啟動時寫進 `0x3D8` 的那一個 byte 決定
+// (docs/re/146 §4:掃全部模組的 `out` 指令):
+//
+//	WRLDMOVE  0x0A   → 世界地圖:綠 / 紅 / 棕
+//	MAZEMOVE  0x0E   → 迷宮
+//	CMBT      0x0E   → 戰鬥
+//	MENU      0x0E   → 主選單
+//	TOWN / CAMP / CHARUTIL 沒有寫 —— 沿用前一個模組設的
+//
+// ⚠ **先前只有一組**,理由是 `docs/formats/07` §5 讀到 `0x3D8 = 0x0E` ——
+// 那是對的,但它只讀了一個模組。**世界地圖寫的是 `0x0A`**,
+// 而用錯調色盤畫出來的地圖仍然是一張地圖,只是顏色不對。
+//
+// `0x3D9`(顏色選擇)從來沒有被任何模組寫過,所以背景色是預設的黑,
+// 亮度位元維持 BIOS 設模式時的狀態 —— 取原版實跑截圖裡的低亮度那一組。
+var (
+	// PaletteWorld 是世界地圖用的(`0x3D8 = 0x0A`,CGA 第 0 組)。
+	PaletteWorld = color.Palette{
+		color.RGBA{0x00, 0x00, 0x00, 0xff},
+		color.RGBA{0x00, 0xaa, 0x00, 0xff}, // 綠
+		color.RGBA{0xaa, 0x00, 0x00, 0xff}, // 紅
+		color.RGBA{0xaa, 0x55, 0x00, 0xff}, // 棕
+	}
+	// PaletteMaze 是迷宮 / 戰鬥 / 選單用的(`0x3D8 = 0x0E`)。
+	PaletteMaze = color.Palette{
+		color.RGBA{0x00, 0x00, 0x00, 0xff},
+		color.RGBA{0x00, 0xaa, 0xaa, 0xff}, // 青
+		color.RGBA{0xaa, 0x00, 0xaa, 0xff}, // 洋紅
+		color.RGBA{0xaa, 0xaa, 0xaa, 0xff}, // 白(低亮度)
+	}
+	// Palette 是預設的那一組。⚠ 解碼函式本身**不知道**這張圖要畫在哪個畫面,
+	// 所以由呼叫端在轉檔時重新指定(cmd/convert)。
+	Palette = PaletteMaze
+)
+
+// WithPalette 換掉一張已解好的圖的調色盤。**只換色盤不動像素值** ——
+// 像素值是原版檔案裡的,換色盤才是畫面差異的來源。
+func WithPalette(img *image.Paletted, p color.Palette) *image.Paletted {
+	img.Palette = p
+	return img
 }
 
 // decodeGetArray 解一張 BASIC `GET` 陣列。

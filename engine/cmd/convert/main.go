@@ -177,19 +177,23 @@ func run(in, out, transDir string) error {
 		return err
 	}
 	nWorld := 0
+	// ⚠ 世界地圖用**另一組調色盤**(`WRLDMOVE` 寫 `0x3D8 = 0x0A`,
+	// 而迷宮 / 戰鬥 / 選單寫 `0x0E`,docs/re/146 §4)。
+	// 像素值一樣,只有色盤不同 —— 用錯了畫出來仍然是一張地圖,只是顏色不對。
 	for v := 0; v <= 38; v++ {
 		src, idx := original.WorldTileOrigin(v)
 		var img image.Image
 		switch src {
 		case original.SrcFastWrld:
-			img = fast[idx]
+			img = original.WithPalette(fast[idx], original.PaletteWorld)
 		case original.SrcWrldItem:
 			// ⚠ 空行代表該值不走向量路徑(docs/re/54 §2)。不輸出,
 			// 讓執行期畫佔位符 —— 不要拿空巨集渲染出一張全黑的圖冒充。
 			if idx >= len(segs) || strings.TrimSpace(segs[idx]) == "" {
 				continue
 			}
-			img = original.RenderDraw(segs[idx], 17, 17)
+			img = original.WithPalette(
+				original.RenderDraw(segs[idx], 17, 17), original.PaletteWorld)
 		default:
 			continue // 無來源,交給執行期畫佔位符
 		}

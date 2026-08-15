@@ -334,7 +334,7 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 			g.cursor.spell.Name), x, y)
 		y += lh * 1.2
 	} else if g.actor >= 0 {
-		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d　方向鍵移動(先轉再走)　A 攻擊　C 施法　Enter 結束",
+		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d　方向鍵移動(先轉再走)　A 攻擊　C 施法　U 用道具　Enter 結束",
 			f.Units[g.actor].Name, g.points[g.actor], f.Units[g.actor].Speed), x, y)
 		y += lh * 1.2
 	}

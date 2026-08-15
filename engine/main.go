@@ -107,6 +107,18 @@ type Game struct {
 	// cursor 非 nil = 施法的**選格階段**(手冊 p.34 的 I/J/K/M + 空白鍵)
 	cursor *castCursor
 
+	// 戰鬥中的 U)se an item + 藥劑「自己/丟給別人」(docs/spec/12-combat-board.md
+	// §5.3、docs/spec/19-coverage.md §2-1)。use_item.go。
+	useUnit      int           // 開道具選單的人(field.Units 索引,同 castUnit 的用法)
+	useList      []useEntry    // 選單開著時的可選道具清單
+	combatPotion *potionPrompt // 非 nil = 正在問「自己/丟給別人」或選目標(戰鬥)
+
+	// 營地 U)se an item 的同一段子流程(docs/spec/16-camp-actions.md §3、
+	// docs/spec/19-coverage.md §2-1)。townState(town_scene.go)是唯讀邊界、
+	// 不能新增欄位,子流程狀態放在這裡,由 use_item.go 的 campPotionKey /
+	// campPotionLines 讀寫。
+	campPotion *potionPrompt
+
 	// M12:遊戲外殼(docs/spec/15-game-shell.md)。標題/主選單/隊伍選擇/全滅/結局。
 	shell     *shellState
 	titleFont *render.Painter // 標題用 32px(docs/spec/04 §4)
@@ -230,6 +242,15 @@ func (g *Game) Update() error {
 			}
 			return nil
 		}
+		// 用道具的「自己/丟給別人」子流程(use_item.go,docs/spec/19-coverage.md §2-1)
+		if g.combatPotion != nil {
+			for _, k := range inpututil.AppendJustPressedKeys(nil) {
+				if g.combatPotionKey(k) {
+					break
+				}
+			}
+			return nil
+		}
 		// 施法選單開著時只吃字母
 		if len(g.castList) > 0 {
 			for i := 0; i < len(g.castList) && i < 26; i++ {
@@ -243,8 +264,25 @@ func (g *Game) Update() error {
 			}
 			return nil
 		}
+		// 道具選單開著時只吃字母(use_item.go,docs/spec/12 §5.3 的 U)
+		if len(g.useList) > 0 {
+			for i := 0; i < len(g.useList) && i < 26; i++ {
+				if inpututil.IsKeyJustPressed(ebiten.KeyA + ebiten.Key(i)) {
+					g.pickUseItem(i)
+					break
+				}
+			}
+			if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
+				g.useList = nil
+			}
+			return nil
+		}
 		if inpututil.IsKeyJustPressed(ebiten.KeyC) {
 			g.openCast()
+			return nil
+		}
+		if inpututil.IsKeyJustPressed(ebiten.KeyU) {
+			g.openUseItem()
 			return nil
 		}
 		// M10 之後戰鬥由戰場操作(docs/spec/12);
@@ -715,6 +753,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawCreate(screen)
 	g.drawCombat(screen)
 	g.drawCastMenu(screen)
+	g.drawUseMenu(screen) // use_item.go
 	g.drawOverlay(screen)
 	g.drawPrompt(screen)
 	g.drawSaveAs(screen)

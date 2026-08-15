@@ -282,11 +282,19 @@ func (g *Game) campCastLines(ts *townState) []string {
 func (g *Game) campUseKey(k ebiten.Key) {
 	ts := g.town
 	if ts.campWho < 0 {
+		// 防呆:town_scene.go 的 campSubKey 在按到 ESC 時直接把 campMode
+		// 重置回選單,不會經過下面「自己/給別人」子流程的收尾 —— 新一輪
+		// 選人之前先清掉上一輪可能留下的殘留(use_item.go 的 campPotion)。
+		g.campPotion = nil
 		i := int(k - ebiten.Key1)
 		if i < 0 || i >= len(g.members) {
 			return
 		}
 		ts.campWho, ts.msg = i, ""
+		return
+	}
+	if g.campPotion != nil {
+		g.campPotionKey(k) // use_item.go:「自己/給別人」子流程
 		return
 	}
 	slot := int(k - ebiten.KeyA)
@@ -298,8 +306,24 @@ func (g *Game) campUseKey(k ebiten.Key) {
 		ts.msg = "那一格是空的"
 		return
 	}
-	g.useItem(ts.campWho, slot)
-	ts.campMode, ts.campWho = 0, -1
+
+	// 「那是戰鬥用道具!」閘門(docs/spec/19-coverage.md §2-2,CAMP:100)。
+	// use_item.go 的 isCombatOnlyItem 是**猜的**,不是讀到的判斷式。
+	if it, ok := g.itemByIndex(c.Pack[slot]); ok && g.isCombatOnlyItem(it) {
+		ts.msg = c.Name + "：那是戰鬥用道具！"
+		ts.campMode, ts.campWho = 0, -1
+		return
+	}
+
+	if c.Pack[slot] <= magic.MagicItemMin {
+		// 不是魔法道具,不會有「給誰用」的差別,維持原本的單階段流程。
+		g.useItem(ts.campWho, slot)
+		ts.campMode, ts.campWho = 0, -1
+		return
+	}
+
+	// 魔法道具:先問「自己/給別人」(docs/spec/19-coverage.md §2-1,CAMP:92)。
+	g.campPotion = &potionPrompt{slot: slot, stage: 1}
 }
 
 // itemDisplayName 回傳一件道具在畫面上該顯示的名字 ——
@@ -329,39 +353,13 @@ func (g *Game) spellByIndex(n int) (original.Spell, bool) {
 	return original.Spell{}, false
 }
 
-// useItem 讓 g.members[who] 用背包第 slot 格的道具。
+// useItem 讓 g.members[who] 用背包第 slot 格的道具在自己身上。
+//
+// ⚠ docs/spec/19-coverage.md §2-1 補上「給別人用」之前,這是唯一的路徑;
+// 現在是 useItemOn(who, slot, who)(use_item.go)的簡寫,保留給
+// 「非魔法道具」的單階段流程與既有測試用 —— 行為與訊息完全不變。
 func (g *Game) useItem(who, slot int) {
-	ts := g.town
-	c := &g.members[who]
-	idx := c.Pack[slot]
-	name := g.itemDisplayName(*c, slot)
-
-	// ⚠ 編號 ≤ 26 不是魔法道具,不走發動這條路(docs/spec/09 §5)——
-	// 不是「查不到效果」,是原版這個機制本來就不管這些編號。
-	if idx <= magic.MagicItemMin {
-		ts.msg = fmt.Sprintf("%s 用了%s，但它不是魔法道具，什麼事也沒發生。", c.Name, name)
-		return
-	}
-	it, ok := g.itemByIndex(idx)
-	if !ok {
-		ts.msg = fmt.Sprintf("%s：%s 的資料查不到，用不出效果。", c.Name, name)
-		return
-	}
-	if !magic.ItemTriggers(idx, it.Col6, g.rand) {
-		ts.msg = fmt.Sprintf("%s 用了%s，這次沒有發動。", c.Name, name)
-		return
-	}
-	s, ok := g.spellByIndex(it.Col4)
-	if !ok {
-		ts.msg = fmt.Sprintf("%s 用了%s，發動了，但對應的法術（編號 %d）查不到。", c.Name, name, it.Col4)
-		return
-	}
-	invest := it.Col5
-	cUnit := campUnit(*c)
-	r := magic.Apply(s, invest, &cUnit, []*combat.Unit{&cUnit})
-	applyCampUnit(c, cUnit)
-	g.syncMember(*c)
-	ts.msg = fmt.Sprintf("%s 用了%s，發動了「%s」：%s", c.Name, name, s.Name, r.Message)
+	g.useItemOn(who, slot, who)
 }
 
 // campUseLines 畫 U)se an item 的內容。
@@ -372,6 +370,9 @@ func (g *Game) campUseLines(ts *townState) []string {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, c.Name))
 		}
 		return out
+	}
+	if g.campPotion != nil {
+		return g.campPotionLines(ts) // use_item.go
 	}
 	c := g.members[ts.campWho]
 	out := []string{c.Name + " 的背包（按字母選要用的道具）"}

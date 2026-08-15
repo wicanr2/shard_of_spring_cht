@@ -60,3 +60,37 @@ func TestExpShareTruncates(t *testing.T) {
 		t.Errorf("沒有人有資格時應回 0,得 %d", got)
 	}
 }
+
+// 金幣:每隻怪物一次擲骰,面數是難度階級;隊員不算(docs/re/152 §2.3 的佔位)。
+//
+// ⚠ 這條測的是**形狀**不是數值 —— 四個係數未解,數值本身沒有出處。
+func TestTotalGoldRollsPerMonster(t *testing.T) {
+	units := make([]Unit, PartyBase+PartyMax)
+	units[0] = Unit{IsMonster: true, Tier: 5}
+	units[1] = Unit{IsMonster: true, Tier: 9}
+	units[2] = Unit{IsMonster: true, Tier: 0} // 階級 0 → 夾成 1,不能擲 0 面
+	units[PartyBase] = Unit{Tier: 99}         // 隊員的階級固定 99,不該被算進去
+
+	r := &ScriptRand{Values: []int{3}}
+	if got := TotalGold(units, r); got != 9 {
+		t.Errorf("三隻怪物各擲 3 應為 9,得 %d(隊員的 99 不該算)", got)
+	}
+	if want := []int{5, 9, 1}; len(r.Faces) != 3 ||
+		r.Faces[0] != want[0] || r.Faces[1] != want[1] || r.Faces[2] != want[2] {
+		t.Errorf("擲骰面數 %v,應為 %v(階級,0 夾成 1)", r.Faces, want)
+	}
+	// 沒有怪物就沒有金幣
+	if got := TotalGold(make([]Unit, PartyBase+PartyMax), &ScriptRand{Values: []int{3}}); got != 0 {
+		t.Errorf("沒有怪物應為 0,得 %d", got)
+	}
+}
+
+// 未解項要出現在執行時的清單裡 —— 佔位的規則不能只寫在文件。
+func TestGoldAssumptionIsVisible(t *testing.T) {
+	for _, u := range Unresolved {
+		if u == GoldAssumption {
+			return
+		}
+	}
+	t.Error("金幣的佔位說明不在 Unresolved 裡 —— 玩家看不到它是佔位")
+}

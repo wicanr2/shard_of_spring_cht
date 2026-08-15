@@ -151,8 +151,10 @@ func TestToHitIsAPercentage(t *testing.T) {
 	if 100-BerserkThreshold != 25 {
 		t.Errorf("狂暴機率 %d%%,應為 25%%", 100-BerserkThreshold)
 	}
-	if len(Unresolved) != 0 {
-		t.Errorf("未解項清單有 %d 條 —— 若新增了未解常數,這條要一起改", len(Unresolved))
+	// 目前只有金幣的佔位(docs/re/152 §2.3)。這條的用意是
+	// **清單與常數一起改** —— 新增或解掉一項時它會失敗,逼人回來更新規格。
+	if len(Unresolved) != 1 {
+		t.Errorf("未解項清單有 %d 條,應為 1(只剩金幣)", len(Unresolved))
 	}
 }
 

@@ -123,9 +123,7 @@ const BerserkThreshold = 75
 const KarateSkill = 4
 
 // Unresolved 是要顯示在訊息列的未解項,讓它們在**執行時**也看得見。
-// 目前是空的 —— 戰鬥規則裡沒有需要在執行時警告玩家的未解常數了。
-// ⚠ **保留這個機制**:下一個未解的規則常數要放進來,不要散在算式裡。
-var Unresolved []string
+var Unresolved = []string{GoldAssumption}
 
 // ReorderEachRound:先攻**每回合重排**(docs/re/159)。
 //

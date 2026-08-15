@@ -55,3 +55,41 @@ func (u Unit) EarnsExp() bool { return !u.IsMonster && u.OnField() && u.Status <
 // 這裡不 import original,戰鬥層只認屬性編號。
 const StatusDead = 5
 
+
+// TotalGold 回傳這一場戰鬥的金幣。
+//
+// ⚠ **這是具名的佔位,不是原版的公式。**
+//
+// 原版的管線讀出來了(docs/re/152 §2.3),形狀是:
+//
+//	每隻怪物  FAC ← 難度階級 ^ ds:96B8 … 再一次次方 … × RND … + 1
+//	全部加完  總額 × ds:96E8,再走一次 × RND × 0.5
+//
+// **四個常數是執行期變數,不在檔案映像裡**(docs/re/42 §3),
+// 而手冊沒有任何一頁講戰後金幣 —— 所以它們只能靠 oracle 實測解。
+//
+// 這裡用「每隻怪物擲 1…難度階級」:量綱對(來源是難度階級)、
+// 形狀對(`INT(RND × N) + 1`),但**係數與兩次次方都不在裡面**。
+//
+// ⛔ 不要因為「玩起來手感不錯」就調這個數。要改就是去實測。
+//
+// ⚠ 為什麼不乾脆給 0:給 0 也是一個選擇,而且**確定是錯的** ——
+// 玩家永遠買不起東西,整個經濟停擺。有標示的近似值比確定錯誤的零好。
+func TotalGold(units []Unit, r Rand) int {
+	total := 0
+	for i, u := range units {
+		if i >= PartyBase || !u.IsMonster {
+			continue
+		}
+		tier := u.Tier
+		if tier < 1 {
+			tier = 1
+		}
+		total += r.Roll(tier)
+	}
+	return total
+}
+
+// GoldAssumption 是給畫面顯示用的說明。
+const GoldAssumption = "⚠ 戰後金幣的四個係數未解(docs/re/152 §2.3)," +
+	"本引擎每隻怪物擲 1…難度階級 —— 形狀對、係數不對"

@@ -65,7 +65,7 @@ func (g *Game) stepCombat() {
 	}
 	if o := f.Outcome(); o != combat.Ongoing {
 		f.Log = append(f.Log, "戰鬥結束："+o.String())
-		if _, msg := g.awardExp(f.Units[:]); msg != "" {
+		if msg := g.awardSpoils(f.Units[:]); msg != "" {
 			f.Log = append(f.Log, msg)
 		}
 	}
@@ -175,7 +175,7 @@ func (g *Game) endTurn() {
 	}
 	if o := f.Outcome(); o != combat.Ongoing {
 		f.Log = append(f.Log, "戰鬥結束："+o.String())
-		if _, msg := g.awardExp(f.Units[:]); msg != "" {
+		if msg := g.awardSpoils(f.Units[:]); msg != "" {
 			f.Log = append(f.Log, msg)
 		}
 		if o == combat.PartyDead {

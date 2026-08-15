@@ -49,3 +49,28 @@ func (g *Game) awardExp(units []combat.Unit) (int, string) {
 	}
 	return share, fmt.Sprintf("獲得經驗 %d,每人 %d(%d 人分)", total, share, len(idx))
 }
+
+// awardSpoils 發經驗與金幣。原版的結算畫面兩者一起印
+// (`Experience:` 與 `Gold:`,docs/re/95 §3)。
+//
+// ⚠ 金幣走的是**具名佔位**(combat.GoldAssumption)——
+// 係數未解,但**不發金幣也是錯的**:玩家永遠買不起東西。
+func (g *Game) awardSpoils(units []combat.Unit) string {
+	_, msg := g.awardExp(units)
+	gold := combat.TotalGold(units, combat.NewRand(g.spoilSeed()))
+	if gold > 0 {
+		g.group.Gold += float64(gold)
+		if msg != "" {
+			msg += "；"
+		}
+		msg += fmt.Sprintf("撿到 %d 金幣（%s）", gold, combat.GoldAssumption)
+	}
+	return msg
+}
+
+// spoilSeed 讓同一場戰鬥的戰利品可重現 —— 用戰場的亂數來源會把
+// 「同一顆種子跑兩次結果相同」這條驗收(docs/spec/07 §2)弄壞,
+// 因為結算的擲骰次數取決於怪物數。
+func (g *Game) spoilSeed() uint64 {
+	return uint64(g.party.X)<<32 | uint64(g.party.Y)<<16 | uint64(g.party.Encounter)
+}

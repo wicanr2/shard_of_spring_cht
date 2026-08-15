@@ -34,7 +34,13 @@ RE 來源:[`re/126`](../re/126-shop-price-multiplier.md)(價格倍率)、
 
 ## 2. 城鎮
 
-進入條件:世界地圖踩到城鎮格(值 30/31/32,13 處)。
+進入條件:世界地圖踩到城鎮格(值 30/31/32,13 處)。**踩上去就進去**,不必按鍵
+([`re/141`](../re/141-world-map-axes-were-transposed.md) §3)。
+
+座標 → 是哪一個城鎮:查 **`TOWNDATA.BIN` 的座標表**
+([`formats/05`](../formats/05-world-map.md) §4、[`re/145`](../re/145-town-coordinates-were-already-solved.md)),
+第 n 列對上 `TOWNDATA.DAT` 第 n 個出現的城鎮。
+⛔ **不要**用「按座標排序取第 n 個」—— 那個排序是錯的,實跑證明過。
 
 `TOWNDATA.DAT` 每個城鎮有數間商店,每間一筆記錄
 ([`re/126`](../re/126-shop-price-multiplier.md)):`town`(所屬城鎮)、`name`、`price_mult`(位移 38 的 MBF 倍率)。

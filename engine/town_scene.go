@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"sort"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
@@ -10,7 +9,6 @@ import (
 	"shardofspring/internal/original"
 	"shardofspring/internal/town"
 	"shardofspring/internal/ui"
-	"shardofspring/internal/world"
 )
 
 // 城鎮、商店與營地的畫面。docs/spec/11-town-camp-roster.md。
@@ -49,18 +47,14 @@ const shopPageSize = 20
 
 // enterTown 從世界地圖進城。回 false 表示這一格沒有城鎮。
 //
-// ⚠ 世界地圖只知道「這裡有城鎮」(值 30/31/32),**不知道是哪一個** ——
-// 座標與 TOWNDATA 的對應未解。這裡按城鎮座標的排序取第 n 個,
-// 是**佔位**,畫面上會標出來。
+// 座標 → 城鎮的對應來自 **`TOWNDATA.BIN` 的座標表**(docs/re/53 §2、
+// 兩軸依 docs/re/141 訂正),第 n 列對上 `TOWNDATA.DAT` 的第 n 個城鎮。
 //
-// 唯一有證據的是**第 0 個 = Green Hamlet**:出貨存檔起點東邊那一格,
-// 實跑進去就是它,建築清單與 TOWNDATA 記錄 0–6 逐間吻合(docs/re/141 §2)。
-// ⛔ 不要因為第 0 個對了就推定其餘 12 個也對 —— 那是 13 選 1 猜中一次。
+// ⚠ 這裡原本是「把地圖上的城鎮格按座標排序、取第 n 個」的佔位 ——
+// 實跑走到 (24,12) 得到的是 **Arcania**(表的第 4 列),而排序給的是 Gleon。
+// **那張表早就解出來了**(re/53 §2 三重驗證),只是實作端沒去用它。
 func (g *Game) enterTown(x, y int) bool {
 	names := original.Towns(g.shops)
-	if len(names) == 0 {
-		return false
-	}
 	idx := g.townIndexAt(x, y)
 	if idx < 0 || idx >= len(names) {
 		return false
@@ -72,31 +66,19 @@ func (g *Game) enterTown(x, y int) bool {
 			ts.shops = append(ts.shops, s)
 		}
 	}
-	ts.msg = "⚠ 世界座標 → 城鎮的對應未解,這裡按座標排序取第 " +
-		fmt.Sprint(idx+1) + " 個"
+	// 建築數要對得上座標表 —— 對不上就是兩份資料不同步,講出來不要吞掉。
+	if idx < len(g.townSites) && g.townSites[idx].Shops != len(ts.shops) {
+		ts.msg = fmt.Sprintf("⚠ 座標表說有 %d 間建築,實際載到 %d 間",
+			g.townSites[idx].Shops, len(ts.shops))
+	}
 	g.town = ts
 	return true
 }
 
-// townIndexAt 回傳這個座標是第幾個城鎮(依 y、x 排序)。
+// townIndexAt 用 TOWNDATA.BIN 的座標表查這一格是第幾個城鎮;不是城鎮回 -1。
 func (g *Game) townIndexAt(x, y int) int {
-	type pt struct{ x, y int }
-	var pts []pt
-	for yy := 0; yy < world.H; yy++ {
-		for xx := 0; xx < world.W; xx++ {
-			if v := g.world.At(xx, yy); v >= 30 && v <= 32 {
-				pts = append(pts, pt{xx, yy})
-			}
-		}
-	}
-	sort.Slice(pts, func(a, b int) bool {
-		if pts[a].y != pts[b].y {
-			return pts[a].y < pts[b].y
-		}
-		return pts[a].x < pts[b].x
-	})
-	for i, p := range pts {
-		if p.x == x && p.y == y {
+	for i, s := range g.townSites {
+		if s.X == x && s.Y == y {
 			return i
 		}
 	}

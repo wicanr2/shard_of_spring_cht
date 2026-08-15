@@ -231,3 +231,46 @@ func Towns(shops []Shop) []string {
 	}
 	return out
 }
+
+// ---------------------------------------------------------------------------
+// TOWNDATA.BIN — 城鎮座標表。docs/re/53 §2(座標)、docs/re/141(兩軸訂正)。
+// ---------------------------------------------------------------------------
+
+// TownSite 是一個城鎮在世界地圖上的位置與建築數。
+//
+// ⚠ 這張表**早就解出來了**(docs/re/53 §2 的三重驗證),
+// 而 `enterTown` 一直用「按座標排序取第 n 個」的佔位 ——
+// 那個佔位在實跑裡被打臉:(24,12) 是 **Arcania**(表的第 4 列),
+// 不是排序給出的 Gleon。**答案早就在自己的 docs 裡。**
+type TownSite struct {
+	X     int `json:"x"`
+	Y     int `json:"y"`
+	Shops int `json:"shops"`
+}
+
+// TownSitesLen 是城鎮數。
+const TownSitesLen = 13
+
+// ParseTownSites 解 TOWNDATA.BIN:56 個 MBF 單精度,排成 4 欄 × 14 列,第 0 列全零。
+//
+//	欄 1 = 東西座標、欄 2 = 南北座標、欄 3 = 建築數
+//
+// ⚠ re/53 §2 把欄 1/2 標成 `Y`/`X`,那是**兩軸接反時的命名**(docs/re/141)——
+// 數值沒變,名字反了。回傳的第 0 筆對應原版的第 1 列。
+func ParseTownSites(d []byte) ([]TownSite, error) {
+	b, err := ParseBSAVE(d)
+	if err != nil {
+		return nil, err
+	}
+	if len(b.Body) < 4*4*14 {
+		return nil, fmt.Errorf("TOWNDATA.BIN 只有 %d bytes,需要 224", len(b.Body))
+	}
+	// ⚠ 排法是**逐欄**存(BASIC 的二維陣列):索引 = 欄 × 14 + 列,
+	// 不是 列 × 4 + 欄。寫反了會取到別欄的值,而那些值同樣落在合理範圍內。
+	at := func(row, col int) int { return int(MBF(b.Body[(col*14+row)*4:])) }
+	out := make([]TownSite, 0, TownSitesLen)
+	for row := 1; row <= TownSitesLen; row++ {
+		out = append(out, TownSite{X: at(row, 1), Y: at(row, 2), Shops: at(row, 3)})
+	}
+	return out, nil
+}

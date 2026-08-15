@@ -203,7 +203,9 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 			if combat.OnEdge(x, y) {
 				ch = "○" // 圓點 = 出口(手冊 p.33)
 			}
-			if i := f.Occupant(x, y); i >= 0 {
+			if g.cursor != nil && g.cursor.x == x && g.cursor.y == y {
+				ch = "✚" // 施法游標
+			} else if i := f.Occupant(x, y); i >= 0 {
 				if f.Units[i].IsMonster {
 					ch = "怪"
 				} else if i == g.actor {
@@ -231,8 +233,12 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 	p.Draw(dst, fmt.Sprintf("戰鬥 — 第 %d 回合", f.Round), x, y)
 	y += lh * 1.3
 	y = g.drawBoard(dst, x, y) + lh*0.5
-	if g.actor >= 0 {
-		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d　方向鍵移動(先轉再走)　A 攻擊　Enter 結束",
+	if g.cursor != nil {
+		p.Draw(dst, fmt.Sprintf("選施法目標:%s　I/J/K/M 移動游標、空白鍵施放、ESC 取消",
+			g.cursor.spell.Name), x, y)
+		y += lh * 1.2
+	} else if g.actor >= 0 {
+		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d　方向鍵移動(先轉再走)　A 攻擊　C 施法　Enter 結束",
 			f.Units[g.actor].Name, g.points[g.actor], f.Units[g.actor].Speed), x, y)
 		y += lh * 1.2
 	}

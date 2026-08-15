@@ -79,10 +79,11 @@ type Game struct {
 	roster *rosterState
 	create *createState // 非 nil = 建立角色的畫面蓋在名冊上
 
-	shops    []original.Shop
-	itemList []original.Item
-	town     *townState
-	rumors   map[int]string // 酒館傳聞:位移 36 → 文字(docs/re/138 §4)
+	shops     []original.Shop
+	townSites []original.TownSite // TOWNDATA.BIN 的座標表(docs/re/53 §2)
+	itemList  []original.Item
+	town      *townState
+	rumors    map[int]string // 酒館傳聞:位移 36 → 文字(docs/re/138 §4)
 
 	// 經驗值。⚠ **不寫進 CHARS.DAT** —— 它在原版記錄裡的位移未解
 	// (docs/re/140 §9),猜一個位移寫下去會壞掉原版讀得到的欄位,
@@ -94,6 +95,8 @@ type Game struct {
 	spells   []original.Spell
 	castUnit int
 	castList []original.Spell
+	// cursor 非 nil = 施法的**選格階段**(手冊 p.34 的 I/J/K/M + 空白鍵)
+	cursor *castCursor
 }
 
 func (g *Game) Update() error {
@@ -107,6 +110,15 @@ func (g *Game) Update() error {
 
 	// 戰鬥中:方向鍵不移動,空白鍵推一回合、ESC 離開結束的戰鬥。
 	if g.field != nil {
+		// 施法的選格階段:I/J/K/M 移動、空白鍵施放、ESC 取消
+		if g.cursor != nil {
+			for _, k := range inpututil.AppendJustPressedKeys(nil) {
+				if g.cursorKey(k) {
+					break
+				}
+			}
+			return nil
+		}
 		// 施法選單開著時只吃字母
 		if len(g.castList) > 0 {
 			for i := 0; i < len(g.castList) && i < 26; i++ {
@@ -509,6 +521,9 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 		return err
 	}
 	if err := readJSON(filepath.Join(dir, "data", "spells.json"), &g.spells); err != nil {
+		return err
+	}
+	if err := readJSON(filepath.Join(dir, "data", "townsites.json"), &g.townSites); err != nil {
 		return err
 	}
 	if err := readJSON(filepath.Join(dir, "data", "shops.json"), &g.shops); err != nil {

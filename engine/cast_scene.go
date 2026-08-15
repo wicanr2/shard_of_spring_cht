@@ -67,23 +67,88 @@ func (g *Game) openCast() bool {
 	return false
 }
 
-// pickSpell 用字母選一個法術並施放。
+// pickSpell 用字母選一個法術。選完進**游標選格**那一步(手冊 p.34)。
 func (g *Game) pickSpell(n int) {
 	if n < 0 || n >= len(g.castList) {
 		return
 	}
-	s := g.castList[n]
+	// 原版:選完法術之後「螢幕會出現一個游標,用 I,J,K,M 移動游標到
+	// 你想施法的目標位置,再按下 SPACE BAR 施行」(手冊 p.34)。
+	u := g.field.Units[g.castUnit]
+	g.cursor = &castCursor{spell: g.castList[n], x: u.X, y: u.Y}
+	g.castList = nil
+}
+
+// castCursor 是選格子的游標。**存法術本身不存索引** ——
+// 索引要配上「當時那份清單」才有意義,而清單在游標階段已經關掉了。
+type castCursor struct {
+	spell original.Spell
+	x, y  int
+}
+
+// cursorKey 處理游標階段的按鍵。手冊 p.34 的 I/J/K/M 是 Apple II 的菱形配置。
+func (g *Game) cursorKey(k ebiten.Key) bool {
+	cu := g.cursor
+	if cu == nil {
+		return false
+	}
+	switch k {
+	case ebiten.KeyI:
+		cu.y--
+	case ebiten.KeyM:
+		cu.y++
+	case ebiten.KeyJ:
+		cu.x--
+	case ebiten.KeyK:
+		cu.x++
+	case ebiten.KeySpace:
+		g.castAt(cu.spell, cu.x, cu.y)
+		g.cursor, g.castList = nil, nil
+		return true
+	case ebiten.KeyEscape:
+		g.cursor, g.castList = nil, nil
+		return true
+	default:
+		return false
+	}
+	if cu.x < 0 {
+		cu.x = 0
+	}
+	if cu.y < 0 {
+		cu.y = 0
+	}
+	if cu.x >= combat.BoardSize {
+		cu.x = combat.BoardSize - 1
+	}
+	if cu.y >= combat.BoardSize {
+		cu.y = combat.BoardSize - 1
+	}
+	return true
+}
+
+// castAt 對某一格施放第 n 個法術。
+//
+// ⚠ **法術的作用範圍未解**([`spec/09`])—— 原版有全場的風暴類法術
+// (`FIRE STORM` 的圖檔是整片的),也有單體的。這裡把目標取成
+// **游標那一格上的單位**,而增益類仍然套全隊 ——
+// 範圍解出來之後只要改這個函式。
+func (g *Game) castAt(s original.Spell, cx, cy int) {
 	invest := s.UnitCost
 	if invest < 1 {
 		invest = 1
 	}
 	caster := &g.field.Units[g.castUnit]
 
-	// 目標:敵方所有還活著的單位。單體法術由 magic.Apply 自己取第一個。
+	// 目標:游標那一格上的單位。查不到就落回「敵方全部」——
+	// ⚠ 那個落回是**實作決定**,不是原版行為(範圍未解)。
 	var targets []*combat.Unit
-	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
-		if g.field.Units[i].Alive() {
-			targets = append(targets, &g.field.Units[i])
+	if j := g.field.Occupant(cx, cy); j >= 0 {
+		targets = append(targets, &g.field.Units[j])
+	} else {
+		for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
+			if g.field.Units[i].Alive() {
+				targets = append(targets, &g.field.Units[i])
+			}
 		}
 	}
 	// 增益類對自己人。⚠ **原版怎麼選目標未解** —— 這裡是實作決定。

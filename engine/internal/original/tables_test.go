@@ -239,3 +239,50 @@ func TestMBF(t *testing.T) {
 		t.Errorf("1.3 應落在 [1.2999999, 1.3),得 %v", v)
 	}
 }
+
+// TOWNDATA.BIN 的座標表(docs/re/53 §2)與地圖上的城鎮格必須是同一組。
+//
+// ⚠ 這條擋的是兩件事:表的兩軸讀反(docs/re/141)、
+// 以及「按座標排序取第 n 個」那種佔位 —— 實跑證明排序是錯的。
+func TestTownSitesMatchTheMapTiles(t *testing.T) {
+	sites, err := ParseTownSites(read(t, "TOWNDATA.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(sites) != TownSitesLen {
+		t.Fatalf("城鎮數 %d,應為 %d", len(sites), TownSitesLen)
+	}
+	cells, err := DecodeWorldMap(read(t, "WRLDMAP.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i, s := range sites {
+		v := int(cells[s.X*WorldH+s.Y])
+		if v < 30 || v > 32 {
+			t.Errorf("第 %d 個城鎮 (%d,%d) 的圖塊是 %d,應為 30–32",
+				i+1, s.X, s.Y, v)
+		}
+	}
+	// 實跑印證的兩筆(docs/re/145)
+	if sites[0].X != 9 || sites[0].Y != 8 {
+		t.Errorf("第 1 個城鎮應為 (9,8) Green Hamlet,得 (%d,%d)", sites[0].X, sites[0].Y)
+	}
+	if sites[3].X != 24 || sites[3].Y != 12 {
+		t.Errorf("第 4 個城鎮應為 (24,12) Arcania,得 (%d,%d)", sites[3].X, sites[3].Y)
+	}
+
+	// 建築數要對得上 TOWNDATA.DAT 的記錄數
+	shops, err := ParseShops(read(t, "TOWNDATA.DAT"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	count := map[string]int{}
+	for _, sh := range shops {
+		count[sh.Town]++
+	}
+	for i, name := range Towns(shops) {
+		if count[name] != sites[i].Shops {
+			t.Errorf("%s 有 %d 間建築,座標表寫 %d", name, count[name], sites[i].Shops)
+		}
+	}
+}

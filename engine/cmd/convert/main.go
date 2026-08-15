@@ -89,6 +89,10 @@ func run(in, out, transDir string) error {
 			shops[i].Town = zh
 		}
 	}
+	sites, serr := original.ParseTownSites(mustRead(in, "TOWNDATA.BIN"))
+	if err := step("town sites", len(sites), serr); err != nil {
+		return err
+	}
 	if err := step("shops", len(shops), err); err != nil {
 		return err
 	}
@@ -98,7 +102,7 @@ func run(in, out, transDir string) error {
 		v    any
 	}{
 		{"monsters", monsters}, {"spells", spells}, {"items", items},
-		{"shops", shops}, {"towns", original.Towns(shops)},
+		{"shops", shops}, {"towns", original.Towns(shops)}, {"townsites", sites},
 	} {
 		if err := writeJSON(filepath.Join(out, "data", w.name+".json"), w.v); err != nil {
 			return err

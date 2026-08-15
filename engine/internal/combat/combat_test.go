@@ -129,17 +129,30 @@ func TestToHitFacesAllowsBerserk(t *testing.T) {
 	}
 }
 
-// 還沒解出來的常數。這條測試的存在就是提醒:解出來時它會失敗,
-// 逼人回來更新 docs/re/153 與 docs/spec/01 §5。
+// 面數 = 100:命中值直接就是百分比(docs/re/154)。
 //
-// ⚠ `DamageK1` 已經不在這條裡 —— 手冊把它定成 0.5(docs/re/153 §6.1)。
-// ⚠ `DamageK2` 也不在 —— 它的 0 是正確的(偏移已折進 Roll)。
-func TestPlaceholderConstants(t *testing.T) {
+// ⚠ 這條不是「鎖住一個佔位」,是**鎖住一條規則**:
+// 手冊的表把命中率印成 `技巧 × 4 %`,而程式算的是 `擲骰 ≤ 技巧 × 4`
+// —— 兩者相等只在面數 100 時成立。改了面數就等於改了命中率的尺度。
+func TestToHitIsAPercentage(t *testing.T) {
 	if ToHitFaces != 100 {
-		t.Errorf("命中面數=%v —— 若這是讀出來的值,更新 docs/re/153 §7.1 再改這條", ToHitFaces)
+		t.Fatalf("面數 %d —— 手冊 p.13 的表是百分比,面數不是 100 的話"+
+			"「命中值」與「命中率」就不再是同一個數(docs/re/154)", ToHitFaces)
 	}
-	if len(Unresolved) != 1 {
-		t.Errorf("未解項清單有 %d 條,應為 1 —— 清單與常數要一起改", len(Unresolved))
+	// 手冊 p.13 逐列:技巧 3 → 12%、技巧 20 → 80%
+	for _, c := range []struct{ skill, pct int }{{3, 12}, {10, 40}, {20, 80}} {
+		got := ToHit(Unit{ToHit: c.skill, Facing: North}, Unit{Facing: East},
+			Item{}, Item{})
+		if got != c.pct {
+			t.Errorf("技巧 %d 的命中值 %d,手冊表寫 %d%%", c.skill, got, c.pct)
+		}
+	}
+	// 狂暴門檻在 100 面下是四分之一
+	if 100-BerserkThreshold != 25 {
+		t.Errorf("狂暴機率 %d%%,應為 25%%", 100-BerserkThreshold)
+	}
+	if len(Unresolved) != 0 {
+		t.Errorf("未解項清單有 %d 條 —— 若新增了未解常數,這條要一起改", len(Unresolved))
 	}
 }
 

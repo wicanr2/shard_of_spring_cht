@@ -36,6 +36,10 @@ const (
 	offLightTurns = 45
 	offVisLit     = 59
 	offVisDark    = 61
+	// offPoolUses 是迷宮治療池的已使用次數(docs/re/155 §2.1)。
+	// `< 11` 才能用,用完原版印 `This pool is empty!`。
+	// ⚠ **跨迷宮共用一個計數器** —— 它存在隊伍記錄裡,不在迷宮資料裡。
+	offPoolUses = 63
 	offMazeX      = 79
 	offMazeY      = 81
 	offLightPick  = 83
@@ -60,6 +64,7 @@ type Group struct {
 	Facing                int
 	LightTurns            int
 	VisLit, VisDark       int
+	PoolUses              int // 位移 63:治療池已使用次數(docs/re/155)
 	MazeX, MazeY          int // 1-based
 	LightPick             int // 99 = 沒帶光源
 	Fled                  int
@@ -109,6 +114,7 @@ func ParseGroups(d []byte) ([]Group, error) {
 			LightTurns: u16(r, offLightTurns),
 			VisLit:     u16(r, offVisLit),
 			VisDark:    u16(r, offVisDark),
+			PoolUses:   u16(r, offPoolUses),
 			MazeX:      u16(r, offMazeX),
 			MazeY:      u16(r, offMazeY),
 			LightPick:  u16(r, offLightPick),
@@ -160,6 +166,7 @@ func (g Group) Bytes() []byte {
 		{offMonth, g.Month}, {offDay, g.Day}, {offHour, g.Hour}, {offSub, g.Sub},
 		{offWorldX, g.WorldX}, {offWorldY, g.WorldY}, {offFacing, g.Facing},
 		{offLightTurns, g.LightTurns}, {offVisLit, g.VisLit}, {offVisDark, g.VisDark},
+		{offPoolUses, g.PoolUses},
 		{offMazeX, g.MazeX}, {offMazeY, g.MazeY},
 		{offLightPick, g.LightPick}, {offFled, g.Fled},
 	} {

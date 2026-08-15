@@ -151,3 +151,59 @@ func Visible(s State, major, minor int) bool {
 	}
 	return dM <= s.Visibility
 }
+
+// ── 迷宮裡的兩個機關(docs/re/155)────────────────────────────────────
+
+// GemAnswer 是寶石謎題的答案:依序碰藍、藍、紅、綠。
+//
+// 原版收滿**四個字元才比一次**(docs/re/71 §4),所以提示裡的
+// `B`/`G`/`V`/`R` 不會出現在單字元的按鍵鏈裡 —— 那不是缺口。
+const GemAnswer = "BBRG"
+
+// 答對的效果是**傳送**,不是拿道具也不是開門(docs/re/155 §1.1)。
+const (
+	GemDestMajor  = 46 // ds:351C → GROUPS.DAT 位移 79
+	GemDestMinor  = 37 // ds:351E → 位移 81
+	GemDestFacing = 4  // ds:3520 → 位移 41,4 = 西
+)
+
+// GemSolved 判定玩家輸入的四個字母對不對。
+//
+// ⚠ 比的是**累積字串**,不是逐字元 —— 輸入不足四個字元時一律不算對,
+// 也不算錯(原版還在收)。
+func GemSolved(input string) bool { return input == GemAnswer }
+
+// PoolLimit 是治療池的使用次數上限:`GROUPS.DAT` 位移 63 `< 11` 才能用
+// (docs/re/155 §2.1)。
+const PoolLimit = 11
+
+// PoolMaxStatus 是能被治療池治療的最高狀態碼。
+//
+// 原版 `cmp ax, 2 / jg` → **狀態 > 2 治不了**:凝滯(3)、冰封(4)、死亡(5)
+// 會得到 `That character can't be helped here !`。
+//
+// ⚠ **它治的是生命值,不是狀態** —— 中毒的人治完仍然中毒。
+const PoolMaxStatus = 2
+
+// PoolAvailable 回傳這座池還能不能用。
+func PoolAvailable(uses int) bool { return uses < PoolLimit }
+
+// PoolCanHeal 回傳這個狀態碼的人能不能在池邊被治療。
+func PoolCanHeal(status int) bool { return status <= PoolMaxStatus }
+
+// PoolHeal 回傳實際回復的生命值:擲骰結果夾在「離滿血還差多少」。
+//
+// 原版:`治療量 = INT(RND × N) + M`,若 `當前 + 治療量 ≥ 最大` 就改成
+// `最大 − 當前`(docs/re/155 §2.3)。
+//
+// ⚠ `N`(`ds:950A`)**未解**,所以擲骰結果由呼叫端給 ——
+// 這個函式只負責「夾住」那一半,那一半是讀出來的。
+func PoolHeal(hp, maxHP, roll int) int {
+	if roll < 0 {
+		roll = 0
+	}
+	if hp+roll >= maxHP {
+		return maxHP - hp
+	}
+	return roll
+}

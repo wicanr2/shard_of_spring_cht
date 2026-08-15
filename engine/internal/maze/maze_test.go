@@ -116,3 +116,40 @@ func TestSteppingOutOfBoundsLeavesTheMaze(t *testing.T) {
 		t.Fatal("沒有測到任何方向 —— delta() 的正負號變了,這條測試失效了")
 	}
 }
+
+// 寶石謎題:答案是累積字串 BBRG(docs/re/155 §1)。
+func TestGemPuzzle(t *testing.T) {
+	if !GemSolved(GemAnswer) {
+		t.Error("正確答案應該算對")
+	}
+	// ⚠ 前綴不算對 —— 原版收滿四個字元才比一次
+	for _, s := range []string{"", "B", "BB", "BBR", "BBRGG", "bbrg", "BGRB"} {
+		if GemSolved(s) {
+			t.Errorf("%q 不該算對", s)
+		}
+	}
+}
+
+// 治療池:11 次上限、狀態 > 2 治不了、回血夾在滿血(docs/re/155 §2)。
+func TestHealingPool(t *testing.T) {
+	if !PoolAvailable(10) || PoolAvailable(11) || PoolAvailable(12) {
+		t.Error("上限是「已使用次數 < 11」")
+	}
+	for st := 0; st <= 5; st++ {
+		want := st <= 2 // 正常 / 中毒 / 束縛 可以;凝滯 / 冰封 / 死亡 不行
+		if got := PoolCanHeal(st); got != want {
+			t.Errorf("狀態 %d → %v,應為 %v", st, got, want)
+		}
+	}
+	// 夾住:差 3 血時擲出 10 只回 3
+	if got := PoolHeal(7, 10, 10); got != 3 {
+		t.Errorf("7/10 擲 10 應回 3,得 %d", got)
+	}
+	if got := PoolHeal(7, 10, 2); got != 2 {
+		t.Errorf("7/10 擲 2 應回 2,得 %d", got)
+	}
+	// 滿血的人回 0,不會變成負數
+	if got := PoolHeal(10, 10, 5); got != 0 {
+		t.Errorf("滿血應回 0,得 %d", got)
+	}
+}

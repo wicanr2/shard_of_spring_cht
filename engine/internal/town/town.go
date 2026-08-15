@@ -115,14 +115,18 @@ const (
 	CampSleepHours    = 8 // 睡滿八小時
 )
 
-// TownInnPrice 是旅店每晚的價格。**來源未解** —— 沒讀到這個數字從哪來。
-// ⛔ 不要因為「看起來合理」就換一個值。
-const TownInnPrice = 10
-
-// TownFoodPrice 是每份食糧的價格。**來源未解**,同上。
+// 城鎮服務的**基準價**。docs/re/142:在倍率恰好 1.0 的 Green Hamlet 讀到,
+// 所以畫面上的數字就是基準價,不必反推(反推會踩到 MBF 的截斷誤差)。
 //
-// ⚠ 食糧在**酒館**買,不在旅店(手冊 p.37,docs/re/140 §6)。
-const TownFoodPrice = 5
+// 實際收費一律是 `Price(基準價, 該店倍率)`。
+const (
+	TownInnPrice   = 25 // 住宿每晚
+	TownFoodPrice  = 2  // 食糧每份 —— ⚠ 在**酒館**買,不在旅店
+	HealPerHP      = 2  // 治療:每點生命。⚠ 單位是推的(見 docs/re/142 §結論)
+	UnpoisonPrice  = 40 // 解毒,定價
+	UnbindPerLv    = 94 // 解除束縛,依**角色等級**
+	ResurrectPerLv = 100
+)
 
 // CampRestHeal 保留給「不睡覺、只休息一會兒」。原版沒有這個動作 ——
 // 它是本引擎為了讓玩家能推進時鐘而加的,**恢復量因此是自訂的,不是未解的原版值**。
@@ -130,9 +134,10 @@ const CampRestHeal = 1
 
 // Unresolved 是要顯示在畫面上的未解項(docs/spec/11 §3、§4)。
 var Unresolved = []string{
-	"旅店房價、食糧單價、治療費用的金額未解(恢復量已知)",
-	"賣出價與角色創造的骰法未解,未列入指令",
+	"原版沒有賣出功能(docs/re/142 §4),所以這裡也沒有",
+	"角色創造的基礎屬性骰法未解,只套種族修正",
 	"經驗值存在存檔的哪個位移未解,升級用引擎自己的計數",
+	"PERSUASIVENESS 技能怎麼降價未解,價格未套用它",
 }
 
 // Rest 讓全隊休息一次(引擎自訂的動作,見 CampRestHeal)。

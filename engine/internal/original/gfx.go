@@ -112,10 +112,14 @@ func DecodeMonst(d []byte) ([]*image.Paletted, error) {
 }
 
 // DecodeWorldMap 解 WRLDMAP.BIN。docs/formats/05 §2:
-// 103 × 121 格,每格 2 bytes,索引 = y × 103 + x。
+// **東西 121 × 南北 103**,每格 2 bytes,索引 = x × 103 + y。
+//
+// ⚠ 兩軸的名字改過一次(docs/re/141):先前寫成 103 東西 × 121 南北。
+// 格數(12,463)與跨距(103)都沒錯,錯的是**跨距 103 是往東還是往南** ——
+// 而轉置過的地圖仍然是一塊連續陸地,畫得出來、看起來也合理。
 const (
-	WorldW = 103
-	WorldH = 121
+	WorldW = 121 // 東西
+	WorldH = 103 // 南北,同時是索引的跨距
 )
 
 func DecodeWorldMap(d []byte) ([]uint16, error) {

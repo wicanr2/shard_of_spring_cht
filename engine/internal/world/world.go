@@ -4,10 +4,14 @@
 // **規格改了才改這裡。**
 package world
 
-// 地圖尺寸。docs/spec/05 §1。
+// 地圖尺寸。docs/spec/05 §1、docs/formats/05 §2。
+//
+// ⚠ **東西 121、南北 103**,而索引的跨距是 H(= 103):往東一格 = +103。
+// 兩軸的名字被接反過一次(docs/re/141)—— 轉置過的地圖仍然畫得出來,
+// 沒有任何錯誤訊息,是實跑走進城鎮才裁決出來的。
 const (
-	W = 103
-	H = 121
+	W = 121 // 東西 0–120
+	H = 103 // 南北 0–102
 )
 
 // 朝向。docs/spec/05 §6,與 GROUPS.DAT 位移 41 相同。
@@ -42,14 +46,15 @@ type Map struct {
 
 // At 回傳 (x,y) 的地形值。界外回傳 0(= 地圖邊界,docs/spec/05 §2.1)。
 //
-// ⚠ 索引是 y*W + x。迷宮是「欄 × 81 + 列」,**不同的順序**
-// (docs/spec/00-index.md 實作前必讀第 4 條)。寫反了地圖仍然畫得出來,
-// 只是轉了 90 度 —— 不會有任何錯誤訊息。
+// ⚠ 索引是 **x*H + y**(往東 +103),與迷宮的「欄 × 81 + 列」同一種形狀。
+// 這一行寫成 y*W+x 過,而**那樣地圖照樣畫得出來,只是整張轉了 90 度**
+// —— 上面那句警語當初就寫在這裡,擋不住,因為它警告的東西沒有症狀。
+// 裁決它的是實跑(docs/re/141):城鎮在東邊還是南邊。
 func (m *Map) At(x, y int) int {
 	if x < 0 || x >= W || y < 0 || y >= H {
 		return 0
 	}
-	return m.Cells[y*W+x]
+	return m.Cells[x*H+y]
 }
 
 // Clock 是四級計數器。docs/formats/02「時鐘的四級進位」。
@@ -110,12 +115,13 @@ const (
 	Blocked               // 撞到地圖邊界
 )
 
-// 可通行性的邊界常數。docs/re/131 §2 規則 1:X 限制在 5–98,
-// 而地圖寬 103 —— **兩側各有幾欄玩家永遠到不了**。
-// ⚠ Y 沒有對應的檢查,原因未解。
+// 可通行性的邊界常數。docs/re/131 §2 規則 1 把座標限制在 5–98,
+// 而被限制的是**跨距 1 的那一條軸** —— 也就是**南北**(0–102,docs/re/141)。
+// 南北兩端因此各有 5 排玩家永遠到不了。
+// ⚠ 東西向沒有對應的檢查,原因未解。
 const (
-	MinX = 5
-	MaxX = 98
+	MinY = 5
+	MaxY = 98
 )
 
 func in(v, lo, hi int) bool { return v >= lo && v <= hi }
@@ -133,8 +139,8 @@ func oneOf(v int, set ...int) bool {
 //
 // docs/re/131 §2 的八條規則,任一成立即不可通行。順序與原版一致。
 func Passable(m *Map, fromX, fromY, toX, toY int, dir Facing) bool {
-	// 1. X 範圍
-	if !in(toX, MinX, MaxX) {
+	// 1. 南北範圍
+	if !in(toY, MinY, MaxY) {
 		return false
 	}
 	cur, dst := m.At(fromX, fromY), m.At(toX, toY)
@@ -185,7 +191,7 @@ func (s *State) Step(dir Facing, m *Map) Result {
 	}
 	dx, dy := dir.delta()
 	nx, ny := s.X+dx, s.Y+dy
-	if ny < 0 || ny >= H || !Passable(m, s.X, s.Y, nx, ny, dir) {
+	if nx < 0 || nx >= W || !Passable(m, s.X, s.Y, nx, ny, dir) {
 		return Blocked
 	}
 	s.X, s.Y = nx, ny

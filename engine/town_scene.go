@@ -48,6 +48,10 @@ const shopPageSize = 20
 // ⚠ 世界地圖只知道「這裡有城鎮」(值 30/31/32),**不知道是哪一個** ——
 // 座標與 TOWNDATA 的對應未解。這裡按城鎮座標的排序取第 n 個,
 // 是**佔位**,畫面上會標出來。
+//
+// 唯一有證據的是**第 0 個 = Green Hamlet**:出貨存檔起點東邊那一格,
+// 實跑進去就是它,建築清單與 TOWNDATA 記錄 0–6 逐間吻合(docs/re/141 §2)。
+// ⛔ 不要因為第 0 個對了就推定其餘 12 個也對 —— 那是 13 選 1 猜中一次。
 func (g *Game) enterTown(x, y int) bool {
 	names := original.Towns(g.shops)
 	if len(names) == 0 {
@@ -131,16 +135,44 @@ func (g *Game) townKey(k ebiten.Key) {
 		case townInn:
 			// 手冊 p.37:睡一晚回 2 HP、10 SP,而且供餐(不耗食糧)。
 			if k == ebiten.KeyR {
+				cost := town.Price(town.TownInnPrice, ts.shop.PriceMult)
+				if float64(cost) > g.group.Gold {
+					ts.msg = "金幣不足"
+					return
+				}
+				g.group.Gold -= float64(cost)
 				g.members = town.InnSleep(g.members)
 				g.party.Clock.Tick()
-				ts.msg = fmt.Sprintf("住了一晚,全隊回 %d 生命 %d 法力。⚠ 房價未解",
-					town.InnHealHP, town.InnHealSP)
+				ts.msg = fmt.Sprintf("住了一晚,花 %d 金幣,全隊回 %d 生命 %d 法力",
+					cost, town.InnHealHP, town.InnHealSP)
 			}
 		case townTavern:
-			// ⚠ 食糧買在**酒館**,不是旅店(手冊 p.37,docs/re/140 §6)。
-			if k == ebiten.KeyF {
+			// 原版的酒館選單是 `T)alk … B)uy food`(docs/re/142 §3)。
+			// ⚠ 食糧買在**酒館**,不是旅店。
+			if k == ebiten.KeyB {
 				g.buyProvisions(1)
 			}
+		case townHealer:
+			// 1–5 選人,再按 W/P/B/R 選服務(docs/re/142 的四項)。
+			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
+				ts.page = i // 借 page 當「選到第幾個人」
+				ts.msg = g.members[i].Name + ":選 W 治療 / P 解毒 / B 解束縛 / R 復活"
+				return
+			}
+			var kind town.HealKind
+			switch k {
+			case ebiten.KeyW:
+				kind = town.HealWounds
+			case ebiten.KeyP:
+				kind = town.HealPoison
+			case ebiten.KeyB:
+				kind = town.HealBind
+			case ebiten.KeyR:
+				kind = town.HealDeath
+			default:
+				return
+			}
+			g.healMember(ts.page, kind)
 		case townTrainer:
 			// 選成員的編號升級。訓練免費(手冊 p.37)。
 			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
@@ -318,6 +350,29 @@ func (g *Game) buyProvisions(n int) {
 	g.town.msg = fmt.Sprintf("買了 %d 份食糧,花 %d 金幣(⚠ 單價未解)", n, price)
 }
 
+// healMember 在治療所替第 i 位成員做一項服務。
+func (g *Game) healMember(i int, k town.HealKind) {
+	if i < 0 || i >= len(g.members) {
+		return
+	}
+	c := &g.members[i]
+	gold := g.group.Gold
+	cost := town.HealCost(*c, k, g.town.shop.PriceMult)
+	if !town.Heal(&gold, c, k, g.town.shop.PriceMult) {
+		if cost == 0 {
+			g.town.msg = c.Name + " 不需要「" + k.String() + "」"
+		} else {
+			g.town.msg = fmt.Sprintf("金幣不足(需要 %d)", cost)
+		}
+		return
+	}
+	g.group.Gold = gold
+	if c.ID >= 1 && c.ID <= len(g.chars) {
+		g.chars[c.ID-1] = *c
+	}
+	g.town.msg = fmt.Sprintf("%s 接受「%s」,花 %d 金幣", c.Name, k.String(), cost)
+}
+
 // trainMember 讓第 i 位成員在訓練所升級。
 func (g *Game) trainMember(i, guildExtra int) {
 	c := &g.members[i]
@@ -341,20 +396,34 @@ func (g *Game) buildingLines(ts *townState) []string {
 	case original.ShopInn:
 		return []string{
 			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
-			"R) 住一晚",
+			fmt.Sprintf("R) 住一晚　%d 金幣",
+				town.Price(town.TownInnPrice, ts.shop.PriceMult)),
 			fmt.Sprintf("睡一晚回 %d 生命、%d 法力，並供餐（手冊 p.37）。",
 				town.InnHealHP, town.InnHealSP),
-			"⚠ 住宿的**基準價**未解 —— 倍率讀得出來，乘的那個數字還沒定位。",
 		}
 	case original.ShopHealer:
-		return []string{
-			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
-			"治癒傷勢的費用依傷害程度、解毒是定價、解束縛與復活依等級（手冊 p.37）。",
-			"⚠ 這四項的**金額**都未解，本畫面只顯示不施作。",
+		lines := []string{
+			fmt.Sprintf("價格倍率 %.2f　（治療所不受說服技能影響）", ts.shop.PriceMult),
+			"",
+			fmt.Sprintf("治療傷勢　每點生命 %d　　解毒　%d",
+				town.Price(town.HealPerHP, ts.shop.PriceMult),
+				town.Price(town.UnpoisonPrice, ts.shop.PriceMult)),
+			fmt.Sprintf("解除束縛　每級 %d　　復活　每級 %d",
+				town.Price(town.UnbindPerLv, ts.shop.PriceMult),
+				town.Price(town.ResurrectPerLv, ts.shop.PriceMult)),
+			"",
+			"按編號選人，再按 W 治療 / P 解毒 / B 解束縛 / R 復活：",
 		}
+		for i, c := range g.members {
+			lines = append(lines, fmt.Sprintf("%d) %s　生命 %d／%d　%s　治療費 %d",
+				i+1, c.Name, c.HP, c.MaxHP, c.StatusName(),
+				town.HealCost(c, town.HealWounds, ts.shop.PriceMult)))
+		}
+		return append(lines, "", town.ResurrectAssumption)
 	case original.ShopTavern:
 		lines := []string{
-			fmt.Sprintf("F) 買 1 份食糧　目前 %d 份（⚠ 單價未解）", g.group.Provisions),
+			fmt.Sprintf("B) 買 1 份食糧　每份 %d 金幣　目前 %d 份",
+				town.Price(town.TownFoodPrice, ts.shop.PriceMult), g.group.Provisions),
 			"",
 		}
 		if r, ok := g.rumors[ts.shop.Extra]; ok {

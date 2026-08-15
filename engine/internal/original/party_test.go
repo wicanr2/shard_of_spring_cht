@@ -147,9 +147,14 @@ func TestGroupsShippedRecords(t *testing.T) {
 	}
 }
 
-// 出貨存檔站在城鎮正北方一格、面向南方 —— 手冊說 PARTY #5 是「最快開始」用的。
-// 這條同時檢查了世界座標欄位、朝向編碼(3 = 南)與 y+1 = 南 的方向約定。
-func TestShippedSaveFacesATown(t *testing.T) {
+// 出貨存檔就站在城鎮 Green Hamlet 的**西邊一格**,朝向卻是南(3)——
+// 也就是玩家開局要先往東轉一次才走得進去。這是 DOSBox 實跑裁決的
+// (docs/re/141:往東走一格進得去、往南走兩格進不去)。
+//
+// ⚠ 這條測試的第一版寫「城鎮在正南方」,而它**當時是通過的** ——
+// 因為地圖的兩軸接反了,而轉置過的地圖照樣自洽。
+// **一個從錯誤前提寫出來的測試會保護那個錯誤**,不會揭發它。
+func TestShippedSaveTownIsOneStepEast(t *testing.T) {
 	gs, err := ParseGroups(read(t, "GROUPS.DAT"))
 	if err != nil {
 		t.Fatal(err)
@@ -159,15 +164,22 @@ func TestShippedSaveFacesATown(t *testing.T) {
 		t.Fatal(err)
 	}
 	g := gs[4]
-	at := func(x, y int) int { return int(cells[y*WorldW+x]) }
+	// 索引 = x*WorldH + y,往東一格 = +103(docs/re/141)
+	at := func(x, y int) int { return int(cells[x*WorldH+y]) }
 	if v := at(g.WorldX, g.WorldY); v != 4 {
-		t.Errorf("隊伍所在格 (%d,%d) 的地形是 %d,應為 4(森林,可站人)",
+		t.Errorf("隊伍所在格 (%d,%d) 的地形是 %d,應為 4(可站人)",
 			g.WorldX, g.WorldY, v)
 	}
-	// 朝向 3 = 南 = y+1(docs/spec/05 §6)
-	if v := at(g.WorldX, g.WorldY+1); v != 30 {
-		t.Errorf("朝向 3(南)那一格 (%d,%d) 的地形是 %d,應為 30(城鎮)",
-			g.WorldX, g.WorldY+1, v)
+	if v := at(g.WorldX+1, g.WorldY); v != 30 {
+		t.Errorf("東邊一格 (%d,%d) 的地形是 %d,應為 30(Green Hamlet)",
+			g.WorldX+1, g.WorldY, v)
+	}
+	// 反面:南邊那一格**不是**城鎮 —— 這一格正是先前接反時被誤認的那一格。
+	if v := at(g.WorldX, g.WorldY+1); v == 30 {
+		t.Errorf("南邊一格不該是城鎮,得 %d", v)
+	}
+	if g.Facing != 3 {
+		t.Errorf("出貨存檔朝向應為 3(南),得 %d", g.Facing)
 	}
 }
 

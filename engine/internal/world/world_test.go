@@ -73,9 +73,9 @@ func TestBlockedAtEdge(t *testing.T) {
 // 而畫面上看起來仍像「地圖本來就長這樣」。
 func TestMapIndexOrder(t *testing.T) {
 	m := blankMap()
-	m.Cells[3*W+7] = 42 // (x=7, y=3)
+	m.Cells[7*H+3] = 42 // (x=7, y=3)
 	if got := m.At(7, 3); got != 42 {
-		t.Errorf("At(7,3) 得 %d,應為 42 —— 索引應為 y*W+x", got)
+		t.Errorf("At(7,3) 得 %d,應為 42 —— 索引應為 x*H+y(docs/re/141)", got)
 	}
 	if got := m.At(3, 7); got == 42 {
 		t.Error("At(3,7) 也回 42 —— x 與 y 寫反了")
@@ -137,19 +137,20 @@ func TestEncounterNeverNegative(t *testing.T) {
 func mapWith(cells map[[2]int]int) *Map {
 	m := blankMap()
 	for k, v := range cells {
-		m.Cells[k[1]*W+k[0]] = v
+		m.Cells[k[0]*H+k[1]] = v // 索引 x*H+y(docs/re/141)
 	}
 	return m
 }
 
-func TestPassableXRange(t *testing.T) {
+// 規則 1 限制的是**南北**座標(跨距 1 的那一條軸,docs/re/141)。
+func TestPassableNorthSouthRange(t *testing.T) {
 	m := blankMap()
 	for _, c := range []struct {
-		x  int
+		y  int
 		ok bool
 	}{{4, false}, {5, true}, {98, true}, {99, false}} {
-		if got := Passable(m, c.x, 50, c.x, 49, North); got != c.ok {
-			t.Errorf("X=%d 可通行=%v,應為 %v(規則 1:5–98)", c.x, got, c.ok)
+		if got := Passable(m, 50, c.y+1, 50, c.y, North); got != c.ok {
+			t.Errorf("南北=%d 可通行=%v,應為 %v(規則 1:5–98)", c.y, got, c.ok)
 		}
 	}
 }

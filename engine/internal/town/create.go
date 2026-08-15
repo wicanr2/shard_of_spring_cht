@@ -201,3 +201,82 @@ func raceSkills(race rules.Race, class rules.Class) string {
 	}
 	return string(flags)
 }
+
+// ── 營地的 R)eorder 與 T)rade ────────────────────────────────────────
+//
+// 兩者的**效果**都由已解的資料結構決定,⚠ 但**原版的操作介面沒有讀到**
+// (docs/re/150 §5.2 只讀到選單上有這兩個字母)。
+// 引擎用最小的忠實操作:交換兩個成員槽 / 搬一格背包。
+
+// Reorder 交換隊伍裡第 a、b 兩個成員槽(1-based)。
+//
+// 順序**不只是顯示** —— 戰場的初始佈陣直接用槽序算位置
+// (`欄 = (i−1) mod 3 − 1`,docs/re/160),所以調順序就是調站位。
+//
+// ⚠ 要同時動 `GROUPS.DAT` 的成員槽**與**引擎的 members 切片,
+// 只動一邊會讓存檔與畫面對不上,而畫面看起來完全正常。
+func Reorder(g *original.Group, members []original.Character, a, b int) bool {
+	if a == b || a < 1 || b < 1 || a > len(members) || b > len(members) {
+		return false
+	}
+	members[a-1], members[b-1] = members[b-1], members[a-1]
+	g.Members[a-1], g.Members[b-1] = g.Members[b-1], g.Members[a-1]
+	return true
+}
+
+// TradeResult 說明一次傳遞的結果。
+type TradeResult int
+
+const (
+	TradeOK TradeResult = iota
+	TradeEmptySlot
+	TradeNoRoom
+	TradeSamePerson
+)
+
+func (r TradeResult) String() string {
+	switch r {
+	case TradeOK:
+		return "交給對方了"
+	case TradeEmptySlot:
+		return "那一格是空的"
+	case TradeNoRoom:
+		return "對方的背包滿了"
+	case TradeSamePerson:
+		return "不能交給自己"
+	}
+	return "?"
+}
+
+// Trade 把 from 的第 slot 格交給 to。
+//
+// ⚠ **裝備欄存的是背包格號**(docs/formats/01 位移 34/36)——
+// 傳出去的那一格若正裝備著,要先卸下,否則裝備欄會指向一個空格,
+// 而那個錯誤不會報錯,只會讓角色空手打人。與 D)rop 是同一條(docs/spec/11 §4)。
+func Trade(from, to *original.Character, slot int) TradeResult {
+	if from == to {
+		return TradeSamePerson
+	}
+	if slot < 0 || slot >= original.PackSlots || from.Pack[slot] == original.NotEquipped {
+		return TradeEmptySlot
+	}
+	dst := -1
+	for i, v := range to.Pack {
+		if v == original.NotEquipped {
+			dst = i
+			break
+		}
+	}
+	if dst < 0 {
+		return TradeNoRoom
+	}
+	if from.Weapon == slot {
+		from.Weapon = original.NotEquipped
+	}
+	if from.Armor == slot {
+		from.Armor = original.NotEquipped
+	}
+	to.Pack[dst] = from.Pack[slot]
+	from.Pack[slot] = original.NotEquipped
+	return TradeOK
+}

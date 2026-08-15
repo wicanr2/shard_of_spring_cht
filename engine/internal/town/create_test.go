@@ -189,3 +189,77 @@ func TestRerollIgnoresOutOfRange(t *testing.T) {
 		t.Errorf("編號超出 1–5 應原樣回傳,得 %+v", got)
 	}
 }
+
+// R)eorder:順序不只是顯示 —— 戰場佈陣直接用槽序算位置(docs/re/160)。
+//
+// ⚠ 要同時動 GROUPS 的成員槽與 members 切片。只動一邊的話存檔與畫面對不上,
+// 而畫面看起來完全正常 —— 所以這條兩邊都驗。
+func TestReorderMovesBothSides(t *testing.T) {
+	g := &original.Group{}
+	ms := []original.Character{{Name: "甲", ID: 1}, {Name: "乙", ID: 2}, {Name: "丙", ID: 3}}
+	for i, c := range ms {
+		g.Members[i] = c.ID
+	}
+	if !Reorder(g, ms, 1, 3) {
+		t.Fatal("交換 1↔3 應該成功")
+	}
+	if ms[0].Name != "丙" || ms[2].Name != "甲" {
+		t.Errorf("members 沒換:%s / %s", ms[0].Name, ms[2].Name)
+	}
+	if g.Members[0] != 3 || g.Members[2] != 1 {
+		t.Errorf("成員槽沒換:%d / %d", g.Members[0], g.Members[2])
+	}
+	for _, c := range [][2]int{{1, 1}, {0, 2}, {1, 9}} {
+		if Reorder(g, ms, c[0], c[1]) {
+			t.Errorf("(%d,%d) 應該被擋下來", c[0], c[1])
+		}
+	}
+}
+
+// T)rade:搬一格背包,傳出去的若正裝備著要先卸下。
+func TestTradeUnequipsWhatItMoves(t *testing.T) {
+	from := emptyPackChar()
+	to := emptyPackChar()
+	from.Pack[2] = 7
+	from.Weapon = 2 // 正拿著第 2 格
+
+	if r := Trade(&from, &to, 2); r != TradeOK {
+		t.Fatalf("應該傳得過去,得 %v", r)
+	}
+	if from.Pack[2] != original.NotEquipped {
+		t.Errorf("來源那一格應該清空,得 %d", from.Pack[2])
+	}
+	if from.Weapon != original.NotEquipped {
+		t.Error("傳出去的那一格正裝備著,應該一起卸下 —— 否則裝備欄指向空格")
+	}
+	if to.Pack[0] != 7 {
+		t.Errorf("對方的第一個空格應該收到 7,得 %d", to.Pack[0])
+	}
+	// 空格 / 自己 / 背包滿
+	if r := Trade(&from, &to, 5); r != TradeEmptySlot {
+		t.Errorf("空格應回 TradeEmptySlot,得 %v", r)
+	}
+	if r := Trade(&from, &from, 0); r != TradeSamePerson {
+		t.Errorf("交給自己應被擋,得 %v", r)
+	}
+	full := emptyPackChar()
+	for i := range full.Pack {
+		full.Pack[i] = 3
+	}
+	src := emptyPackChar()
+	src.Pack[0] = 9
+	if r := Trade(&src, &full, 0); r != TradeNoRoom {
+		t.Errorf("對方背包滿應回 TradeNoRoom,得 %v", r)
+	}
+}
+
+// emptyPackChar 造一個背包全空的角色 —— **空格的哨兵是 99 不是 0**
+// (docs/re/144 §3)。用零值 Character 會讓測試保護錯誤的假設。
+func emptyPackChar() original.Character {
+	var c original.Character
+	for i := range c.Pack {
+		c.Pack[i] = original.NotEquipped
+	}
+	c.Weapon, c.Armor = original.NotEquipped, original.NotEquipped
+	return c
+}

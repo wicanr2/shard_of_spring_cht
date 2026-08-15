@@ -37,9 +37,11 @@ type townState struct {
 	page  int             // 商品分頁(原版有 `+ for next page`,手冊 p.31)
 	msg   string
 	// 營地的子畫面。原版選單有 11 個指令(docs/re/150 §5.2),
-	// 這裡做了三個:角色卡、裝備、丟棄。其餘的規則還沒解,選單上標「未實作」。
+	// 這裡做了五個:角色卡、裝備、丟棄、調整隊形、傳遞。
+	// 其餘的規則還沒解,選單上標「未實作」。
 	campWho  int  // 選到第幾位成員
-	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別
+	campWho2 int  // 第二位(R)eorder / T)rade 用)
+	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別、'R' 調隊形、'T' 傳遞
 }
 
 // shopPageSize 是一頁的商品數。主視野高 612、行高 26 → 扣掉標題約 20 列。
@@ -195,17 +197,16 @@ func (g *Game) townKey(k ebiten.Key) {
 			return
 		}
 		switch k {
-		case ebiten.KeyE, ebiten.KeyD:
+		case ebiten.KeyE, ebiten.KeyD, ebiten.KeyR, ebiten.KeyT:
 			ts.campMode = campLetter(k)
 			ts.msg = "按編號選人"
-			ts.campWho = -1
+			ts.campWho, ts.campWho2 = -1, -1
 		case ebiten.Key1, ebiten.Key2, ebiten.Key3, ebiten.Key4, ebiten.Key5:
 			// 原版是 `#)inspect char` —— 直接按編號。
 			if i := int(k - ebiten.Key1); i < len(g.members) {
 				ts.campMode, ts.campWho, ts.msg = '#', i, ""
 			}
-		case ebiten.KeyP, ebiten.KeyR, ebiten.KeyT, ebiten.KeyH, ebiten.KeyI,
-			ebiten.KeyC, ebiten.KeyU:
+		case ebiten.KeyP, ebiten.KeyH, ebiten.KeyI, ebiten.KeyC, ebiten.KeyU:
 			ts.msg = campUnimplemented[k] + ":原版有這個指令,但規則還沒解,本引擎未實作"
 		case ebiten.KeyS:
 			// 手冊 p.38:每人耗 1 份食糧,回 1 HP、5 SP;沒得吃的人扣 1 HP。
@@ -315,11 +316,11 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			town.CampSleepFood, town.CampSleepHP, town.CampSleepSP,
 			g.group.Provisions), x, y)
 		y += lh
-		p.Draw(dst, "1–5) 檢視角色　E) 裝備　D) 丟棄", x, y)
+		p.Draw(dst, "1–5) 檢視角色　E) 裝備　D) 丟棄　R) 調整隊形　T) 傳遞", x, y)
 		y += lh
-		p.Draw(dst, "P) 列印角色表　R) 調整隊形　T) 傳遞　H) 打獵　I) 鑑定　C) 施法　U) 使用道具", x, y)
+		p.Draw(dst, "P) 列印角色表　H) 打獵　I) 鑑定　C) 施法　U) 使用道具", x, y)
 		y += lh
-		p.Draw(dst, "　　（上面這七個原版有，規則未解，本引擎未實作）", x, y)
+		p.Draw(dst, "　　（上面這五個原版有，規則未解，本引擎未實作）", x, y)
 		y += lh
 		if ts.campMode != 0 {
 			y += lh * 0.5
@@ -351,8 +352,6 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 // 沒有人會發現漏了什麼 —— 而 `R)eorder` 會直接影響戰鬥站位。
 var campUnimplemented = map[ebiten.Key]string{
 	ebiten.KeyP: "P) 列印角色表",
-	ebiten.KeyR: "R) 調整隊形順序",
-	ebiten.KeyT: "T) 隊員之間傳遞",
 	ebiten.KeyH: "H) 打獵",
 	ebiten.KeyI: "I) 鑑定",
 	ebiten.KeyC: "C) 施法",
@@ -366,6 +365,10 @@ func campLetter(k ebiten.Key) byte {
 		return 'E'
 	case ebiten.KeyD:
 		return 'D'
+	case ebiten.KeyR:
+		return 'R'
+	case ebiten.KeyT:
+		return 'T'
 	}
 	return 0
 }
@@ -385,11 +388,44 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
 			ts.campWho = i
 			ts.msg = ""
+			if ts.campMode == 'R' || ts.campMode == 'T' {
+				ts.msg = "再按一個編號選對方"
+			}
 		}
 		return
 	}
 	// 角色卡只是看,沒有下一步。
 	if ts.campMode == '#' {
+		return
+	}
+	// R)eorder 與 T)rade 都要選第二個人
+	if ts.campMode == 'R' || ts.campMode == 'T' {
+		if ts.campWho2 < 0 {
+			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
+				ts.campWho2 = i
+			}
+			return
+		}
+		if ts.campMode == 'R' {
+			if town.Reorder(&g.group, g.members, ts.campWho+1, ts.campWho2+1) {
+				ts.msg = "調換了隊形順序（戰場站位跟著改）"
+			} else {
+				ts.msg = "那兩個位置換不了"
+			}
+			ts.campMode, ts.campWho, ts.campWho2 = 0, -1, -1
+			return
+		}
+		// T)rade:選完兩個人再選背包格
+		slot := int(k - ebiten.KeyA)
+		if slot < 0 || slot >= town.PackSlots {
+			return
+		}
+		r := town.Trade(&g.members[ts.campWho], &g.members[ts.campWho2], slot)
+		ts.msg = g.members[ts.campWho].Name + "：" + r.String()
+		if r == town.TradeOK {
+			g.syncMember(g.members[ts.campWho])
+			g.syncMember(g.members[ts.campWho2])
+		}
 		return
 	}
 	// `E)quip` 選完人再選武器還是防具 —— **分類不在 `ITEMS.DAT` 裡,在呼叫端**
@@ -540,7 +576,8 @@ func (g *Game) campLines(ts *townState) []string {
 	if ts.campMode == '#' && ts.campWho >= 0 && ts.campWho < len(g.members) {
 		return g.charCard(g.members[ts.campWho])
 	}
-	title := map[byte]string{'E': "裝備", 'W': "拿武器", 'A': "穿防具", 'D': "丟棄"}[ts.campMode]
+	title := map[byte]string{'E': "裝備", 'W': "拿武器", 'A': "穿防具", 'D': "丟棄",
+		'R': "調整隊形", 'T': "傳遞"}[ts.campMode]
 	if ts.campWho < 0 {
 		out := []string{title + "：按編號選人"}
 		for i, c := range g.members {
@@ -549,11 +586,29 @@ func (g *Game) campLines(ts *townState) []string {
 		return out
 	}
 	c := g.members[ts.campWho]
+	if ts.campMode == 'R' {
+		return []string{c.Name + "：再按一個編號,兩人交換隊形順序",
+			"（順序不只是顯示 —— 戰場站位直接用它算,docs/re/160）"}
+	}
+	if ts.campMode == 'T' {
+		if ts.campWho2 < 0 {
+			return []string{c.Name + "：再按一個編號選對方"}
+		}
+		out := []string{fmt.Sprintf("%s → %s（按字母選要給的那一格）",
+			c.Name, g.members[ts.campWho2].Name)}
+		return append(out, g.packLines(c)...)
+	}
 	if ts.campMode == 'E' {
 		return []string{c.Name + "：W) 當武器　A) 當防具",
 			"（`ITEMS.DAT` 沒有「武器還是防具」這個欄位，分類在呼叫端）"}
 	}
 	out := []string{fmt.Sprintf("%s 的背包（%s，按字母選格）", c.Name, title)}
+	return append(out, g.packLines(c)...)
+}
+
+// packLines 列出一個角色的背包。
+func (g *Game) packLines(c original.Character) []string {
+	var out []string
 	for i, n := range c.Pack {
 		if n == original.NotEquipped {
 			continue
@@ -571,7 +626,9 @@ func (g *Game) campLines(ts *townState) []string {
 		}
 		out = append(out, fmt.Sprintf("%c) %s%s", 'A'+i, name, mark))
 	}
-	if len(out) == 1 {
+	// ⚠ 這裡是 0 不是 1 —— 抽成獨立函式之後 out 不再帶標題那一列。
+	// 寫成 1 的話空背包會**什麼都不顯示**,而畫面上看起來像正常的空清單。
+	if len(out) == 0 {
 		out = append(out, "（背包是空的）")
 	}
 	return out

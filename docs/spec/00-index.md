@@ -63,7 +63,7 @@
 | 戰場的**怪物佈陣與 AI** | [`spec/12`](12-combat-board.md) §5;⚠ **隊伍的佈陣已解**([`re/160`](../re/160-party-deploys-three-per-row.md))|
 | 迷宮的**寶石謎題 / 治療池觸發點** | [`spec/08`](08-maze-scene.md) §5.5;規則已解,是哪一筆事件叫起它們未解 |
 | 戰後**金幣**的四個常數 | [`re/152`](../re/152-experience-settlement-formula.md) §2.3;**管線形狀已通**(含兩次次方),⚠ 手冊沒寫金幣 → **唯一的路是 oracle 實測**。引擎已發金幣,走具名佔位 |
-| 營地的 `H)unt` / `I)dentify` / `T)rade` / `R)eorder` | [`spec/11`](11-town-camp-roster.md) §4 |
+| 營地的 `H)unt` / `I)dentify` / `P)rint` | [`spec/11`](11-town-camp-roster.md) §4;⚠ `R)eorder` 與 `T)rade` **已實作**(效果由已解的結構決定)|
 
 **已經填掉的**(不要再照舊引用):傷害公式的兩個係數(`k₁` = 0.5、`k₂` 折進 `Roll`)、
 擲骰面數(= 100)、`CHARS.DAT` 位移 1(= 所屬隊伍)、經驗值的位移與結算算式、

@@ -575,9 +575,10 @@ func (g *Game) buildingLines(ts *townState) []string {
 		if r, ok := g.rumors[ts.shop.Extra]; ok {
 			return append(lines, r)
 		}
+		// 11 個索引現在都有文字(docs/re/142 §5:第 11 段是續作預告)。
+		// ⛔ 真的查不到時仍然不拿別段頂替。
 		return append(lines, fmt.Sprintf(
-			"⚠ 第 %d 段傳聞未定位(docs/re/138 §4:找到 10 段、索引有 11 個)。"+
-				"⛔ 這裡不拿別段頂替。", ts.shop.Extra))
+			"⚠ 第 %d 段傳聞的譯文載不進來,這裡不拿別段頂替。", ts.shop.Extra))
 	case original.ShopTrainer:
 		art, teaches := "武術", "戰士"
 		if ts.shop.Extra == 1 {

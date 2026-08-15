@@ -133,9 +133,12 @@ func TestRumorCountVsTavernIndices(t *testing.T) {
 		t.Skip(err)
 	}
 	rumors := ExtractRumors(town)
-	if len(rumors) != 10 {
-		t.Errorf("抽出 %d 段傳聞,docs/re/138 §4 記 10 —— "+
-			"若第 11 段被定位到了,請更新那一節與實作端的訊息", len(rumors))
+	// 11 個索引就該有 11 段(docs/re/142 §5)。
+	// ⚠ 這條原本寫「應為 10」,而那個 10 是**我畫的掃描範圍的產物**,
+	// 不是原版的事實 —— 上界只框到第 10 段就停了。
+	// **回傳的段數不是證據,除非掃描範圍本身有出處。**
+	if len(rumors) != 11 {
+		t.Errorf("抽出 %d 段,酒館索引有 11 個(docs/re/142 §5)", len(rumors))
 	}
 
 	shops, err := ParseShops(read(t, "TOWNDATA.DAT"))
@@ -157,8 +160,8 @@ func TestRumorCountVsTavernIndices(t *testing.T) {
 			missing++
 		}
 	}
-	if missing != 1 {
-		t.Errorf("查不到文字的酒館索引有 %d 個,應為 1(那個差額就是未解的部分)", missing)
+	if missing != 0 {
+		t.Errorf("查不到文字的酒館索引有 %d 個,11 段現在都定位到了", missing)
 	}
 }
 

@@ -88,7 +88,36 @@ Kor's Smithy   1.1   Winsome Weapons  1.1   The Purple Rat   1.0   General Goods
 
 **信心等級:證據充分**(畫面 + 手冊兩個獨立來源都沒有;沒有窮舉過所有按鍵)。
 
-## 5. 尚未解開
+## 5. 第 11 段酒館傳聞:找到了,而且不是傳聞
+
+[`138`](138-towndata-building-types.md) §4 的問題是「11 個索引只找到 10 段」,
+掃描門檻當時設 55 bytes。把門檻降到 30 並看**描述子鏈**:
+
+```
+0x032c9 … 0x03961   十段傳聞,指標高位元組依序是 s t u v w x y
+0x03a4d             '* Coming soon * From the makers of The Shard of Spring ...
+                     an adventure set in the midst of a greater evil... '   ← 高位元組 z
+0x03aXX             'towndata.bin' / 'towndata.dat' / 'Aack!, There is …'   ← 檔名與錯誤訊息
+```
+
+**第 11 段是續作預告**(SSI 的《Demon's Winter》),而不是一段傳聞。
+
+判準三條:
+
+1. 它在描述子鏈上**緊接第 10 段**,高位元組正好是下一個(`y` → `z`)
+2. 從 `0x032c9` 到它為止**剛好 11 段散文**,再往後就換成檔名與錯誤訊息
+3. 酒館的索引也**剛好 11 個**
+
+**信心等級:證據充分**(位置與數量都吻合,但沒有實跑到那間酒館看畫面)。
+⚠ 要升到已確認,只要走到位移 36 = 11 的那間酒館按 `T)alk`。
+
+譯文在 [`translations/module-text/TOWN-rumors.tsv`](../../translations/module-text/TOWN-rumors.tsv) 第 11 列。
+
+> **判準**:「掃不到第 11 段」與「第 11 段不是同一種東西」在掃描結果上長得一樣。
+> 門檻卡掉的不是長度,是**我對它應該長什麼樣子的預期** ——
+> 我在找一段一百多 bytes 的傳聞,而它是一段一百多 bytes 的廣告。
+
+## 6. 尚未解開
 
 | 項目 | 狀態 |
 |---|---|

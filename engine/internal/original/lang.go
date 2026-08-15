@@ -115,13 +115,16 @@ func ParsePlaceTSV(d []byte) map[string]string {
 // ExtractRumors 從 TOWN.EXE 抽出酒館傳聞。docs/re/138 §4。
 //
 // 位址範圍與長度門檻都是**觀察到的**,不是從程式碼讀出來的 ——
-// 所以這支函式回傳的段數要當成證據看:
+// 所以這支函式回傳的段數要當成證據看:**應該是 11 段**
+// (酒館的 TOWNDATA 位移 36 是 1–11)。
 //
-//	10 段找到、11 個索引(酒館的 TOWNDATA 位移 36 是 1–11)
+// ⚠ 上界原本是 `0x03A40`,只框住 10 段 —— **第 11 段是續作預告**
+// (docs/re/142 §5),它在描述子鏈上緊接第 10 段,而我當時在找
+// 「一段傳聞」所以沒把它算進來。上界已延長到把它含進去。
 //
 // ⚠ **差的那一段不補。** 呼叫端查不到索引時要明講,不要拿別段頂替。
 func ExtractRumors(town []byte) map[int]string {
-	const lo, hi, minLen = 0x032C0, 0x03A40, 55
+	const lo, hi, minLen = 0x032C0, 0x03AF0, 55
 	out := map[int]string{}
 	n := 0
 	start := -1

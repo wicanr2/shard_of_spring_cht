@@ -10,6 +10,7 @@ import (
 	"shardofspring/internal/layout"
 	"shardofspring/internal/magic"
 	"shardofspring/internal/original"
+	"shardofspring/internal/rules"
 	"shardofspring/internal/ui"
 )
 
@@ -38,22 +39,31 @@ func (g *Game) castable(c original.Character) []original.Spell {
 }
 
 // openCast 打開施法選單。回 false 表示沒有人施得出來。
+// openCast 開施法選單。**施法的是目前輪到的那個人**(docs/spec/12 §2)——
+// 先前是「掃過全隊,找第一個會法術的」,那在戰場上是錯的:
+// 施法要扣**那個人**的行動點數,而且做完結束**他的**回合。
 func (g *Game) openCast() bool {
 	if g.field == nil {
 		return false
 	}
-	for i := combat.PartyBase; i < combat.PartyBase+combat.PartyMax; i++ {
-		u := g.field.Units[i]
-		if !u.Alive() || !u.OnField() || i-combat.PartyBase >= len(g.members) {
-			continue
-		}
-		c := g.members[i-combat.PartyBase]
-		if list := g.castable(c); len(list) > 0 {
-			g.castUnit, g.castList = i, list
-			return true
-		}
+	i := g.actor
+	if i < combat.PartyBase || i >= combat.PartyBase+combat.PartyMax {
+		g.field.Log = append(g.field.Log, "現在沒有人可以行動")
+		return false
 	}
-	g.field.Log = append(g.field.Log, "沒有人施得出法術")
+	if g.points[i] < rules.ActCast.Cost() {
+		g.field.Log = append(g.field.Log,
+			g.field.Units[i].Name+"：行動點數不足,施不了法")
+		return false
+	}
+	if i-combat.PartyBase >= len(g.members) {
+		return false
+	}
+	if list := g.castable(g.members[i-combat.PartyBase]); len(list) > 0 {
+		g.castUnit, g.castList = i, list
+		return true
+	}
+	g.field.Log = append(g.field.Log, g.field.Units[i].Name+" 施不出法術")
 	return false
 }
 
@@ -102,6 +112,12 @@ func (g *Game) pickSpell(n int) {
 		caster.SP = 0
 	}
 	r := magic.Apply(s, invest, caster, targets)
+	// 施法扣 3 點,而且**做完直接結束這個人的回合**(手冊 p.35,docs/spec/12 §2)。
+	// ⚠ 攻擊的成本也是 3 但**不會**結束回合 —— 不能用成本判斷。
+	if g.castUnit == g.actor {
+		g.points[g.actor] = 0
+		g.nextActor()
+	}
 	g.field.Log = append(g.field.Log,
 		fmt.Sprintf("%s 施放 %s(投入 %d)", caster.Name, s.Name, invest))
 	g.field.Log = append(g.field.Log, r.Message)

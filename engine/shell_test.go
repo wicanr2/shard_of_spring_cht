@@ -10,6 +10,7 @@ import (
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/original"
+	"shardofspring/internal/save"
 	"shardofspring/internal/ui"
 	"shardofspring/internal/world"
 )
@@ -117,8 +118,18 @@ func TestMainMenuLOpensPartySelect(t *testing.T) {
 	g.openMainMenu()
 	g.testKeys = []ebiten.Key{ebiten.KeyL}
 	mustUpdate(t, g)
+	// B2/B3(docs/spec/18 §2/§4,2026-08-15 補):fixture 沒有任何具名存檔
+	// (saves/*.json),L 之後先進匯入入口,不是直接進隊伍選擇 —— 這一層是
+	// 新加的,不是既有斷言被推翻。
+	if g.shell.mode != shellImportPrompt {
+		t.Fatalf("沒有具名存檔時,L 之後應該先進匯入入口,得到 %v", g.shell.mode)
+	}
+	// Enter = 不匯入,直接沿用目前 <assets>/save/ 底下的資料(docs/spec/18 §6
+	// 原本的行為:沒有 JSON 存檔就沿用工作副本)。
+	g.testKeys = []ebiten.Key{ebiten.KeyEnter}
+	mustUpdate(t, g)
 	if g.shell.mode != shellPartySelect {
-		t.Errorf("L 之後應進隊伍選擇,得到 %v", g.shell.mode)
+		t.Errorf("Enter 之後應進隊伍選擇,得到 %v", g.shell.mode)
 	}
 	if len(g.shell.slots) != original.GroupSlots {
 		t.Errorf("應該讀到 %d 槽,得到 %d", original.GroupSlots, len(g.shell.slots))
@@ -239,8 +250,14 @@ func TestPartySelectListsFiveSlotsBlankUnselectable(t *testing.T) {
 	g.openMainMenu()
 	g.testKeys = []ebiten.Key{ebiten.KeyL}
 	mustUpdate(t, g)
+	// B2/B3(docs/spec/18 §2/§4):fixture 沒有具名存檔,L 之後先進匯入入口。
+	if g.shell.mode != shellImportPrompt {
+		t.Fatalf("前提不成立:沒有具名存檔時 L 之後應該先進匯入入口,得到 %v", g.shell.mode)
+	}
+	g.testKeys = []ebiten.Key{ebiten.KeyEnter} // 不匯入,直接沿用目前的 .DAT
+	mustUpdate(t, g)
 	if g.shell.mode != shellPartySelect {
-		t.Fatalf("前提不成立:L 之後應進隊伍選擇,得到 %v", g.shell.mode)
+		t.Fatalf("前提不成立:Enter 之後應進隊伍選擇,得到 %v", g.shell.mode)
 	}
 	if len(g.shell.slots) != original.GroupSlots {
 		t.Fatalf("前提不成立:應該讀到 %d 槽,得到 %d", original.GroupSlots, len(g.shell.slots))
@@ -271,6 +288,13 @@ func TestSelectOccupiedPartyEntersGameWithSavedState(t *testing.T) {
 	g := newShellTestGame(t)
 	g.openMainMenu()
 	g.testKeys = []ebiten.Key{ebiten.KeyL}
+	mustUpdate(t, g)
+	// B2/B3(docs/spec/18 §2/§4):fixture 沒有具名存檔,L 之後先進匯入入口,
+	// Enter 不匯入、直接沿用目前的 .DAT,才進隊伍選擇。
+	if g.shell.mode != shellImportPrompt {
+		t.Fatalf("前提不成立:沒有具名存檔時 L 之後應該先進匯入入口,得到 %v", g.shell.mode)
+	}
+	g.testKeys = []ebiten.Key{ebiten.KeyEnter}
 	mustUpdate(t, g)
 
 	g.testKeys = []ebiten.Key{ebiten.KeyDigit1}
@@ -438,8 +462,17 @@ func TestJoinBlankSlotFromMainMenuAppliesNewPartyDefaults(t *testing.T) {
 
 	g.testKeys = []ebiten.Key{ebiten.KeyL}
 	mustUpdate(t, g)
+	// B2/B3(docs/spec/18 §2/§4):fixture 沒有具名存檔,L 之後先進匯入入口,
+	// Enter 不匯入、直接沿用剛剛透過名冊改過的 .DAT,才進隊伍選擇 ——
+	// hydrateFromSave 在這條路徑上不會找到 saves/*.json,是 no-op,
+	// 不會把剛編好的隊伍蓋回去。
+	if g.shell.mode != shellImportPrompt {
+		t.Fatalf("前提不成立:沒有具名存檔時 L 之後應該先進匯入入口,得到 %v", g.shell.mode)
+	}
+	g.testKeys = []ebiten.Key{ebiten.KeyEnter}
+	mustUpdate(t, g)
 	if g.shell.mode != shellPartySelect {
-		t.Fatalf("前提不成立:L 之後應進隊伍選擇,得到 %v", g.shell.mode)
+		t.Fatalf("前提不成立:Enter 之後應進隊伍選擇,得到 %v", g.shell.mode)
 	}
 
 	slot2 := g.shell.slots[1] // 第 2 隊,0-based 索引 1
@@ -563,5 +596,252 @@ func TestJoinExistingPartyDoesNotResetProgress(t *testing.T) {
 	ids := got.MemberIDs()
 	if len(ids) != 2 {
 		t.Fatalf("應該有 2 名成員(原本的老將 + 新加入的新兵),得到 %v", ids)
+	}
+}
+
+// ── 補件(2026-08-15):B2 存檔選擇 / B3 匯入 / 另存新檔 ──────────────────
+//
+// 上一輪把存檔底層(internal/save)做完,但沒有接成畫面 —— save.List() 沒人
+// 呼叫、save.Import() 有測試但點不到。這裡補三個新畫面:
+//
+//	B2 選存檔:L)oad a Party 之後列出 saves/*.json,選一份才進隊伍選擇
+//	B3 匯入:saves/ 是空的時候,提供「從原版磁片匯入」的入口
+//	另存新檔:世界地圖/迷宮按 A,可以替目前進度取一個新的存檔名
+//
+// 上面 TestMainMenuLOpensPartySelect 等四條既有測試已經改成先過 B3 匯入
+// 入口那一層(見各自的註解);這裡另外驗 B2/B3/另存新檔本身的行為。
+
+// writeNamedSave 寫一份具名 JSON 存檔到 <dir>/saves/<name>.json,給 B2/B3
+// 的測試用。chars/groups 直接整份複製進去 —— 呼叫端自己保證長度對
+// (original.CharSlots/GroupSlots),通常是從 g.chars / g.readGroupSlots()
+// 拿來的,不是憑空造的零值(零值 Group 經過 Bytes() 往返之後 Blank() 會
+// 判斷錯誤,見下面測試的說明)。
+func writeNamedSave(t *testing.T, dir, name string, chars []original.Character, groups []original.Group, active int) {
+	t.Helper()
+	s := &save.Save{Version: save.CurrentVersion, Active: active}
+	copy(s.Chars[:], chars)
+	copy(s.Groups[:], groups)
+	if err := save.Write(save.Path(filepath.Join(dir, "saves"), name), s); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// ── B2:存檔選擇畫面 ────────────────────────────────────────────────────
+
+// 只有一份具名存檔:docs/spec/18 §4「只有一份時可以直接進,但要讓玩家看得到
+// 它叫什麼名字」——不必經過選擇畫面,但訊息欄要講出名字。
+func TestSaveListAutoSelectsSingleNamedSave(t *testing.T) {
+	g := newShellTestGame(t)
+	chars := append([]original.Character(nil), g.chars...)
+	groups, err := g.readGroupSlots()
+	if err != nil {
+		t.Fatal(err)
+	}
+	writeNamedSave(t, g.assets, "solo", chars, groups, 1)
+
+	g.openMainMenu()
+	g.testKeys = []ebiten.Key{ebiten.KeyL}
+	mustUpdate(t, g)
+
+	if g.shell.mode != shellPartySelect {
+		t.Fatalf("只有一份具名存檔應該直接進隊伍選擇,得到 %v", g.shell.mode)
+	}
+	if g.saveName != "solo" {
+		t.Errorf("應該自動選取那份存檔,g.saveName 應為 solo,得到 %q", g.saveName)
+	}
+	if !strings.Contains(g.shell.msg, "solo") {
+		t.Errorf("畫面訊息應該講出存檔名稱,得到 %q", g.shell.msg)
+	}
+}
+
+// 兩份以上具名存檔:列出來讓玩家選,選中哪份就套用哪份的資料 —— 不是
+// 「反正都讀同一份 GROUPS.DAT」矇混過去。用金幣數字區分兩份存檔的內容。
+func TestSaveListMultipleNamedSavesLoadIndependently(t *testing.T) {
+	g := newShellTestGame(t)
+	baseChars := append([]original.Character(nil), g.chars...)
+	baseGroups, err := g.readGroupSlots()
+	if err != nil {
+		t.Fatal(err)
+	}
+	writeNamedSave(t, g.assets, "alpha", baseChars, baseGroups, 1)
+
+	richGroups := append([]original.Group(nil), baseGroups...)
+	richGroups[0].Gold = 999
+	writeNamedSave(t, g.assets, "beta", baseChars, richGroups, 1)
+
+	g.openMainMenu()
+	g.testKeys = []ebiten.Key{ebiten.KeyL}
+	mustUpdate(t, g)
+	if g.shell.mode != shellSaveList {
+		t.Fatalf("兩份具名存檔應該進選存檔畫面,得到 %v", g.shell.mode)
+	}
+	if len(g.shell.saveList) != 2 {
+		t.Fatalf("應該列出 2 份存檔,得到 %v", g.shell.saveList)
+	}
+	// save.List 回傳的是排序過的名字,alpha 在前、beta 在後(save.go 的說明)。
+
+	g.testKeys = []ebiten.Key{ebiten.KeyDigit2} // beta
+	mustUpdate(t, g)
+	if g.shell.mode != shellPartySelect {
+		t.Fatalf("選存檔後應該進隊伍選擇,得到 %v", g.shell.mode)
+	}
+	if g.saveName != "beta" {
+		t.Errorf("g.saveName 應該記著選中的存檔名 beta,得到 %q", g.saveName)
+	}
+	if g.shell.slots[0].Gold != 999 {
+		t.Errorf("應該套用 beta 的資料(金幣 999),得到 %.0f", g.shell.slots[0].Gold)
+	}
+}
+
+func TestSaveListEscReturnsToMainMenu(t *testing.T) {
+	g := newShellTestGame(t)
+	chars := append([]original.Character(nil), g.chars...)
+	groups, err := g.readGroupSlots()
+	if err != nil {
+		t.Fatal(err)
+	}
+	writeNamedSave(t, g.assets, "alpha", chars, groups, 1)
+	writeNamedSave(t, g.assets, "beta", chars, groups, 1)
+
+	g.openMainMenu()
+	g.testKeys = []ebiten.Key{ebiten.KeyL}
+	mustUpdate(t, g)
+	if g.shell.mode != shellSaveList {
+		t.Fatalf("前提不成立:兩份具名存檔應該進選存檔畫面,得到 %v", g.shell.mode)
+	}
+
+	g.testKeys = []ebiten.Key{ebiten.KeyEscape}
+	mustUpdate(t, g)
+	if g.shell.mode != shellMainMenu {
+		t.Errorf("ESC 應該回主選單,得到 %v", g.shell.mode)
+	}
+}
+
+// ── B3:匯入原版存檔 ────────────────────────────────────────────────────
+
+func TestImportPromptEscReturnsToMainMenu(t *testing.T) {
+	g := newShellTestGame(t)
+	g.openMainMenu()
+	g.testKeys = []ebiten.Key{ebiten.KeyL}
+	mustUpdate(t, g)
+	if g.shell.mode != shellImportPrompt {
+		t.Fatalf("前提不成立:沒有具名存檔時 L 之後應該進匯入入口,得到 %v", g.shell.mode)
+	}
+
+	g.testKeys = []ebiten.Key{ebiten.KeyEscape}
+	mustUpdate(t, g)
+	if g.shell.mode != shellMainMenu {
+		t.Errorf("ESC 應該回主選單,得到 %v", g.shell.mode)
+	}
+}
+
+// 匯入:產生一份叫 imported 的具名存檔,Progress 全部零值(docs/spec/18
+// §4:一次性事件視為尚未觸發),而且畫面上要講明這件事。
+func TestImportFromOriginalCreatesNamedSaveWithZeroProgress(t *testing.T) {
+	g := newShellTestGame(t)
+	g.openMainMenu()
+	g.testKeys = []ebiten.Key{ebiten.KeyL}
+	mustUpdate(t, g)
+	if g.shell.mode != shellImportPrompt {
+		t.Fatalf("前提不成立:沒有具名存檔時 L 之後應該進匯入入口,得到 %v", g.shell.mode)
+	}
+
+	g.testKeys = []ebiten.Key{ebiten.KeyY}
+	mustUpdate(t, g)
+
+	if g.shell.mode != shellPartySelect {
+		t.Fatalf("匯入後應該進隊伍選擇,得到 %v", g.shell.mode)
+	}
+	if g.saveName != "imported" {
+		t.Errorf("應該切換到具名存檔 imported,得到 %q", g.saveName)
+	}
+	if !strings.Contains(g.shell.msg, "尚未觸發") {
+		t.Errorf("畫面應該講明一次性事件視為尚未觸發,得到 %q", g.shell.msg)
+	}
+
+	names, err := save.List(g.effectiveSaveDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(names) != 1 || names[0] != "imported" {
+		t.Fatalf("saves/ 應該多一份 imported.json,得到 %v", names)
+	}
+	got, err := save.Read(save.Path(g.effectiveSaveDir(), "imported"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(got.Progress.DisabledEvents) != 0 || got.Progress.ClanRewarded || len(got.Progress.Tombs) != 0 {
+		t.Errorf("匯入的存檔 Progress 應該全部是零值,得到 %+v", got.Progress)
+	}
+}
+
+// ── 另存新檔 ───────────────────────────────────────────────────────────
+
+func TestSaveAsCreatesNewNamedSaveAndSwitchesActiveSave(t *testing.T) {
+	g := newShellTestGame(t)
+	if err := g.loadParty(1); err != nil {
+		t.Fatal(err)
+	}
+	g.shell.mode = shellPlaying
+
+	g.testKeys = []ebiten.Key{ebiten.KeyA}
+	mustUpdate(t, g)
+	if g.saveAs == nil {
+		t.Fatalf("前提不成立:A 之後另存新檔畫面應該開著")
+	}
+
+	// 打字:g.testRunes 同 g.testKeys 的道理(main.go inputRunes 的說明),
+	// 不跑 ebiten.RunGame 就讀不到真正的文字輸入。
+	g.testKeys = []ebiten.Key{}
+	g.testRunes = []rune("myrun")
+	mustUpdate(t, g)
+	if g.saveAs.name != "myrun" {
+		t.Fatalf("前提不成立:打字應該進到 g.saveAs.name,得到 %q", g.saveAs.name)
+	}
+
+	g.testRunes = nil
+	g.testKeys = []ebiten.Key{ebiten.KeyEnter}
+	mustUpdate(t, g)
+
+	if g.saveAs != nil {
+		t.Errorf("Enter 之後另存新檔畫面應該關閉")
+	}
+	if g.saveName != "myrun" {
+		t.Errorf("g.saveName 應該切成 myrun,得到 %q", g.saveName)
+	}
+	names, err := save.List(g.effectiveSaveDir())
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, n := range names {
+		if n == "myrun" {
+			found = true
+		}
+	}
+	if !found {
+		t.Errorf("saves/ 應該多一份 myrun.json,得到 %v", names)
+	}
+}
+
+// 空白名稱要擋下來,不能存出一個叫 ".json" 的檔案。
+func TestSaveAsRejectsEmptyName(t *testing.T) {
+	g := newShellTestGame(t)
+	if err := g.loadParty(1); err != nil {
+		t.Fatal(err)
+	}
+	g.shell.mode = shellPlaying
+
+	g.testKeys = []ebiten.Key{ebiten.KeyA}
+	mustUpdate(t, g)
+
+	g.testKeys = []ebiten.Key{ebiten.KeyEnter} // 沒打任何字就按 Enter
+	mustUpdate(t, g)
+
+	if g.saveAs == nil {
+		t.Fatalf("空白名稱應該被擋下,畫面應該還開著")
+	}
+	if g.saveAs.msg == "" {
+		t.Errorf("應該顯示錯誤訊息")
 	}
 }

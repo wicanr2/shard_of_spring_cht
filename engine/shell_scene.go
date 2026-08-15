@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -12,6 +13,7 @@ import (
 	"shardofspring/internal/maze"
 	"shardofspring/internal/original"
 	"shardofspring/internal/render"
+	"shardofspring/internal/save"
 	"shardofspring/internal/ui"
 	"shardofspring/internal/world"
 )
@@ -27,12 +29,14 @@ import (
 type shellMode int
 
 const (
-	shellTitle       shellMode = iota // A1 標題畫面(docs/spec/15 §3)
-	shellMainMenu                     // A2 主選單(§4)
-	shellPartySelect                  // A3 隊伍選擇 = 開局(§5)
-	shellWipe                         // A4 全滅(§6)
-	shellEnding                       // A5 結局(§7)
-	shellPlaying                      // 遊戲中,外殼不接管 Update/Draw
+	shellTitle        shellMode = iota // A1 標題畫面(docs/spec/15 §3)
+	shellMainMenu                      // A2 主選單(§4)
+	shellSaveList                      // B2 存檔選擇(docs/spec/18 §2/§4)
+	shellImportPrompt                  // B3 匯入原版存檔(docs/spec/18 §4)
+	shellPartySelect                   // A3 隊伍選擇 = 開局(§5)
+	shellWipe                          // A4 全滅(§6)
+	shellEnding                        // A5 結局(§7)
+	shellPlaying                       // 遊戲中,外殼不接管 Update/Draw
 )
 
 // shellState 是外殼的狀態機。
@@ -43,8 +47,10 @@ type shellState struct {
 	// GROUPS.DAT,不快取 —— 從主選單的 C)har Utilities 回來後,GROUPS.DAT
 	// 可能已經被 J)oin/D)isband 改過(docs/re/135)。
 	slots []original.Group
-	// msg 是主選單/隊伍選擇畫面的錯誤或提示訊息。
+	// msg 是主選單/隊伍選擇/存檔選擇/匯入畫面的錯誤或提示訊息。
 	msg string
+	// saveList 是 B2 存檔選擇畫面列出的存檔名(不含副檔名,docs/spec/18 §2)。
+	saveList []string
 }
 
 // openTitle 是程式進入點的預設狀態(docs/spec/15 §1:預設走標題)。
@@ -61,6 +67,73 @@ func (g *Game) openMainMenu() {
 	}
 	g.shell.mode = shellMainMenu
 	g.shell.msg = ""
+}
+
+// openSaveList 是 L)oad a Party 的新入口(B2,docs/spec/18 §2/§4)。原本 L
+// 鍵直接呼叫 openPartySelect(),永遠讀寫死的 save.DefaultName("party")——
+// 玩家看不到、也選不到其他具名存檔。這裡先列出 saves/*.json:
+//
+//   - 沒有任何具名存檔 → 進 B3 匯入入口(shellImportPrompt,docs/spec/18 §4)
+//   - 剛好一份 → 直接選它進 A3,但訊息欄要講出它的名字(docs/spec/18 §4
+//     「只有一份時可以直接進,但要讓玩家看得到它叫什麼名字」)
+//   - 兩份以上 → 列出來讓玩家用 1–9 選(shellSaveList)
+func (g *Game) openSaveList() {
+	names, err := save.List(g.effectiveSaveDir())
+	if err != nil {
+		g.shell.mode = shellMainMenu
+		g.shell.msg = "讀取存檔清單失敗:" + err.Error()
+		return
+	}
+	switch len(names) {
+	case 0:
+		g.shell.mode = shellImportPrompt
+		g.shell.msg = ""
+	case 1:
+		g.enterPartySelectWithSave(names[0], "只有一份存檔,已自動選取:"+names[0])
+	default:
+		g.shell.saveList = names
+		g.shell.mode = shellSaveList
+		g.shell.msg = ""
+	}
+}
+
+// enterPartySelectWithSave 選定存檔 name(空字串 = 不具名,沿用
+// <assets>/save/ 底下目前的 .DAT——docs/spec/18 §6 定案時的行為,也是 B2/B3
+// 這一輪之前 L 鍵唯一走過的路徑),套用後進 A3,並把 msg 顯示在畫面上。
+func (g *Game) enterPartySelectWithSave(name, msg string) {
+	g.saveName = name
+	if err := g.openPartySelect(); err != nil {
+		g.shell.mode = shellMainMenu
+		g.shell.msg = "讀取隊伍失敗:" + err.Error()
+		return
+	}
+	g.shell.msg = msg
+}
+
+// importFromOriginal 是 B3(docs/spec/18 §4):讀 <assets>/save/ 底下的
+// CHARS.DAT/GROUPS.DAT(cmd/convert 從原版磁片複製出來的工作副本,不是
+// game/sharspri/ 本身 —— CLAUDE.md §8 唯讀),存成一份叫「imported」的具名
+// 存檔,再進隊伍選擇。
+//
+// ⚠ Progress 全部是零值 = 一次性事件都還沒觸發(save.Import 的說明)——
+// 這件事要在畫面上講清楚,不能只寫在文件裡(docs/spec/18 §4 最後一段)。
+func (g *Game) importFromOriginal() {
+	charsPath := filepath.Join(g.assets, "save", "CHARS.DAT")
+	s, err := save.Import(charsPath, g.savePath)
+	if err != nil {
+		g.shell.mode = shellMainMenu
+		g.shell.msg = "匯入失敗:" + err.Error()
+		return
+	}
+	const importedName = "imported"
+	if err := save.Write(save.Path(g.effectiveSaveDir(), importedName), s); err != nil {
+		g.shell.mode = shellMainMenu
+		g.shell.msg = "匯入失敗:" + err.Error()
+		return
+	}
+	g.enterPartySelectWithSave(importedName,
+		"已從原版磁片匯入,存成「imported」—— ⚠ 一次性事件(已開過的寶箱等)"+
+			"視為尚未觸發(docs/spec/18 §4:那份紀錄原本存在 DE*EFF.BIN,本引擎不讀取它)")
 }
 
 // openPartySelect 讀 GROUPS.DAT 的五個槽,進 A3。
@@ -173,16 +246,42 @@ func (g *Game) shellUpdate() error {
 	case shellMainMenu: // A2(docs/spec/15 §4)
 		for _, k := range g.pressedKeys() {
 			switch k {
-			case ebiten.KeyL: // L)oad a Party —— 開局的唯一入口
-				if err := g.openPartySelect(); err != nil {
-					g.shell.msg = "讀取隊伍失敗:" + err.Error()
-				}
+			case ebiten.KeyL: // L)oad a Party —— 開局的唯一入口,B2 存檔選擇(§4)
+				g.openSaveList()
 			case ebiten.KeyC: // C)har Utilities —— 沿用既有名冊(docs/spec/11 §5)
 				g.openRoster()
 			case ebiten.KeyP: // P)rogram Notes —— 這裡改成按鍵表(docs/spec/15 §1.1)
 				g.overlay = shellKeyHelp
 			case ebiten.KeyQ: // Q)uit the Game
 				return ebiten.Termination
+			}
+			break
+		}
+
+	case shellSaveList: // B2(docs/spec/18 §2/§4)
+		for _, k := range g.pressedKeys() {
+			if k == ebiten.KeyEscape {
+				g.openMainMenu()
+				break
+			}
+			if n, ok := digitKey1to9(k); ok && n <= len(g.shell.saveList) {
+				name := g.shell.saveList[n-1]
+				g.enterPartySelectWithSave(name, "已選取存檔:"+name)
+				break
+			}
+		}
+
+	case shellImportPrompt: // B3(docs/spec/18 §4)
+		for _, k := range g.pressedKeys() {
+			switch k {
+			case ebiten.KeyEnter, ebiten.KeyKPEnter:
+				// 不匯入,直接沿用 <assets>/save/ 底下目前的 .DAT
+				// (docs/spec/18 §6 定案時的行為)。
+				g.enterPartySelectWithSave("", "")
+			case ebiten.KeyY:
+				g.importFromOriginal()
+			case ebiten.KeyEscape:
+				g.openMainMenu()
 			}
 			break
 		}
@@ -225,6 +324,34 @@ func digitKey(k ebiten.Key) (int, bool) {
 	return 0, false
 }
 
+// digitKey1to9 同 digitKey 的做法(逐一列舉,不靠鍵值範圍相減),但存檔
+// 清單(B2)可能超過 5 份,digitKey 的 1–5 不夠用。⚠ **不要改 digitKey
+// 本身** —— roster_scene.go 也在用它,範圍是 1–5 有它自己的理由(隊伍槽
+// 數量,docs/spec/18 沒有理由把兩者綁在一起)。
+func digitKey1to9(k ebiten.Key) (int, bool) {
+	switch k {
+	case ebiten.KeyDigit1:
+		return 1, true
+	case ebiten.KeyDigit2:
+		return 2, true
+	case ebiten.KeyDigit3:
+		return 3, true
+	case ebiten.KeyDigit4:
+		return 4, true
+	case ebiten.KeyDigit5:
+		return 5, true
+	case ebiten.KeyDigit6:
+		return 6, true
+	case ebiten.KeyDigit7:
+		return 7, true
+	case ebiten.KeyDigit8:
+		return 8, true
+	case ebiten.KeyDigit9:
+		return 9, true
+	}
+	return 0, false
+}
+
 // shellKeyHelp 是 A6 按鍵表(docs/spec/15 §8)的內容,經既有的敘述覆蓋層
 // 機制(g.overlay,見 maze_prompt.go 的 drawOverlay)顯示。
 //
@@ -236,10 +363,10 @@ func digitKey(k ebiten.Key) (int, bool) {
 // 這裡照引擎實際行為寫,不照手冊抄。
 const shellKeyHelp = "按鍵表：" +
 	"主選單　L 載入隊伍、C 角色管理、P 本頁、Q 離開；" +
-	"世界地圖／迷宮　方向鍵先轉再走、N 開名冊；" +
+	"存檔選擇　1–9 選存檔、ESC 回主選單；" +
+	"世界地圖／迷宮　方向鍵先轉再走、N 開名冊、S 存檔、A 另存新檔；" +
 	"戰鬥　方向鍵移動或轉身、A 攻擊、C 施法、Enter 結束回合；" +
-	"施法選格　I/J/K/M 移動游標、空白鍵施放、ESC 取消；" +
-	"S 存檔(世界地圖／營地)。" +
+	"施法選格　I/J/K/M 移動游標、空白鍵施放、ESC 取消。" +
 	"（按任意鍵關閉）"
 
 // endingText 是引擎暫用的結局文字。
@@ -259,6 +386,10 @@ func (g *Game) drawShell(dst *ebiten.Image) {
 		g.drawTitle(dst)
 	case shellMainMenu:
 		g.drawMainMenu(dst)
+	case shellSaveList:
+		g.drawSaveList(dst)
+	case shellImportPrompt:
+		g.drawImportPrompt(dst)
 	case shellPartySelect:
 		g.drawPartySelect(dst)
 	case shellWipe:
@@ -322,6 +453,79 @@ func (g *Game) drawMainMenu(dst *ebiten.Image) {
 	py := float64(layout.Prompt.Y + ui.PanelPad)
 	p.Draw(dst, "L 載入隊伍　C 角色管理　P 按鍵表　Q 離開",
 		float64(layout.Prompt.X+ui.PanelPad), py)
+}
+
+// drawSaveList 畫 B2 存檔選擇畫面。docs/spec/18 §2/§4:L)oad a Party 選完
+// 存檔才進 A3 隊伍選擇 —— 這個畫面只在存檔有兩份以上時出現(openSaveList
+// 的說明),0 份走 B3、1 份自動選走。
+func (g *Game) drawSaveList(dst *ebiten.Image) {
+	p := g.panel
+	if p == nil {
+		return
+	}
+	strokeFrame(dst, layout.View)
+	strokeFrame(dst, layout.Prompt)
+
+	lh := p.LineHeight()
+	x := float64(layout.View.X + ui.PanelPad)
+	y := float64(layout.View.Y + ui.PanelPad)
+	line := func(s string) { p.Draw(dst, s, x, y); y += lh }
+
+	line("選擇存檔")
+	y += lh * 0.5
+	for i, name := range g.shell.saveList {
+		line(fmt.Sprintf("%d) %s", i+1, name))
+	}
+	if g.shell.msg != "" {
+		y += lh * 0.5
+		line("⚠ " + g.shell.msg)
+	}
+
+	py := float64(layout.Prompt.Y + ui.PanelPad)
+	p.Draw(dst, "1–9 選存檔　ESC 回主選單", float64(layout.Prompt.X+ui.PanelPad), py)
+}
+
+// drawImportPrompt 畫 B3 匯入原版存檔的入口。docs/spec/18 §4:saves/ 是空的
+// 時候提供這個入口;⚠ 匯入後 Progress 全部是零值 = 一次性事件都還沒觸發,
+// 這件事要在畫面上講明(§4 最後一段),不能只寫在文件裡。
+func (g *Game) drawImportPrompt(dst *ebiten.Image) {
+	p := g.panel
+	if p == nil {
+		return
+	}
+	strokeFrame(dst, layout.View)
+	strokeFrame(dst, layout.Prompt)
+
+	lh := p.LineHeight()
+	x := float64(layout.View.X + ui.PanelPad)
+	y := float64(layout.View.Y + ui.PanelPad)
+	line := func(s string) { p.Draw(dst, s, x, y); y += lh }
+
+	line("尚未有任何具名存檔")
+	y += lh * 0.5
+	for _, ln := range ui.Wrap(
+		"Enter) 直接使用目前的角色／隊伍資料進入遊戲(不產生具名存檔)", 46) {
+		line(ln)
+	}
+	y += lh * 0.3
+	for _, ln := range ui.Wrap(
+		"Y) 從原版磁片匯入,存成一份叫「imported」的存檔", 46) {
+		line(ln)
+	}
+	y += lh * 0.3
+	for _, ln := range ui.Wrap(
+		"⚠ 匯入後,一次性事件(例如已開過的寶箱)全部視為尚未觸發 —— "+
+			"那份「已觸發」的紀錄原本存在原版的 DE*EFF.BIN 裡,本引擎不讀取它"+
+			"(docs/spec/18 §4)。", 46) {
+		line(ln)
+	}
+	if g.shell.msg != "" {
+		y += lh * 0.5
+		line("⚠ " + g.shell.msg)
+	}
+
+	py := float64(layout.Prompt.Y + ui.PanelPad)
+	p.Draw(dst, "Enter 直接進　Y 匯入　ESC 回主選單", float64(layout.Prompt.X+ui.PanelPad), py)
 }
 
 // drawPartySelect 畫 A3 隊伍選擇。docs/spec/15 §5 的表:

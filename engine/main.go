@@ -125,6 +125,20 @@ type Game struct {
 	// JSON 存檔(saves/party.json)才是玩家實際看到的「存檔」(docs/spec/18 §5)。
 	saveDir string // saves/*.json 所在目錄。預設在資產目錄旁邊,-save 可覆寫
 
+	// saveName 是目前選定的具名存檔(docs/spec/18 §2 的多存檔;B2 存檔選擇 /
+	// B3 匯入 / 另存新檔畫面,shell_scene.go 與 save_ui.go)。
+	//
+	// ⚠ 空字串 = 還沒經過那些畫面選過(或測試用 struct literal 直接建構
+	// *Game,例如既有測試 fixture)——effectiveSaveName() 這時候退回
+	// save.DefaultName,與 B2/B3/另存新檔加入之前「寫死 save.DefaultName」
+	// 的行為完全一致。
+	saveName string
+
+	// saveAs 非 nil = 另存新檔的文字輸入畫面開著,蓋在遊戲畫面之上
+	// (save_ui.go)。docs/spec/18 §2:多存檔 = 多個檔,玩家要能替目前進度
+	// 另外取一個檔名,不然「多存檔」在玩家那一側等於不存在。
+	saveAs *saveAsState
+
 	// disabledEvents 是已作廢的一次性事件(docs/spec/18 §3.2 的
 	// Progress.DisabledEvents):key = 事件檔編號(original.MazeEntry.TextFile,
 	// 即 DE<N>EFF.BIN 的 N)→ 目標編號集合。
@@ -156,6 +170,11 @@ type Game struct {
 	// 不管有沒有 display,永遠讀不到任何鍵。沒有這層接縫,
 	// docs/spec/15 §9 要求的「不開視窗、直接呼叫 Update()」測試做不到。
 	testKeys []ebiten.Key
+
+	// testRunes 同 testKeys,但給文字輸入用(目前只有另存新檔畫面,
+	// save_ui.go 在用)——ebiten.AppendInputChars 跟 inpututil 一樣靠
+	// RunGame 的事件迴圈填,不跑 RunGame 永遠是空的,道理與 testKeys 相同。
+	testRunes []rune
 }
 
 // pressedKeys / pressed 包一層 inpututil,讓 g.testKeys 非 nil 時可以
@@ -177,6 +196,17 @@ func (g *Game) pressed(k ebiten.Key) bool {
 		return false
 	}
 	return inpututil.IsKeyJustPressed(k)
+}
+
+// inputRunes 包一層 ebiten.AppendInputChars,讓 g.testKeys 非 nil(測試模式)
+// 時可以用 g.testRunes 取代真正的文字輸入 —— 沿用 g.testKeys 當「是不是
+// 測試模式」的旗標,不必另開一個布林:測試一律會先設 g.testKeys(即使是
+// 空切片)才呼叫 Update(),見 pressedKeys() 的同一條說明。
+func (g *Game) inputRunes() []rune {
+	if g.testKeys != nil {
+		return g.testRunes
+	}
+	return ebiten.AppendInputChars(nil)
 }
 
 func (g *Game) Update() error {
@@ -275,6 +305,20 @@ func (g *Game) Update() error {
 		return nil
 	}
 
+	// 另存新檔的文字輸入(蓋在世界地圖/迷宮之上,save_ui.go)。docs/spec/18
+	// §2:多存檔 = 多個檔,玩家要能替目前進度另外取一個檔名 —— 這裡要優先於
+	// N)ames 等其他按鍵,否則打名稱打到 n 之類的字母會被別的畫面搶走。
+	if g.saveAs != nil {
+		g.saveAsRunes(g.inputRunes())
+		for _, k := range g.pressedKeys() {
+			g.saveAsKey(k)
+			if g.saveAs == nil {
+				break
+			}
+		}
+		return nil
+	}
+
 	if (g.shell == nil || g.shell.mode == shellPlaying) && g.pressed(ebiten.KeyN) {
 		g.openRoster() // N)ames —— 名冊(docs/spec/11 §5)
 		return nil
@@ -364,6 +408,9 @@ func (g *Game) Update() error {
 				g.saveMsg = fmt.Sprintf("已存到第 %d 隊(%s)", g.slot, g.savePath)
 			}
 		}
+		if g.pressed(ebiten.KeyA) {
+			g.openSaveAs() // 另存新檔(docs/spec/18 §2 多存檔;save_ui.go)
+		}
 		return nil
 	}
 
@@ -396,6 +443,9 @@ func (g *Game) Update() error {
 		} else {
 			g.saveMsg = fmt.Sprintf("已存到第 %d 隊(%s)", g.slot, g.savePath)
 		}
+	}
+	if g.pressed(ebiten.KeyA) {
+		g.openSaveAs() // 另存新檔(docs/spec/18 §2 多存檔;save_ui.go)
 	}
 	return nil
 }
@@ -480,7 +530,7 @@ func (g *Game) save() error {
 	return g.writeSaveFile(groups, mazeFile, mazeFacing)
 }
 
-// writeSaveFile 組一份 save.Save 並寫進 saves/<save.DefaultName>.json。
+// writeSaveFile 組一份 save.Save 並寫進 saves/<effectiveSaveName()>.json。
 // docs/spec/18 §5:這是玩家實際看到的存檔。
 func (g *Game) writeSaveFile(groups []original.Group, mazeFile string, mazeFacing int) error {
 	s := &save.Save{Version: save.CurrentVersion, Active: g.slot}
@@ -496,7 +546,23 @@ func (g *Game) writeSaveFile(groups []original.Group, mazeFile string, mazeFacin
 		s.Progress.Tombs = append(s.Progress.Tombs, n)
 	}
 	sort.Ints(s.Progress.Tombs) // 穩定輸出 —— map 沒有固定順序,不排序的話每次存檔 JSON 都會不一樣
-	return save.Write(save.Path(g.effectiveSaveDir(), save.DefaultName), s)
+	return save.Write(save.Path(g.effectiveSaveDir(), g.effectiveSaveName()), s)
+}
+
+// effectiveSaveName 回傳目前選定的具名存檔。docs/spec/18 §2 的多存檔 ——
+// B2 存檔選擇 / B3 匯入(shell_scene.go)與另存新檔(save_ui.go)都靠這裡
+// 才能讓 hydrateFromSave/writeSaveFile 讀寫到「玩家挑的那一份」,而不是
+// 永遠寫死同一個檔名。
+//
+// ⚠ g.saveName 是空字串時(還沒經過那些畫面,或測試用 struct literal
+// 直接建構 *Game)退回 save.DefaultName —— 與這一輪之前「寫死
+// save.DefaultName」的行為完全一致,internal/save/save_test.go 與
+// engine/save_test.go 的既有測試都沒有設過 g.saveName,靠這一點才繼續通過。
+func (g *Game) effectiveSaveName() string {
+	if g.saveName != "" {
+		return g.saveName
+	}
+	return save.DefaultName
 }
 
 // effectiveSaveDir 回傳實際要用的存檔目錄。docs/spec/18 §2:預設在資產目錄
@@ -522,7 +588,7 @@ func (g *Game) effectiveSaveDir() string {
 	return "saves"
 }
 
-// hydrateFromSave 讀 saves/<save.DefaultName>.json,若存在就覆寫工作用的
+// hydrateFromSave 讀 saves/<effectiveSaveName()>.json,若存在就覆寫工作用的
 // <assets>/save/{CHARS,GROUPS}.DAT,並套用 Progress(docs/spec/18)。
 //
 // 找不到檔案(還沒存過)不是錯誤 —— 沿用目前 <assets>/save/ 底下已經有的資料
@@ -530,7 +596,7 @@ func (g *Game) effectiveSaveDir() string {
 // 在列出隊伍槽之前呼叫這支函式,讓「隊伍選擇畫面讀 JSON 存檔」成立
 // (docs/spec/15 §5、docs/spec/18 §6)。
 func (g *Game) hydrateFromSave() {
-	s, err := save.Read(save.Path(g.effectiveSaveDir(), save.DefaultName))
+	s, err := save.Read(save.Path(g.effectiveSaveDir(), g.effectiveSaveName()))
 	if err != nil {
 		if !os.IsNotExist(err) {
 			g.warnings = append(g.warnings, "讀取存檔失敗:"+err.Error())
@@ -651,6 +717,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawCastMenu(screen)
 	g.drawOverlay(screen)
 	g.drawPrompt(screen)
+	g.drawSaveAs(screen)
 
 	// M2 還沒有字型(docs/spec/04 §4 的 TTF 是 M3 之後),
 	// 所以狀態暫時走 Ebitengine 的除錯字。**這不是最終呈現。**

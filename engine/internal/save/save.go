@@ -24,12 +24,13 @@ import (
 // 未知版本要**拒絕載入並講清楚**,不是盡力解析 —— 半懂的存檔會安靜弄壞進度。
 const CurrentVersion = 1
 
-// DefaultName 是主迴圈自動存讀的存檔名(saves/party.json)。
+// DefaultName 是「還沒經過存檔選擇畫面挑過」時的退回存檔名(saves/party.json)。
 //
 // ⚠ docs/spec/18 §2 的格式支援**任意檔名**的多存檔(Read/Write/List 都吃
-// 任意路徑),這裡的常數只是「目前唯一被外殼(shell_scene.go)自動使用」
-// 的那一個名字 —— 存檔挑選畫面(選哪一份 saves/*.json)不在這一輪的範圍內,
-// 見 engine 那三個檔案裡的說明。
+// 任意路徑)。存檔選擇 / 匯入 / 另存新檔畫面(engine/shell_scene.go、
+// engine/save_ui.go)接上之後,這個常數只在 Game.saveName 是空字串時當退回值
+// (engine/main.go 的 effectiveSaveName())——維持「舊存檔、或測試 fixture
+// 用 struct literal 直接建構 *Game、沒特別選過名字」時的行為不變。
 const DefaultName = "party"
 
 // Progress 是原版沒有欄位可以裝、或存放位置未解的狀態。

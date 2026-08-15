@@ -306,8 +306,10 @@ func TestPackIsTenSlotsWithSentinel99(t *testing.T) {
 			}
 		}
 		// 位移 74–83 是字串旗標,不是背包的後五格
-		if c.Flags2 != "0000000000" {
-			t.Errorf("%s 的第二串旗標是 %q,出貨資料應為十個 0", c.Name, c.Flags2)
+		// 位移 74–83 = 背包十格的已辨識旗標(docs/re/167 §2)。
+		// 出貨五人的背包是空的,所以十格全 0。
+		if c.Identified != "0000000000" {
+			t.Errorf("%s 的已辨識旗標是 %q,出貨資料應為十個 0", c.Name, c.Identified)
 		}
 	}
 }

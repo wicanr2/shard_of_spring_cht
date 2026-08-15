@@ -87,3 +87,19 @@ func TestCanIdentify(t *testing.T) {
 		t.Errorf("今天用過應擋:得 %v", g)
 	}
 }
+
+// lore 分界的邊界值。0-based 編號:20 是最後一件護甲、21 是第一瓶藥水
+// (docs/re/167 §3/§4)——這兩格寫錯不會有症狀,所以釘住。
+func TestLoreBoundaryIsAtTheFirstPotion(t *testing.T) {
+	if LoreFor(20) != SkillWeaponLore {
+		t.Error("編號 20(ITEMS.DAT 第 21 列 Plate +2)應該算武器護甲")
+	}
+	if LoreFor(21) != SkillPotionLore {
+		t.Error("編號 21(第 22 列 Heal potion)應該算藥水")
+	}
+	// ⚠ 第三段接不到任何真實道具(資料只到編號 56)——
+	// 這不是 bug,是原版就這樣(docs/re/167 §4)。
+	if LoreFor(57) != SkillItemLore {
+		t.Error("編號 > 56 走 Item lore")
+	}
+}

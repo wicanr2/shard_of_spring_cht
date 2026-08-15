@@ -58,28 +58,32 @@ const (
 
 // Character 是一筆角色記錄。欄位順序與 docs/formats/01 的表相同。
 type Character struct {
-	Party   byte   // 位移 1:所屬隊伍 '1'–'5';'*' = 無(docs/re/133)
-	Name    string // 位移 2–11
-	ID      int    // 位移 12,1–25
-	Race    byte   // 位移 14:H/T/D/E/G
-	Class   byte   // 位移 15:'1' = Hero、'2' = Wizard
-	Speed   int    // 位移 16
-	Str     int    // 位移 18
-	Int     int    // 位移 20
-	End     int    // 位移 22
-	ToHit   int    // 位移 24
-	MaxHP   int    // 位移 26
-	HP      int    // 位移 28
-	MaxSP   int    // 位移 30
-	SP      int    // 位移 32
-	Weapon  int    // 位移 34:背包格號,99 = 未裝備
-	Armor   int    // 位移 36:同上
-	Status  int    // 位移 38:= 法術系別編號(docs/formats/03)
-	Level   int    // 位移 40
-	Skills  string // 位移 42–51:十個 '0'/'1',**表由職業決定**
-	Pack    [PackSlots]int
-	Flags2  string // 位移 74–83:第二串十個旗標,**語意未解**(docs/re/144 §6)
-	StatMag int    // 位移 84:狀態效果強度
+	Party  byte   // 位移 1:所屬隊伍 '1'–'5';'*' = 無(docs/re/133)
+	Name   string // 位移 2–11
+	ID     int    // 位移 12,1–25
+	Race   byte   // 位移 14:H/T/D/E/G
+	Class  byte   // 位移 15:'1' = Hero、'2' = Wizard
+	Speed  int    // 位移 16
+	Str    int    // 位移 18
+	Int    int    // 位移 20
+	End    int    // 位移 22
+	ToHit  int    // 位移 24
+	MaxHP  int    // 位移 26
+	HP     int    // 位移 28
+	MaxSP  int    // 位移 30
+	SP     int    // 位移 32
+	Weapon int    // 位移 34:背包格號,99 = 未裝備
+	Armor  int    // 位移 36:同上
+	Status int    // 位移 38:= 法術系別編號(docs/formats/03)
+	Level  int    // 位移 40
+	Skills string // 位移 42–51:十個 '0'/'1',**表由職業決定**
+	Pack   [PackSlots]int
+	// Identified 是**背包十格的「已辨識」旗標**(位移 74–83,docs/re/167 §2)。
+	// 買東西與鑑定成功都寫 `'1'` 到 `74 + 格號` —— 兩處寫法一模一樣。
+	// ⚠ 誰把它清成 `'0'`(戰利品拾取)未讀。
+	// ⚠ 舊名 `Flags2`(「語意未解」)已停用。
+	Identified string
+	StatMag    int // 位移 84:狀態效果強度
 	// SkillUsed:今天已經用過技能(docs/re/166 §1)。原版是 `MID$(記錄, 86, 1) = "1"`,
 	// `H)unt` 與 `I)dentify` 共用同一個旗標。
 	// ⚠ 出貨存檔這一格是**空白**不是 `'0'` —— 判定要寫成「等於 `'1'` 才算用過」。
@@ -123,7 +127,7 @@ func ParseChars(d []byte) ([]Character, error) {
 			MaxSP: u16(r, 30), SP: u16(r, 32),
 			Weapon: u16(r, 34), Armor: u16(r, 36),
 			Status: u16(r, 38), Level: u16(r, 40),
-			Skills: string(r[41:51]), Flags2: string(r[73:83]),
+			Skills: string(r[41:51]), Identified: string(r[73:83]),
 			StatMag: u16(r, 84), SkillPts: int(r[88]),
 			SkillUsed: r[offSkillUsed-1] == '1',
 			Exp:       MBF(r[offExp-1 : offExp+3]),
@@ -230,8 +234,8 @@ func (c Character) Bytes() []byte {
 		r[offSkillUsed-1] = ' '
 	}
 	for i := 0; i < 10; i++ {
-		if i < len(c.Flags2) {
-			r[73+i] = c.Flags2[i]
+		if i < len(c.Identified) {
+			r[73+i] = c.Identified[i]
 		}
 	}
 	r[88] = byte(c.SkillPts)

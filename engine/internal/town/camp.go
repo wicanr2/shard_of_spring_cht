@@ -78,11 +78,18 @@ func CanHunt(c original.Character, outdoors bool) SkillGate {
 
 // LoreFor 回傳辨識這個道具要哪一個 lore 技能;0 = 空格(原版直接回選單)。
 //
-// 原版讀到的分界是編號 `≤ 20` / `21–56` / 其餘,`99` = 空格(docs/re/166 §3)。
+// 分界是編號 `≤ 20` / `21–56` / 其餘,`99` = 空格(docs/re/166 §3)。
+// 背包存的是 **0-based** 編號(docs/re/167 §3:商店的販售範圍最小值是 0,
+// 而「藥水舖」賣 21–26 = ITEMS.DAT 第 22–27 列),所以:
 //
-// ⚠ **哪些道具落在哪一段未解**:背包格存的是 0-based 還是 1-based 編號
-// 沒有讀到,而兩種讀法各自與手冊衝突一半(docs/re/166 §3.1)。
-// 這裡照抄編號的分界,不去猜道具的分類 —— 分界是讀到的,分類不是。
+//	0–20   ITEMS.DAT 第 1–21 列 = **全部 21 件武器與護甲**  → Weapon lore
+//	21–56  第 22–57 列 = 藥水 + 任務道具                    → Potion lore
+//	> 56   **沒有真實道具**                                  → Item lore
+//
+// ⚠ 第一段與手冊 p.39「WEAPON LORE 可以辨別武器和護甲」完全吻合,
+// 但手冊另外兩句對不上:`Item lore` 那一段接不到任何真實道具,
+// 對玩家而言是**一個永遠用不到的技能**(docs/re/167 §4)。**照程式走**,
+// 因為反組譯是第 2 級證據、手冊是第 3 級。
 func LoreFor(item int) int {
 	switch {
 	case item == original.NotEquipped:

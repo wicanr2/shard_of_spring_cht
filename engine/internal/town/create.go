@@ -171,10 +171,11 @@ func Create(chars []original.Character, race rules.Race, class rules.Class,
 		Speed: spd, Str: str, Int: intel, End: end, ToHit: skill,
 		MaxHP: end, HP: end, // 初始生命 = 體能
 		Weapon: original.NotEquipped, Armor: original.NotEquipped,
-		Level:    1,
-		Skills:   raceSkills(race, class),
-		Flags2:   "0000000000",
-		SkillPts: intel, // 技能點數 = 智能,一點都還沒花(docs/re/144 §4)
+		Level:  1,
+		Skills: raceSkills(race, class),
+		// 背包十格全空 → 十個「未辨識」(docs/re/167 §2)
+		Identified: "0000000000",
+		SkillPts:   intel, // 技能點數 = 智能,一點都還沒花(docs/re/144 §4)
 	}
 	// 背包十格全空。⚠ 哨兵是 99 不是 0 —— 填 0 會讓每一格都看起來裝著第 0 號道具。
 	for i := range c.Pack {

@@ -9,6 +9,7 @@ import (
 	"shardofspring/internal/layout"
 	"shardofspring/internal/music"
 	"shardofspring/internal/original"
+	"shardofspring/internal/rules"
 	"shardofspring/internal/ui"
 )
 
@@ -23,9 +24,22 @@ func (g *Game) startCombat() bool {
 	if len(g.members) == 0 || len(g.monsters) == 0 {
 		return false
 	}
-	// 依隊伍所在格的地形挑一隻怪。⚠ **遭遇表未解**(哪種地形出哪些怪)——
-	// 這裡用種子決定,是**佔位**,不是規則。
-	pick := g.rand.Roll(len(g.monsters)) - 1
+	// 遭遇的怪物由**區域編號**挑(docs/re/169):隨機挑一隻,
+	// `|難度階級 − 區域| > 1` 就重挑。區域由「你人在哪裡」決定。
+	zone := rules.WorldZone(g.party.X, g.party.Y)
+	if g.level != nil {
+		zone = rules.MazeZone(g.level.entry.MazeFile,
+			g.mazeState.Major, g.mazeState.Minor)
+	}
+	pick, ok := g.pickMonster(zone)
+	if !ok {
+		// ⚠ 原版沒有次數上限,湊不到就當掉。引擎**明講**而不是
+		// 悄悄退回「最接近的一隻」—— 那會讓原版不存在的怪物出現。
+		g.warnings = append(g.warnings,
+			fmt.Sprintf("區域 %d 找不到難度階級落在 ±%d 內的怪物(docs/re/169 §5)",
+				zone, rules.ZoneTolerance))
+		return false
+	}
 	g.field = combat.Build(g.members, []original.Monster{g.monsters[pick]},
 		g.items, g.rand)
 	g.field.Place() // docs/spec/12 §5:初始佈陣(原版陣型未解,這裡是佔位)
@@ -300,3 +314,32 @@ func unitLine(u combat.Unit) string {
 	}
 	return fmt.Sprintf("%s  HP %3d  速 %2d", ui.PadTo(u.Name, ui.CombatNameCols), u.HP, u.Speed)
 }
+
+// pickMonster 依區域挑一隻怪物,照原版的「不合就重擲」。
+//
+// ⚠ 原版的重擲**沒有上限**(無條件 `jg` 回頭),湊不到就當掉。
+// 這裡加上限是**實作決定**;耗盡時回 false,由呼叫端明講,
+// ⛔ 不用「取最接近的一隻」代替。
+func (g *Game) pickMonster(zone int) (int, bool) {
+	// 先看有沒有合格的 —— 沒有的話重擲多少次都沒用。
+	any := false
+	for _, m := range g.monsters {
+		if rules.ZoneAccepts(zone, m.Tier) {
+			any = true
+			break
+		}
+	}
+	if !any {
+		return 0, false
+	}
+	for i := 0; i < monsterPickTries; i++ {
+		p := g.rand.Roll(len(g.monsters)) - 1
+		if rules.ZoneAccepts(zone, g.monsters[p].Tier) {
+			return p, true
+		}
+	}
+	return 0, false
+}
+
+// monsterPickTries 是重擲的上限。原版沒有這個數字(見 pickMonster)。
+const monsterPickTries = 200

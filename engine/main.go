@@ -91,6 +91,11 @@ type Game struct {
 	roster *rosterState
 	create *createState // 非 nil = 建立角色的畫面蓋在名冊上
 
+	// 技能點分配畫面(docs/spec/20-skill-allocation.md,skill_alloc_scene.go)。
+	// 非 nil = 畫面開著,蓋在目前的主畫面之上——創角完成之後蓋在名冊上,
+	// 升級成功之後蓋在城鎮的訓練所上,兩個入口共用同一份狀態與程式碼。
+	skillAlloc *skillAllocState
+
 	shops     []original.Shop
 	townSites []original.TownSite // TOWNDATA.BIN 的座標表(docs/re/53 §2)
 	itemList  []original.Item
@@ -351,6 +356,20 @@ func (g *Game) Update() error {
 		for _, k := range g.pressedKeys() {
 			g.saveAsKey(k)
 			if g.saveAs == nil {
+				break
+			}
+		}
+		return nil
+	}
+
+	// 技能點分配(docs/spec/20):創角完成 / 升級成功之後蓋在原畫面上,
+	// 兩個入口共用(skill_alloc_scene.go)。放在 create / roster / 城鎮 / N 鍵
+	// 之前——不管背後是名冊還是城鎮,這個畫面開著時要吃光所有按鍵,
+	// 不能讓底下的畫面漏接。
+	if g.skillAlloc != nil {
+		for _, k := range g.pressedKeys() {
+			g.skillAllocKey(k)
+			if g.skillAlloc == nil {
 				break
 			}
 		}
@@ -751,6 +770,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawTown(screen)
 	g.drawRoster(screen)
 	g.drawCreate(screen)
+	g.drawSkillAlloc(screen)
 	g.drawCombat(screen)
 	g.drawCastMenu(screen)
 	g.drawUseMenu(screen) // use_item.go

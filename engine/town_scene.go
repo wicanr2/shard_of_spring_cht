@@ -626,6 +626,10 @@ func (g *Game) trainMember(i, guildExtra int) {
 	// TOWN.tsv「You have N points left.」——技能點會累積(docs/re/183 §6)。
 	msg += fmt.Sprintf("，技能點 %d", c.SkillPts)
 	g.town.msg = msg
+	// docs/spec/20-skill-allocation.md:升級發的點數要有地方花——接技能點
+	// 分配畫面(蓋掉主視野,上面這句訊息留在訊息列繼續顯示)。onDone 是
+	// nil——這裡要接續的事(升級訊息)已經在打開畫面之前設定好了。
+	g.openSkillAlloc(c.ID, i, nil)
 }
 
 // charCard 是原版 `#)inspect char` 的角色卡(docs/re/150 §1.1)。

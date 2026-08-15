@@ -133,7 +133,8 @@ func (g *Game) createRunes(rs []rune) {
 
 func (g *Game) finishCreate() {
 	c := g.create
-	id, r := town.Create(g.chars, c.race, c.class, c.rolled, strings.TrimSpace(c.name))
+	name := strings.TrimSpace(c.name)
+	id, r := town.Create(g.chars, c.race, c.class, c.rolled, name)
 	if r != town.CreateOK {
 		c.msg = r.String()
 		return
@@ -142,10 +143,15 @@ func (g *Game) finishCreate() {
 		g.warnings = append(g.warnings, "名冊存檔失敗:"+err.Error())
 	}
 	g.create = nil
-	if g.roster != nil {
-		g.roster.msg = fmt.Sprintf("建立了 %s(第 %d 槽)", strings.TrimSpace(c.name), id)
-		g.roster.cursor = id - 1
-	}
+	// docs/spec/20-skill-allocation.md:創角發的技能點要有地方花——接技能點
+	// 分配畫面(蓋掉名冊,不另開視窗)。「建立了 XXX」的名冊訊息延到玩家按 0
+	// 離開分配畫面之後才設,兩段合起來才是完整的創角流程。
+	g.openSkillAlloc(id, -1, func(g *Game) {
+		if g.roster != nil {
+			g.roster.msg = fmt.Sprintf("建立了 %s(第 %d 槽)", name, id)
+			g.roster.cursor = id - 1
+		}
+	})
 }
 
 // drawCreate 畫創造畫面。版面照原版:左邊角色表、右邊提示。

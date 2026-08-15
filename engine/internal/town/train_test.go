@@ -8,18 +8,22 @@ import (
 	"shardofspring/internal/rules"
 )
 
-// maxRoll 永遠骰到**該次的最大面**。
+// maxRoll 永遠骰到**該次的最大面**,浮點也永遠回接近 1 的值。
 //
 // ⚠ 不能寫成「永遠回 99」—— `Train` 除了成長還會跑屬性成長
 // (`GrowAttributes`,面數 5),而 99 超出 `Roller` 的契約(回 1…faces),
-// 會拿去當索引。回 `faces` 同時滿足兩邊:對成長一定夾到上限,對五選一是合法索引。
+// 會拿去當索引。回 `faces` 同時滿足兩邊。
+//
+// Float01 回 `1 − 2⁻⁵³` 而不是 1.0 —— 原版的 `RND` 值域是 **[0,1)**,
+// 回 1.0 會讓成長量比真正的上界多 1,而那個 +1 看起來完全合理。
 type maxRoll struct{}
 
 func (maxRoll) Roll(faces int) int { return faces }
+func (maxRoll) Float01() float64   { return 1 - 1.0/(1<<53) }
 
-// capped 是「一定骰到夾上限」的來源 —— 讓那些在驗**上限表**的測試
-// 不受骰子影響。⚠ 分開兩件事:哪張表、夾不夾,各自有自己的測試。
-func capped() Roller { return maxRoll{} }
+// capped 是「一定骰到上界」的來源 —— 讓那些在驗**係數**的測試
+// 不受骰子影響。⚠ 分開兩件事:係數對不對、亂數怎麼取,各自有自己的測試。
+func capped() GrowthRand { return maxRoll{} }
 
 func hero(level, end int) original.Character {
 	return original.Character{
@@ -51,15 +55,15 @@ func TestTrainNeedsExperience(t *testing.T) {
 	}
 }
 
-// 升級加的是上限與當前值,但**不補舊傷**。
-func TestTrainAddsGrowthWithoutHealingOldWounds(t *testing.T) {
-	c := hero(1, 10) // 體質 10 → 戰士成長上限 7(手冊 p.49)
+// 升級只加上限,**當前值一點都不動**(docs/re/184)。
+func TestTrainAddsGrowthToTheCapOnly(t *testing.T) {
+	c := hero(1, 10) // 體能 10 戰士:INT(10 × ~1 × 2/3) + 1 = 7
 	Train(&c, 300, 0, capped())
 	if c.MaxHP != 17 {
 		t.Errorf("最大生命應為 10+7=17,得 %d", c.MaxHP)
 	}
-	if c.HP != 11 {
-		t.Errorf("當前生命應為 4+7=11(舊傷不補),得 %d", c.HP)
+	if c.HP != 4 {
+		t.Errorf("當前生命不該被動到(應留在 4),得 %d", c.HP)
 	}
 }
 
@@ -74,8 +78,10 @@ func TestWizardGrowsSPAndUsesWizardColumn(t *testing.T) {
 	if c.MaxHP != 8+5 { // 體質 10 的**巫師**欄是 5,不是戰士的 7
 		t.Errorf("巫師最大生命應為 8+5=13,得 %d", c.MaxHP)
 	}
-	if c.MaxSP != 5+8 { // 智力 12 → 8
-		t.Errorf("最大法力應為 5+8=13,得 %d", c.MaxSP)
+	// 智能 12:INT(12 × r × 0.5) + 2,r < 1 → 5 + 2 = 7
+	// ⚠ 手冊 p.48 寫 8 —— 見 TestManualSPTableIsOffByOne
+	if c.MaxSP != 5+7 {
+		t.Errorf("最大法力應為 5+7=12,得 %d", c.MaxSP)
 	}
 }
 
@@ -211,29 +217,100 @@ func TestGuildTeaches(t *testing.T) {
 	}
 }
 
-// 成長是**擲骰後夾上限**(專案負責人裁定 2026-08-15):
-// 骰子超過上限就取上限,在上限內就取骰子的值。
-func TestLevelGainClampsToCap(t *testing.T) {
-	for _, c := range []struct{ roll, attr, cap, want int }{
-		{3, 10, 7, 3},  // 骰在上限內 → 取骰子
-		{7, 10, 7, 7},  // 剛好等於上限
-		{9, 10, 7, 7},  // 超過 → 取上限
-		{1, 10, 7, 1},  // 下界
-		{5, 3, 3, 3},   // 低屬性:上限低,幾乎每次吃滿
+// 成長算式:INT(屬性 × 亂數 × 係數) + 加項(docs/re/184)。
+// 用固定的浮點序列驗係數 —— 兩次 Float01 取大,所以給兩個值。
+func TestLevelGainHPFormula(t *testing.T) {
+	for _, c := range []struct {
+		floats []float64
+		end    int
+		wizard bool
+		want   int
+	}{
+		// 因子取大 = 1.0 的極限 → 上界 INT(體能 × K) + 1
+		{[]float64{0.9, 0.999999}, 20, false, 14}, // INT(20 × 2/3) + 1 = 14
+		{[]float64{0.999999, 0.1}, 20, true, 9},   // INT(20 × 0.434783) + 1 = 9
+		{[]float64{0.5, 0.5}, 20, false, 7},       // INT(20 × 0.5 × 2/3) + 1 = 7
+		{[]float64{0.0, 0.0}, 20, false, 1},       // 因子 0 → 只剩加項
 	} {
-		got := LevelGain(&combat.ScriptRand{Values: []int{c.roll}}, c.attr, c.cap)
+		got := LevelGainHP(&combat.ScriptRand{Floats: c.floats}, c.end, c.wizard)
 		if got != c.want {
-			t.Errorf("骰 %d、屬性 %d、上限 %d → %d,應為 %d",
-				c.roll, c.attr, c.cap, got, c.want)
+			t.Errorf("體能 %d、巫師 %v、亂數 %v → %d,應為 %d",
+				c.end, c.wizard, c.floats, got, c.want)
 		}
 	}
 }
 
-// 骰面是**屬性本身**,不是上限 —— 骰 1…上限的話「超過就夾」永遠不會生效。
-func TestLevelGainRollsOnTheAttributeNotTheCap(t *testing.T) {
-	r := &combat.ScriptRand{Values: []int{1}}
-	LevelGain(r, 20, 14)
-	if len(r.Faces) != 1 || r.Faces[0] != 20 {
-		t.Errorf("骰面應為屬性 20,得 %v", r.Faces)
+// **取大不取小** —— 取小的話下面第一列會得到 INT(20 × 0.1 × 2/3) + 1 = 2。
+func TestGrowthRollTakesTheLargerOfTwo(t *testing.T) {
+	for _, order := range [][]float64{{0.1, 0.9}, {0.9, 0.1}} {
+		got := LevelGainHP(&combat.ScriptRand{Floats: order}, 20, false)
+		if got != 13 { // INT(20 × 0.9 × 2/3) + 1 = 13
+			t.Errorf("亂數 %v 應取大的 0.9 → 13,得 %d", order, got)
+		}
+	}
+}
+
+// 法力係數與加項各自能弄錯,分開驗。
+func TestLevelGainSPFormula(t *testing.T) {
+	for _, c := range []struct {
+		floats []float64
+		intel  int
+		want   int
+	}{
+		{[]float64{0.999999, 0.1}, 20, 11}, // INT(20 × 0.999999 × 0.5) + 2 = 11
+		{[]float64{0.999999, 0.1}, 11, 7},  // INT(11 × 0.5) + 2 = 7 ← 手冊寫 8
+		{[]float64{0.0, 0.0}, 20, 2},       // 因子 0 → 只剩加項
+	} {
+		got := LevelGainSP(&combat.ScriptRand{Floats: c.floats}, c.intel)
+		if got != c.want {
+			t.Errorf("智能 %d、亂數 %v → %d,應為 %d", c.intel, c.floats, got, c.want)
+		}
+	}
+}
+
+// ⚠ **手冊 p.48 的 SP 表與本實作全表差 1,而差多少取決於一個未決點。**
+//
+// 引擎目前用**截尾**(`int()`)。若原版的浮點轉整數其實是**四捨五入**,
+// 偶數智能會與手冊吻合、只有奇數 ≥ 11 差 1。兩種模式在 HP 那條**分不出來**
+// (戰士係數 0.666667 比 2/3 大,餘裕蓋過 MBF 的 1−r),
+// **只有 SP 分得出來**,因為它的係數 0.5 是精確的。
+//
+// ⛔ 這條測試釘的是**目前的選擇**,不是已確認的原版行為。
+// 裁決方法(第 1 級證據,一次實測就夠):在原版把巫師的智能練到 20,
+// 反覆升級,量最大法力成長是 **11**(截尾)還是 **12**(四捨五入)。
+func TestManualSPTableIsOffByOne(t *testing.T) {
+	manual := map[int]int{10: 7, 11: 8, 12: 8, 13: 9, 19: 12}
+	for intel, m := range manual {
+		got := LevelGainSP(&combat.ScriptRand{Floats: []float64{0.999999, 0.1}}, intel)
+		if got != m-1 {
+			t.Errorf("智能 %d:本實作應為 %d(手冊 %d),得 %d", intel, m-1, m, got)
+		}
+	}
+}
+
+// 升級**不回血**、也不回法力 —— 只加上限(docs/re/184)。
+func TestTrainDoesNotHealOnLevelUp(t *testing.T) {
+	c := original.Character{
+		Name: "巫", Class: byte(rules.ClassWizard), Level: 1,
+		End: 10, Int: 12, MaxHP: 8, HP: 3, MaxSP: 5, SP: 1,
+	}
+	Train(&c, 300, 1, capped())
+	if c.HP != 3 || c.SP != 1 {
+		t.Errorf("當前生命/法力不該被動到,得 %d/%d", c.HP, c.SP)
+	}
+	if c.MaxHP <= 8 || c.MaxSP <= 5 {
+		t.Errorf("上限應該有長,得 %d/%d", c.MaxHP, c.MaxSP)
+	}
+}
+
+// 生命與法力**共用**同一個總量上限 255(ds:6D8C)。
+func TestTotalsClampAt255(t *testing.T) {
+	c := original.Character{
+		Name: "巫", Class: byte(rules.ClassWizard), Level: 1,
+		End: 20, Int: 20, MaxHP: MaxTotalPoints, MaxSP: MaxTotalPoints,
+	}
+	Train(&c, 300, 1, capped())
+	if c.MaxHP != MaxTotalPoints || c.MaxSP != MaxTotalPoints {
+		t.Errorf("總量應夾在 %d,得 %d/%d", MaxTotalPoints, c.MaxHP, c.MaxSP)
 	}
 }

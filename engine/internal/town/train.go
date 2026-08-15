@@ -47,10 +47,11 @@ func GuildTeaches(extra int) byte {
 
 // Train 讓一位角色在訓練所升一級。
 //
-// 成長量是**現骰後夾上限**(見 LevelGain)。
+// 成長量是讀出來的算式(見 LevelGainHP / LevelGainSP)。
 //
-// 經驗值**不扣**(手冊沒說要扣,而累計欄的語意是「累計到多少」)。
-func Train(c *original.Character, exp, guildExtra int, r Roller) TrainResult {
+// 經驗值**不扣** —— 這條先前是從「累計欄的語意」推的,現在是**讀出來的**
+// (docs/re/184:升級常式沒有任何一處寫位移 90–93)。
+func Train(c *original.Character, exp, guildExtra int, r GrowthRand) TrainResult {
 	if c.Class != GuildTeaches(guildExtra) {
 		return TrainWrongGuild
 	}
@@ -63,14 +64,12 @@ func Train(c *original.Character, exp, guildExtra int, r Roller) TrainResult {
 	wizard := c.Class == byte(rules.ClassWizard)
 
 	c.Level++
-	gainHP := LevelGain(r, c.End, rules.MaxHPGain(c.End, wizard))
-	c.MaxHP += gainHP
-	c.HP += gainHP // 升級時把新增的部分也補滿,舊傷不補
-
+	// ⚠ **只加上限,不動當前值** —— 原版的升級常式沒有寫位移 28 / 32
+	// (docs/re/184)。先前這裡寫 `c.HP += gainHP`,那是「新增的部分補滿」
+	// 的推論,原版沒有這回事:升級不會回血。
+	c.MaxHP = clampTotal(c.MaxHP + LevelGainHP(r, c.End, wizard))
 	if wizard {
-		gainSP := LevelGain(r, c.Int, rules.MaxSPGain(c.Int))
-		c.MaxSP += gainSP
-		c.SP += gainSP
+		c.MaxSP = clampTotal(c.MaxSP + LevelGainSP(r, c.Int))
 	}
 	intBefore := c.Int
 	GrowAttributes(c, r)
@@ -127,40 +126,96 @@ func GrowAttributes(c *original.Character, r Roller) {
 	}
 }
 
-// LevelGain 回傳升一級實際加多少點:**擲骰,超過上限就用上限**。
+// GrowthRand 是升級成長要的亂數來源:屬性成長用 Roll、HP/SP 用 Float01。
+type GrowthRand interface {
+	Roller
+	FloatRoller
+}
+
+// 升級成長的係數,**全部是 DGROUP 初值**(docs/re/184):
 //
-//	成長 = min(擲骰(屬性), 上限)
+//	ds:71C2  0.666667   戰士的生命係數(= 2/3)
+//	ds:71BA  0.434783   巫師的生命係數(= 1/2.3)
+//	ds:71BE  1          生命的加項
 //
-// 上限是手冊 p.48/p.49 兩張表(`MAX … GAIN PER LEVEL`)—— 欄名寫著「最多」,
-// 所以那兩張表給的不是成長量本身,是成長量的**天花板**。
+// 法力那條的 0.5 與 2 同樣是 DGROUP 常數(ds:6D98 / ds:722E)。
+const (
+	HPFactorHero   = 0.666667
+	HPFactorWizard = 0.434783
+	HPAddend       = 1
+	SPFactor       = 0.5
+	SPAddend       = 2
+)
+
+// MaxTotalPoints 是生命與法力的**總量**上限。
 //
-// **「現骰」是確定的** —— 專案負責人實測原版,同一個角色反覆升級成長量**會變**
-// (2026-08-15,第 1 級證據)。
-//
-// ⚠ **但骰面是具名假設**:裁定沒有指定骰幾面,原版那段程式碼也沒有讀到。
-// 這裡取**屬性本身**(生命骰體能、法力骰智能),理由有二:
-//
-//   - 只有骰面**可能超過上限**,「超過就用上限」才有作用 ——
-//     若骰 1…上限,那句規則永遠不會生效;
-//   - 全遊戲的擲骰成語都是 `INT(RND × N) + 1`(docs/re/152 §3),
-//     而這裡手邊唯一的 N 就是那個屬性。
-//
-// ⛔ **這不是讀出來的。** 要裁決得去讀升級那段程式碼,或在原版裡
-// 同一個角色反覆升級看成長量會不會變。
-//
-// 效果:低屬性的人幾乎每次都吃滿(上限本來就低),高屬性的人**平均拿不到上限** ——
-// 體能 20 的戰士上限 14,骰 1…20 夾完平均只有 9.45。
-func LevelGain(r Roller, attr, cap int) int {
-	if cap <= 0 {
-		return 0
+// `ds:6D8C`,在 `TOWN.EXE 0x10306` 寫成 `0FFh` —— 全檔唯一的寫入端,
+// 而且**生命與法力共用同一個**(docs/re/184)。
+// ⚠ 它夾的是**總量**不是成長量。
+const MaxTotalPoints = 255
+
+func clampTotal(v int) int {
+	if v > MaxTotalPoints {
+		return MaxTotalPoints
 	}
-	if attr < 1 {
-		attr = 1
+	return v
+}
+
+// growthRoll 回傳成長算式用的亂數因子:**兩次 RND 取大**。
+//
+// 原版擲兩次 `RND` 存進 `ds:71B0` / `ds:71B4`,比較後把大的留在 `71B0`
+// (`TOWN 0x11235`–`0x11243`:`3F:9F` 比較、`jb` → `xchg` → `3F:7B` 複製)。
+//
+// ⚠ **取大不取小**,期望值 2/3 而不是 1/2 —— 這在平均成長量上看得見。
+func growthRoll(r FloatRoller) float64 {
+	a, b := r.Float01(), r.Float01()
+	if a < b {
+		return b
 	}
-	if v := r.Roll(attr); v < cap {
-		return v
+	return a
+}
+
+// LevelGainHP 回傳升一級的生命成長。
+//
+//	成長 = INT(體能 × max(R1,R2) × K) + 1      K:戰士 2/3、巫師 1/2.3
+//
+// **這是讀出來的算式**(docs/re/184),不是「擲骰後夾上限」的近似。
+// 兩者的關係是:亂數因子趨近 1 時,這條式子的上界正好等於手冊 p.49 那張表 ——
+// **`INT(體能 × K) + 1` 對手冊 36 格全中**,所以那張表是這條公式的推論,
+// 不是程式裡的查表(程式裡根本沒有那張表)。
+//
+// ⚠ 專案負責人裁定的「現骰」(2026-08-15,第 1 級證據)**成立**;
+// 「夾上限」那一半被算式取代 —— 算式本身不可能超過上限,不需要再夾。
+func LevelGainHP(r FloatRoller, endurance int, wizard bool) int {
+	k := HPFactorHero
+	if wizard {
+		k = HPFactorWizard
 	}
-	return cap
+	if endurance < 0 {
+		endurance = 0
+	}
+	return int(float64(endurance)*growthRoll(r)*k) + HPAddend
+}
+
+// LevelGainSP 回傳巫師升一級的法力成長。戰士沒有這一項。
+//
+//	成長 = INT(智能 × max(R1,R2) × 0.5) + 2
+//
+// ⚠ **浮點轉整數是截尾還是四捨五入,未決** —— 這裡用截尾。
+// 差別是**每一級 1 點法力**:智能 20 的巫師,截尾上界 11、四捨五入上界 12。
+//
+// ⛔ 這是具名假設,不是 RE 結論。兩種模式在生命那條**分不出來**
+// (戰士係數 0.666667 比 2/3 大,餘裕蓋過 MBF 的 1−r);**只有法力分得出來**,
+// 因為它的係數 0.5 是精確的。裁決方法是**第 1 級證據**:在原版把巫師的智能
+// 練到 20,反覆升級,量最大法力成長是 11 還是 12。
+//
+// ⚠ 手冊 p.48 那張表在兩種模式下都對不上(截尾全表差 1、四捨五入差奇數 ≥ 11 那五格)。
+// 依 CLAUDE.md §6 的證據優先序,反組譯(第 2 級)勝過手冊(第 3 級)。
+func LevelGainSP(r FloatRoller, intellect int) int {
+	if intellect < 0 {
+		intellect = 0
+	}
+	return int(float64(intellect)*growthRoll(r)*SPFactor) + SPAddend
 }
 
 // AttrNames 是五項屬性的顯示名,順序同 attrSlots(CHARS.DAT 位移 16–24)。
@@ -191,7 +246,7 @@ func AttrGrowth(before [AttrGrowthPick]int, c original.Character) [AttrGrowthPic
 }
 
 // GrowthNote 是訓練所畫面的說明。
-const GrowthNote = "升級成長:擲骰(屬性)夾在手冊 p.48/49 的上限。⚠ 骰面是假設,原版那段沒讀到"
+const GrowthNote = "升級成長:INT(屬性 × 兩次亂數取大 × 係數) + 加項;生命與法力總量共用上限 255"
 
 // NeedExp 回傳這個等級升下一級所需的累計經驗;已達頂級回 0。
 func NeedExp(level int) int {

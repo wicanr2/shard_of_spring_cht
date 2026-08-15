@@ -43,13 +43,10 @@ func GuildTeaches(extra int) byte {
 
 // Train 讓一位角色在訓練所升一級。
 //
-// 成長量取手冊 p.48/p.49 兩張表的**上限**(`MAX … GAIN PER LEVEL`)。
-// ⚠ 表的欄名是「最多」,所以原版很可能是**在 1 到上限之間現骰**;
-// 沒有讀到那段程式碼,這裡取上限是一個**具名的假設**(見 GrowthAssumption),
-// 換成擲骰只要改這個函式。
+// 成長量是**現骰後夾上限**(見 LevelGain)。
 //
 // 經驗值**不扣**(手冊沒說要扣,而累計欄的語意是「累計到多少」)。
-func Train(c *original.Character, exp, guildExtra int) TrainResult {
+func Train(c *original.Character, exp, guildExtra int, r Roller) TrainResult {
 	if c.Class != GuildTeaches(guildExtra) {
 		return TrainWrongGuild
 	}
@@ -62,20 +59,54 @@ func Train(c *original.Character, exp, guildExtra int) TrainResult {
 	wizard := c.Class == byte(rules.ClassWizard)
 
 	c.Level++
-	gainHP := rules.MaxHPGain(c.End, wizard)
+	gainHP := LevelGain(r, c.End, rules.MaxHPGain(c.End, wizard))
 	c.MaxHP += gainHP
 	c.HP += gainHP // 升級時把新增的部分也補滿,舊傷不補
 
 	if wizard {
-		gainSP := rules.MaxSPGain(c.Int)
+		gainSP := LevelGain(r, c.Int, rules.MaxSPGain(c.Int))
 		c.MaxSP += gainSP
 		c.SP += gainSP
 	}
 	return TrainOK
 }
 
-// GrowthAssumption 是給畫面顯示用的說明。
-const GrowthAssumption = "⚠ 手冊給的是成長**上限**,原版是否現骰未解 —— 本引擎取上限"
+// LevelGain 回傳升一級實際加多少點:**擲骰,超過上限就用上限**。
+//
+//	成長 = min(擲骰(屬性), 上限)
+//
+// 上限是手冊 p.48/p.49 兩張表(`MAX … GAIN PER LEVEL`)—— 欄名寫著「最多」,
+// 所以那兩張表給的不是成長量本身,是成長量的**天花板**。
+//
+// ⚠ **骰面是具名假設。** 專案負責人裁定成長要「現骰、超過上限就取上限」
+// (2026-08-15),但**沒有指定骰幾面**,而原版那段程式碼沒有讀到。
+// 這裡取**屬性本身**(生命骰體能、法力骰智能),理由有二:
+//
+//   - 只有骰面**可能超過上限**,「超過就用上限」才有作用 ——
+//     若骰 1…上限,那句規則永遠不會生效;
+//   - 全遊戲的擲骰成語都是 `INT(RND × N) + 1`(docs/re/152 §3),
+//     而這裡手邊唯一的 N 就是那個屬性。
+//
+// ⛔ **這不是讀出來的。** 要裁決得去讀升級那段程式碼,或在原版裡
+// 同一個角色反覆升級看成長量會不會變。
+//
+// 效果:低屬性的人幾乎每次都吃滿(上限本來就低),高屬性的人**平均拿不到上限** ——
+// 體能 20 的戰士上限 14,骰 1…20 夾完平均只有 9.45。
+func LevelGain(r Roller, attr, cap int) int {
+	if cap <= 0 {
+		return 0
+	}
+	if attr < 1 {
+		attr = 1
+	}
+	if v := r.Roll(attr); v < cap {
+		return v
+	}
+	return cap
+}
+
+// GrowthNote 是訓練所畫面的說明。
+const GrowthNote = "升級成長:擲骰(屬性)夾在手冊 p.48/49 的上限。⚠ 骰面是假設,原版那段沒讀到"
 
 // NeedExp 回傳這個等級升下一級所需的累計經驗;已達頂級回 0。
 func NeedExp(level int) int {

@@ -546,7 +546,7 @@ func (g *Game) healMember(i int, k town.HealKind) {
 func (g *Game) trainMember(i, guildExtra int) {
 	c := &g.members[i]
 	exp := g.charExp(*c)
-	r := town.Train(c, exp, guildExtra)
+	r := town.Train(c, exp, guildExtra, g.rand)
 	if r != town.TrainOK {
 		g.town.msg = c.Name + ":" + r.String()
 		return
@@ -710,7 +710,7 @@ func (g *Game) buildingLines(ts *townState) []string {
 			lines = append(lines, fmt.Sprintf("%d) %s　%s　第 %d 級　經驗 %s",
 				i+1, c.Name, c.ClassName(), c.Level, state))
 		}
-		return append(lines, "", town.GrowthAssumption)
+		return append(lines, "", town.GrowthNote)
 	}
 	return nil
 }

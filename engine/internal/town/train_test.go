@@ -3,9 +3,14 @@ package town
 import (
 	"testing"
 
+	"shardofspring/internal/combat"
 	"shardofspring/internal/original"
 	"shardofspring/internal/rules"
 )
+
+// capped 是「一定骰到夾上限」的來源 —— 讓那些在驗**上限表**的測試
+// 不受骰子影響。⚠ 分開兩件事:哪張表、夾不夾,各自有自己的測試。
+func capped() *combat.ScriptRand { return &combat.ScriptRand{Values: []int{99}} }
 
 func hero(level, end int) original.Character {
 	return original.Character{
@@ -16,7 +21,7 @@ func hero(level, end int) original.Character {
 
 func TestTrainNeedsTheRightGuild(t *testing.T) {
 	c := hero(1, 10)
-	if got := Train(&c, 999_999, 1); got != TrainWrongGuild {
+	if got := Train(&c, 999_999, 1, capped()); got != TrainWrongGuild {
 		t.Fatalf("戰士進魔法訓練所應被擋下,得 %v", got)
 	}
 	if c.Level != 1 {
@@ -26,10 +31,10 @@ func TestTrainNeedsTheRightGuild(t *testing.T) {
 
 func TestTrainNeedsExperience(t *testing.T) {
 	c := hero(1, 10)
-	if got := Train(&c, 299, 0); got != TrainNotEnoughExp {
+	if got := Train(&c, 299, 0, capped()); got != TrainNotEnoughExp {
 		t.Fatalf("299 經驗應不足,得 %v", got)
 	}
-	if got := Train(&c, 300, 0); got != TrainOK {
+	if got := Train(&c, 300, 0, capped()); got != TrainOK {
 		t.Fatalf("300 經驗應可升級,得 %v", got)
 	}
 	if c.Level != 2 {
@@ -40,7 +45,7 @@ func TestTrainNeedsExperience(t *testing.T) {
 // 升級加的是上限與當前值,但**不補舊傷**。
 func TestTrainAddsGrowthWithoutHealingOldWounds(t *testing.T) {
 	c := hero(1, 10) // 體質 10 → 戰士成長上限 7(手冊 p.49)
-	Train(&c, 300, 0)
+	Train(&c, 300, 0, capped())
 	if c.MaxHP != 17 {
 		t.Errorf("最大生命應為 10+7=17,得 %d", c.MaxHP)
 	}
@@ -56,7 +61,7 @@ func TestWizardGrowsSPAndUsesWizardColumn(t *testing.T) {
 		Name: "法", Class: byte(rules.ClassWizard), Level: 1,
 		End: 10, Int: 12, MaxHP: 8, HP: 8, MaxSP: 5, SP: 5,
 	}
-	Train(&c, 300, 1)
+	Train(&c, 300, 1, capped())
 	if c.MaxHP != 8+5 { // 體質 10 的**法師**欄是 5,不是戰士的 7
 		t.Errorf("法師最大生命應為 8+5=13,得 %d", c.MaxHP)
 	}
@@ -68,7 +73,7 @@ func TestWizardGrowsSPAndUsesWizardColumn(t *testing.T) {
 func TestTrainIsFreeOfCharge(t *testing.T) {
 	// 手冊 p.37:訓練完全免費。介面上沒有金幣參數,這裡確認升級不需要它。
 	c := hero(1, 10)
-	if Train(&c, 300, 0) != TrainOK {
+	if Train(&c, 300, 0, capped()) != TrainOK {
 		t.Error("升級不該需要金幣")
 	}
 }
@@ -79,5 +84,32 @@ func TestGuildTeaches(t *testing.T) {
 	}
 	if GuildTeaches(1) != byte(rules.ClassWizard) {
 		t.Error("位移 36 = 1 應是魔法(法師)")
+	}
+}
+
+// 成長是**擲骰後夾上限**(專案負責人裁定 2026-08-15):
+// 骰子超過上限就取上限,在上限內就取骰子的值。
+func TestLevelGainClampsToCap(t *testing.T) {
+	for _, c := range []struct{ roll, attr, cap, want int }{
+		{3, 10, 7, 3},  // 骰在上限內 → 取骰子
+		{7, 10, 7, 7},  // 剛好等於上限
+		{9, 10, 7, 7},  // 超過 → 取上限
+		{1, 10, 7, 1},  // 下界
+		{5, 3, 3, 3},   // 低屬性:上限低,幾乎每次吃滿
+	} {
+		got := LevelGain(&combat.ScriptRand{Values: []int{c.roll}}, c.attr, c.cap)
+		if got != c.want {
+			t.Errorf("骰 %d、屬性 %d、上限 %d → %d,應為 %d",
+				c.roll, c.attr, c.cap, got, c.want)
+		}
+	}
+}
+
+// 骰面是**屬性本身**,不是上限 —— 骰 1…上限的話「超過就夾」永遠不會生效。
+func TestLevelGainRollsOnTheAttributeNotTheCap(t *testing.T) {
+	r := &combat.ScriptRand{Values: []int{1}}
+	LevelGain(r, 20, 14)
+	if len(r.Faces) != 1 || r.Faces[0] != 20 {
+		t.Errorf("骰面應為屬性 20,得 %v", r.Faces)
 	}
 }

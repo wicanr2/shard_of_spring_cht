@@ -7,7 +7,9 @@ type Field struct {
 	Units [Slots]Unit
 	Order []int // 先攻表:單位編號,速度高的在前
 	Round int
-	Rand  Rand
+	// ⚠ 型別是 FloatRand 不是 Rand —— 命中與狂暴擲骰要用 Float01()
+	// 算 round(RND×N+1)(docs/re/185),不能只靠 Roll()。
+	Rand FloatRand
 	// Items 是查表用的:編號 → ITEMS.DAT 的兩個欄位。
 	Items map[int]Item
 	// Log 是這一場的訊息,給訊息列顯示、也給測試檢查。
@@ -79,7 +81,9 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 	// 原版把兩次擲骰都算在同一次攻擊裡,所以這裡一定要再擲一次,
 	// 不能沿用命中那一次的值 —— 沿用會讓「命中很險」與「打得很重」綁在一起。
 	verb := " 擊中 "
-	if second := f.Rand.Roll(ToHitFaces); Berserk(a, second) {
+	// ⚠ round(RND×100+1),不是 Roll(100)——同一個成語,同一個修正
+	// (docs/re/185 §2 表列 #4)。
+	if second := rollRound(f.Rand, ToHitFaces); Berserk(a, second) {
 		dmg *= 2
 		verb = " 劈中 " // 原版:'and hacks for' ↔ 'and hits for'
 	}

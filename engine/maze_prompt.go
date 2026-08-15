@@ -147,8 +147,10 @@ func (g *Game) poolKey(k ebiten.Key) {
 		g.prompt = nil
 		return
 	}
-	// 治療量 = INT(RND × N) + 1。⚠ N 未解 —— maze.PoolRollFaces 是佔位。
-	roll := g.rand.Roll(maze.PoolRollFaces)
+	// 治療量 = round(RND × 5 + 1),值域 1–6(docs/re/185 §2 表列 #5)。
+	// ⚠ 不是 g.rand.Roll(maze.PoolRollFaces)(那是 1–5、均勻,少了四捨五入
+	// 多出來的上界)。
+	roll := maze.PoolRoll(g.rand)
 	got := maze.PoolHeal(m.HP, m.MaxHP, roll)
 	m.HP += got
 	g.group.PoolUses++

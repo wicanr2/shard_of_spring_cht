@@ -201,6 +201,48 @@ func TestHealingPool(t *testing.T) {
 	}
 }
 
+// fixedFloat 依序回傳固定的 [0,1) 值,用完循環(同 town 套件的做法)。
+type fixedFloat struct {
+	seq []float64
+	i   int
+}
+
+func (r *fixedFloat) Float01() float64 {
+	v := r.seq[r.i%len(r.seq)]
+	r.i++
+	return v
+}
+
+// PoolRoll 是 round(RND×5+1),不是 INT(RND×5)+1(docs/re/185 §2 表列 #5)。
+//
+// 0.09×5+1 = 1.45:floor 給 1、round 給 1 一樣分不開,換一個真的會分岔的值——
+// 0.31×5+1 = 2.55:floor 給 2、round 給 3。
+func TestPoolRollRoundsNotFloors(t *testing.T) {
+	got := PoolRoll(&fixedFloat{seq: []float64{0.31}})
+	if got != 3 {
+		t.Errorf("round(0.31×5+1)=round(2.55) 應為 3,得 %d —— "+
+			"得 2 表示還在用 floor(舊的 INT(RND×5)+1)", got)
+	}
+}
+
+// ⭐ 值域上界是 **6**,不是 5(docs/re/185 §2 表列 #5)。
+//
+// Float01() 逼近 1 時,round(RND×5+1) 逼近 6;舊公式 INT(RND×5)+1 的
+// 值域頂多到 5。這條測試專門釘住「上界多了 1」這件事本身。
+func TestPoolRollUpperBoundIs6(t *testing.T) {
+	got := PoolRoll(&fixedFloat{seq: []float64{0.999999}})
+	if got != 6 {
+		t.Errorf("逼近上界的擲骰 %d,應為 6 —— 值域是 1…6,不是 1…5", got)
+	}
+}
+
+// 下界仍然是 1(RND=0 時 round(1)=1,與舊公式的下界相同)。
+func TestPoolRollLowerBoundIs1(t *testing.T) {
+	if got := PoolRoll(&fixedFloat{seq: []float64{0}}); got != 1 {
+		t.Errorf("RND=0 應回 1,得 %d", got)
+	}
+}
+
 // 事件作廢:只在打完仗之後,而且同一個目標的所有列一起消失(docs/re/165 §3)。
 func TestDisableTargetBlanksEveryRow(t *testing.T) {
 	evs := []original.Event{

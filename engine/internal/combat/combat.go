@@ -168,6 +168,32 @@ const ReorderEachRound = true
 // 以及測試可以餵腳本化的序列來逐項驗公式。
 type Rand interface{ Roll(faces int) int }
 
+// FloatRand 除了 Roll 還能給 [0,1) 浮點。形狀照 internal/town.GrowthRand。
+//
+// `round(RND×N+C)` 這類原版**沒有** `INT 3D:03` 截尾的算式(docs/re/185)
+// 要用 Float01() 算,不能用 Roll() 湊 —— Roll(n)-1 兩次相加是另一個分佈
+// (docs/re/156)。
+type FloatRand interface {
+	Rand
+	Float01() float64
+}
+
+// roundHalfUp 是原版 `INT 3F:77` 沒配 `INT 3D:03` 時的行為:**四捨五入**,
+// 不是截尾(docs/re/184 §5、185)。形狀與 internal/town.toInt 相同 ——
+// 兩份是同一次稽核(docs/re/185)算出來的,這裡照抄形狀,不重新發明。
+func roundHalfUp(x float64) int { return int(math.Floor(x + 0.5)) }
+
+// rollRound 回傳 `round(RND×faces+1)` 的擲骰結果,值域 **1…faces+1**
+// (docs/re/185 §2 表列 #2/#4)。
+//
+// ⚠ **不是 `Roll(faces)`**(值域 1…faces、均勻)。命中擲骰(`CMBT 0x136DA`)
+// 與狂暴的第二次擲骰(`CMBT 0x1373D`)在原版都**沒有**配 `INT 3D:03`,
+// 而 `3F:77` 沒配 `INT()` 時是四捨五入 —— 上界因此多 1、均值多 0.5。
+// 命中率因此是 `(命中值 − 0.5) ÷ 100`,不是 `命中值 ÷ 100`。
+func rollRound(r FloatRand, faces int) int {
+	return roundHalfUp(r.Float01()*float64(faces) + 1)
+}
+
 // 這裡曾經有一個 `DamageFaces = 26`。**那個面數不存在**:
 // 它來自把 `mov bx, 1Ah` 讀成「26 面骰」,而 0x1A 是浮點累加器的**位址**
 // (docs/re/152 §3、153 §9)。傷害擲骰的面數是**武器傷害本身**
@@ -193,8 +219,11 @@ func ToHit(atk, def Unit, atkWeapon, defArmor Item) int {
 }
 
 // Hits 擲骰判定是否命中。擲骰 ≤ 門檻 → 命中。
-func Hits(atk, def Unit, atkWeapon, defArmor Item, r Rand, faces int) (int, bool) {
-	roll := r.Roll(faces)
+//
+// ⚠ 擲骰是 `round(RND×faces+1)`,不是 `Roll(faces)`(docs/re/185 §2 表列 #2)——
+// 值域 1…faces+1,原版這裡沒有 `INT 3D:03` 截尾。
+func Hits(atk, def Unit, atkWeapon, defArmor Item, r FloatRand, faces int) (int, bool) {
+	roll := rollRound(r, faces)
 	return roll, roll <= ToHit(atk, def, atkWeapon, defArmor)
 }
 

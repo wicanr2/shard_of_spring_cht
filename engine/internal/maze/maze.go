@@ -3,7 +3,11 @@
 // 規則出自 docs/spec/08-maze-scene.md;每一條在下面註明章節。
 package maze
 
-import "shardofspring/internal/original"
+import (
+	"math"
+
+	"shardofspring/internal/original"
+)
 
 // VisibilityIsRadius:把 GROUPS.DAT 的能見度值當成視野半徑。
 //
@@ -256,14 +260,32 @@ func PoolCanHeal(status int) bool { return status <= PoolMaxStatus }
 
 // PoolRollFaces 是治療量擲骰的面數 `ds:950A`,**讀出來的**:
 // MAZEMOVE 的 DGROUP 常數,初值是 MBF 5.0(docs/re/178 §2)。
-// 加號後面的 1 也是讀出來的 —— 全遊戲的擲骰成語都是
-// `INT(RND × N) + 1`(docs/re/152 §3)。
 //
 // ⚠ 先前這裡是 8,一個具名佔位。
 const PoolRollFaces = 5
 
+// FloatRoller 是能給 [0,1) 浮點的亂數來源,配 PoolRoll 用
+// (docs/re/185 §2 表列 #5)。
+type FloatRoller interface{ Float01() float64 }
+
+// PoolRoll 回傳治療池的擲骰結果:`round(RND×5+1)`,值域 **1…6**。
+//
+// ⚠ **不是 `INT(RND×5)+1`(值域 1…5)。** `MAZEMOVE 0x13788` 這一處
+// **沒有**配 `INT 3D:03`,而 `INT 3F:77` 沒配 `INT()` 時是四捨五入不是
+// 截尾(docs/re/184 §5)——上界因此多 1、均值 3.5 而不是 3
+// (docs/re/185 §2 表列 #5)。⚠ 先前這裡誤記成 `INT(RND×5)+1`,那是
+// 「沒配 INT() 的 3F:77 一律截尾」的舊預設,已經推翻(docs/re/184 §7)。
+func PoolRoll(r FloatRoller) int {
+	return roundHalfUp(r.Float01()*float64(PoolRollFaces) + 1)
+}
+
+// roundHalfUp 是原版 `INT 3F:77` 沒配 `INT 3D:03` 時的行為:**四捨五入**,
+// 不是截尾(docs/re/184 §5、185)。形狀與 internal/town.toInt 相同 ——
+// 兩份是同一次稽核(docs/re/185)算出來的,這裡照抄形狀,不重新發明。
+func roundHalfUp(x float64) int { return int(math.Floor(x + 0.5)) }
+
 // PoolRollNote 是站在池邊時的提示。**這不是免責聲明** —— 面數已經解出來了。
-const PoolRollNote = "治療池:每次 INT(RND × 5) + 1 點,夾在離滿血還差多少"
+const PoolRollNote = "治療池:每次 round(RND × 5 + 1) 點(1–6),夾在離滿血還差多少"
 
 // Unresolved 是要顯示在訊息列的未解項。⚠ **目前是空的** ——
 // 迷宮這一層沒有未解到會影響玩家的規則。⛔ 不要為了「有東西可顯示」

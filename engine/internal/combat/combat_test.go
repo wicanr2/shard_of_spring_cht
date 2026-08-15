@@ -162,6 +162,63 @@ func TestToHitIsAPercentage(t *testing.T) {
 	}
 }
 
+// 命中擲骰是 round(RND×faces+1),不是 Roll(faces)(docs/re/185 §2 表列 #2)。
+//
+// 0.005×100+1 = 1.5:floor 給 1、round 給 2 —— 這組值兩者不同,
+// 分得出 Hits() 是不是真的换了取整方式(而不是還在用 Roll())。
+func TestHitsRollIsRoundNotFloor(t *testing.T) {
+	atk := Unit{ToHit: 100, Facing: North} // 門檻拉滿,讓命中與否只看擲骰本身
+	def := Unit{Facing: South}
+	r := &ScriptRand{Floats: []float64{0.005}}
+	roll, _ := Hits(atk, def, Item{}, Item{}, r, ToHitFaces)
+	if roll != 2 {
+		t.Errorf("擲骰 %d,應為 2(round(0.005×100+1)=round(1.5)=2;"+
+			"得 1 表示還在用 floor 或 Roll())", roll)
+	}
+}
+
+// ⭐ 值域上界是 **101**,不是 100(docs/re/185 §2 表列 #2)。
+//
+// Float01() 逼近 1 時,round(RND×100+1) 逼近 101。舊的 `Roll(100)`
+// 值域頂多到 100 —— 這條測試專門釘住「上界多了 1」這件事本身。
+func TestHitsRollUpperBoundIs101(t *testing.T) {
+	atk := Unit{ToHit: 1000, Facing: North}
+	def := Unit{Facing: South}
+	r := &ScriptRand{Floats: []float64{0.999999}}
+	roll, _ := Hits(atk, def, Item{}, Item{}, r, ToHitFaces)
+	if roll != 101 {
+		t.Errorf("逼近上界的擲骰 %d,應為 101 —— 值域是 1…faces+1,"+
+			"不是 1…faces", roll)
+	}
+}
+
+// 狂暴的第二次擲骰同樣是 round(RND×100+1),要用 Float01()
+// 不是 Roll()(docs/re/185 §2 表列 #4)。用 Attack() 整條路徑驗,
+// 免得只測 rollRound 這個內部函式漏掉呼叫端沒接上。
+func TestBerserkSecondRollIsRoundNotFloor(t *testing.T) {
+	f := &Field{Items: map[int]Item{}}
+	// 赤手(Weapon: BareHandMin)→ 擲骰面數直接是力量,沒有加值
+	// (docs/re/153),傷害基準就是 Roll(Str) 的回傳值。
+	// ⚠ 攻擊者要有 Berserk,Berserk() 看的是**攻擊者**那一項。
+	f.Units[PartyBase] = Unit{Name: "人", HP: 20, Facing: North, ToHit: 100,
+		Str: 20, Weapon: BareHandMin, Berserk: 1}
+	f.Units[MonsterBase] = Unit{Name: "怪", HP: 20, Facing: South}
+	// Roll() 走 Values、Float01() 走 Floats,兩條計數各自獨立(ScriptRand)。
+	// 命中門檻拉滿保證命中;傷害擲骰固定用 Values=[5]。
+	// 若狂暴那一擲還在用 f.Rand.Roll(ToHitFaces) 而不是 rollRound(Float01),
+	// 它會讀到 Values 的 5(5 ≤ 75,不觸發狂暴)—— 兩條路徑在這組腳本值下
+	// **結果不同**,分得出呼叫端有沒有真的接上 Float01。
+	f.Rand = &ScriptRand{Floats: []float64{0.0, 0.999999}, Values: []int{5}}
+	_, hit, dmg := f.Attack(PartyBase, MonsterBase)
+	if !hit {
+		t.Fatal("命中門檻拉滿應該必中")
+	}
+	if dmg != 10 { // 傷害基準 5,狂暴加倍 → 10;沒加倍會停在 5
+		t.Errorf("狂暴應加倍傷害為 10,得 %d —— "+
+			"檢查第二次擲骰有沒有走 rollRound(Float01)而不是 Roll()", dmg)
+	}
+}
+
 // 驗收 4:生命值 < 1 設為 0,不會變負。
 func TestApplyClampsToZero(t *testing.T) {
 	u := Unit{HP: 3}

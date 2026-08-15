@@ -5,8 +5,10 @@ import "shardofspring/internal/original"
 // Build 依 docs/spec/01-combat.md §1 的來源欄把隊伍與怪物填進單位陣列。
 //
 // ⚠ **索引配置不可以改**(docs/spec/07 §1):怪物 0–8、隊伍 9–13。
+// ⚠ `r` 是 FloatRand 不是 Rand —— Field.Rand 要能給 Float01()
+// (docs/re/185:命中／狂暴擲骰要用它)。
 func Build(party []original.Character, monsters []original.Monster,
-	items map[int]Item, r Rand) *Field {
+	items map[int]Item, r FloatRand) *Field {
 
 	f := &Field{Rand: r, Items: items}
 

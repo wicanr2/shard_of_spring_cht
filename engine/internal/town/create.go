@@ -83,11 +83,28 @@ var (
 // 不是骰子(docs/re/156)。
 type FloatRoller interface{ Float01() float64 }
 
-// RollAttribute 擲一項屬性(**不含**種族修正)。
+// RollAttribute 擲一項屬性(**不含**種族修正)。**首擲**,有 `INT 3D:03`
+// 截尾,取整仍然是 `floor`(docs/re/185 §2.1:A 類,算式不變)。
 //
 //	INT(RND × A + RND × A + B)
 func RollAttribute(r FloatRoller) int {
 	return int(math.Floor(r.Float01()*AttrRangeA + r.Float01()*AttrRangeA + AttrOffsetB))
+}
+
+// RerollAttribute 重擲一項屬性(ESC 重擲,對應畫面上的編號 1–5)。
+//
+// 公式形狀與 RollAttribute 相同,但**沒有** `INT 3D:03` 那道截尾 ——
+// `CHARUTIL 0x10CF7`(重擲)比 `0x10ABA`(首擲)少了 `mov bx,1Ah / INT 3D:03`
+// 那三個位元組,只剩最後的 `INT 3F:77`。`3F:77` 沒配 `INT()` 時是
+// **四捨五入**,不是截尾(docs/re/184 §5、185 §2.1 逐位元組核對)。
+//
+//	round(RND × A + RND × A + B)
+//
+// ⚠ **這是原版真實行為,不是要跟首擲統一成同一顆骰**:重擲期望值 8.0
+// 比首擲 7.5 高 0.5,而且**只有重擲擲得出上界 14**(首擲上界 13)
+// (docs/re/185 §2 表列 #1)。⛔ 不要把兩者合併成同一個函式。
+func RerollAttribute(r FloatRoller) int {
+	return toInt(r.Float01()*AttrRangeA + r.Float01()*AttrRangeA + AttrOffsetB)
 }
 
 // Rolled 是一次擲出的五項屬性,**種族修正尚未加上去**。
@@ -105,18 +122,21 @@ func RollAll(r FloatRoller) Rolled {
 }
 
 // Reroll 重擲第 n 項(1–5,對應畫面上的編號)。超出範圍時原樣回傳。
+//
+// ⚠ 用的是 RerollAttribute(四捨五入),**不是** RollAttribute(截尾)——
+// 兩者是原版兩條不同的指令路徑(docs/re/185 §2.1)。
 func Reroll(v Rolled, n int, r FloatRoller) Rolled {
 	switch n {
 	case 1:
-		v.Speed = RollAttribute(r)
+		v.Speed = RerollAttribute(r)
 	case 2:
-		v.Str = RollAttribute(r)
+		v.Str = RerollAttribute(r)
 	case 3:
-		v.Int = RollAttribute(r)
+		v.Int = RerollAttribute(r)
 	case 4:
-		v.End = RollAttribute(r)
+		v.End = RerollAttribute(r)
 	case 5:
-		v.Skill = RollAttribute(r)
+		v.Skill = RerollAttribute(r)
 	}
 	return v
 }

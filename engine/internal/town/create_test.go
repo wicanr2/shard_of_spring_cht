@@ -188,6 +188,50 @@ func TestRerollIgnoresOutOfRange(t *testing.T) {
 	}
 }
 
+// 重擲是**四捨五入**,首擲是**截尾**(docs/re/185 §2.1)。
+//
+// 0.3×6 = 1.8,兩次是 1.8+1.8+2 = 5.6:
+//
+//	首擲(floor)= 5、重擲(round)= 6
+//
+// 這組值兩者不同,分得出 RerollAttribute 是不是真的換了取整方式。
+func TestRerollAttributeRoundsNotFloors(t *testing.T) {
+	seq := []float64{0.3, 0.3}
+	if got := RollAttribute(&fixedFloat{seq: seq}); got != 5 {
+		t.Errorf("首擲 INT(1.8+1.8+2)應為 5(截尾),得 %d", got)
+	}
+	if got := RerollAttribute(&fixedFloat{seq: seq}); got != 6 {
+		t.Errorf("重擲 round(1.8+1.8+2)應為 6(四捨五入),得 %d", got)
+	}
+}
+
+// ⭐ **只有重擲擲得出上界 14**;首擲的上界是 13(docs/re/185 §2 表列 #1)。
+//
+// 逼近上限:兩次都取 0.999999 → x = 5.999994×2 + 2 = 13.999988。
+// 截尾停在 13,四捨五入進到 14 —— 這條測試釘住「重擲多一格」這件事本身,
+// 不是釘住某個中間值。
+func TestRerollAttributeReachesFourteen(t *testing.T) {
+	seq := []float64{0.999999, 0.999999}
+	if got := RollAttribute(&fixedFloat{seq: seq}); got != 13 {
+		t.Errorf("首擲逼近上界應為 13,得 %d —— 首擲不該擲得出 14", got)
+	}
+	if got := RerollAttribute(&fixedFloat{seq: seq}); got != 14 {
+		t.Errorf("重擲逼近上界應為 14,得 %d", got)
+	}
+}
+
+// Reroll() 呼叫的必須是 RerollAttribute(四捨五入),不是 RollAttribute。
+// 用同一組 0.3/0.3 值:選 RollAttribute 會得到 5,選對了是 6。
+func TestRerollUsesRoundingNotFloor(t *testing.T) {
+	r := &fixedFloat{seq: []float64{0.3, 0.3}}
+	v := Rolled{Speed: 1, Str: 2, Int: 3, End: 4, Skill: 5}
+	got := Reroll(v, 3, r)
+	if got.Int != 6 {
+		t.Errorf("重擲第 3 項應為 6(四捨五入),得 %d —— 若得 5 表示"+
+			"Reroll 還在呼叫 RollAttribute(截尾)", got.Int)
+	}
+}
+
 // R)eorder:順序不只是顯示 —— 戰場佈陣直接用槽序算位置(docs/re/160)。
 //
 // ⚠ 要同時動 GROUPS 的成員槽與 members 切片。只動一邊的話存檔與畫面對不上,

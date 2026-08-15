@@ -60,6 +60,9 @@ const (
 	Turned Result = iota
 	Moved
 	Blocked
+	// Left 是走出迷宮邊界 —— 原版在這一刻印 `Leaving maze ..` 並切回世界地圖
+	// (docs/re/147:實跑從入口那一格往外走一步就離開)。
+	Left
 )
 
 // Step 處理一次方向輸入。**朝向不同時只轉身,不位移** ——
@@ -71,6 +74,13 @@ func (s *State) Step(dir Facing, m *original.Maze) Result {
 	}
 	dM, dm := dir.delta()
 	nM, nm := s.Major+dM, s.Minor+dm
+	// 走出邊界 = 離開迷宮(原版的 `Leaving maze ..`,docs/re/147)。
+	//
+	// ⚠ 這條**放在可通行性之前** —— 邊界外的格子讀出來是不可通行,
+	// 若先判可通行就會變成「撞牆」,而玩家會被關在迷宮裡出不去。
+	if !m.InBounds(nM, nm) {
+		return Left
+	}
 	if !original.MazePassable(m.At(nM, nm)) {
 		return Blocked
 	}

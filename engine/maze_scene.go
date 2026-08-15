@@ -68,7 +68,15 @@ func (g *Game) stepMaze(dir maze.Facing) {
 	if g.level == nil {
 		return
 	}
-	if g.mazeState.Step(dir, g.level.grid) != maze.Moved {
+	switch g.mazeState.Step(dir, g.level.grid) {
+	case maze.Left:
+		// 走出邊界 → 回世界地圖。原版在這一刻印 `Leaving maze ..`
+		// (docs/re/147:實跑從入口那一格往外走一步就出去了)。
+		g.level = nil
+		g.overlay = "離開迷宮……"
+		return
+	case maze.Moved:
+	default:
 		return
 	}
 	g.fireTrigger(maze.Scan(g.level.events, g.mazeState, g.level.text))

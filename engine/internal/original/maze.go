@@ -28,6 +28,15 @@ type Maze struct {
 	Cells  []int
 }
 
+// InBounds 回傳座標在不在這一層裡面。
+//
+// ⚠ **界外不是「不可通行」而是「迷宮外面」**(docs/re/147):
+// 從入口那一格往外走一步,原版就印 `Leaving maze ..` 切回世界地圖。
+// `At` 對界外回 0(可通行),所以光看 `At` 分不出「空地」與「外面」。
+func (m *Maze) InBounds(major, minor int) bool {
+	return major >= 0 && major < m.Majors && minor >= 0 && minor < MazeRows
+}
+
 // At 回傳 (major, minor) 的格值。界外回 0(= 可通行但不繪製)。
 func (m *Maze) At(major, minor int) int {
 	if major < 0 || major >= m.Majors || minor < 0 || minor >= MazeRows {

@@ -92,3 +92,27 @@ func TestVisibilityIsChebyshev(t *testing.T) {
 		t.Error("能見度 0 應視為未設定,全部可見")
 	}
 }
+
+// 走出邊界 = 離開迷宮(docs/re/147),不是撞牆。
+//
+// ⚠ 這條的順序很重要:界外的格值讀出來是 0(可通行),
+// 而**如果先判可通行再判邊界**,玩家會被關在迷宮裡出不去 ——
+// 而畫面上只會看到「走不動」,像是牆。
+func TestSteppingOutOfBoundsLeavesTheMaze(t *testing.T) {
+	m := &original.Maze{Majors: 3, Cells: make([]int, 3*original.MazeRows)}
+	tried := 0
+	for _, dir := range []Facing{North, East, South, West} {
+		dM, dm := dir.delta()
+		if dM >= 0 && dm >= 0 {
+			continue // 這個方向從 (0,0) 走不出邊界
+		}
+		tried++
+		s := &State{Major: 0, Minor: 0, Facing: dir}
+		if got := s.Step(dir, m); got != Left {
+			t.Errorf("朝向 %v 從 (0,0) 往外走應為 Left,得 %v", dir, got)
+		}
+	}
+	if tried == 0 {
+		t.Fatal("沒有測到任何方向 —— delta() 的正負號變了,這條測試失效了")
+	}
+}

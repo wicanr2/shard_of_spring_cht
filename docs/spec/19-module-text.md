@@ -1,0 +1,117 @@
+# 模組內文本的中文化 — **READY**
+
+對應 [`14-remake-worklist.md`](14-remake-worklist.md) 的 **F1**。
+接續 [`10-localization.md`](10-localization.md)(已上線的 439 段)。
+
+## 1. 這一項到底在做什麼
+
+⚠ **不是「把畫面變中文」** —— 引擎的畫面**早就是中文**了
+(`tools/check_ui_language.py` 回 0 條)。那些中文是實作時**自己寫的**,
+不是原版的措辭。
+
+```
+現在   引擎:「按編號選人」          原版:'Character # to hunt ? (ESC exits)'
+之後   引擎:「要哪位隊員去打獵?(ESC 離開)」
+```
+
+**F1 是讓畫面說原版說的話。** 這與專案定位一致
+([`CLAUDE.md`](../../CLAUDE.md) §1:文化資產保存,不是「能跑就好」)。
+
+### 1.1 副產品比主產品更有價值:**覆蓋率稽核**
+
+把原版每一句玩家看得到的話列出來,逐句問「remake 有沒有對應的東西」——
+**沒有對應的就是缺的功能**。初步掃就看到這些:
+
+| 原版的話 | 引擎現況 |
+|---|---|
+| `Do you wish to use the potion on Y)ourself or G)ive it to another character?` | ⚠ 用道具沒有問「給自己還是給別人」|
+| `That is a Combat Item!` | ⚠ 沒有這道閘門 |
+| `You need more spell points than that!` | 待查 |
+| `The Guild decides you need N experience before gaining a level.` | 待查措辭 |
+| `Your party is full of items, please discard some from Camp.` | ⚠ 待查 |
+| `Which party member do you wish to heal? (0 exits)` | 治療池 —— 待查 |
+
+⚠ 這正是 `H)unt` / `I)dentify` 按不到那一類的洞:**規則層做完了、接線斷了,
+而畫面上看不出來**。原版的字串是現成的檢查表。
+
+## 2. 範圍:801 段裡真正要翻的遠少於此
+
+`tools/dgroup_strings.py` 掃 11 支模組得 **801 段**(`USERLIB` 另計,
+它是 `bm` 模組,見 [`re/65`](../re/65-userlib-export-table.md))。分佈:
+
+| 類 | 段 | 處理 |
+|---|---:|---|
+| ≤ 2 字元(選單字母、分隔符)| 207 | ⛔ **不翻** |
+| 純數字 / 無字母 | 7 | ⛔ **不翻** |
+| 短語 3–19 字元 | 463 | **要篩** —— 含檔名(`CMBT`/`eff.bin`)、`PLAY` 巨集、欄位標籤 |
+| 長句 ≥ 20 字元 | 124 | 見下 |
+
+124 句長句裡 **`MENU` 佔 47 句,幾乎全是換磁片與安裝** ——
+而 [`15`](15-game-shell.md) §1.1 已經裁定 `R)estore Mazes` / `I)nstall Game` **不做**。
+
+**真正玩家看得到的長句約 66 句**:`CAMP` 25、`TOWN` 22、`CHARUTIL` 9、
+`MAZEMOVE` 5、`CMBT` 4、`WRLDMOVE` 1。
+
+> **判準**:承諾翻譯之前先看分佈。「1,012 段」聽起來像一季的工作,
+> 拆完之後主體是 **66 句 + 一批篩過的短語**。
+> ⛔ 不要拿總數當工作量,那會讓人先放棄。
+
+## 3. 分類(每一段都要有一個)
+
+| 標記 | 意思 |
+|---|---|
+| `ui` | 玩家看得到,**要翻** |
+| `na-disk` | 換磁片 / 安裝 / 硬碟設定 —— remake 沒有這些 |
+| `na-printer` | 驅動印表機([`11`](11-town-camp-roster.md):改成畫面顯示)|
+| `na-debug` | `MTEST` 與開發期訊息 |
+| `data` | 檔名、模組名、`PLAY` 巨集、格式字串 —— **不是給人讀的** |
+
+⚠ **`data` 要小心**:`MB T108 O3 L8 E F#GD` 看起來像亂碼,那是**音樂**
+([`13`](13-sound.md) 的 `PLAY` 巨集)。⛔ 翻它會把樂譜毀掉。
+
+## 4. ⚠ 一個原版自己打架的地方
+
+| 來源 | 說法 |
+|---|---|
+| `TITLES.DAT` 第 89 列 | `"name (10 char)"` |
+| `CHARUTIL` 字串 | `'Please enter the new name (9 char max):'` |
+
+引擎現在用 **10**([`re/178`](../re/178-settings-from-three-sources.md) §4)。
+⚠ **兩份都是原版資料,不能靠「哪個比較可信」裁決** ——
+要去讀 `CHARUTIL` 實際擋在幾個字元,或在原版裡打 10 個字看它收不收。
+**在裁決之前不要改引擎**,只把矛盾記在這裡。
+
+## 5. 產出
+
+```
+translations/source/module-<模組>.tsv      原文清冊(DGROUP 位址 + 原文 + 分類)
+translations/module-text/<模組>.tsv        譯文(只有 ui 那一批)
+docs/spec/19-coverage.md                   覆蓋率稽核:哪幾句原版的話,引擎沒有對應
+```
+
+TSV 欄位沿用 [`translations/README.md`](../../translations/README.md) 的既有形狀
+(`row / field / original / orig_bytes / translation / trans_bytes / fits / note`)。
+
+## 6. 翻譯規則
+
+- 譯名**一律照** [`glossary.md`](../../translations/glossary.md)。⛔ 不要自己造新譯名;
+  表上沒有的先加進 glossary 再用
+- **保留原版的語氣**:`Aack!` 這種驚嘆、`Mumble, mumble` 這種戲謔要譯出來,
+  ⛔ 不要抹平成公文
+- 按鍵提示裡的字母**保留原文字母**:`(ESC exits)` → 「(ESC 離開)」,
+  `Y)ourself` → 「Y) 自己」—— **玩家要按的是那個字母**
+- 欄寬照 [`04`](04-display-layout.md) §5 的預算;不折行的固定欄要標 `fits`
+
+## 7. 驗收
+
+| # | 條件 |
+|---|---|
+| 1 | 801 段**每一段都有分類**,沒有空白 |
+| 2 | `data` 那一類逐條看過 —— `PLAY` 巨集**沒有被當成句子翻掉** |
+| 3 | `ui` 那一批全部有譯文,且譯名與 glossary **零衝突**(有檢查) |
+| 4 | 覆蓋率報告列出**引擎沒有對應的原版訊息**,一句都不漏報 |
+| 5 | 引擎的措辭換成譯文之後,`check_ui_language.py` 仍然 0 條 |
+| 6 | 破格檢查:不折行的欄位沒有超出 [`04`](04-display-layout.md) §5 的預算 |
+
+⚠ 第 4 條是這一份最有價值的產出。⛔ **不要在稽核時順手把缺的功能補掉** ——
+先列出來,補不補是另一個決定。

@@ -36,6 +36,7 @@
 | [`16-camp-actions.md`](16-camp-actions.md) | 營地的 `C)ast`/`U)se`/`P)rint` 與**施法的投入點數** —— 規則全已解,只差接線 |
 | [`17-scripted-fights.md`](17-scripted-fights.md) | **腳本戰鬥**:事件指定的怪物清單(`ds:372C + 2i`,哨兵 99)。533 = 2 × Great Dragon + Siriadne |
 | [`18-save-format.md`](18-save-format.md) | **自己的存檔格式**(JSON,一檔 = 25 角色 + 5 隊伍 + 進度)。⚠ 順帶修掉「一次性事件會復活」|
+| [`19-module-text.md`](19-module-text.md) | **模組內文本的中文化**(F1)。⚠ 主產品是「讓畫面說原版說的話」,**副產品是覆蓋率稽核** |
 | [`12-combat-board.md`](12-combat-board.md) | **戰場**(格陣列 31 寬、畫面 15×15 視窗、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 高度與怪物擲骰範圍未解、AI 是佔位 |
 
 ## ⚠ 實作前必讀的六條

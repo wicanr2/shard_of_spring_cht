@@ -200,3 +200,29 @@ func TestHealingPool(t *testing.T) {
 		t.Errorf("滿血應回 0,得 %d", got)
 	}
 }
+
+// 事件作廢:只在打完仗之後,而且同一個目標的所有列一起消失(docs/re/165 §3)。
+func TestDisableTargetBlanksEveryRow(t *testing.T) {
+	evs := []original.Event{
+		{Major: 57, Minor: 14, Dir: 1, Target: 204},
+		{Major: 57, Minor: 14, Dir: 2, Target: 204}, // 同一格的另一個入口方向
+		{Major: 3, Minor: 4, Dir: 0, Target: 101},   // 房間敘述,不該被動到
+	}
+	if n := DisableTarget(evs, 204); n != 2 {
+		t.Errorf("作廢了 %d 列,應為 2", n)
+	}
+	for i := 0; i < 2; i++ {
+		e := evs[i]
+		if e.Major != DisabledCoord || e.Minor != DisabledCoord || e.Dir != DisabledCoord {
+			t.Errorf("第 %d 列沒作廢:%+v", i, e)
+		}
+	}
+	if evs[2].Major != 3 {
+		t.Error("目標不同的列不該被動到")
+	}
+	// 作廢之後掃不到
+	text := map[int]string{204: "巨人"}
+	if got := Scan(evs, State{Major: 57, Minor: 14, Facing: North}, text).Kind; got != KindNone {
+		t.Errorf("作廢後仍掃得到:%v", got)
+	}
+}

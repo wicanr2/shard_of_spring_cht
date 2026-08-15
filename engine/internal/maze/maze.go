@@ -159,6 +159,30 @@ func Scan(evs []original.Event, s State, text map[int]string) Trigger {
 	return Trigger{}
 }
 
+// DisabledCoord 是作廢事件時填進座標欄的值。原版寫 **99**
+// (docs/re/161 §2),而迷宮的 Major 值域只到 80 —— 落在值域外就再也掃不到。
+const DisabledCoord = 99
+
+// DisableTarget 把所有目標等於 target 的事件列作廢。
+//
+// **只在打完一場由事件引發的戰鬥、回到迷宮時呼叫**
+// (docs/re/165 §3:原版的閘門是「剛從 `CMBT` 回來」)。
+//
+// ⚠ 房間敘述不引發戰鬥,所以**不會**被作廢 —— 可以重複看。
+// ⚠ 迴圈不提早跳出:同一個目標記在四個入口方向上時,四列一起消失。
+// ⚠ 作廢**是否跨存檔保留**未解(docs/re/161 §7),本引擎只留在記憶體。
+func DisableTarget(evs []original.Event, target int) int {
+	n := 0
+	for i := range evs {
+		if evs[i].Target != target {
+			continue
+		}
+		evs[i].Major, evs[i].Minor, evs[i].Dir = DisabledCoord, DisabledCoord, DisabledCoord
+		n++
+	}
+	return n
+}
+
 // Visible 回傳這一格在目前的能見度下畫不畫。
 // 切比雪夫距離 > 半徑 → 不畫(docs/spec/08 §3)。
 func Visible(s State, major, minor int) bool {

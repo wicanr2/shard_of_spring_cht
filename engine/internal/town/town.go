@@ -23,20 +23,26 @@ func Price(basePrice int, mult float64) int {
 	return int(math.Floor(float64(basePrice) * mult))
 }
 
-// PackSlots 是背包格數(CHARS.DAT 位移 54 + 2i,i = 0…14)。
-const PackSlots = 15
+// PackSlots 是背包格數。**10 格**(docs/re/144 §3),不是 15。
+const PackSlots = original.PackSlots
 
 // EmptyPackSlot 回傳第一個空的背包格號;滿了回 -1。
 //
-// ⚠ 空格的表示是 **0**。裝備欄的「未裝備」哨兵是 99,兩者不同 ——
-// 混用會讓「卸下裝備」變成「背包第 99 格」。
+// ⚠ **空格的哨兵是 99**,與裝備欄的「未裝備」同一個值(docs/re/144 §3)。
+// 先前這裡找的是值 `0` 的格子 —— 而每一格都是 99,所以它永遠找不到空位,
+// **買東西一律回「背包已滿」**。那句話完全合理,所以那個 bug 不會被當成 bug。
 func EmptyPackSlot(c original.Character) int {
 	for i := 0; i < PackSlots; i++ {
-		if c.Pack[i] == 0 {
+		if c.Pack[i] == original.NotEquipped {
 			return i
 		}
 	}
 	return -1
+}
+
+// PackEmpty 回傳背包某一格是不是空的。
+func PackEmpty(c original.Character, slot int) bool {
+	return slot < 0 || slot >= PackSlots || c.Pack[slot] == original.NotEquipped
 }
 
 // BuyResult 說明一次購買的結果。

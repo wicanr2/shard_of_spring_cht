@@ -400,7 +400,7 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		return
 	}
 	c := &g.members[ts.campWho]
-	if c.Pack[slot] == 0 {
+	if town.PackEmpty(*c, slot) {
 		ts.msg = "那一格是空的"
 		return
 	}
@@ -428,7 +428,8 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		if c.Armor == slot {
 			c.Armor = original.NotEquipped
 		}
-		c.Pack[slot] = 0
+		// ⚠ 空格填 99 不是 0(docs/re/144 §3)—— 填 0 會讓那一格看起來裝著第 0 號道具
+		c.Pack[slot] = original.NotEquipped
 		ts.msg = fmt.Sprintf("%s 丟掉了 %s(拿不回來)", c.Name, it.Name)
 	}
 	if c.ID >= 1 && c.ID <= len(g.chars) {
@@ -513,7 +514,7 @@ func (g *Game) campLines(ts *townState) []string {
 	c := g.members[ts.campWho]
 	out := []string{fmt.Sprintf("%s 的背包（%s，按字母選格）", c.Name, title)}
 	for i, n := range c.Pack {
-		if n == 0 {
+		if n == original.NotEquipped {
 			continue
 		}
 		name := "（編號 " + fmt.Sprint(n) + "，查不到）"

@@ -151,15 +151,21 @@ func Create(chars []original.Character, race rules.Race, class rules.Class,
 		race, v.Speed, v.Str, v.Int, v.End, v.Skill)
 
 	c := original.Character{
-		Party: original.NoParty,
+		Party: original.NoParty, // '0' = 有角色但無隊伍(docs/re/144 §5)
 		Name:  name,
 		ID:    slot + 1,
 		Race:  byte(race), Class: byte(class),
 		Speed: spd, Str: str, Int: intel, End: end, ToHit: skill,
 		MaxHP: end, HP: end, // 初始生命 = 體質
 		Weapon: original.NotEquipped, Armor: original.NotEquipped,
-		Level:  1,
-		Skills: raceSkills(race, class),
+		Level:    1,
+		Skills:   raceSkills(race, class),
+		Flags2:   "0000000000",
+		SkillPts: intel, // 技能點數 = 智力,一點都還沒花(docs/re/144 §4)
+	}
+	// 背包十格全空。⚠ 哨兵是 99 不是 0 —— 填 0 會讓每一格都看起來裝著第 0 號道具。
+	for i := range c.Pack {
+		c.Pack[i] = original.NotEquipped
 	}
 	chars[slot] = c
 	return slot + 1, CreateOK

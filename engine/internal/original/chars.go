@@ -17,37 +17,49 @@ const (
 	// PartySlots 是每一隊的人數上限(手冊 + ds:34F8,docs/re/133 §2)。
 	// ⚠ 與 CharSlots 沒有關係 —— 25 = 5×5 是巧合,原版沒有「每隊剛好 5 人」。
 	PartySlots = 5
-	// NoParty 是位移 1 在「不屬於任何隊伍」時的值。
-	// ⚠ 它同時出現在空槽上,兩種語意在出貨資料上分不開(docs/re/133 §3)。
-	NoParty = '*'
-	// NotEquipped 是裝備格號的哨兵值(位移 34/36)。
+	// NoParty 是位移 1 在「有角色但不屬於任何隊伍」時的值。
+	// EmptySlot 是「這一槽從來沒有角色」。
+	//
+	// ⚠ 兩者**曾經被當成同一件事**(docs/re/133 §3):出貨資料裡只看得到 `'*'`,
+	// 所以分不開。讓原版自己造一個角色就分開了 —— 新角色的位移 1 是 `'0'`
+	// (docs/re/144 §5)。
+	NoParty   = '0'
+	EmptySlot = '*'
+	// NotEquipped 是裝備格號的哨兵值(位移 34/36),
+	// **同時也是背包空格的哨兵**(位移 54–72,docs/re/144 §3)。
 	NotEquipped = 99
+	// PackSlots 是背包格數。**10 格,不是 15**(docs/re/144 §3):
+	// 位移 74 起讀成 word 是 12336 = 0x3030 = 兩個 ASCII `'0'`,
+	// 那是另一串字串旗標,不是背包的後五格。手冊 p.39 也寫「只能帶 10 件」。
+	PackSlots = 10
 )
 
 // Character 是一筆角色記錄。欄位順序與 docs/formats/01 的表相同。
 type Character struct {
-	Party   byte   // 位移 1:所屬隊伍 '1'–'5';'*' = 無(docs/re/133)
-	Name    string // 位移 2–11
-	ID      int    // 位移 12,1–25
-	Race    byte   // 位移 14:H/T/D/E/G
-	Class   byte   // 位移 15:'1' = Hero、'2' = Wizard
-	Speed   int    // 位移 16
-	Str     int    // 位移 18
-	Int     int    // 位移 20
-	End     int    // 位移 22
-	ToHit   int    // 位移 24
-	MaxHP   int    // 位移 26
-	HP      int    // 位移 28
-	MaxSP   int    // 位移 30
-	SP      int    // 位移 32
-	Weapon  int    // 位移 34:背包格號,99 = 未裝備
-	Armor   int    // 位移 36:同上
-	Status  int    // 位移 38:= 法術系別編號(docs/formats/03)
-	Level   int    // 位移 40
-	Skills  string // 位移 42–51:十個 '0'/'1',**表由職業決定**
-	Pack    [15]int
-	StatMag int    // 位移 84:狀態效果強度
-	Raw     []byte // 原始 94 bytes —— 存檔往返要逐位元組保留未解欄位
+	Party    byte   // 位移 1:所屬隊伍 '1'–'5';'*' = 無(docs/re/133)
+	Name     string // 位移 2–11
+	ID       int    // 位移 12,1–25
+	Race     byte   // 位移 14:H/T/D/E/G
+	Class    byte   // 位移 15:'1' = Hero、'2' = Wizard
+	Speed    int    // 位移 16
+	Str      int    // 位移 18
+	Int      int    // 位移 20
+	End      int    // 位移 22
+	ToHit    int    // 位移 24
+	MaxHP    int    // 位移 26
+	HP       int    // 位移 28
+	MaxSP    int    // 位移 30
+	SP       int    // 位移 32
+	Weapon   int    // 位移 34:背包格號,99 = 未裝備
+	Armor    int    // 位移 36:同上
+	Status   int    // 位移 38:= 法術系別編號(docs/formats/03)
+	Level    int    // 位移 40
+	Skills   string // 位移 42–51:十個 '0'/'1',**表由職業決定**
+	Pack     [PackSlots]int
+	Flags2   string // 位移 74–83:第二串十個旗標,**語意未解**(docs/re/144 §6)
+	StatMag  int    // 位移 84:狀態效果強度
+	SkillPts int    // 位移 89:剩餘技能點數(docs/re/144 §4)
+	Raw      []byte // 原始 94 bytes —— 存檔往返要逐位元組保留未解欄位
 }
 
 // Occupied 回傳這一槽是否有角色。
@@ -84,7 +96,8 @@ func ParseChars(d []byte) ([]Character, error) {
 			MaxSP: u16(r, 30), SP: u16(r, 32),
 			Weapon: u16(r, 34), Armor: u16(r, 36),
 			Status: u16(r, 38), Level: u16(r, 40),
-			Skills: string(r[41:51]), StatMag: u16(r, 84),
+			Skills: string(r[41:51]), Flags2: string(r[73:83]),
+			StatMag: u16(r, 84), SkillPts: int(r[88]),
 			Raw: append([]byte(nil), r...),
 		}
 		// 背包:位移 54 + 2i(docs/formats/01)
@@ -180,5 +193,11 @@ func (c Character) Bytes() []byte {
 		put(54+2*k, v)
 	}
 	put(84, c.StatMag)
+	for i := 0; i < 10; i++ {
+		if i < len(c.Flags2) {
+			r[73+i] = c.Flags2[i]
+		}
+	}
+	r[88] = byte(c.SkillPts)
 	return r
 }

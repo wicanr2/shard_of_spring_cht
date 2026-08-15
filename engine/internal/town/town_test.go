@@ -36,10 +36,24 @@ func TestPriceMultipliesBeforeTruncating(t *testing.T) {
 	}
 }
 
+// emptyPack 回傳一個十格全空的背包。
+//
+// ⚠ **空格的哨兵是 99 不是 0**(docs/re/144 §3)。
+// 先前這些測試用零值 Character(背包全 0),於是「找空位」看起來正常 ——
+// 而真正的存檔裡每一格都是 99,買東西一律回「背包已滿」。
+// **測試用的假資料要長得像真資料**,否則它保護的是假設不是行為。
+func emptyPack() original.Character {
+	var c original.Character
+	for i := range c.Pack {
+		c.Pack[i] = original.NotEquipped
+	}
+	return c
+}
+
 // 驗收 2 + 3:買入扣金幣、進第一個空格;背包滿與金幣不足都要擋。
 func TestBuy(t *testing.T) {
 	gold := 100.0
-	c := original.Character{}
+	c := emptyPack()
 	c.Pack[0] = 7 // 第 0 格已有東西
 
 	if r := Buy(&gold, &c, 42, 30); r != BuyOK {
@@ -71,7 +85,7 @@ func TestBuy(t *testing.T) {
 // 金幣不會變負 —— 即使價格剛好等於餘額。
 func TestGoldNeverNegative(t *testing.T) {
 	gold := 30.0
-	c := original.Character{}
+	c := emptyPack()
 	Buy(&gold, &c, 1, 30)
 	if gold != 0 {
 		t.Errorf("金幣 %v,應為 0", gold)

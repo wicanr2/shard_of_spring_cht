@@ -65,8 +65,9 @@ func TestCharSlotsAndParty(t *testing.T) {
 			occupied++
 			continue
 		}
-		if c.Party != NoParty {
-			t.Errorf("第 %d 槽未佔用,位移 1 卻是 %q", i+1, c.Party)
+		// 空槽是 '*';'0' 是「有角色但沒隊伍」,兩者不同(docs/re/144 §5)。
+		if c.Party != EmptySlot {
+			t.Errorf("第 %d 槽未佔用,位移 1 應為 %q,得 %q", i+1, byte(EmptySlot), c.Party)
 		}
 		if _, ok := c.InParty(); ok {
 			t.Errorf("第 %d 槽未佔用,卻被判成有隊伍", i+1)
@@ -277,11 +278,55 @@ func TestCharRoundTrip(t *testing.T) {
 	}
 }
 
-// 驗收 11(docs/spec/11 §9):寫回時**不能動到未解的尾端位移 86–94**。
+// 驗收 11(docs/spec/11 §9):寫回時**不能動到仍未解的尾端**。
 //
-// 經驗值的落點未解(docs/re/140 §9),而 86–94 是僅存的候選區。
-// 這個測試擋的是「順手找個空位存經驗值」——
-// 那種改動不會報錯,原版照樣開得起來,只是某個欄位悄悄變了值。
+// ⚠ 範圍縮小過一次:位移 **89 已經解出來是剩餘技能點數**(docs/re/144 §4),
+// 所以它現在是會被寫的欄位。仍然不准碰的是 **86–88 與 90–94** ——
+// 經驗值如果在這份記錄裡,只剩那五個 byte(docs/re/144 §6)。
+// 背包是 10 格、空格哨兵 99(docs/re/144 §3)。
+// ⚠ 這條擋的是一個**沒有症狀**的 bug:先前用 0 當空格,
+// 於是「找第一個空位」永遠找不到,買東西一律回「背包已滿」——
+// 而那句話完全合理。
+func TestPackIsTenSlotsWithSentinel99(t *testing.T) {
+	chars, err := ParseChars(read(t, "CHARS.DAT"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if PackSlots != 10 {
+		t.Fatalf("背包應為 10 格,得 %d", PackSlots)
+	}
+	for _, c := range chars {
+		if !c.Occupied() {
+			continue
+		}
+		for i, v := range c.Pack {
+			if v != NotEquipped {
+				t.Errorf("%s 背包第 %d 格是 %d,出貨資料應全是 %d",
+					c.Name, i+1, v, NotEquipped)
+			}
+		}
+		// 位移 74–83 是字串旗標,不是背包的後五格
+		if c.Flags2 != "0000000000" {
+			t.Errorf("%s 的第二串旗標是 %q,出貨資料應為十個 0", c.Name, c.Flags2)
+		}
+	}
+}
+
+// 位移 89 = 剩餘技能點數(docs/re/144 §4)。Hard Axe 是唯一非 0 的。
+func TestSkillPointsAtOffset89(t *testing.T) {
+	chars, err := ParseChars(read(t, "CHARS.DAT"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]int{"Segrono": 0, "Hard Axe": 1, "Grod": 0,
+		"Fire Hawk": 0, "Richtatha": 0}
+	for _, c := range chars {
+		if w, ok := want[c.Name]; ok && c.SkillPts != w {
+			t.Errorf("%s 的剩餘技能點數 = %d,出貨資料是 %d", c.Name, c.SkillPts, w)
+		}
+	}
+}
+
 func TestBytesLeavesUnresolvedTailUntouched(t *testing.T) {
 	raw := make([]byte, CharRecLen)
 	for i := range raw {
@@ -292,9 +337,12 @@ func TestBytesLeavesUnresolvedTailUntouched(t *testing.T) {
 	tail := []byte{0x20, 0x20, 0x20, 0x01, 0x00, 0x00, 0x00, 0x40, 0x00}
 	copy(raw[85:], tail)
 
-	c := Character{Name: "測試", Raw: raw}
+	c := Character{Name: "測試", Raw: raw, SkillPts: int(tail[3])}
 	out := c.Bytes()
-	if got := out[85:94]; string(got) != string(tail) {
-		t.Errorf("位移 86–94 被改動了:%X → %X", tail, got)
+	if got := out[85:88]; string(got) != string(tail[:3]) {
+		t.Errorf("位移 86–88 被改動了:%X → %X", tail[:3], got)
+	}
+	if got := out[89:94]; string(got) != string(tail[4:]) {
+		t.Errorf("位移 90–94 被改動了:%X → %X", tail[4:], got)
 	}
 }

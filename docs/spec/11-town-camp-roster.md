@@ -76,7 +76,11 @@ RE 來源:[`re/126`](../re/126-shop-price-multiplier.md)(價格倍率)、
 
 ⚠ **欄 3 是基準價不是售價**([`formats/04`](../formats/04-spells-items-dat.md))。
 
-買:選字母 → 扣金幣 → 進背包第一個空格(`CHARS.DAT` 位移 54 + 2i,15 格)。
+買:選字母 → 扣金幣 → 進背包第一個空格(`CHARS.DAT` 位移 54–72,**十格**)。
+
+⚠ **背包空格的哨兵是 `99`,不是 0**([`re/144`](../re/144-created-record-exposes-layout.md) §3)。
+用 0 當空格會讓「找第一個空位」永遠找不到 → **買東西一律回「背包已滿」**,
+而那句話在畫面上完全合理。
 金幣不足時顯示 `'enough gold!'` 的中文對應。
 
 ⚠ **原版沒有賣出功能** —— 商店的指令列只有 `Item to buy, ESC to leave.`,

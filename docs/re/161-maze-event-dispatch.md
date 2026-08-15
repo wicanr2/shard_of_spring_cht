@@ -147,8 +147,13 @@ mov ax, ds:3532h / mov ds:8DD0h, ax / call <顯示>
 [`64`](64-userlib-call-mechanism.md)),而字串常數區裡就放著模組名
 `CMBT` / `DEAD` / `WRLDMOVE` / `CAMP`。
 
-⚠ **沒有讀到「填了哪幾隻怪物」,也沒有讀到祝福的實際效果。**
-第 4 項的信心來自文字,不是來自那幾條指派。
+**「填了哪幾隻怪物」後來解出來了**([`180`](180-scripted-fight-monster-list.md)):
+腳本把怪物編號寫進 `ds:372C + 2i`(哨兵 99),`CMBT` 讀到就跳過隨機挑怪 ——
+204 是 1 隻 `Hill Giant`,533 是 2 隻 `Great Dragon` + `Siriadne !`。
+
+⚠ **祝福的實際效果仍然沒有讀到**,而且 `0x131D0` 起那一長串
+`INT 3F:61` 是**結局文字的排版**,不是怪物設定
+([`180`](180-scripted-fight-monster-list.md) 那一輪先排除掉的)。
 
 ## 5. `ds:66C8` / `66CA` 是服務呼叫的引數槽
 

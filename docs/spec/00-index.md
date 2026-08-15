@@ -34,6 +34,7 @@
 | [`14-remake-worklist.md`](14-remake-worklist.md) | **Remake worklist —— 狀態的單一真相來源**。RE 階段結束後「規則實作完 → 遊戲做完」之間的差距,含順序與理由 |
 | [`15-game-shell.md`](15-game-shell.md) | **遊戲外殼**:標題、主選單、隊伍選擇、全滅與結局。⚠ 原版主選單**沒有「開新遊戲」** |
 | [`16-camp-actions.md`](16-camp-actions.md) | 營地的 `C)ast`/`U)se`/`P)rint` 與**施法的投入點數** —— 規則全已解,只差接線 |
+| [`17-scripted-fights.md`](17-scripted-fights.md) | **腳本戰鬥**:事件指定的怪物清單(`ds:372C + 2i`,哨兵 99)。533 = 2 × Great Dragon + Siriadne |
 | [`12-combat-board.md`](12-combat-board.md) | **戰場**(格陣列 31 寬、畫面 15×15 視窗、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 高度與怪物擲骰範圍未解、AI 是佔位 |
 
 ## ⚠ 實作前必讀的六條

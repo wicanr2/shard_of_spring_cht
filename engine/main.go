@@ -74,6 +74,7 @@ type Game struct {
 	// M8:城鎮與名冊(docs/spec/11)
 	chars  []original.Character
 	roster *rosterState
+	create *createState // 非 nil = 建立角色的畫面蓋在名冊上
 
 	shops    []original.Shop
 	itemList []original.Item
@@ -141,6 +142,18 @@ func (g *Game) Update() error {
 	dirs := map[ebiten.Key]int{
 		ebiten.KeyUp: 1, ebiten.KeyRight: 2, ebiten.KeyDown: 3, ebiten.KeyLeft: 4,
 		ebiten.KeyDigit1: 1, ebiten.KeyDigit2: 2, ebiten.KeyDigit3: 3, ebiten.KeyDigit4: 4,
+	}
+
+	// 建立角色中(蓋在名冊之上)
+	if g.create != nil {
+		g.createRunes(ebiten.AppendInputChars(nil))
+		for _, k := range inpututil.AppendJustPressedKeys(nil) {
+			g.createKey(k)
+			if g.create == nil {
+				break
+			}
+		}
+		return nil
 	}
 
 	// 名冊中
@@ -245,7 +258,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	inCombat := g.field != nil
 	inMaze := g.level != nil && !inCombat
 	inTown := g.town != nil && g.town.mode != townClosed && !inCombat && !inMaze
-	inRoster := g.roster != nil && g.roster.open
+	inRoster := (g.roster != nil && g.roster.open) || g.create != nil
 
 	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
 	const half = layout.ViewTiles / 2
@@ -298,6 +311,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawMaze(screen)
 	g.drawTown(screen)
 	g.drawRoster(screen)
+	g.drawCreate(screen)
 	g.drawCombat(screen)
 	g.drawCastMenu(screen)
 	g.drawOverlay(screen)

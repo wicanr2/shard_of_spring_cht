@@ -15,6 +15,13 @@ import (
 //
 // 對照 `CHARUTIL.EXE` 的 `' #) Name       Party'` —— 原版是兩欄並排 25 個槽,
 // 本專案放主視野(61 欄)一欄列完。
+//
+// 原版的指令(DOSBox 實跑,docs/re/143):
+//
+//	* Characters *  C)reate  R)emove  N)ew Name
+//	* Parties *     D)isband  J)oin  I)nformation  E)xit
+//
+// ⚠ 助憶鍵沿用原版 —— 先前刪除用 `X`,那是自己造的。
 
 type rosterState struct {
 	open   bool
@@ -46,6 +53,8 @@ func (g *Game) rosterKey(k ebiten.Key) {
 		if r.cursor < original.CharSlots-1 {
 			r.cursor++
 		}
+	case ebiten.KeyC: // C)reate
+		g.openCreate()
 	case ebiten.KeyJ: // J)OIN —— 沿用原版的助憶鍵
 		g.rosterJoin()
 	case ebiten.KeyD: // D)ISBAND / 移出隊伍

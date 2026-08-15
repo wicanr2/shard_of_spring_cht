@@ -9,11 +9,15 @@ import (
 // 角色名冊。docs/spec/11 §5。
 
 // NameMaxRunes 是角色名稱的長度上限。
-// 來自 `CHARUTIL.EXE` 的 `'Please enter the new name (9 char max)'`。
 //
-// ⚠ 記錄的名稱欄是 **10 bytes**(位移 2–11),但原版只讓玩家輸入 9 個 ——
-// 兩個數字不同,照抄小的那個。差的那一格用途未解。
-const NameMaxRunes = 9
+// ⚠ **原版自己不一致**(docs/re/143 §4):創造時提示
+// `Enter your character's name (10 char)`,改名時提示 `(9 char max)`。
+// 記錄的名稱欄是 **10 bytes**(位移 2–11)—— 所以 10 才是欄位真正的容量,
+// 改名那個 9 是原版少算一格。這裡取 10。
+//
+// ⚠ 先前這裡寫 9,並把差的那一格記成「用途未解」。**那不是未解,
+// 是兩個提示打架** —— 只讀到其中一個提示時,它看起來像個乾淨的事實。
+const NameMaxRunes = 10
 
 // JoinParty 把一位角色編進第 n 隊,同時維護**兩個地方**。
 //

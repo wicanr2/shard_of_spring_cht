@@ -78,3 +78,16 @@ var ScriptedFight = map[int][]int{
 | 6 | 全部不開視窗 |
 
 ⚠ 第 5 條是針對 §4 那個刻意差異的 —— 沒有它,清空邏輯壞掉不會有症狀。
+
+### 5.1 ⚠ 驗收 1 要**兩層**
+
+引擎端的測試用 fixture 把名字種在索引 10/53/71,所以它驗得到
+「引擎有照表走」,**驗不到「表本身對不對」**。後者要另一條測試,
+直接讀**真實的 `MONSTERS.DAT`** 比對名字
+(`internal/rules` 的 `TestScriptedFightIndicesMatchRealMonstersDat`;
+原版不進版控,找不到就 skip)。
+
+**負對照做過**:把 `53` 改成 `54`,那條測試回
+「索引 54 在 `MONSTERS.DAT` 是 `Titan`,應為 `Great Dragon`」。
+⚠ **`Titan` 是一隻真的怪** —— 差一格在遊戲裡看起來完全正常,
+只有比對真實資料檔才擋得住。

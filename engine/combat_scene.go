@@ -2,11 +2,13 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
+	"shardofspring/internal/maze"
 	"shardofspring/internal/music"
 	"shardofspring/internal/original"
 	"shardofspring/internal/rules"
@@ -47,6 +49,64 @@ func (g *Game) startCombat() bool {
 	g.actor = g.firstActor()
 	g.field.Log = append(g.field.Log,
 		fmt.Sprintf("遭遇 %s！", g.monsters[pick].Name))
+	return true
+}
+
+// startScriptedCombat 依 docs/spec/17-scripted-fights.md 用腳本清單建一場戰鬥,
+// **不經過** re/169 的區域隨機挑怪。target 是迷宮事件的目標編號
+// (maze.TargetPriest / maze.TargetFinalBoss)。
+//
+// 回 false 表示這個目標沒有腳本清單(docs/re/180 §6:其餘 13 處寫入點還沒
+// 盤到)—— 呼叫端(maze_scene.go 的 fireTrigger)要自己決定怎麼處理,
+// 這裡不代勞、也不退回隨機遭遇(隨機遭遇的觸發點是「你在哪裡」,
+// 不是「這個劇情事件查不到腳本清單」,兩者不能互相頂替)。
+//
+// ⚠ **每次都是全新查表 + 全新配置 *Field**,不維護任何跨戰鬥的清單狀態
+// (docs/spec/17 §4 最後一列)。原版的 `ds:372C` 陣列沒有找到重置點,
+// 理論上殘留舊值會讓下一場多出怪物,但那個 bug 在原版裡有沒有真的發生過
+// 沒有被驗證過。這裡的做法是:rules.ScriptedFight 是唯讀表,每次呼叫都
+// 重新查、重新用 combat.Build 配置一個全新的 *Field —— 上一場的怪物活在
+// 上一個 *Field 裡,這一場用的是全新的一個,兩者不共用任何陣列,天生就不會
+// 殘留。**這是刻意與原版不同的決定**,理由就是上面那句「沒有被驗證過」。
+func (g *Game) startScriptedCombat(target int) bool {
+	idxs, ok := rules.ScriptedFight[target]
+	if !ok {
+		return false
+	}
+	monsters := make([]original.Monster, 0, len(idxs))
+	names := make([]string, 0, len(idxs))
+	for _, i := range idxs {
+		if i < 0 || i >= len(g.monsters) {
+			// 表本身照 docs/re/180 §3 抄,理論上不會發生;
+			// 真的發生時明講,不要悄悄跳過湊出一場怪物數不對的戰鬥。
+			g.warnings = append(g.warnings, fmt.Sprintf(
+				"腳本戰鬥 %d 的怪物索引 %d 超出 MONSTERS.DAT 範圍(docs/re/180 §3)", target, i))
+			continue
+		}
+		monsters = append(monsters, g.monsters[i])
+		names = append(names, g.monsters[i].Name)
+	}
+	if len(monsters) == 0 {
+		return false
+	}
+	g.field = combat.Build(g.members, monsters, g.items, g.rand)
+	g.field.Place() // docs/spec/12 §5:近似值,原版擲座標找空格的兩個範圍未解(docs/re/164 §3)
+	g.field.ResetPoints(&g.points)
+	g.actor = g.firstActor()
+	if target == maze.TargetPriest {
+		// 固定字串,兼做「這場是不是祭司事件」的識別 —— 見
+		// rules.PriestEncounterMark 的說明(endTurn() 靠它決定要不要
+		// 顯示 rules.PriestBlessing)。
+		g.field.Log = append(g.field.Log, rules.PriestEncounterMark)
+	} else {
+		g.field.Log = append(g.field.Log,
+			fmt.Sprintf("遭遇 %s！", strings.Join(names, "、")))
+	}
+	if target == maze.TargetFinalBoss {
+		// docs/spec/15 §7:外殼已經接好 g.bossFight → 結局畫面的轉場,
+		// 這裡只設旗標,不碰 main.go。
+		g.bossFight = true
+	}
 	return true
 }
 
@@ -197,6 +257,14 @@ func (g *Game) endTurn() {
 			// 它慢一半、而 USERLIB 有死亡與結局兩個匯出槽。
 			// 全滅時放它是本引擎的選擇,不是讀到呼叫端。
 			g.play(music.Userlib)
+		}
+		// docs/spec/17 §3:打贏 204(祭司事件)之後顯示祭司的後續文字。
+		// ⚠ 祝福的效果未解(docs/re/161 §4 只讀到這句字串)——
+		// 只顯示文字,⛔ 不附加任何屬性加成。
+		// 用 f.Log[0] 判斷「這場是不是祭司事件」—— 理由見
+		// rules.PriestEncounterMark 的說明。
+		if o == combat.MonstersDead && len(f.Log) > 0 && f.Log[0] == rules.PriestEncounterMark {
+			f.Log = append(f.Log, rules.PriestBlessing)
 		}
 		g.actor = -1
 		return

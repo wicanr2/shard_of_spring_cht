@@ -331,12 +331,9 @@ func TestCombatPartyDeadGoesToWipeThenMainMenu(t *testing.T) {
 
 // ── 驗收 7:打倒目標 533 → 結局畫面 → 回主選單 ────────────────────────
 //
-// ⚠ **這條驗收目前只驗到「打贏之後的轉場」,驗不到「打得到」**。
-// 迷宮事件目標 533(maze.TargetFinalBoss)的怪物組成未解(docs/re/161 §4),
-// maze_prompt.go 的 fireTrigger 明講「不要在這裡自己安排一場戰鬥,
-// 那會是編的,不是原版的」——所以今天沒有任何路徑會真的把 g.bossFight
-// 設成 true。這裡直接設它,是在驗證「結局畫面本身的轉場邏輯」,
-// 不是宣稱這條路徑在遊戲裡打得到。見 main.go 裡 Game.bossFight 的說明。
+// 這一條只驗**轉場邏輯本身**,所以直接設 g.bossFight,不打一整場戰鬥。
+// 端對端(從迷宮事件觸發一路打到結局畫面)在
+// engine/scripted_fight_test.go 的 TestScriptedBossFightReachesEndingScreen。
 func TestCombatBossVictoryGoesToEndingThenMainMenu(t *testing.T) {
 	g := newShellTestGame(t)
 	if err := g.loadParty(1); err != nil {
@@ -349,7 +346,7 @@ func TestCombatBossVictoryGoesToEndingThenMainMenu(t *testing.T) {
 	if got := g.field.Outcome(); got != combat.MonstersDead {
 		t.Fatalf("前提不成立:Outcome()=%v,應為 MonstersDead", got)
 	}
-	g.bossFight = true // 模擬「以後接上劇情戰鬥觸發時」的情境,見上面的說明
+	g.bossFight = true // 由 startScriptedCombat 設定(docs/spec/17)
 
 	g.testKeys = []ebiten.Key{ebiten.KeyEscape}
 	mustUpdate(t, g)

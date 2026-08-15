@@ -102,11 +102,19 @@ func (g *Game) fireTrigger(t maze.Trigger) {
 		}
 	}
 	if t.Kind == maze.KindScript {
-		// 目標 204 / 533 —— 劇情段落。⚠ **內容未解**(docs/re/161 §4):
-		// 讀到的只有「有一段專屬程式」與 DT 文字,沒有讀到怪物組成。
-		// ⛔ 不要在這裡自己安排一場戰鬥 —— 那會是編的,不是原版的。
-		g.warnings = append(g.warnings,
-			fmt.Sprintf("劇情事件 %d 的內容未解(docs/re/161 §4)", t.Number))
+		// 目標 204 / 533 —— 腳本戰鬥(docs/spec/17-scripted-fights.md)。
+		// 怪物組成已經從 ds:372C 起的清單解出來(docs/re/180):204 是
+		// 1 隻 Hill Giant,533 是 2 隻 Great Dragon + 1 隻 Siriadne !。
+		// 上面已經把 DT 文字放進 g.overlay(原版先印文字再做事,
+		// docs/re/161 §3)——玩家關掉那個覆蓋層之後,g.field 已經是
+		// 這場戰鬥,直接進戰鬥畫面。
+		//
+		// 查不到腳本清單(docs/re/180 §6 其餘 13 處寫入點還沒盤到)
+		// 就明講,⛔ 不自己編一場戰鬥出來頂替。
+		if !g.startScriptedCombat(t.Number) {
+			g.warnings = append(g.warnings,
+				fmt.Sprintf("劇情事件 %d 沒有腳本怪物清單(docs/re/180 §6 尚未盤到)", t.Number))
+		}
 		return
 	}
 	g.openPrompt(t)
@@ -157,7 +165,13 @@ func min(a, b int) int {
 // drawMaze 畫 9×9 的迷宮視野。
 func (g *Game) drawMaze(dst *ebiten.Image) {
 	lv, p := g.level, g.panel
-	if lv == nil || p == nil {
+	// g.field != nil:一場腳本戰鬥正在迷宮裡進行(docs/spec/17)——
+	// main.go 的 Draw() 沒有幫忙互斥這兩層(它只在世界地圖那圈用
+	// inCombat/inMaze 互斥,drawMaze/drawCombat 各自的呼叫沒有比較),
+	// 這裡自己讓開,否則迷宮格線會跟戰場畫在同一塊視野裡疊在一起。
+	// 隨機遭遇目前不會在迷宮裡觸發(combat_scene.go startCombat 的
+	// 呼叫端只有世界地圖那一條路),所以這個分支只影響腳本戰鬥。
+	if lv == nil || p == nil || g.field != nil {
 		return
 	}
 	const half = layout.ViewTiles / 2

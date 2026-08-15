@@ -51,7 +51,7 @@ A 遊戲外殼   →  B 自己的存檔  →  C 場景架構  →  D 戰鬥 AI
 | [x] | A2 主選單 | `L)oad a Party` / `C)har Utilities` / `P)rogram Notes`(改成按鍵表)/ `Q)uit` —— 逐項對應原版([`15`](15-game-shell.md) §1.1)。角色管理已實作,只差入口 |
 | [x] | A3 隊伍選擇 | 列五個槽,未初始化的顯示 `(空)`。⚠ **新組隊伍的起始座標與時鐘未解** —— 先照抄出貨 PARTY #5 並標成具名假設([`15`](15-game-shell.md) §5.1)|
 | [x] | A4 全滅處置 | 現在只播一段曲子然後**帶著死掉的隊伍回世界地圖**。要改成全滅畫面 → 回主選單([`15`](15-game-shell.md) §6)|
-| [ ] | A5 結局 | 落地端做好了(`bossFight` → 結局畫面 + `music.Ending`,有測試)。**擋路的 RE 已解**([`re/180`](../re/180-scripted-fight-monster-list.md)):腳本清單 = `ds:372C + 2i`,哨兵 99;533 = 2 × `Great Dragon` + `Siriadne !`。**剩下的是接線** —— 見 [`17`](17-scripted-fights.md) |
+| [x] | A5 結局 | 落地端做好了(`bossFight` → 結局畫面 + `music.Ending`,有測試)。**擋路的 RE 已解**([`re/180`](../re/180-scripted-fight-monster-list.md)):腳本清單 = `ds:372C + 2i`,哨兵 99;533 = 2 × `Great Dragon` + `Siriadne !`。已接線([`17`](17-scripted-fights.md)),端對端測試從迷宮事件一路打到結局畫面 |
 | [x] | A6 遊戲內說明 | 按鍵表。原版靠紙本鍵盤模板,remake 沒有那張紙 |
 
 ⚠ **A3 的起始狀態要當成一個 RE 問題處理**,不是隨手填。判準:出貨磁片的

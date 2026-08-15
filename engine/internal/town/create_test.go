@@ -1,6 +1,7 @@
 package town
 
 import (
+	"shardofspring/internal/combat"
 	"testing"
 
 	"shardofspring/internal/original"
@@ -14,6 +15,19 @@ type fixedRoller struct {
 }
 
 func (r *fixedRoller) Roll(int) int {
+	v := r.seq[r.i%len(r.seq)]
+	r.i++
+	return v
+}
+
+// fixedFloat 依序回傳固定的 [0,1) 值 —— 屬性算式吃的是浮點不是骰子
+// (docs/re/156)。
+type fixedFloat struct {
+	seq []float64
+	i   int
+}
+
+func (r *fixedFloat) Float01() float64 {
 	v := r.seq[r.i%len(r.seq)]
 	r.i++
 	return v
@@ -75,16 +89,60 @@ func TestCreateLeavesEquipmentUnset(t *testing.T) {
 	}
 }
 
-// 骰出來的值一定落在觀察到的範圍內(docs/re/143 §5:4–12)。
-// 這條把「骰法的假設」與「觀察到的支撐集」綁在一起 ——
-// 換一組骰子時如果跑出範圍外的值,這裡會擋下來。
-func TestRollStaysInObservedRange(t *testing.T) {
-	for _, face := range []int{1, AttrFaces} {
-		r := &fixedRoller{seq: []int{face}}
-		v := RollAttribute(r)
-		if v < 4 || v > 12 {
-			t.Errorf("擲出 %d,超出實跑觀察到的 4–12", v)
+// 屬性算式:INT(RND × A + RND × A + B),兩次亂數同範圍、只取整一次
+// (docs/re/156 §1)。
+func TestAttributeRollShape(t *testing.T) {
+	for _, c := range []struct {
+		a, b float64
+		want int
+	}{
+		{0, 0, AttrOffsetB},                          // 兩次都擲到 0 → 下界就是 B
+		{0.999, 0.999, int(2*AttrRangeA) + AttrOffsetB - 1}, // 逼近上界
+		{0.5, 0.5, int(AttrRangeA) + AttrOffsetB},    // 兩次半 → A + B
+		{0.3, 0.3, int(0.6*AttrRangeA) + AttrOffsetB},
+	} {
+		r := &fixedFloat{seq: []float64{c.a, c.b}}
+		if got := RollAttribute(r); got != c.want {
+			t.Errorf("RND=%.3f,%.3f → %d,應為 %d", c.a, c.b, got, c.want)
 		}
+	}
+}
+
+// ⚠ 取整只做**一次**,在總和之後。
+//
+// 這條測的是 `INT(x+y+B)` 與 `INT(x)+INT(y)+B` 的差別 ——
+// 兩者的支撐集幾乎一樣,只有小數部分會相加進位的那些點分岔。
+func TestAttributeRollFloorsOnce(t *testing.T) {
+	// 0.6×5 = 3.0、0.19×5 = 0.95 → 和 3.95 + 4 = 7.95 → 7
+	// 若各自取整:3 + 0 + 4 = 7 —— 相同,換一組會分開的
+	// 0.5×5 = 2.5、0.7×5 = 3.5 → 和 6.0 + 4 = 10
+	// 各自取整:2 + 3 + 4 = 9   ← 分岔
+	r := &fixedFloat{seq: []float64{0.5, 0.7}}
+	if got := RollAttribute(r); got != 10 {
+		t.Errorf("INT(2.5 + 3.5 + 4) 應為 10,得 %d "+
+			"—— 得 9 表示各自取整了(docs/re/156 §1)", got)
+	}
+}
+
+// 骰出來的值落在實測觀察到的範圍內(docs/re/143 §5:4–12,
+// 而 A=5 的支撐集是 4–13)。
+func TestRollStaysInPlausibleRange(t *testing.T) {
+	rnd := combat.NewRand(20260815)
+	lo, hi := 99, -1
+	for i := 0; i < 2000; i++ {
+		v := RollAttribute(rnd)
+		if v < lo {
+			lo = v
+		}
+		if v > hi {
+			hi = v
+		}
+	}
+	if lo != AttrOffsetB {
+		t.Errorf("下界 %d,應為 B = %d", lo, AttrOffsetB)
+	}
+	if want := int(2*AttrRangeA) + AttrOffsetB - 1; hi != want {
+		t.Errorf("上界 %d,應為 ⌈2A+B⌉−1 = %d", hi, want)
 	}
 }
 
@@ -110,10 +168,10 @@ func TestCreateFillsFirstEmptySlot(t *testing.T) {
 }
 
 func TestRerollOnlyTouchesTheChosenAttribute(t *testing.T) {
-	// ⚠ 期望值由 AttrDice/AttrFaces 算出,**不寫死** ——
-	// 骰法是未解的假設(docs/re/143 §5),寫死會讓改假設時測試假性失敗。
-	r := &fixedRoller{seq: []int{AttrFaces}}
-	want := AttrDice * AttrFaces
+	// ⚠ 期望值由 A/B 算出,**不寫死** —— 兩個常數仍是假設(docs/re/156),
+	// 寫死會讓改假設時測試假性失敗。
+	r := &fixedFloat{seq: []float64{0.5}}
+	want := int(AttrRangeA) + AttrOffsetB
 	v := Rolled{Speed: 1, Str: 2, Int: 3, End: 4, Skill: 5}
 	got := Reroll(v, 3, r)
 	if got.Int != want {
@@ -125,7 +183,7 @@ func TestRerollOnlyTouchesTheChosenAttribute(t *testing.T) {
 }
 
 func TestRerollIgnoresOutOfRange(t *testing.T) {
-	r := &fixedRoller{seq: []int{AttrFaces}}
+	r := &fixedFloat{seq: []float64{0.5}}
 	v := Rolled{Speed: 1, Str: 2, Int: 3, End: 4, Skill: 5}
 	if got := Reroll(v, 9, r); got != v {
 		t.Errorf("編號超出 1–5 應原樣回傳,得 %+v", got)

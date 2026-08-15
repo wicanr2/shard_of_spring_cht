@@ -36,6 +36,17 @@ func (r *SeededRand) Roll(faces int) int {
 	return int(r.next()>>33)%faces + 1
 }
 
+// Float01 回 [0,1) 的浮點數 —— 原版 `INT 3D:34`(`RND`)回的就是這個
+// (docs/re/152 §3:線性同餘 + 指數 0x88 正規化)。
+//
+// ⚠ **不是每個地方都能用 Roll() 代替。** 原版有些算式是
+// `INT(RND × A + RND × A + B)` —— 兩個浮點先相加再取整一次
+// (docs/re/156)。用 `Roll(A) − 1` 兩次相加會得到**不同的分佈**,
+// 而支撐集幾乎一樣,看不出來。
+func (r *SeededRand) Float01() float64 {
+	return float64(r.next()>>11) / (1 << 53)
+}
+
 // ScriptRand 是測試用的腳本化來源:照給定的序列回值,用完循環。
 //
 // 有了它,公式的每一項都可以獨立驗 —— 不必去猜某顆種子會擲出什麼。
@@ -44,8 +55,20 @@ type ScriptRand struct {
 	// Faces 記下每次被要求的面數 —— 傷害公式的「面數是哪一項」
 	// 本身就是規則的一部分(武器傷害 / 力量 / 命中能力 − 5,docs/re/153),
 	// 而只看回傳值分不出這三條分支。
-	Faces []int
-	i     int
+	Faces  []int
+	Floats []float64
+	i      int
+	fi     int
+}
+
+// Floats 是腳本化的 [0,1) 序列;空的話 Float01 回 0。
+func (r *ScriptRand) Float01() float64 {
+	if len(r.Floats) == 0 {
+		return 0
+	}
+	v := r.Floats[r.fi%len(r.Floats)]
+	r.fi++
+	return v
 }
 
 func (r *ScriptRand) Roll(faces int) int {

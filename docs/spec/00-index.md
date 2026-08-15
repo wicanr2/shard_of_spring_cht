@@ -29,7 +29,7 @@
 | [`08-maze-scene.md`](08-maze-scene.md) | **迷宮與事件**(Major/Minor 座標、視野、事件三類、跨關卡)|
 | [`09-magic-items.md`](09-magic-items.md) | **法術與道具**(施法閘門、威力、狀態強度、道具發動);⚠ 效果類別 3/13 未解 |
 | [`10-localization.md`](10-localization.md) | **中文化上線**(轉檔期併入、破格的定義與預算)|
-| [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 旅店 / 酒館 / 訓練所 / 治療所 / 營地 / 名冊 / 角色創造**;⚠ 屬性骰法未解(3d6 已排除)|
+| [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 旅店 / 酒館 / 訓練所 / 治療所 / 營地 / 名冊 / 角色創造**;⚠ 屬性算式的兩個常數未解|
 | [`13-sound.md`](13-sound.md) | **聲音**(`PLAY` 巨集的解析與方波合成);⚠ 十五段樂譜的**用途**是位置上的推測 |
 | [`12-combat-board.md`](12-combat-board.md) | **戰場**(15×15、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 初始佈陣與怪物 AI 是佔位 |
 
@@ -60,7 +60,7 @@
 | 戰鬥屬性 **14 / 18** 的語意 | [`spec/01`](01-combat.md) §9;屬性 14 決定要不要查空手道旗標([`re/153`](../re/153-damage-formula-closed.md) §5)|
 | 法術效果類別 **3** | [`spec/09`](09-magic-items.md) |
 | 先攻是否**每回合重排** | [`spec/01`](01-combat.md) §2 |
-| 角色創造的**屬性骰法** | [`spec/11`](11-town-camp-roster.md) §5;**3d6 已被 15 個實測樣本排除** |
+| 屬性算式的兩個常數 `A` / `B` | [`spec/11`](11-town-camp-roster.md) §5;**形狀已讀出**([`re/156`](../re/156-attribute-roll-shape.md)),只剩值 |
 | 戰場的**初始佈陣與怪物 AI** | [`spec/12`](12-combat-board.md) §5 |
 | 迷宮的**寶石謎題 / 治療池觸發點** | [`spec/08`](08-maze-scene.md) §5.5;規則已解,是哪一筆事件叫起它們未解 |
 | 魔法道具**發動判定的原始碼位置** | [`spec/09`](09-magic-items.md) §5 |

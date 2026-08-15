@@ -1,6 +1,8 @@
 package town
 
 import (
+	"math"
+
 	"shardofspring/internal/original"
 	"shardofspring/internal/rules"
 )
@@ -21,19 +23,28 @@ type Roller interface {
 	Roll(faces int) int // 回 1…faces
 }
 
-// 擲屬性的骰法。**未解** —— 沒有讀到 `CHARUTIL.EXE` 那一段程式碼。
+// 擲屬性的算式。**形狀是讀出來的**(docs/re/156):
 //
-// docs/re/143 §5:實跑收集到 15 個擲出值,落在 **4–12**、平均 8.4。
-// ⛔ **3d6 已被這批樣本排除**(3d6 有 26% 超過 12,15 個全部 ≤12 的機率約 1.2%)。
-// 這裡用 **4d3**(範圍 4–12、平均 8),理由只有「支撐集與觀察到的上下界吻合」——
-// 是**具名的假設**,不是規則。
+//	屬性 = INT(RND × A + RND × A + B)
+//
+// 兩次亂數用**同一個範圍**(原版第二次乘法沒有重載 di),
+// 而 `INT()` **只在總和之後做一次** —— 那讓它是個對稱三角分佈。
+//
+// ⚠ `INT(x + y + B)` 與 `INT(x) + INT(y) + B` 的支撐集幾乎一樣、分佈不同。
+// 先前用 `4d3`(四顆骰的和)支撐集也吻合,但峰度明顯更高 ——
+// **支撐集相同而分佈不同,玩起來只覺得「極端值比較少」**,沒有人會發現。
+//
+// A 與 B 的**值**仍未解(執行期變數)。15 個實測樣本(4…12、平均 8.4)
+// 把它們約束到 B = 4、A ≈ 4.9;取整數 A = 5 → 支撐集 4…13、平均 8.5。
+// 這兩個數字是**具名的假設**,形狀不是。
 const (
-	AttrDice  = 4
-	AttrFaces = 3
+	AttrRangeA = 5.0 // ds:6C2A
+	AttrOffsetB = 4  // ds:6C2E
 )
 
 // AttrRollAssumption 是給畫面顯示用的說明。
-const AttrRollAssumption = "⚠ 屬性的骰法未解(docs/re/143 §5)—— 本引擎用 4d3,是假設不是規則"
+const AttrRollAssumption = "⚠ 屬性算式的形狀已解(兩個亂數相加再取整一次)," +
+	"但兩個常數未解 —— 本引擎用 A=5、B=4(docs/re/156)"
 
 // SkillPoints 回傳創造時可用的技能點數。
 //
@@ -60,13 +71,15 @@ const DefaultSkillCost = 2
 
 var heroSkillCost = map[int]int{1: 2, 2: 2, 3: 1, 4: 2, 5: 2}
 
+// FloatRoller 是能給 [0,1) 浮點的亂數來源。原版的屬性算式要的是浮點,
+// 不是骰子(docs/re/156)。
+type FloatRoller interface{ Float01() float64 }
+
 // RollAttribute 擲一項屬性(**不含**種族修正)。
-func RollAttribute(r Roller) int {
-	sum := 0
-	for i := 0; i < AttrDice; i++ {
-		sum += r.Roll(AttrFaces)
-	}
-	return sum
+//
+//	INT(RND × A + RND × A + B)
+func RollAttribute(r FloatRoller) int {
+	return int(math.Floor(r.Float01()*AttrRangeA + r.Float01()*AttrRangeA + AttrOffsetB))
 }
 
 // Rolled 是一次擲出的五項屬性,**種族修正尚未加上去**。
@@ -76,7 +89,7 @@ type Rolled struct {
 }
 
 // RollAll 擲出五項。
-func RollAll(r Roller) Rolled {
+func RollAll(r FloatRoller) Rolled {
 	return Rolled{
 		Speed: RollAttribute(r), Str: RollAttribute(r), Int: RollAttribute(r),
 		End: RollAttribute(r), Skill: RollAttribute(r),
@@ -84,7 +97,7 @@ func RollAll(r Roller) Rolled {
 }
 
 // Reroll 重擲第 n 項(1–5,對應畫面上的編號)。超出範圍時原樣回傳。
-func Reroll(v Rolled, n int, r Roller) Rolled {
+func Reroll(v Rolled, n int, r FloatRoller) Rolled {
 	switch n {
 	case 1:
 		v.Speed = RollAttribute(r)

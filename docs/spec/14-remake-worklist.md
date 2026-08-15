@@ -60,6 +60,10 @@ PARTY #1–#4 是**未初始化**([`spec/06`](06-party-and-save.md) 驗收 4),
 
 ## 3. B. 自己的存檔格式
 
+> 規格:[`18-save-format.md`](18-save-format.md)。⚠ 順帶修掉一個**現行的缺口**:
+> 一次性事件只作廢在記憶體裡,走出迷宮再走回來就復活了 ——
+> 原版是寫回 `DE*EFF.BIN`([`re/181`](../re/181-deeff-mst-is-the-master.md)),而 `game/` 唯讀。
+
 | | 項目 | 說明 |
 |---|---|---|
 | [ ] | B1 定義格式 | JSON 或 gob;涵蓋 `GameState` 全部欄位(含 remake 新增的:已解謎題、氏族進度、旗標) |

@@ -110,11 +110,9 @@ type Game struct {
 	// bossFight:目前這場戰鬥是不是迷宮事件目標 533(maze.TargetFinalBoss,
 	// 最終首領 Siriadne)引發的劇情戰鬥。
 	//
-	// ⚠ **目前沒有任何呼叫端會把它設成 true** —— 那場戰鬥的怪物組成未解
-	// (docs/re/161 §4),maze_prompt.go 的 fireTrigger 明講「不要在這裡
-	// 自己安排一場戰鬥,那會是編的,不是原版的」。這個欄位只是結局畫面
-	// (docs/spec/15 §7)的介接點:一旦 RE 解出怪物組成,呼叫端在觸發
-	// 那場戰鬥時把它設成 true,勝負判定與轉場已經現成,不必再動這裡。
+	// 由 combat_scene.go 的 startScriptedCombat 設定(docs/spec/17)——
+	// 迷宮事件目標 533 的怪物組成已經解出來了(docs/re/180:2 隻 Great Dragon
+	// + Siriadne !)。打贏且這個旗標為真 → 結局畫面(docs/spec/15 §7)。
 	bossFight bool
 
 	// testKeys 是測試用的假輸入佇列(docs/spec/15 §9)。

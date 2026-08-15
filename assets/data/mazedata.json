@@ -1,0 +1,132 @@
+[
+ {
+  "WorldX": 101,
+  "WorldY": 7,
+  "StartMajor": 42,
+  "StartMinor": 49,
+  "Facing": 3,
+  "TextFile": 0,
+  "MazeFile": 1,
+  "TextCount": 1
+ },
+ {
+  "WorldX": 55,
+  "WorldY": 9,
+  "StartMajor": 2,
+  "StartMinor": 47,
+  "Facing": 3,
+  "TextFile": 1,
+  "MazeFile": 1,
+  "TextCount": 7
+ },
+ {
+  "WorldX": 23,
+  "WorldY": 18,
+  "StartMajor": 1,
+  "StartMinor": 2,
+  "Facing": 3,
+  "TextFile": 2,
+  "MazeFile": 2,
+  "TextCount": 7
+ },
+ {
+  "WorldX": 66,
+  "WorldY": 19,
+  "StartMajor": 25,
+  "StartMinor": 22,
+  "Facing": 1,
+  "TextFile": 3,
+  "MazeFile": 3,
+  "TextCount": 18
+ },
+ {
+  "WorldX": 114,
+  "WorldY": 41,
+  "StartMajor": 67,
+  "StartMinor": 47,
+  "Facing": 1,
+  "TextFile": 4,
+  "MazeFile": 1,
+  "TextCount": 1
+ },
+ {
+  "WorldX": 94,
+  "WorldY": 50,
+  "StartMajor": 2,
+  "StartMinor": 7,
+  "Facing": 3,
+  "TextFile": 5,
+  "MazeFile": 5,
+  "TextCount": 17
+ },
+ {
+  "WorldX": 86,
+  "WorldY": 35,
+  "StartMajor": 29,
+  "StartMinor": 39,
+  "Facing": 3,
+  "TextFile": 6,
+  "MazeFile": 1,
+  "TextCount": 5
+ },
+ {
+  "WorldX": 53,
+  "WorldY": 67,
+  "StartMajor": 13,
+  "StartMinor": 4,
+  "Facing": 3,
+  "TextFile": 7,
+  "MazeFile": 6,
+  "TextCount": 8
+ },
+ {
+  "WorldX": 44,
+  "WorldY": 85,
+  "StartMajor": 2,
+  "StartMinor": 40,
+  "Facing": 3,
+  "TextFile": 7,
+  "MazeFile": 6,
+  "TextCount": 8
+ },
+ {
+  "WorldX": 92,
+  "WorldY": 96,
+  "StartMajor": 2,
+  "StartMinor": 23,
+  "Facing": 3,
+  "TextFile": 7,
+  "MazeFile": 6,
+  "TextCount": 8
+ },
+ {
+  "WorldX": 68,
+  "WorldY": 97,
+  "StartMajor": 22,
+  "StartMinor": 33,
+  "Facing": 3,
+  "TextFile": 7,
+  "MazeFile": 6,
+  "TextCount": 8
+ },
+ {
+  "WorldX": 45,
+  "WorldY": 98,
+  "StartMajor": 25,
+  "StartMinor": 21,
+  "Facing": 1,
+  "TextFile": 7,
+  "MazeFile": 6,
+  "TextCount": 8
+ },
+ {
+  "WorldX": 0,
+  "WorldY": 0,
+  "StartMajor": 0,
+  "StartMinor": 0,
+  "Facing": 0,
+  "TextFile": 51,
+  "MazeFile": 51,
+  "TextCount": 14
+ }
+]

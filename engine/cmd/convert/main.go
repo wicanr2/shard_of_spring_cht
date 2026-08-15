@@ -348,7 +348,10 @@ func run(in, out, transDir string) error {
 	for _, l := range report {
 		fmt.Println(l)
 	}
-	fmt.Println("\n⚠ 這些是原版資料,不要進版控(CLAUDE.md §1)。")
+	// ⚠ 這些是原版資料的轉換產物。**本專案的 private repo 收錄它們**
+	// (CLAUDE.md §8,專案負責人裁定 2026-08-15)——但那是這個 repo 的
+	// 決定,不是通則。公開發行時玩家仍然要自備合法原版。
+	fmt.Println("\n⚠ 這些是原版資料的轉換產物 —— 公開發行不得附帶(CLAUDE.md §1)。")
 	return nil
 }
 

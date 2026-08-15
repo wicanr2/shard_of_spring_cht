@@ -1,0 +1,744 @@
+[
+ {
+  "Major": 42,
+  "Minor": 44,
+  "Dir": 4,
+  "Target": 48,
+  "DestMinor": 44
+ },
+ {
+  "Major": 48,
+  "Minor": 45,
+  "Dir": 2,
+  "Target": 42,
+  "DestMinor": 45
+ },
+ {
+  "Major": 50,
+  "Minor": 44,
+  "Dir": 3,
+  "Target": 43,
+  "DestMinor": 38
+ },
+ {
+  "Major": 42,
+  "Minor": 48,
+  "Dir": 4,
+  "Target": 1,
+  "DestMinor": 0
+ },
+ {
+  "Major": 43,
+  "Minor": 32,
+  "Dir": 4,
+  "Target": 55,
+  "DestMinor": 37
+ },
+ {
+  "Major": 55,
+  "Minor": 38,
+  "Dir": 2,
+  "Target": 43,
+  "DestMinor": 33
+ },
+ {
+  "Major": 55,
+  "Minor": 37,
+  "Dir": 4,
+  "Target": 2,
+  "DestMinor": 0
+ },
+ {
+  "Major": 57,
+  "Minor": 36,
+  "Dir": 3,
+  "Target": 4,
+  "DestMinor": 0
+ },
+ {
+  "Major": 52,
+  "Minor": 35,
+  "Dir": 1,
+  "Target": 3,
+  "DestMinor": 0
+ },
+ {
+  "Major": 42,
+  "Minor": 38,
+  "Dir": 1,
+  "Target": 49,
+  "DestMinor": 44
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ },
+ {
+  "Major": 0,
+  "Minor": 0,
+  "Dir": 0,
+  "Target": 0,
+  "DestMinor": 0
+ }
+]

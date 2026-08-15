@@ -1,0 +1,299 @@
+[
+ {
+  "index": 0,
+  "name": "火柱",
+  "school": 1,
+  "effect": 5,
+  "power": -3,
+  "unit_cost": 1,
+  "hit_msg": "灼燒造成"
+ },
+ {
+  "index": 1,
+  "name": "烈焰猛擊術",
+  "school": 1,
+  "effect": 2,
+  "power": 25,
+  "unit_cost": 16,
+  "hit_msg": "被烈焰擊倒，造成"
+ },
+ {
+  "index": 2,
+  "name": "狂焰暴風術",
+  "school": 1,
+  "effect": 1,
+  "power": 15,
+  "unit_cost": 10,
+  "hit_msg": "灼燒造成"
+ },
+ {
+  "index": 3,
+  "name": "劍術",
+  "school": 2,
+  "effect": 5,
+  "power": -5,
+  "unit_cost": 2,
+  "hit_msg": "劈砍造成"
+ },
+ {
+  "index": 4,
+  "name": "鐵鍊術",
+  "school": 2,
+  "effect": 11,
+  "power": 1,
+  "unit_cost": 10,
+  "hit_msg": "被鎖鏈束縛"
+ },
+ {
+  "index": 5,
+  "name": "死亡劍刃術",
+  "school": 2,
+  "effect": 2,
+  "power": 18,
+  "unit_cost": 15,
+  "hit_msg": "被砍成碎片"
+ },
+ {
+  "index": 6,
+  "name": "強壯術",
+  "school": 2,
+  "effect": 4,
+  "power": 1,
+  "unit_cost": 1,
+  "hit_msg": "力量增強"
+ },
+ {
+  "index": 7,
+  "name": "暴風雨術",
+  "school": 3,
+  "effect": 1,
+  "power": 6,
+  "unit_cost": 6,
+  "hit_msg": "遭風暴擊中，造成"
+ },
+ {
+  "index": 8,
+  "name": "空氣凝結術",
+  "school": 3,
+  "effect": 11,
+  "power": 1,
+  "unit_cost": 11,
+  "hit_msg": "被凝滯於空中"
+ },
+ {
+  "index": 9,
+  "name": "勝利之翼",
+  "school": 3,
+  "effect": 3,
+  "power": 1,
+  "unit_cost": 1,
+  "hit_msg": "獲得勇氣"
+ },
+ {
+  "index": 10,
+  "name": "魔翼術",
+  "school": 3,
+  "effect": 6,
+  "power": 3,
+  "unit_cost": 4,
+  "hit_msg": "疾飛而起"
+ },
+ {
+  "index": 11,
+  "name": "冰雹暴風術",
+  "school": 4,
+  "effect": 1,
+  "power": 8,
+  "unit_cost": 7,
+  "hit_msg": "冰雹擊中，造成"
+ },
+ {
+  "index": 12,
+  "name": "寒風術",
+  "school": 4,
+  "effect": 3,
+  "power": -1,
+  "unit_cost": 1,
+  "hit_msg": "受寒"
+ },
+ {
+  "index": 13,
+  "name": "遲緩術",
+  "school": 4,
+  "effect": 6,
+  "power": -3,
+  "unit_cost": 3,
+  "hit_msg": "行動遲緩"
+ },
+ {
+  "index": 14,
+  "name": "冰凍術",
+  "school": 4,
+  "effect": 11,
+  "power": 1,
+  "unit_cost": 9,
+  "hit_msg": "被冰封凍結"
+ },
+ {
+  "index": 15,
+  "name": "滅魂術",
+  "school": 5,
+  "effect": 2,
+  "power": 26,
+  "unit_cost": 20,
+  "hit_msg": "受盡折磨……"
+ },
+ {
+  "index": 16,
+  "name": "衰弱術",
+  "school": 5,
+  "effect": 4,
+  "power": -1,
+  "unit_cost": 1,
+  "hit_msg": "變得虛弱"
+ },
+ {
+  "index": 17,
+  "name": "愚蠢術",
+  "school": 5,
+  "effect": 3,
+  "power": -3,
+  "unit_cost": 2,
+  "hit_msg": "變得笨拙"
+ },
+ {
+  "index": 18,
+  "name": "溶解術",
+  "school": 1,
+  "effect": 10,
+  "power": 1,
+  "unit_cost": 11,
+  "hit_msg": "從冰封中融化解除"
+ },
+ {
+  "index": 19,
+  "name": "破鐐銬術",
+  "school": 2,
+  "effect": 10,
+  "power": 1,
+  "unit_cost": 11,
+  "hit_msg": "束縛已解除"
+ },
+ {
+  "index": 20,
+  "name": "自由術",
+  "school": 3,
+  "effect": 10,
+  "power": 1,
+  "unit_cost": 13,
+  "hit_msg": "獲得自由"
+ },
+ {
+  "index": 21,
+  "name": "風行術",
+  "school": 3,
+  "effect": 12,
+  "power": 1,
+  "unit_cost": 10,
+  "hit_msg": "全隊被瞬間移動"
+ },
+ {
+  "index": 22,
+  "name": "生命之氣",
+  "school": 3,
+  "effect": 5,
+  "power": 10,
+  "unit_cost": 5,
+  "hit_msg": "恢復"
+ },
+ {
+  "index": 23,
+  "name": "醫療術",
+  "school": 5,
+  "effect": 5,
+  "power": 3,
+  "unit_cost": 1,
+  "hit_msg": "恢復"
+ },
+ {
+  "index": 24,
+  "name": "復活術",
+  "school": 5,
+  "effect": 8,
+  "power": 25,
+  "unit_cost": 25,
+  "hit_msg": "復活了！"
+ },
+ {
+  "index": 25,
+  "name": "解毒術",
+  "school": 5,
+  "effect": 9,
+  "power": 60,
+  "unit_cost": 9,
+  "hit_msg": "解除中毒"
+ },
+ {
+  "index": 26,
+  "name": "移轉術",
+  "school": 5,
+  "effect": 13,
+  "power": 3,
+  "unit_cost": 3,
+  "hit_msg": "獲得力量"
+ },
+ {
+  "index": 27,
+  "name": "護甲術",
+  "school": 2,
+  "effect": 7,
+  "power": 1,
+  "unit_cost": 2,
+  "hit_msg": "被護甲包覆"
+ },
+ {
+  "index": 28,
+  "name": "聖靈庇護術",
+  "school": 5,
+  "effect": 7,
+  "power": 1,
+  "unit_cost": 3,
+  "hit_msg": "被祥和的靈光籠罩"
+ },
+ {
+  "index": 29,
+  "name": "冰盾術",
+  "school": 4,
+  "effect": 7,
+  "power": 1,
+  "unit_cost": 3,
+  "hit_msg": "受冰牆保護"
+ },
+ {
+  "index": 30,
+  "name": "火焰盾牌術",
+  "school": 1,
+  "effect": 7,
+  "power": 1,
+  "unit_cost": 4,
+  "hit_msg": "受烈焰保護"
+ },
+ {
+  "index": 31,
+  "name": "魔火焰術",
+  "school": 1,
+  "effect": 12,
+  "power": 3,
+  "unit_cost": 2,
+  "hit_msg": "魔法火焰在眼前躍動"
+ },
+ {
+  "index": 32,
+  "name": "水晶燈術",
+  "school": 4,
+  "effect": 12,
+  "power": 4,
+  "unit_cost": 2,
+  "hit_msg": "冰藍色光芒環繞著你"
+ }
+]

@@ -1,0 +1,612 @@
+[
+ {
+  "index": 0,
+  "town": "翠綠村(Green Hamlet)",
+  "name": "鐵刃劍舖(The Iron Blade)",
+  "kind": 0,
+  "first": 0,
+  "last": 3,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 1,
+  "town": "翠綠村(Green Hamlet)",
+  "name": "羅洛旅店(Rolo's Resthouse)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 2,
+  "town": "翠綠村(Green Hamlet)",
+  "name": "村莊醫館(Hamlet Hospital)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 3,
+  "town": "翠綠村(Green Hamlet)",
+  "name": "柯爾鐵匠鋪(Kor's Smithy)",
+  "kind": 0,
+  "first": 12,
+  "last": 14,
+  "extra": 0,
+  "price_mult": 1.100000023841858
+ },
+ {
+  "index": 4,
+  "town": "翠綠村(Green Hamlet)",
+  "name": "精選兵器(Winsome Weapons)",
+  "kind": 0,
+  "first": 0,
+  "last": 6,
+  "extra": 0,
+  "price_mult": 1.100000023841858
+ },
+ {
+  "index": 5,
+  "town": "翠綠村(Green Hamlet)",
+  "name": "紫鼠酒館(The Purple Rat)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 1,
+  "price_mult": 1
+ },
+ {
+  "index": 6,
+  "town": "翠綠村(Green Hamlet)",
+  "name": "雜貨店(General Goods)",
+  "kind": 0,
+  "first": 47,
+  "last": 48,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 7,
+  "town": "珍寶平原(Precious Plains)",
+  "name": "幸運劍舖(Lucky Blades)",
+  "kind": 0,
+  "first": 0,
+  "last": 2,
+  "extra": 0,
+  "price_mult": 0.8999999761581421
+ },
+ {
+  "index": 8,
+  "town": "珍寶平原(Precious Plains)",
+  "name": "乾草堆(The Haystack)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 0.8999999761581421
+ },
+ {
+  "index": 9,
+  "town": "珍寶平原(Precious Plains)",
+  "name": "穀倉(The Grainery)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 2,
+  "price_mult": 1
+ },
+ {
+  "index": 10,
+  "town": "珍寶平原(Precious Plains)",
+  "name": "火絨盒(The Tinder Box)",
+  "kind": 0,
+  "first": 47,
+  "last": 48,
+  "extra": 0,
+  "price_mult": 0.8999999761581421
+ },
+ {
+  "index": 11,
+  "town": "格里昂(Gleon)",
+  "name": "劍術大師(BladeMaster)",
+  "kind": -4,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 0
+ },
+ {
+  "index": 12,
+  "town": "格里昂(Gleon)",
+  "name": "寒光鋼刃(Flashing Steel)",
+  "kind": 0,
+  "first": 2,
+  "last": 7,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 13,
+  "town": "格里昂(Gleon)",
+  "name": "戰士酒館(Hero's Pub)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 3,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 14,
+  "town": "格里昂(Gleon)",
+  "name": "柯賓商店(Corbin's)",
+  "kind": 0,
+  "first": 13,
+  "last": 17,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 15,
+  "town": "格里昂(Gleon)",
+  "name": "秘銀之光(Mithril Light)",
+  "kind": 0,
+  "first": 0,
+  "last": 11,
+  "extra": 0,
+  "price_mult": 1.5
+ },
+ {
+  "index": 16,
+  "town": "阿卡尼亞(Arcania)",
+  "name": "藥劑坊(Potion Shoppe)",
+  "kind": 0,
+  "first": 21,
+  "last": 26,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 17,
+  "town": "阿卡尼亞(Arcania)",
+  "name": "佐爾醫館(Zor's Healing)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 18,
+  "town": "阿卡尼亞(Arcania)",
+  "name": "九霄雲外(Cloud Nine)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.100000023841858
+ },
+ {
+  "index": 19,
+  "town": "阿卡尼亞(Arcania)",
+  "name": "泡沫佳釀(Foaming Brew)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 4,
+  "price_mult": 1
+ },
+ {
+  "index": 20,
+  "town": "阿卡尼亞(Arcania)",
+  "name": "魔法坊(Magic Shoppe)",
+  "kind": 0,
+  "first": 30,
+  "last": 32,
+  "extra": 0,
+  "price_mult": 1.2999999523162842
+ },
+ {
+  "index": 21,
+  "town": "阿卡尼亞(Arcania)",
+  "name": "極品醫館(Best Healing)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.25
+ },
+ {
+  "index": 22,
+  "town": "林安鎮(Woodhaven)",
+  "name": "呆萌飛龍(Dopey Dragon)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 5,
+  "price_mult": 1
+ },
+ {
+  "index": 23,
+  "town": "林安鎮(Woodhaven)",
+  "name": "日月閣(Sun \u0026 Moon)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 24,
+  "town": "林安鎮(Woodhaven)",
+  "name": "拉神殿(Church of Ra)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 25,
+  "town": "林安鎮(Woodhaven)",
+  "name": "三環閣(Three Rings)",
+  "kind": 0,
+  "first": 27,
+  "last": 29,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 26,
+  "town": "林安鎮(Woodhaven)",
+  "name": "搖曳燭光(Flickering Light)",
+  "kind": 0,
+  "first": 47,
+  "last": 48,
+  "extra": 0,
+  "price_mult": 0.699999988079071
+ },
+ {
+  "index": 27,
+  "town": "特里諾(Terynor)",
+  "name": "神秘蒼穹(Mystic Sky)",
+  "kind": 0,
+  "first": 21,
+  "last": 36,
+  "extra": 0,
+  "price_mult": 1.7000000476837158
+ },
+ {
+  "index": 28,
+  "town": "特里諾(Terynor)",
+  "name": "魔法學院(College of Magic)",
+  "kind": -4,
+  "first": 0,
+  "last": 0,
+  "extra": 1,
+  "price_mult": 1
+ },
+ {
+  "index": 29,
+  "town": "特里諾(Terynor)",
+  "name": "戰神藥劑(Ares' Elixer)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 6,
+  "price_mult": 2
+ },
+ {
+  "index": 30,
+  "town": "特里諾(Terynor)",
+  "name": "附魔精鋼(Enchanted Steel)",
+  "kind": 0,
+  "first": 8,
+  "last": 11,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 31,
+  "town": "特里諾(Terynor)",
+  "name": "賽歐(Xeor)",
+  "kind": 0,
+  "first": 37,
+  "last": 39,
+  "extra": 0,
+  "price_mult": 1.5
+ },
+ {
+  "index": 32,
+  "town": "特里諾(Terynor)",
+  "name": "安眠客棧(Soft Slumber)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.2999999523162842
+ },
+ {
+  "index": 33,
+  "town": "特里諾(Terynor)",
+  "name": "洛文火把行(Loven's Torches)",
+  "kind": 0,
+  "first": 47,
+  "last": 48,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 34,
+  "town": "密夸希德(Myrquacid)",
+  "name": "秘法之盾(A Mystic Shield)",
+  "kind": 0,
+  "first": 12,
+  "last": 20,
+  "extra": 0,
+  "price_mult": 0.8999999761581421
+ },
+ {
+  "index": 35,
+  "town": "密夸希德(Myrquacid)",
+  "name": "卓洛醫館(Jorlor's Healers)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 0.800000011920929
+ },
+ {
+  "index": 36,
+  "town": "密夸希德(Myrquacid)",
+  "name": "沃利爾學院(Volir's Academy)",
+  "kind": -4,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 0
+ },
+ {
+  "index": 37,
+  "town": "密夸希德(Myrquacid)",
+  "name": "新星閣(The Rising Star)",
+  "kind": -4,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 38,
+  "town": "密夸希德(Myrquacid)",
+  "name": "燒杯屋(The Beaker)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 7,
+  "price_mult": 2
+ },
+ {
+  "index": 39,
+  "town": "密夸希德(Myrquacid)",
+  "name": "冒險者旅舍(Adventurer's Inn)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.7000000476837158
+ },
+ {
+  "index": 40,
+  "town": "阿瑟(Athe)",
+  "name": "哨兵殿(The Sentinel)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 41,
+  "town": "阿瑟(Athe)",
+  "name": "鐵匠鋪(The Blacksmith)",
+  "kind": 0,
+  "first": 0,
+  "last": 16,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 42,
+  "town": "阿瑟(Athe)",
+  "name": "美人魚(The Mermaid)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 8,
+  "price_mult": 0.6000000238418579
+ },
+ {
+  "index": 43,
+  "town": "阿瑟(Athe)",
+  "name": "養生藥草(Healthy Herbs)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 0.800000011920929
+ },
+ {
+  "index": 44,
+  "town": "蜘蛛灣(Spider Bay)",
+  "name": "厄洛克帆行(Erlock's Sail)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 9,
+  "price_mult": 0.800000011920929
+ },
+ {
+  "index": 45,
+  "town": "蜘蛛灣(Spider Bay)",
+  "name": "喬爾醫館(Healers of Jor)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 46,
+  "town": "蜘蛛灣(Spider Bay)",
+  "name": "鹹水客棧(Salty's Slumber)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.100000023841858
+ },
+ {
+  "index": 47,
+  "town": "蜘蛛灣(Spider Bay)",
+  "name": "巴利克鬥技場(Balik's Arena)",
+  "kind": -4,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 0
+ },
+ {
+  "index": 48,
+  "town": "蜘蛛灣(Spider Bay)",
+  "name": "巴利克劍舖(Balik's Blades)",
+  "kind": 0,
+  "first": 0,
+  "last": 7,
+  "extra": 0,
+  "price_mult": 0.800000011920929
+ },
+ {
+  "index": 49,
+  "town": "詹斯林(Janthrin)",
+  "name": "磨刀石(The Grindstone)",
+  "kind": 0,
+  "first": 4,
+  "last": 9,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 50,
+  "town": "詹斯林(Janthrin)",
+  "name": "范迪加德商行(Vandiguard's)",
+  "kind": 0,
+  "first": 14,
+  "last": 18,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 51,
+  "town": "詹斯林(Janthrin)",
+  "name": "鳳凰閣(The Pheonix)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.7000000476837158
+ },
+ {
+  "index": 52,
+  "town": "詹斯林(Janthrin)",
+  "name": "稜鏡(Prism)",
+  "kind": 0,
+  "first": 40,
+  "last": 42,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 53,
+  "town": "亞特蘭提斯(Atlantis)",
+  "name": "醫療所(Healers)",
+  "kind": -1,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 1.399999976158142
+ },
+ {
+  "index": 54,
+  "town": "亞特蘭提斯(Atlantis)",
+  "name": "附魔鎧甲(Enchanted Armor)",
+  "kind": 0,
+  "first": 17,
+  "last": 20,
+  "extra": 0,
+  "price_mult": 1.2999999523162842
+ },
+ {
+  "index": 55,
+  "town": "亞特蘭提斯(Atlantis)",
+  "name": "瑞德酒館(Red's Tavern)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 11,
+  "price_mult": 2
+ },
+ {
+  "index": 56,
+  "town": "歐西安娜(Oceana)",
+  "name": "海濱客棧(Seaside Inn)",
+  "kind": -3,
+  "first": 0,
+  "last": 0,
+  "extra": 0,
+  "price_mult": 2
+ },
+ {
+  "index": 57,
+  "town": "歐西安娜(Oceana)",
+  "name": "造戒坊(RingMaker)",
+  "kind": 0,
+  "first": 27,
+  "last": 31,
+  "extra": 0,
+  "price_mult": 1
+ },
+ {
+  "index": 58,
+  "town": "歐西安娜(Oceana)",
+  "name": "奧德修斯酒館(Odysseus Pub)",
+  "kind": -2,
+  "first": 0,
+  "last": 0,
+  "extra": 10,
+  "price_mult": 1.5
+ },
+ {
+  "index": 59,
+  "town": "崔頓(Triton)",
+  "name": "法師實驗室(Wizard's Lab)",
+  "kind": 0,
+  "first": 43,
+  "last": 46,
+  "extra": 0,
+  "price_mult": 1.2000000476837158
+ },
+ {
+  "index": 60,
+  "town": "崔頓(Triton)",
+  "name": "法師圖書館(Wizard's Library)",
+  "kind": -4,
+  "first": 0,
+  "last": 0,
+  "extra": 1,
+  "price_mult": 1
+ }
+]

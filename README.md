@@ -3,8 +3,12 @@
 SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 **完整逆向工程紀錄**,以及在其上重寫的引擎與繁體中文翻譯。
 
-**這個 repo 不含原版執行檔、資料檔與美術。** 玩家自備合法原版,用 `cmd/convert`
-自行轉出資產。
+**這個 repo 是 private**,收錄了 `cmd/convert` 轉出的資產(`assets/`)與含原版
+美術的引擎截圖 —— 專案負責人裁定([`CLAUDE.md`](CLAUDE.md) §8)。
+⛔ **原版磁片的內容本身**(`game/`、`original/`)仍然不進版控。
+
+⚠ **repo 收錄 ≠ 發行附帶。** 公開發行的產物只有引擎程式碼與翻譯文本,
+玩家自備合法原版、自己跑轉換器。
 
 ---
 
@@ -19,10 +23,9 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | ![地城](docs/images/05-maze.png) | ![戰鬥](docs/images/06-combat.png) |
 | **地城** —— 六座迷宮、能見度裁視野、事件表 | **最終戰** —— 巨龍 ×2 + 希瑞雅妮。這個組成是[反組譯](docs/re/180-scripted-fight-monster-list.md)與[通關紀錄](docs/re/179-final-battle-composition-from-playthrough.md)**兩條獨立證據鏈**得到的同一個答案 |
 
-> ⚠ **截圖裡的美術來自原版**,收錄在 private repo 裡是專案負責人裁定的
-> ([`CLAUDE.md`](CLAUDE.md) §8),與 `translations/` 收錄原版英文文本同一個理由。
-> ⛔ **這讓「repo 維持 private」(§10)變得更吃重,不是更寬鬆。**
-> 例外只涵蓋渲染出來的畫面 —— `cmd/convert` 轉出的素材仍然不進版控。
+> ⚠ **截圖與 `assets/` 都含原版美術。** 這讓「repo 維持 private」
+> ([`CLAUDE.md`](CLAUDE.md) §10)變成整個專案**最吃重的一條** ——
+> 一旦轉 public,洩漏的是原版的資料與美術本身。
 
 ---
 
@@ -54,8 +57,9 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 
 ```bash
 # 一律走 docker,不裝系統 Go(CLAUDE.md §8)
-tools/go.sh run ./cmd/convert -in /game/sharspri -out /workplace/assets   # 轉資產
-tools/go.sh build && ./build/shard -assets workplace/assets
+# assets/ 已經在 repo 裡;要重新轉(改了轉換器時)才需要這一行
+tools/go.sh run ./cmd/convert -in /game/sharspri -out /out
+tools/go.sh build && ./build/shard -assets assets
 tools/go.sh test -count=1      # ⚠ 一定要帶 -count=1,見下
 ```
 

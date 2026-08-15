@@ -30,9 +30,13 @@ result.txt
 *.mp4
 !docs/images/*.png
 !docs/images/**/*.png
-# ⚠ 上面兩行是 CLAUDE.md §8 的例外:引擎畫面的截圖可以進版控,即使含原版美術。
-# ⛔ 例外只涵蓋**渲染出來的畫面**。cmd/convert 轉出的素材(圖塊 / 怪物圖 / PICT)
-#    仍然一律 gitignore —— 判準是「可不可以拿去重建原版」。
+!assets/**/*.png
+# ⚠ 上面三行是 CLAUDE.md §8 的例外(專案負責人裁定 2026-08-15):
+#    引擎畫面的截圖、以及 cmd/convert 轉出的資產,都可以進版控 ——
+#    **即使那是原版美術**。理由與 translations/ 收錄原版英文文本相同。
+# ⛔ 例外**不涵蓋原版檔案本身**:game/ 與 original/ 仍然一律 gitignore。
+#    判準:轉換後的產物可以,原版磁片的內容不行。
+# ⚠ 這讓 §10「repo 維持 private」變成整個專案最吃重的一條。
 
 # 一般
 .DS_Store

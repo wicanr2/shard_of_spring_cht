@@ -1,0 +1,515 @@
+[
+ {
+  "index": 0,
+  "name": "匕首",
+  "alias": "小刀",
+  "base_price": 2,
+  "col4": 3,
+  "col5": 0,
+  "col6": 1
+ },
+ {
+  "index": 1,
+  "name": "小斧",
+  "alias": "小斧",
+  "base_price": 6,
+  "col4": 4,
+  "col5": 0,
+  "col6": 2
+ },
+ {
+  "index": 2,
+  "name": "短劍",
+  "alias": "小劍",
+  "base_price": 15,
+  "col4": 6,
+  "col5": 0,
+  "col6": 3
+ },
+ {
+  "index": 3,
+  "name": "釘錘",
+  "alias": "釘棍",
+  "base_price": 13,
+  "col4": 6,
+  "col5": 0,
+  "col6": 4
+ },
+ {
+  "index": 4,
+  "name": "晨星錘",
+  "alias": "鏈球",
+  "base_price": 20,
+  "col4": 7,
+  "col5": 0,
+  "col6": 5
+ },
+ {
+  "index": 5,
+  "name": "闊劍",
+  "alias": "劍",
+  "base_price": 30,
+  "col4": 8,
+  "col5": 0,
+  "col6": 6
+ },
+ {
+  "index": 6,
+  "name": "戰斧",
+  "alias": "巨斧",
+  "base_price": 65,
+  "col4": 10,
+  "col5": 0,
+  "col6": 7
+ },
+ {
+  "index": 7,
+  "name": "雙手劍",
+  "alias": "巨劍",
+  "base_price": 100,
+  "col4": 12,
+  "col5": 0,
+  "col6": 8
+ },
+ {
+  "index": 8,
+  "name": "釘錘+1",
+  "alias": "釘棍",
+  "base_price": 350,
+  "col4": 6,
+  "col5": 1,
+  "col6": 4
+ },
+ {
+  "index": 9,
+  "name": "劍+1",
+  "alias": "巨劍",
+  "base_price": 500,
+  "col4": 8,
+  "col5": 1,
+  "col6": 6
+ },
+ {
+  "index": 10,
+  "name": "斧+1",
+  "alias": "巨斧",
+  "base_price": 750,
+  "col4": 10,
+  "col5": 1,
+  "col6": 7
+ },
+ {
+  "index": 11,
+  "name": "劍+2",
+  "alias": "巨劍",
+  "base_price": 950,
+  "col4": 8,
+  "col5": 2,
+  "col6": 6
+ },
+ {
+  "index": 12,
+  "name": "布衣",
+  "alias": "長袍",
+  "base_price": 5,
+  "col4": 1,
+  "col5": 0,
+  "col6": 1
+ },
+ {
+  "index": 13,
+  "name": "皮甲",
+  "alias": "皮甲",
+  "base_price": 15,
+  "col4": 2,
+  "col5": 0,
+  "col6": 2
+ },
+ {
+  "index": 14,
+  "name": "鎖甲",
+  "alias": "鎖子甲",
+  "base_price": 40,
+  "col4": 3,
+  "col5": 0,
+  "col6": 3
+ },
+ {
+  "index": 15,
+  "name": "鱗甲",
+  "alias": "鱗甲",
+  "base_price": 200,
+  "col4": 4,
+  "col5": 0,
+  "col6": 4
+ },
+ {
+  "index": 16,
+  "name": "板甲",
+  "alias": "甲冑",
+  "base_price": 400,
+  "col4": 5,
+  "col5": 0,
+  "col6": 5
+ },
+ {
+  "index": 17,
+  "name": "鎖甲+1",
+  "alias": "鎖子甲",
+  "base_price": 700,
+  "col4": 6,
+  "col5": 1,
+  "col6": 3
+ },
+ {
+  "index": 18,
+  "name": "鱗甲+1",
+  "alias": "鱗甲",
+  "base_price": 1000,
+  "col4": 7,
+  "col5": 1,
+  "col6": 4
+ },
+ {
+  "index": 19,
+  "name": "板甲+1",
+  "alias": "甲冑",
+  "base_price": 1500,
+  "col4": 8,
+  "col5": 1,
+  "col6": 5
+ },
+ {
+  "index": 20,
+  "name": "板甲+2",
+  "alias": "甲冑",
+  "base_price": 2000,
+  "col4": 9,
+  "col5": 2,
+  "col6": 5
+ },
+ {
+  "index": 21,
+  "name": "治療藥水",
+  "alias": "藍色藥瓶",
+  "base_price": 50,
+  "col4": 24,
+  "col5": 4,
+  "col6": 100
+ },
+ {
+  "index": 22,
+  "name": "速度藥水",
+  "alias": "紫色藥瓶",
+  "base_price": 70,
+  "col4": 11,
+  "col5": 7,
+  "col6": 100
+ },
+ {
+  "index": 23,
+  "name": "解毒劑",
+  "alias": "綠色藥瓶",
+  "base_price": 150,
+  "col4": 26,
+  "col5": 13,
+  "col6": 100
+ },
+ {
+  "index": 24,
+  "name": "力量藥水",
+  "alias": "紅色藥瓶",
+  "base_price": 50,
+  "col4": 7,
+  "col5": 7,
+  "col6": 100
+ },
+ {
+  "index": 25,
+  "name": "煙火藥劑",
+  "alias": "紅色藥瓶",
+  "base_price": 55,
+  "col4": 31,
+  "col5": 8,
+  "col6": 100
+ },
+ {
+  "index": 26,
+  "name": "液態護甲",
+  "alias": "金屬藥瓶",
+  "base_price": 66,
+  "col4": 28,
+  "col5": 6,
+  "col6": 100
+ },
+ {
+  "index": 27,
+  "name": "護盾戒",
+  "alias": "金戒指",
+  "base_price": 800,
+  "col4": 31,
+  "col5": 12,
+  "col6": 15
+ },
+ {
+  "index": 28,
+  "name": "冰霜戒",
+  "alias": "冰戒指",
+  "base_price": 3900,
+  "col4": 15,
+  "col5": 18,
+  "col6": 11
+ },
+ {
+  "index": 29,
+  "name": "風暴戒",
+  "alias": "黑戒指",
+  "base_price": 5200,
+  "col4": 8,
+  "col5": 10,
+  "col6": 10
+ },
+ {
+  "index": 30,
+  "name": "飛行戒",
+  "alias": "淺色戒指",
+  "base_price": 3000,
+  "col4": 11,
+  "col5": 7,
+  "col6": 10
+ },
+ {
+  "index": 31,
+  "name": "鎖鏈戒",
+  "alias": "鐵戒指",
+  "base_price": 4000,
+  "col4": 5,
+  "col5": 10,
+  "col6": 13
+ },
+ {
+  "index": 32,
+  "name": "鐵杖",
+  "alias": "金屬杖",
+  "base_price": 5850,
+  "col4": 4,
+  "col5": 10,
+  "col6": 12
+ },
+ {
+  "index": 33,
+  "name": "冰霜杖",
+  "alias": "大冰柱",
+  "base_price": 2000,
+  "col4": 13,
+  "col5": 6,
+  "col6": 8
+ },
+ {
+  "index": 34,
+  "name": "水晶杖",
+  "alias": "玻璃棒",
+  "base_price": 4350,
+  "col4": 9,
+  "col5": 11,
+  "col6": 8
+ },
+ {
+  "index": 35,
+  "name": "烈焰杖",
+  "alias": "火柱",
+  "base_price": 5880,
+  "col4": 2,
+  "col5": 16,
+  "col6": 8
+ },
+ {
+  "index": 36,
+  "name": "靈魂杖",
+  "alias": "暗淡法杖",
+  "base_price": 5600,
+  "col4": 24,
+  "col5": 8,
+  "col6": 9
+ },
+ {
+  "index": 37,
+  "name": "光明杖",
+  "alias": "發光杖",
+  "base_price": 2600,
+  "col4": 33,
+  "col5": 2,
+  "col6": 7
+ },
+ {
+  "index": 38,
+  "name": "力量權杖",
+  "alias": "沉重權杖",
+  "base_price": 2500,
+  "col4": 7,
+  "col5": 9,
+  "col6": 11
+ },
+ {
+  "index": 39,
+  "name": "自由權杖",
+  "alias": "輕巧權杖",
+  "base_price": 3000,
+  "col4": 21,
+  "col5": 26,
+  "col6": 15
+ },
+ {
+  "index": 40,
+  "name": "藍色權杖",
+  "alias": "彩色權杖",
+  "base_price": 4850,
+  "col4": 12,
+  "col5": 14,
+  "col6": 9
+ },
+ {
+  "index": 41,
+  "name": "紅色權杖",
+  "alias": "彩色權杖",
+  "base_price": 7000,
+  "col4": 3,
+  "col5": 15,
+  "col6": 10
+ },
+ {
+  "index": 42,
+  "name": "白金權杖",
+  "alias": "彩色權杖",
+  "base_price": 8100,
+  "col4": 6,
+  "col5": 23,
+  "col6": 9
+ },
+ {
+  "index": 43,
+  "name": "聖徽",
+  "alias": "護符",
+  "base_price": 1600,
+  "col4": 99,
+  "col5": 0,
+  "col6": 12
+ },
+ {
+  "index": 44,
+  "name": "精靈寶石",
+  "alias": "發光石",
+  "base_price": 5100,
+  "col4": 27,
+  "col5": 12,
+  "col6": 13
+ },
+ {
+  "index": 45,
+  "name": "恐懼之眼",
+  "alias": "玻璃彈珠",
+  "base_price": 1950,
+  "col4": 17,
+  "col5": 7,
+  "col6": 10
+ },
+ {
+  "index": 46,
+  "name": "邪徽",
+  "alias": "護符",
+  "base_price": 8331,
+  "col4": 16,
+  "col5": 20,
+  "col6": 11
+ },
+ {
+  "index": 47,
+  "name": "火把",
+  "alias": "木棍",
+  "base_price": 2,
+  "col4": 32,
+  "col5": 0,
+  "col6": 100
+ },
+ {
+  "index": 48,
+  "name": "油燈",
+  "alias": "油燈",
+  "base_price": 10,
+  "col4": 33,
+  "col5": 0,
+  "col6": 100
+ },
+ {
+  "index": 49,
+  "name": "鑰匙",
+  "alias": "鐵鑰匙",
+  "base_price": 0,
+  "col4": 0,
+  "col5": 0,
+  "col6": 0
+ },
+ {
+  "index": 50,
+  "name": "銅鑰匙",
+  "alias": "銅鑰匙",
+  "base_price": 0,
+  "col4": 0,
+  "col5": 0,
+  "col6": 0
+ },
+ {
+  "index": 51,
+  "name": "銀鑰匙",
+  "alias": "銀鑰匙",
+  "base_price": 0,
+  "col4": 0,
+  "col5": 0,
+  "col6": 0
+ },
+ {
+  "index": 52,
+  "name": "金鑰匙",
+  "alias": "金鑰匙",
+  "base_price": 0,
+  "col4": 0,
+  "col5": 0,
+  "col6": 0
+ },
+ {
+  "index": 53,
+  "name": "王家印璽",
+  "alias": "鐵幣",
+  "base_price": 0,
+  "col4": 0,
+  "col5": 0,
+  "col6": 0
+ },
+ {
+  "index": 54,
+  "name": "國王首級",
+  "alias": "血淋首級",
+  "base_price": 0,
+  "col4": 0,
+  "col5": 0,
+  "col6": 0
+ },
+ {
+  "index": 55,
+  "name": "力場鑰匙",
+  "alias": "水晶棒",
+  "base_price": 0,
+  "col4": 0,
+  "col5": 0,
+  "col6": 0
+ },
+ {
+  "index": 56,
+  "name": "傳送器",
+  "alias": "紙鴿",
+  "base_price": 0,
+  "col4": 22,
+  "col5": 10,
+  "col6": 50
+ }
+]

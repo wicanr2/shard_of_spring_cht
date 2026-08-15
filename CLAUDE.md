@@ -52,9 +52,13 @@
 不散布原版執行檔、資料檔、美術。公開產出只有引擎程式碼與翻譯文本，玩家自備合法原版。
 `game/`、`original/` 一律 gitignore。不協助破解 DRM 或修改付費驗證。
 
-⚠ **「不散布」講的是公開產出。** private repo 裡的東西不受這一條限制 ——
-`translations/` 收錄原版英文文本、`docs/images/` 收錄含原版美術的引擎截圖,
-都是專案負責人裁定過的(見 §8、§10)。**兩者都綁在「repo 維持 private」上。**
+⚠ **「不散布」講的是公開產出。** private repo 裡的東西不受這一條限制。
+專案負責人裁定(2026-08-15)收錄三類:`translations/`(原版英文文本)、
+`docs/images/`(含原版美術的引擎截圖)、`assets/`(`cmd/convert` 轉出的
+資料與美術)。**三者都綁在「repo 維持 private」上**(見 §8、§10)。
+
+⚠ **公開發行的產物仍然只有引擎程式碼與翻譯文本** —— 打包時不得附帶 `assets/`,
+玩家自備合法原版自己跑轉換器。**repo 收錄 ≠ 發行附帶。**
 
 ---
 
@@ -424,13 +428,14 @@ Apple II / C64 / DOS 三個版本，手冊描述的規則不保證等於 DOS 版
 - 手打 `docker run` 一律帶 `--rm --log-opt max-size=10m --log-opt max-file=3`
 - **`game/` 與 `original/` 唯讀**。要分析先複製到 `workplace/`，不得就地修改
 - `.i64`、`.asm`、解包後的 binary、原版素材 **全部 gitignore**
-- **引擎畫面的截圖可以進版控**(`docs/images/`),**即使畫面上有原版美術** ——
-  專案負責人裁定 2026-08-15。理由與 `translations/` 收錄原版英文文本相同:
-  在 private repo 下作為專案的一部分沒有問題。
-  ⚠ **這條讓 §10「維持 private」變得更吃重,不是更寬鬆。**
-  ⛔ 仍然不准進版控的是**原版素材本身**:`game/`、`original/`、
-  `cmd/convert` 轉出來的資產(圖塊 / 怪物圖 / `PICT` 的 PNG)。
-  判準:**渲染出來的畫面**可以,**可以拿去重建原版的素材**不行。
+- **引擎截圖(`docs/images/`)與轉換後的資產(`assets/`)都可以進版控**,
+  **即使那是原版美術** —— 專案負責人裁定 2026-08-15。理由與 `translations/`
+  收錄原版英文文本相同:在 private repo 下作為專案的一部分沒有問題。
+  ⛔ **例外不涵蓋原版檔案本身**:`game/`、`original/` 仍然一律 gitignore。
+  判準:**轉換後的產物**可以,**原版磁片的內容**不行。
+  ⚠ **這條讓 §10「維持 private」變成整個專案最吃重的一條**,不是更寬鬆 ——
+  一旦轉 public,洩漏的是原版的資料與美術本身,不再只是劇情文本。
+  ⚠ **repo 收錄 ≠ 發行附帶**:打包給玩家的產物仍然不含 `assets/`(§1)。
 - **不碰共用的 docker 資源**：禁止 `docker image prune` / `system prune` / `volume prune`
   / `builder prune` / `rmi` / `container prune`。這台機器同時放著多個客戶專案的 image，
   誤刪過一次事故

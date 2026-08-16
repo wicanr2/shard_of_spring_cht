@@ -434,16 +434,26 @@ func TestT1FullLoop(t *testing.T) {
 		t.Fatalf("%.0f 金幣買不起這間店的任何東西(最便宜 %d)",
 			gold0, town.Price(stock[0].BasePrice, g.town.shop.PriceMult))
 	}
-	packBefore := g.members[0].Pack
+	// ⚠ **買給第 2 位**,不是第一位 —— 原版會問「交給角色 #」(docs/re/187),
+	// 而先前的實作寫死給第一位。買給別人才驗得出那一步真的接上了。
+	const buyer = 1
+	packBefore := g.members[buyer].Pack
 	press(t, g, ebiten.KeyA+ebiten.Key(buyIdx))
+	if g.town.pendingBuy == nil {
+		t.Fatalf("選了道具之後應該問「交給角色 #」(msg=%q)", g.town.msg)
+	}
+	press(t, g, ebiten.Key1+ebiten.Key(buyer))
 	if g.group.Gold >= gold0 {
 		t.Fatalf("買了東西金幣卻沒減少:%.0f → %.0f(msg=%q)",
 			gold0, g.group.Gold, g.town.msg)
 	}
-	if g.members[0].Pack == packBefore {
+	if g.members[buyer].Pack == packBefore {
 		t.Fatalf("買了東西背包卻沒變(msg=%q)", g.town.msg)
 	}
-	bought := g.members[0].Pack
+	if g.members[0].Pack != g.chars[g.members[0].ID-1].Pack {
+		t.Error("東西不該進第一位的背包")
+	}
+	bought := g.members[buyer].Pack
 	t.Logf("買下 %s:金幣 %.0f → %.0f", stock[buyIdx].Name, gold0, g.group.Gold)
 
 	// 離開商店與城鎮 —— ESC 回建築清單,城鎮本身由世界地圖分支關掉。
@@ -513,8 +523,8 @@ func TestT1FullLoop(t *testing.T) {
 	if len(g2.members) != len(g.members) {
 		t.Fatalf("成員人數變了:存 %d,讀 %d", len(g.members), len(g2.members))
 	}
-	if g2.members[0].Pack != bought {
-		t.Errorf("買到的東西沒讀回來:存 %v,讀 %v", bought, g2.members[0].Pack)
+	if g2.members[buyer].Pack != bought {
+		t.Errorf("買到的東西沒讀回來:存 %v,讀 %v", bought, g2.members[buyer].Pack)
 	}
 	if g2.members[0].Exp != wantExp {
 		t.Errorf("經驗值沒讀回來:存 %v,讀 %v", wantExp, g2.members[0].Exp)

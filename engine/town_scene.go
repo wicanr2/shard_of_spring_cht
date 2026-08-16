@@ -44,6 +44,10 @@ type townState struct {
 	campWho2 int  // 第二位(R)eorder / T)rade 用)
 	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別、'R' 調隊形、'T' 傳遞、'C' 施法、'U' 使用道具、'P' 列印
 
+	// pendingBuy 非 nil = 商店裡已經選好道具,正在問「交給角色 #」
+	// (docs/re/187:原版**會問**,而且問的是角色編號)。
+	pendingBuy *original.Item
+
 	// C)ast spell 的子階段(docs/spec/16 §1/§2)。campWho 借來當施法者;
 	// 選目標另外用 campWho2 —— 與 R)eorder / T)rade 共用同一個欄位,
 	// 但那兩個模式不會跟 'C' 同時開著,不會互相污染。
@@ -190,14 +194,32 @@ func (g *Game) townKey(k ebiten.Key) {
 			}
 			return
 		}
+		// 選好道具之後,原版問「Give to char #」(docs/re/187,實跑確認過:
+		// 輸入編號 → 扣錢 → 東西進**那個人**的背包)。
+		if ts.pendingBuy != nil {
+			if k == ebiten.KeyEscape {
+				ts.pendingBuy, ts.msg = nil, ""
+				return
+			}
+			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
+				it := *ts.pendingBuy
+				ts.pendingBuy = nil
+				g.buyItem(it, i)
+			}
+			return
+		}
 		if i := int(k - ebiten.KeyA); i >= 0 && i < shopPageSize {
 			stock := ts.shopStock(g.itemList)
 			if n := ts.page*shopPageSize + i; n < len(stock) {
-				g.buyItem(stock[n])
+				it := stock[n]
+				ts.pendingBuy = &it
+				// 「價格為」「交給角色 #」都是原版的字(TOWN:14 / TOWN:15)。
+				ts.msg = fmt.Sprintf("價格為 %d　交給角色 #(1–%d,ESC 取消)",
+					town.Price(it.BasePrice, ts.shop.PriceMult), len(g.members))
 			}
 		}
 		if k == ebiten.KeyEscape {
-			ts.mode, ts.msg = townBuildings, ""
+			ts.mode, ts.msg, ts.pendingBuy = townBuildings, "", nil
 		}
 	case townCamp:
 		if ts.campMode != 0 {
@@ -258,19 +280,25 @@ func (ts *townState) shopStock(all []original.Item) []original.Item {
 	return out
 }
 
-func (g *Game) buyItem(it original.Item) {
-	if len(g.members) == 0 {
+// buyItem 讓第 who 位成員(0 起算)買下一件道具。
+//
+// 「買給誰」是**原版問的**(docs/re/187 實跑:`Give to char #`,輸入編號之後
+// 金幣才扣、東西才進那個人的背包)。⚠ 先前固定給第一位,是靜態沒讀到那句話 ——
+// 而那句字串一直都在清冊裡(TOWN:15),只是搜尋時找的是別的字眼。
+func (g *Game) buyItem(it original.Item, who int) {
+	if who < 0 || who >= len(g.members) {
 		return
 	}
 	price := town.Price(it.BasePrice, g.town.shop.PriceMult)
 	gold := g.group.Gold
-	r := town.Buy(&gold, &g.members[0], it.Index, price)
+	r := town.Buy(&gold, &g.members[who], it.Index, price)
 	if r != town.BuyOK {
 		g.town.msg = r.String()
 		return
 	}
 	g.group.Gold = gold
-	g.town.msg = fmt.Sprintf("%s 買下 %s(%d 金幣)", g.members[0].Name, it.Name, price)
+	g.syncMember(g.members[who]) // 背包改了要寫回名冊,否則存檔會蓋掉
+	g.town.msg = fmt.Sprintf("%s 買下 %s(%d 金幣)", g.members[who].Name, it.Name, price)
 }
 
 // drawTown 畫城鎮畫面。清單在主視野(61 欄)。

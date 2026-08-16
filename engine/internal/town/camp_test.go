@@ -180,3 +180,33 @@ func TestHuntFailureRateIsSevenSixteenths(t *testing.T) {
 		t.Errorf("16 個擲出裡應有 7 個失敗,得 %d", fail)
 	}
 }
+
+// TestIdentifyThreshold 釘住鑑定的成功門檻(docs/re/189)。
+//
+// ⚠ 這條擋的是「先前必定成功」那個佔位回來 —— 必定成功在畫面上完全正常,
+// 玩家只會覺得這個技能很好用。
+func TestIdentifyThreshold(t *testing.T) {
+	if IdentifyFactor != 4.5 {
+		t.Errorf("乘數 %v,原版 ds:72D2 是 4.5", IdentifyFactor)
+	}
+	if got := IdentifyThreshold(20); got != 90 {
+		t.Errorf("智能 20 的門檻應該是 90,得到 %v", got)
+	}
+	if got := IdentifyThreshold(10); got != 45 {
+		t.Errorf("智能 10 的門檻應該是 45,得到 %v", got)
+	}
+	// 智能 0 → 門檻 0,d100 最小 1 → 必定失敗。
+	c := original.Character{Int: 0}
+	if IdentifySucceeds(c, fixedRoll(1)) {
+		t.Error("智能 0 不該鑑定成功")
+	}
+	// 智能 30(超過上限,防呆)→ 門檻 135 → 必定成功。
+	if !IdentifySucceeds(original.Character{Int: 30}, fixedRoll(100)) {
+		t.Error("門檻遠高於 d100 時應該必定成功")
+	}
+}
+
+// fixedRoll 是永遠回同一個值的擲骰來源。
+type fixedRoll int
+
+func (r fixedRoll) Roll(int) int { return int(r) }

@@ -1054,9 +1054,7 @@ func (g *Game) buildingLines(ts *townState) []string {
 // 打獵的擲骰讀出來了(docs/re/177 §4):`max(0, INT(RND × 16) − 6)`。
 // ⚠ 補給品的**上限**仍未解(`ds:6F10` 沒有編譯期初值),所以這裡不夾。
 //
-// ⚠ 鑑定的 `Failed` 分支還沒讀完 —— 骰面數是 d100,門檻未讀。
-// 所以鑑定**必定成功**並在訊息裡標未解。
-// ⛔ 不要為了「有東西發生」自己編一個成功率。
+// 鑑定的成功率解出來了(docs/re/189):`d100 ≤ 智能 × 4.5`,與道具無關。
 
 func (g *Game) hunt(who int) {
 	ts := g.town
@@ -1096,9 +1094,14 @@ func (g *Game) identify(who, slot int) {
 	}
 	c.SkillUsed = true
 	g.syncMember(*c)
+	// 成功率 = `d100 ≤ 智能 × 4.5`(docs/re/189)。⚠ 與道具本身無關。
+	if !town.IdentifySucceeds(*c, g.rand) {
+		ts.msg = c.Name + "：失敗" // CAMP:62「Failed」
+		return
+	}
 	name := "那件東西"
 	if it, ok := g.itemByIndex(item); ok {
 		name = it.Name
 	}
-	ts.msg = c.Name + " 辨識了 " + name + "。⚠ 成功率未解（docs/re/177 §7）"
+	ts.msg = c.Name + " 辨識了 " + name
 }

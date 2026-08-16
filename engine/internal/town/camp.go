@@ -215,3 +215,26 @@ func PickUp(party []original.Character, item int) (who, slot int) {
 	}
 	return -1, -1
 }
+
+// ── 鑑定的成功率(docs/re/189)────────────────────────────────────────────
+
+// IdentifyFactor 是鑑定成功門檻的乘數:`ds:72D2` 的 DGROUP 初值 = MBF **4.5**。
+const IdentifyFactor = 4.5
+
+// IdentifyThreshold 是鑑定的成功門檻(d100 ≤ 門檻 → 成功)。
+//
+//	門檻 = 智能 × 4.5
+//
+// ⚠ **與道具本身無關** —— 算式裡沒有道具的任何欄位(docs/re/189)。
+// 智能 20 約九成、智能 10 約四成五。
+func IdentifyThreshold(intellect int) float64 {
+	return float64(intellect) * IdentifyFactor
+}
+
+// IdentifySucceeds 擲一次 d100 判鑑定成不成功。
+//
+// ⚠ 擲骰是 `INT(RND × 100) + 1`(配了 `INT 3D:03` 截尾),值域 1…100 ——
+// 與命中擲骰的 `round(RND×100+1)` 不是同一個成語(docs/re/185)。
+func IdentifySucceeds(c original.Character, r Roller) bool {
+	return float64(r.Roll(100)) <= IdentifyThreshold(c.Int)
+}

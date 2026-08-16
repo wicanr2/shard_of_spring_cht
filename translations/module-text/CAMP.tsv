@@ -36,7 +36,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 58	ds:724A	Character # wishing to identify? (ESC exits)	44	哪位角色要鑑定?(ESC離開)	24	Y		engine/town_scene.go
 60	ds:7284	Item to ID ?	12	要鑑定哪件?	11	Y		engine/town_scene.go
 61	ds:729C	You are not trained in that lore!	33	你沒有受過這方面的知識訓練!	27	Y		engine/town_scene.go
-62	ds:72DA	Failed	6	失敗	4	Y		
+62	ds:72DA	Failed	6	失敗	4	Y		engine/town_scene.go
 63	ds:72E4	You're inside!	14	你在室內!	9	Y		engine/internal/town/camp.go
 64	ds:72F6	Character # to hunt ? (ESC exits)	33	哪位角色要打獵?(ESC離開)	24	Y	spec/19 §1.1 H)unt 打獵閘門相關句	engine/town_scene.go
 65	ds:7326	The hunt was	12	這次打獵	8	Y		engine/town_scene.go

@@ -57,7 +57,7 @@
 | `Healing`/`Unpoison`/`Unbind`/`Ressurect`(TOWN:21-24)| `HealKind.String()`:「治療傷勢」/「解毒」/「解除束縛」/「復活」(3/4 用詞已與本輪譯文一致,`Healing`↔`醫療`一項用詞不同,純措辭)| `engine/internal/town/heal.go:19-29` |
 | `No more room!`(TOWN:19,買道具背包滿)| `BuyResult.String()`:「背包已滿」 | `engine/internal/town/town.go:57-64` |
 | `Character # to hunt ?` / `The hunt was (not) successful.`(CAMP:64-67)| `H)` 打獵,「XX 打獵成功!補給 +N」/「這趟沒有收穫。」 | `engine/town_scene.go:748-772` |
-| `I)dentify`(CAMP:16 附近)| `I)` 鑑定(必定成功,已標未解見 `docs/spec/11`)| `engine/town_scene.go:622` |
+| `I)dentify`(CAMP:16 附近)| `I)` 鑑定,成功率 `d100 ≤ 智能 × 4.5`([`re/189`](../re/189-identify-success-rate.md))| `engine/town_scene.go` |
 | `Human`/`Troll`/`Dwarf`/`Elf`/`Gnome`(多模組)| `RaceName()`:「人類」「巨魔」「矮人」「精靈」「地精」 | `engine/internal/original/chars.go:159` |
 | `You are the wrong class!` / `experience before gaining a level.`(TOWN:38,40-41,升級閘門)| `TrainResult.String()`:「這間訓練所不收這個職業」/「經驗還不夠」/「已經是最高等級」 | `engine/internal/town/train.go:24-32` |
 | `Which spell do you wish to cast?`(CMBT:88-90,戰鬥施法)| `C)` 施法選單(`openCast`)| `engine/cast_scene.go:45` |

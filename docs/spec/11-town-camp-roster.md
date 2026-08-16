@@ -179,10 +179,8 @@ C)ast spell         E)quip
 ⚠ **補給品上限未解**(`ds:6F10` 沒有編譯期初值)。引擎先不設上限,
 ⛔ 不自己編一個數字;真要量得在原版裡把補給品堆到上限。
 
-⚠ **鑑定的 `Failed` 分支仍未讀完**:骰面數是 d100
-([`re/177`](../re/177-dgroup-init-stream-and-hunt-formula.md) §6:`ds:72CA = 100.0`),
-但門檻沒讀。引擎的鑑定**必定成功**,並在訊息裡標未解 ——
-⛔ 不自己編一個成功率。
+鑑定的成功率 = **`d100 ≤ 智能 × 4.5`**([`re/189`](../re/189-identify-success-rate.md),
+`ds:72D2` 的 DGROUP 初值)。⚠ **與道具本身無關** —— 算式裡沒有道具的任何欄位。
 
 lore 的分界已定案([`re/167`](../re/167-record-field-accessor-and-identified-flags.md) §4):
 背包存的是 **0-based** 編號(商店的販售範圍最小值是 0,藥水舖賣 21–26)。

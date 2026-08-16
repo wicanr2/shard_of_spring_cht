@@ -47,3 +47,8 @@ __pycache__/
 # Go 建置產物
 build/
 engine/vendor/
+
+# 倚天字型資產(tools/eten_font.py 的產出)
+# ⛔ **不進版控**:倚天中文系統是 1993 年的商業軟體,著作權不屬於本專案。
+#    本機版用 `-tags eten` 內嵌它,發行版走預設的開源字型(docs/spec/21)。
+engine/assets/font/

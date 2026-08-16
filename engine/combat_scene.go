@@ -365,22 +365,34 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 		y += lh * 1.2
 	}
 
-	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
-		u := f.Units[i]
-		if u.Name == "" {
-			continue
+	// ⚠ 畫到主視野框外的字**照樣印得出來**,只是壓在別的面板上
+	// (docs/spec/04 §5 的同一條)。字級換大(倚天 24 px)之後單位表就會滿出來,
+	// 所以這裡跟訊息面板一樣自己收邊。
+	bottom := float64(layout.View.Bottom()) - ui.PanelPad
+	dropped := 0
+	line := func(s string) {
+		// 留一行給「還有幾個沒列出來」——⛔ **不可以默默截斷**:
+		// 少列一個單位在畫面上完全沒有症狀,玩家會以為場上就這些人。
+		if y+lh*2 > bottom {
+			dropped++
+			return
 		}
-		p.Draw(dst, unitLine(u), x, y)
+		p.Draw(dst, s, x, y)
 		y += lh
+	}
+	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
+		if u := f.Units[i]; u.Name != "" {
+			line(unitLine(u))
+		}
 	}
 	y += lh * 0.5
 	for i := combat.PartyBase; i < combat.PartyBase+combat.PartyMax; i++ {
-		u := f.Units[i]
-		if u.Name == "" {
-			continue
+		if u := f.Units[i]; u.Name != "" {
+			line(unitLine(u))
 		}
-		p.Draw(dst, unitLine(u), x, y)
-		y += lh
+	}
+	if dropped > 0 {
+		p.Draw(dst, fmt.Sprintf("…還有 %d 個單位(視窗放不下)", dropped), x, y)
 	}
 
 	// 訊息列:只顯示最後幾條,新的在下面。折行與取尾要一起算 ——

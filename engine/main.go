@@ -588,16 +588,14 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 		return nil, err
 	}
 
-	src, path, err := render.LoadFont(fontPath)
+	// 字型分兩個版本(font_ttf.go / font_eten.go,build tag `eten`)——
+	// 發行版用開源向量字,本機版用倚天點陣字。字級與欄寬預算兩套都不同。
+	panel, overlay, title, fontName, err := newPainters(fontPath)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Fprintln(os.Stderr, "字型:", path)
-	g.panel = render.NewPainter(src, 20, cgaWhite)
-	// 敘述覆蓋層用 24 px(docs/spec/04 §4 的主要閱讀字級)。
-	g.overlayFont = render.NewPainter(src, 24, cgaWhite)
-	// 標題用 32px(docs/spec/04 §4)。
-	g.titleFont = render.NewPainter(src, 32, cgaWhite)
+	fmt.Fprintln(os.Stderr, "字型:", fontName)
+	g.panel, g.overlayFont, g.titleFont = panel, overlay, title
 	g.initSound() // docs/spec/13:失敗只記警告,不影響遊戲
 	g.shell = &shellState{mode: shellTitle}
 	return g, nil

@@ -42,6 +42,7 @@ const (
 	msgDamage   = " 點傷害。"      // 77 ` damage.`
 	msgHeDies   = " 他死了!"       // 81 ` He Dies!`(隊員)
 	msgItDies   = " 牠死了!"       // 82 ` It dies!`(怪物)
+	msgPoisoned = "並中毒了!"      // 79 `and is poisoned!`(docs/re/191)
 	// 5/7 `Hands` —— 沒有武器時填進 `with` 後面的那個名字。
 	//
 	// ⚠ **哪一種單位拿到哪一個名字沒有讀到。** CMBT 的字串表開頭並排著
@@ -137,6 +138,9 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 			msg += msgHeDies
 		}
 	}
+	// 中毒判定排在死亡判定**之後** —— 原版打死了就直接走死亡分支,
+	// 不擲那顆骰(docs/re/191 §1)。poison() 自己擋活著這一項。
+	msg += f.poison(atk, def)
 	f.Log = append(f.Log, msg)
 	return roll, true, dmg
 }

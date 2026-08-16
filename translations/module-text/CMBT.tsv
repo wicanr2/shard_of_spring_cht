@@ -29,7 +29,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 74	ds:97AA	and hacks for 	14	劈砍造成 	9	Y		engine/internal/combat/field.go
 76	ds:97C6	and hits for 	13	命中造成 	9	Y		engine/internal/combat/field.go
 77	ds:97D8	 damage.	8	 點傷害。	9	9		engine/internal/combat/field.go
-79	ds:97F0	and is poisoned!	16	並中毒了!	9	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。攻擊附帶中毒:引擎的 Attack() 只算傷害,不會讓目標中毒(狀態本身是有的)。	
+79	ds:97F0	and is poisoned!	16	並中毒了!	9	Y	攻擊附帶中毒:武器 62、15%、目標狀態正常才中(docs/re/191)。	engine/internal/combat/field.go
 81	ds:9810	 He Dies!	9	 他死了!	8	Y		engine/internal/combat/field.go
 82	ds:981E	 It dies!	9	 牠死了!	8	Y		engine/internal/combat/field.go
 83	ds:9832	All Monsters Dead	17	怪物全滅	8	Y		engine/internal/combat/field.go

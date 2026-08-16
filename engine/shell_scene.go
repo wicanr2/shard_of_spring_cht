@@ -435,8 +435,18 @@ func (g *Game) drawTitle(dst *ebiten.Image) {
 		drawCenter(g.panel, dst, "(c) 1986-1987 by Strategic Simulations Inc.", cx, y)
 		y += g.panel.LineHeight() * 1.3
 		drawCenter(g.panel, dst, "MS DOS 版由 Digital Illusions, Inc. 移植／繁體中文 remake", cx, y)
-		y += g.panel.LineHeight() * 3
-		drawCenter(g.panel, dst, "── 按任意鍵繼續 ──", cx, y)
+		y += g.panel.LineHeight() * 1.6
+		// MENU:93 —— 原版的製作群謝辭,原本印在 P)rogram Notes 那一頁。
+		for _, ln := range []string{
+			"謹以此獻給 Lori Proudfoot。",
+			"與 Applied Computing Services, Inc. 共同開發完成。",
+			"全部使用 Microsoft QuickBasic v3.0 撰寫。",
+		} {
+			drawCenter(g.panel, dst, ln, cx, y)
+			y += g.panel.LineHeight()
+		}
+		y += g.panel.LineHeight() * 2
+		drawCenter(g.panel, dst, "──(按任意鍵)──", cx, y) // MENU:9
 	}
 }
 
@@ -564,6 +574,7 @@ func (g *Game) drawPartySelect(dst *ebiten.Image) {
 	// MENU:94「Which party do you wish to use (1-5,0 Quits) ?」
 	line("要使用哪一支隊伍?(1–5,0離開)")
 	y += lh * 0.5
+	line("# 角色　　　生命　法力") // MENU:100「# CHARACTER HP  SP」
 	for i, grp := range g.shell.slots {
 		n := i + 1
 		if grp.Blank() {

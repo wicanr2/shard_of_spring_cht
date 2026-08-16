@@ -42,6 +42,13 @@ const (
 	msgDamage   = " 點傷害。"      // 77 ` damage.`
 	msgHeDies   = " 他死了!"       // 81 ` He Dies!`(隊員)
 	msgItDies   = " 牠死了!"       // 82 ` It dies!`(怪物)
+	// 5/7 `Hands` —— 沒有武器時填進 `with` 後面的那個名字。
+	//
+	// ⚠ **哪一種單位拿到哪一個名字沒有讀到。** CMBT 的字串表開頭並排著
+	// `Hands` / `Fangs` / `Bite` / `None`(第 5–10 列),形狀像一張
+	// 「沒有武器時該叫什麼」的小表,但選用的判斷式沒讀 —— 所以這裡一律用
+	// 「拳頭」,⛔ 不自己編一條「怪物用獠牙、爬蟲用咬擊」的規則。
+	msgBareHands = "拳頭"
 )
 
 // Outcome 是戰鬥的結束狀態。
@@ -134,16 +141,15 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 	return roll, true, dmg
 }
 
-// weaponPhrase 回傳「 使用 <武器>」;赤手空拳回空字串。
+// weaponPhrase 回傳「 使用 <武器>」。
 //
-// ⚠ 原版無條件印 `with`,但它的武器格用 60／99 當「沒有武器」的哨兵
-// (docs/spec/01 §5、docs/formats/03),而 `ITEMS.DAT` 只有 0–56 有名字 ——
-// 那兩個哨兵在原版會印出什麼**沒有查證**,所以這裡選擇整段不印,
-// 不拿空字串去頂替一個沒讀過的行為。
+// 武器格用 60／99 當「沒有武器」的哨兵(docs/spec/01 §5、docs/formats/03),
+// 而 `ITEMS.DAT` 只有 0–56 有名字 —— 查不到名字就填 msgBareHands,
+// 原版那句 `with` 是無條件印的。
 func (f *Field) weaponPhrase(u Unit) string {
 	name := f.item(u.Weapon).Name
 	if name == "" {
-		return ""
+		name = msgBareHands
 	}
 	return msgWith + name
 }

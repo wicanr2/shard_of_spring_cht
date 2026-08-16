@@ -55,7 +55,9 @@ type Game struct {
 	panel   *render.Painter
 	// 載入時發現的不一致,畫在提示列。⚠ 不自行修正(docs/spec/06 §1)。
 	warnings []string
-	// 最近一次存檔的結果,畫在提示列。
+	// 最近一次動作的結果,畫在提示列(存檔、離開城鎮之類)。
+	// ⚠ 名字留著是因為它一開始只給存檔用;現在是通用的一行狀態訊息,
+	// 由**世界地圖那一層**的動作寫入 —— 城鎮/戰鬥各自有自己的訊息欄。
 	saveMsg string
 
 	// M4:戰鬥(docs/spec/07)
@@ -496,8 +498,12 @@ func main() {
 
 	g, err := loadStatic(*assets, *fontPath, *seed)
 	if err != nil {
-		fmt.Fprintln(os.Stderr, "載入失敗:", err)
-		fmt.Fprintln(os.Stderr, "請先跑:go run ./cmd/convert -in <原版> -out assets")
+		// 原版遇到讀不到資料檔時就是這一句(CMBT:172 / CAMP:87 / TOWN:75)。
+		// ⚠ 底下兩行是**本引擎加的**:原版叫玩家「重新還原」磁片,
+		// 而這裡的對應動作是重跑轉換器,所以錯誤本身與怎麼修都要印出來。
+		fmt.Fprintln(os.Stderr, "啊咧!資料檔好像出了問題,請重新還原!")
+		fmt.Fprintln(os.Stderr, "  ", err)
+		fmt.Fprintln(os.Stderr, "  請先跑:go run ./cmd/convert -in <原版> -out assets")
 		os.Exit(1)
 	}
 	if *saveDir != "" {

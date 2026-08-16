@@ -144,6 +144,28 @@ func TestT3EveryScenePressReacts(t *testing.T) {
 			},
 		},
 		{
+			// DOS 版自己的字串是「Use arrow keys to position cursor.」(CMBT:110/111),
+			// 手冊 p.34 的 I/J/K/M 是 Apple II 版 —— **兩組都要能動**。
+			// ⚠ 這一條是 F3 對字串時翻出來的:引擎原本只收 I/J/K/M,
+			// 而畫面上看不出「方向鍵沒反應」是漏接還是設計。
+			scene: "cast-cursor",
+			setup: func(t *testing.T) *Game {
+				g := newFightingGame(t)
+				g.cursor = &castCursor{x: 5, y: 5}
+				return g
+			},
+			keys: []ebiten.Key{ebiten.KeyRight},
+			want: func(g *Game) string {
+				if g.cursor == nil {
+					return "游標不該被關掉"
+				}
+				if g.cursor.x != 6 {
+					return "方向鍵右應該把游標往右移一格"
+				}
+				return ""
+			},
+		},
+		{
 			scene: "combat-potion",
 			setup: func(t *testing.T) *Game {
 				g := newFightingGame(t)

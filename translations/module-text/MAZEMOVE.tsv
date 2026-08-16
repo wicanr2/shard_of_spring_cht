@@ -24,6 +24,6 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 84	ds:9552	found an item.	14	找到了一件道具。	16	16		
 85	ds:9568	Your party is full of items, please discard some from Camp.	59	隊伍的道具已經滿了,請在營地丟棄一些。	37	Y	spec/19 §1.1 範例句,一字不差	
 88	ds:95DC	Leaving maze ..     	20	離開地城……	10	Y		engine/maze_scene.go
-89	ds:95FC	Making Camp..       	20	紮營中……	8	Y		
+89	ds:95FC	Making Camp..       	20	紮營中……	8	Y		engine/town_scene.go
 90	ds:9614	    C O M B A T !   	20	　　戰　鬥　!　　	9	Y		engine/combat_scene.go
 91	ds:962C	    B A T T L E !   	20	　　交　戰　!　　	9	Y		engine/combat_scene.go

@@ -280,12 +280,13 @@ const (
 
 func (r TradeResult) String() string {
 	switch r {
+	// 措辭照 CAMP.tsv 第 37/38 列(F3):`NO ROOM !` / ` OK`。
 	case TradeOK:
-		return "交給對方了"
+		return "完成"
 	case TradeEmptySlot:
 		return "那一格是空的"
 	case TradeNoRoom:
-		return "對方的背包滿了"
+		return "沒有空間!"
 	case TradeSamePerson:
 		return "不能交給自己"
 	}

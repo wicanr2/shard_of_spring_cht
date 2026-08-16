@@ -468,6 +468,7 @@ func (s townScene) Update(in Input) Transition {
 	for _, k := range in.Keys {
 		if k == ebiten.KeyEscape && s.g.town.mode == townBuildings {
 			s.g.town = nil
+			s.g.saveMsg = "隊伍離開了……" // TOWN:7「The party leaves..」
 			break
 		}
 		s.g.townKey(k)

@@ -7,8 +7,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 32	ds:6C7E	Skills left:	12	剩餘技能點：	12	Y		
 33	ds:6C96	Do you wish to keep this character (Y/N) ?	42	要保留這位角色嗎?(Y/N)	22	Y		
 39	ds:6D18	Party #	7	隊伍 #	6	Y		
-40	ds:6D24	Gold:	5	金幣：	6	Y		
-41	ds:6D2E	 Provisions:	12	 食糧：	6	Y		
+40	ds:6D24	Gold:	5	金幣：	6	Y		engine/party_panel.go
+41	ds:6D2E	 Provisions:	12	 食糧：	6	Y		engine/party_panel.go
 42	ds:6D3E	Saved in the month of the 	26	存檔於月份 	11	Y		
 43	ds:6D5C	Wilderness	10	野外	4	Y		engine/camp_actions.go
 44	ds:6D6E	maze: 	6	地城： 	6	Y		

@@ -101,16 +101,16 @@ func TestAttackMessagePartyMemberDies(t *testing.T) {
 	}
 }
 
-// TestAttackMessageBareHandHasNoWeaponPhrase:赤手空拳不印「使用 …」。
+// TestAttackMessageBareHandSaysHands:赤手空拳印「使用 拳頭」(CMBT:5/7)。
 //
-// ⚠ 這是**引擎的選擇**,不是讀出來的原版行為(field.go 的 weaponPhrase 有說明)。
-// 釘在這裡是為了讓它變成一個有意識的決定 —— 哪天查證了原版怎麼印,
-// 改的時候會有一條測試提醒這裡曾經是空白。
-func TestAttackMessageBareHandHasNoWeaponPhrase(t *testing.T) {
+// ⚠ 原版有 `Hands` / `Fangs` / `Bite` 三個名字,**選用規則沒讀到**
+// (field.go 的 msgBareHands 有說明)。這條釘的是「一律拳頭」這個決定,
+// 哪天讀到選用規則,改的時候會有一條測試提醒這裡曾經只有一種。
+func TestAttackMessageBareHandSaysHands(t *testing.T) {
 	f := newMessageField(toHitAlways)
 	f.Units[PartyBase].Weapon = original.NotEquipped
 	f.Attack(PartyBase, MonsterBase)
-	if got := f.Log[len(f.Log)-1]; strings.Contains(got, "使用") {
-		t.Errorf("赤手空拳不該印武器:%s", got)
+	if got := f.Log[len(f.Log)-1]; !strings.Contains(got, "使用 拳頭") {
+		t.Errorf("赤手空拳該印「使用 拳頭」:%s", got)
 	}
 }

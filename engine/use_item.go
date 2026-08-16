@@ -89,9 +89,9 @@ func (g *Game) useItemOn(who, slot, target int) {
 	// 不是「查不到效果」,是原版這個機制本來就不管這些編號。
 	if idx <= magic.MagicItemMin {
 		if self {
-			ts.msg = fmt.Sprintf("%s 用了%s,但它不是魔法道具,什麼事也沒發生。", c.Name, name)
+			ts.msg = fmt.Sprintf("%s 用了%s,你真的沒辦法用這個!", c.Name, name)
 		} else {
-			ts.msg = fmt.Sprintf("%s 把%s交給 %s,但它不是魔法道具,什麼事也沒發生。", c.Name, name, tgt.Name)
+			ts.msg = fmt.Sprintf("%s 把%s交給 %s,你真的沒辦法用這個!", c.Name, name, tgt.Name)
 		}
 		return
 	}
@@ -178,7 +178,7 @@ func (g *Game) campPotionLines(ts *townState) []string {
 		// 那件的名字放在句子前面,問句本身照原版。
 		return []string{name + "　你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?"}
 	case 2:
-		out := []string{"要交給哪位角色?"} // CAMP:95/96
+		out := []string{"要交給哪位角色?　角色 #："} // CAMP:95/96/97
 		for i, m := range g.members {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, m.Name))
 		}
@@ -380,7 +380,7 @@ func (g *Game) drawUseMenu(dst *ebiten.Image) {
 		case 1:
 			p.Draw(dst, name+"　你要把藥劑用在 Y)自己身上,還是 T)丟給另一位角色?", x, y) // CMBT:165
 		case 2:
-			p.Draw(dst, "要丟給哪位角色?", x, y) // CMBT:168/169
+			p.Draw(dst, "要丟給哪位角色?　角色 #：", x, y) // CMBT:168/169/170
 			y += lh
 			for i, m := range g.members {
 				// ⚠ 不要把 "%d) %s" 這種格式化字串直接寫在 Draw() 呼叫裡 ——

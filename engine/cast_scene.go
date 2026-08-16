@@ -85,20 +85,25 @@ type castCursor struct {
 	x, y  int
 }
 
-// cursorKey 處理游標階段的按鍵。手冊 p.34 的 I/J/K/M 是 Apple II 的菱形配置。
+// cursorKey 處理游標階段的按鍵。
+//
+// **方向鍵與 I/J/K/M 都收。** 手冊 p.34 寫的是 I/J/K/M(Apple II 的菱形配置),
+// 但 DOS 版自己的字串是 `Use arrow keys to position cursor.`(CMBT:110/111)——
+// ⚠ 手冊講的是**另一個平台**(CLAUDE.md §6:套手冊之前先問這一頁講哪個平台),
+// 而模組裡的字串是 DOS 版自己說的話,證據等級較高。兩組都收,不必二選一。
 func (g *Game) cursorKey(k ebiten.Key) bool {
 	cu := g.cursor
 	if cu == nil {
 		return false
 	}
 	switch k {
-	case ebiten.KeyI:
+	case ebiten.KeyI, ebiten.KeyUp:
 		cu.y--
-	case ebiten.KeyM:
+	case ebiten.KeyM, ebiten.KeyDown:
 		cu.y++
-	case ebiten.KeyJ:
+	case ebiten.KeyJ, ebiten.KeyLeft:
 		cu.x--
-	case ebiten.KeyK:
+	case ebiten.KeyK, ebiten.KeyRight:
 		cu.x++
 	case ebiten.KeySpace:
 		g.castAt(cu.spell, cu.x, cu.y)

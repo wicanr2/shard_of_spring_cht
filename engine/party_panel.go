@@ -41,7 +41,7 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	y += lh * 0.5
 	g.panel.Draw(dst, fmt.Sprintf("金幣：%.0f", g.group.Gold), at(ui.ColNum), y)
 	y += lh
-	g.panel.Draw(dst, fmt.Sprintf("補給：%d", g.group.Provisions), at(ui.ColNum), y)
+	g.panel.Draw(dst, fmt.Sprintf("食糧：%d", g.group.Provisions), at(ui.ColNum), y)
 
 	// 提示列:**由實際會接手按鍵的場景自己說**(message.go 的 activeScene)。
 	// ⚠ 先前這裡是一個 switch,自己判斷「現在是哪個畫面」—— 與 Update() 的

@@ -244,8 +244,9 @@ func TestUseItem_NotMagicItemDoesNothing(t *testing.T) {
 	if g.members[0].Str != before {
 		t.Errorf("編號 ≤ 26 的道具不該改動任何屬性,Str 從 %d 變成 %d", before, g.members[0].Str)
 	}
-	if !strings.Contains(g.town.msg, "不是魔法道具") {
-		t.Errorf("訊息要講清楚它不是魔法道具:%q", g.town.msg)
+	// 措辭照 CAMP:91「You really can't make use of this!」(F3)。
+	if !strings.Contains(g.town.msg, "你真的沒辦法用這個!") {
+		t.Errorf("訊息要講清楚這件東西用不出效果:%q", g.town.msg)
 	}
 }
 

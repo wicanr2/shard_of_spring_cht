@@ -35,7 +35,7 @@ func (g SkillGate) String() string {
 	case SkillSpent:
 		return "你今天已經用過那項技能了。"
 	case SkillDisabled:
-		return "這位角色行動不能。"
+		return "這位角色行動不能!" // TOWN:39 / CAMP:131
 	case SkillIndoors:
 		return "你在室內!"
 	}

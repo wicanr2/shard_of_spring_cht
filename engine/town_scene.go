@@ -124,7 +124,7 @@ func (g *Game) townKey(k ebiten.Key) {
 		// 而 `C) Hamlet Hospital` 已經佔掉 C。同一個鍵兩個意思是
 		// 「按下去做了別的事」,而畫面上看不出哪裡錯。
 		if k == ebiten.KeyZ {
-			ts.mode, ts.msg = townCamp, ""
+			ts.mode, ts.msg = townCamp, "紮營中……" // WRLDMOVE:43 / MAZEMOVE:89
 		}
 	case townInn, townHealer, townTavern, townTrainer:
 		if k == ebiten.KeyEscape {
@@ -256,7 +256,7 @@ func (g *Game) townKey(k ebiten.Key) {
 			ts.msg = fmt.Sprintf("你們睡了一覺!吃掉 %d 份食糧(剩 %d)",
 				before-g.group.Provisions, g.group.Provisions)
 		case ebiten.KeyEscape:
-			ts.mode, ts.msg = townBuildings, ""
+			ts.mode, ts.msg = townBuildings, "拔營中……" // CAMP:19「Breaking Camp..」
 		}
 	}
 }
@@ -325,7 +325,7 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 
 	switch ts.mode {
 	case townBuildings:
-		p.Draw(dst, ts.name, x, y)
+		p.Draw(dst, "歡迎來到……"+ts.name, x, y) // WRLDMOVE:40
 		y += lh * 1.5
 		for i, s := range ts.shops {
 			p.Draw(dst, fmt.Sprintf("%c) %s", 'A'+i, s.Name), x, y)
@@ -335,7 +335,9 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		p.Draw(dst, "Z) 營地", x, y)
 
 	case townShop:
-		p.Draw(dst, fmt.Sprintf("%s　價格倍率 %.2f", ts.shop.Name, ts.shop.PriceMult), x, y)
+		// WRLDMOVE:42「Entering ...」—— 原版走進一間店時印的那一句。
+		p.Draw(dst, fmt.Sprintf("正在進入……%s　價格倍率 %.2f",
+			ts.shop.Name, ts.shop.PriceMult), x, y)
 		y += lh * 1.5
 		stock := ts.shopStock(g.itemList)
 		lo := ts.page * shopPageSize
@@ -346,8 +348,12 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 				x+380, y)
 			y += lh
 		}
-		p.Draw(dst, fmt.Sprintf("第 %d／%d 頁　+ 下一頁　- 上一頁",
-			ts.page+1, ts.pages(g.itemList)), x, y+lh*0.5)
+		pageLine := fmt.Sprintf("第 %d／%d 頁　+ 下一頁　- 上一頁",
+			ts.page+1, ts.pages(g.itemList))
+		if ts.page+1 < ts.pages(g.itemList) {
+			pageLine += "　【更多】" // TOWN:11「[MORE]」
+		}
+		p.Draw(dst, pageLine, x, y+lh*0.5)
 
 	case townInn, townHealer, townTavern, townTrainer:
 		p.Draw(dst, ts.shop.Name+"　"+ts.shop.Kind.String(), x, y)
@@ -604,7 +610,8 @@ func (g *Game) buyProvisions(n int) {
 	}
 	g.group.Gold -= float64(price)
 	g.group.Provisions += n
-	g.town.msg = fmt.Sprintf("買了 %d 份食糧,花 %d 金幣(⚠ 單價未解)", n, price)
+	// TOWN:60「Done!」
+	g.town.msg = fmt.Sprintf("完成!買了 %d 份食糧,花 %d 金幣(⚠ 單價未解)", n, price)
 }
 
 // healMember 在治療所替第 i 位成員做一項服務。
@@ -627,7 +634,8 @@ func (g *Game) healMember(i int, k town.HealKind) {
 	if c.ID >= 1 && c.ID <= len(g.chars) {
 		g.chars[c.ID-1] = *c
 	}
-	g.town.msg = fmt.Sprintf("%s 接受「%s」,花 %d 金幣", c.Name, k.String(), cost)
+	// TOWN:20「Done!」
+	g.town.msg = fmt.Sprintf("完成!%s 接受「%s」,花 %d 金幣", c.Name, k.String(), cost)
 }
 
 // trainMember 讓第 i 位成員在訓練所升級。
@@ -755,7 +763,8 @@ func (g *Game) campLines(ts *townState) []string {
 		return []string{c.Name + "：W)武器?　A)防具?",
 			"（`ITEMS.DAT` 沒有「武器還是防具」這個欄位,分類在呼叫端）"}
 	}
-	out := []string{fmt.Sprintf("%s 的背包（%s,按字母選格）", c.Name, title)}
+	// CAMP:70「Letter?」—— 原版問完「哪一件」之後才問字母。
+	out := []string{fmt.Sprintf("%s 的背包（%s 字母?）", c.Name, title)}
 	return append(out, g.packLines(c)...)
 }
 
@@ -809,7 +818,8 @@ func (g *Game) buildingLines(ts *townState) []string {
 				town.Price(town.UnbindPerLv, ts.shop.PriceMult),
 				town.Price(town.ResurrectPerLv, ts.shop.PriceMult)),
 			"",
-			"按編號選人,再按 W 醫療 / P 解毒 / B 解除束縛 / R 復活：",
+			// TOWN:26「Enter character # to be healed, (ESC exits)」
+			"輸入要醫療的角色編號,(ESC離開)　再按 W 醫療 / P 解毒 / B 解除束縛 / R 復活",
 		}
 		for i, c := range g.members {
 			lines = append(lines, fmt.Sprintf("%d) %s　生命 %d／%d　%s　治療費 %d",
@@ -887,7 +897,7 @@ func (g *Game) hunt(who int) {
 	// (CAMP:65「The hunt was」+ CAMP:66/67「not successful.」/「successful!」)。
 	if n := town.HuntYield(g.rand); n > 0 {
 		g.group.Provisions += n
-		ts.msg = fmt.Sprintf("%s：這次打獵有收穫!補給 +%d（共 %d）", c.Name, n, g.group.Provisions)
+		ts.msg = fmt.Sprintf("%s：這次打獵有收穫!食糧 +%d（共 %d）", c.Name, n, g.group.Provisions)
 	} else {
 		ts.msg = c.Name + "：這次打獵沒有收穫。"
 	}

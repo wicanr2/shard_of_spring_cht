@@ -363,15 +363,18 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 	y += lh * 1.3
 	y = g.drawBoard(dst, x, y) + lh*0.5
 	if g.cursor != nil {
-		p.Draw(dst, fmt.Sprintf("選施法目標:%s　I/J/K/M 移動游標、空白鍵施放、ESC 取消",
+		// CMBT:110/111「Use arrow keys to position cursor.」
+		p.Draw(dst, fmt.Sprintf("選施法目標:%s　用方向鍵移動游標。(I/J/K/M 同效)空白鍵施放、ESC 取消",
 			g.cursor.spell.Name), x, y)
 		y += lh * 1.2
 	} else if g.actor >= 0 {
 		// ⚠ **按鍵表不寫在這裡** —— 提示列已經有一份(scene.go 的
 		// combatPrompt),兩份會各自演化;而且這一行加上按鍵表之後
 		// 長度超過主視野的框,字直接壓到右邊的隊伍面板上。
-		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d",
-			f.Units[g.actor].Name, g.points[g.actor], f.Units[g.actor].Speed), x, y)
+		// CMBT:41「FACING 」+ 42「MP=」—— 原版戰場的狀態列就這兩個標籤。
+		p.Draw(dst, fmt.Sprintf("輪到 %s　朝向 %s　行動點=%d／%d",
+			f.Units[g.actor].Name, facingName(f.Units[g.actor].Facing),
+			g.points[g.actor], f.Units[g.actor].Speed), x, y)
 		y += lh * 1.2
 	}
 
@@ -416,6 +419,21 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 		lines = lines[len(lines)-max:]
 	}
 	g.drawMessageLines(dst, lines)
+}
+
+// facingName 是四個朝向的中文。手冊 p.33 的戰場是俯視圖,北在上。
+func facingName(f combat.Facing) string {
+	switch f {
+	case combat.North:
+		return "北"
+	case combat.East:
+		return "東"
+	case combat.South:
+		return "南"
+	case combat.West:
+		return "西"
+	}
+	return "—" // 朝向 0 = 已離場(docs/re/103)
 }
 
 func unitLine(u combat.Unit) string {

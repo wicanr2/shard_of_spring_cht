@@ -43,14 +43,27 @@ const (
 	msgHeDies   = " 他死了!"       // 81 ` He Dies!`(隊員)
 	msgItDies   = " 牠死了!"       // 82 ` It dies!`(怪物)
 	msgPoisoned = "並中毒了!"      // 79 `and is poisoned!`(docs/re/191)
-	// 5/7 `Hands` —— 沒有武器時填進 `with` 後面的那個名字。
-	//
-	// ⚠ **哪一種單位拿到哪一個名字沒有讀到。** CMBT 的字串表開頭並排著
-	// `Hands` / `Fangs` / `Bite` / `None`(第 5–10 列),形狀像一張
-	// 「沒有武器時該叫什麼」的小表,但選用的判斷式沒讀 —— 所以這裡一律用
-	// 「拳頭」,⛔ 不自己編一條「怪物用獠牙、爬蟲用咬擊」的規則。
+	// 5/7 `Hands` —— 武器編號 60 的名字,兩列分別是「已鑑定」與「未鑑定」
+	// 兩張表的第 60 格,而**兩格的原文都是 `Hands`**(docs/re/192 §4),
+	// 所以引擎只用一個「拳頭」不會漏掉任何一種說法。
 	msgBareHands = "拳頭"
 )
+
+// naturalWeapons 是武器編號 59–62 的名字。
+//
+// 那四格**不在 `ITEMS.DAT` 裡**(檔案只有 57 筆)—— 是模組開場在
+// `CMBT 0x10463` 手工補進名稱陣列尾巴的(docs/re/192 §2)。
+//
+// ⚠ **這張表是武器與防具共用的** —— 屬性 4 與屬性 5 查同一個陣列
+// (docs/re/75 §1:未裝備時屬性 4 填 60、屬性 5 填 59)。
+// ⚠ **只有 61 找不到來源**:怪物欄5 是 0–13 與 62、角色走 0–56 與兩個哨兵。
+// ⛔ 不要為了把它用上去編一條「爬蟲用咬擊」的規則。
+var naturalWeapons = map[int]string{
+	59: "無",         // 9  `None` —— 沒穿防具
+	60: msgBareHands, // 5  `Hands` —— 沒拿武器
+	61: "咬擊",       // 10 `Bite` —— 沒有任何資料產得出這個編號
+	62: "獠牙",       // 6  `Fangs` —— 蛇與食屍鬼,就是中毒那五隻(docs/re/191)
+}
 
 // Outcome 是戰鬥的結束狀態。
 type Outcome int
@@ -162,23 +175,29 @@ func (f *Field) WeaponName(i int) string {
 	if i < 0 || i >= len(f.Units) {
 		return msgBareHands
 	}
-	if n := f.item(f.Units[i].Weapon).Name; n != "" {
+	return f.weaponName(f.Units[i].Weapon)
+}
+
+// weaponName 把武器編號翻成名字:先查 `ITEMS.DAT`,查不到再查自然武器表。
+//
+// 原版兩張表是**同一個陣列**(編號 0–56 從檔案讀、59–62 手工補),
+// 所以這裡的兩段查表其實是一段(docs/re/192 §2)。
+func (f *Field) weaponName(w int) string {
+	if n := f.item(w).Name; n != "" {
+		return n
+	}
+	if n, ok := naturalWeapons[w]; ok {
 		return n
 	}
 	return msgBareHands
 }
 
-// weaponPhrase 回傳「 使用 <武器>」。
+// weaponPhrase 回傳「 使用 <武器>」。原版那句 `with` 是無條件印的。
 //
-// 武器格用 60／99 當「沒有武器」的哨兵(docs/spec/01 §5、docs/formats/03),
-// 而 `ITEMS.DAT` 只有 0–56 有名字 —— 查不到名字就填 msgBareHands,
-// 原版那句 `with` 是無條件印的。
+// 武器格 59–62 是自然武器(docs/re/192),99 是「沒裝備」的哨兵 ——
+// 兩張表都查不到才退回 msgBareHands。
 func (f *Field) weaponPhrase(u Unit) string {
-	name := f.item(u.Weapon).Name
-	if name == "" {
-		name = msgBareHands
-	}
-	return msgWith + name
+	return msgWith + f.weaponName(u.Weapon)
 }
 
 // Outcome 判定戰鬥是否結束。docs/spec/07 §6。

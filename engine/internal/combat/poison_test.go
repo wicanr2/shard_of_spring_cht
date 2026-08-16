@@ -113,3 +113,42 @@ func TestPoisonSkipsTheDead(t *testing.T) {
 		t.Errorf("死亡分支不擲中毒骰,用掉 %d 顆", r.i)
 	}
 }
+
+// ── 自然武器名(docs/re/192)────────────────────────────────────────────
+
+// TestNaturalWeaponNames:59–62 不在 ITEMS.DAT 裡,名字要走手工補的那四格。
+func TestNaturalWeaponNames(t *testing.T) {
+	f := &Field{Items: map[int]Item{2: {Name: "短劍"}}}
+	for _, c := range []struct {
+		w    int
+		want string
+	}{
+		{2, "短劍"},   // 檔案裡的
+		{59, "無"},   // `None`
+		{60, "拳頭"},  // `Hands`
+		{61, "咬擊"},  // `Bite`
+		{62, "獠牙"},  // `Fangs`
+		{99, "拳頭"},  // 「沒裝備」的哨兵 → 退回赤手
+	} {
+		if got := f.weaponName(c.w); got != c.want {
+			t.Errorf("武器 %d 的名字應該是 %q,得到 %q", c.w, c.want, got)
+		}
+	}
+}
+
+// TestPoisonWeaponIsFangs 把 191 與 192 綁在一起:會下毒的那個編號,
+// 名字必須是「獠牙」。兩個結論來自不同的碼段,對不上就是有一邊讀錯了。
+func TestPoisonWeaponIsFangs(t *testing.T) {
+	if got := naturalWeapons[PoisonWeapon]; got != "獠牙" {
+		t.Errorf("武器 %d 應該叫獠牙,得到 %q", PoisonWeapon, got)
+	}
+}
+
+// TestSnakeAttackSaysFangs:訊息裡真的印得出來(接線,不只是查表)。
+func TestSnakeAttackSaysFangs(t *testing.T) {
+	f := poisonField(&scriptRand{floats: []float64{0.0, 0.0, 0.99}})
+	f.Attack(MonsterBase, PartyBase)
+	if last := f.Log[len(f.Log)-1]; !strings.Contains(last, "使用 獠牙") {
+		t.Errorf("毒蛇攻擊要說「使用 獠牙」,得到 %q", last)
+	}
+}

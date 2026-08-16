@@ -35,7 +35,6 @@ const (
 	inspectMagic  = "魔法： "     // 186
 	inspectArmor  = "護甲等級："  // 187
 	inspectWeapon = "攻擊方式："  // 188
-	inspectNone   = "無"          // 9 `None`
 	inspectScroll = "(ESC,捲動)" // 191 + 192
 )
 

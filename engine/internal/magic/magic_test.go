@@ -106,17 +106,27 @@ func TestUnresolvedEffectsChangeNothing(t *testing.T) {
 }
 
 // 驗收 7:魔法道具的門檻是**大於** 26。
+//
+// ⚠ 欄6 是**損壞**機率不是發動機率(docs/re/190)——`157` 讀對了判定式
+// 卻讀錯了那一支做什麼。這一組跟著改名,免得舊名字把錯誤的語意留在測試裡。
 func TestMagicItemThreshold(t *testing.T) {
-	always := &combat.ScriptRand{Values: []int{1}} // 一定成功
-	if ItemTriggers(26, 26, always) {
-		t.Error("編號 26 不是魔法道具(門檻是 > 26)")
+	always := &combat.ScriptRand{Values: []int{1}} // 擲出最小值 → 一定成立
+	if ItemBreaks(26, 26, always) {
+		t.Error("編號 26 不是魔法道具(門檻是 > 26),不該走損壞判定")
 	}
-	if !ItemTriggers(27, 26, always) {
-		t.Error("編號 27 且成功率 26 應必定發動")
+	if !ItemBreaks(27, 26, always) {
+		t.Error("編號 27 且損壞率 26,擲出 1 應該壞掉")
 	}
 	never := &combat.ScriptRand{Values: []int{combat.ToHitFaces}}
-	if ItemTriggers(27, 1, never) {
-		t.Error("擲出最大值且成功率 1,不該發動")
+	if ItemBreaks(27, 1, never) {
+		t.Error("擲出最大值且損壞率 1,不該壞掉")
+	}
+	// 資料面的兩個端點(docs/re/190 §3):火把 100 一用就沒、鑰匙 0 永遠不壞。
+	if !ItemBreaks(47, 100, never) {
+		t.Error("欄6 = 100(火把)應該一用就壞")
+	}
+	if ItemBreaks(49, 0, always) {
+		t.Error("欄6 = 0(鑰匙)應該永遠不壞")
 	}
 }
 

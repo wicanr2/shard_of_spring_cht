@@ -4,7 +4,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 7	ds:92F0	Hands	5	拳頭	4	Y		engine/internal/combat/field.go
 9	ds:9338	None	4	無	2	Y		engine/inspect_scene.go
 10	ds:9340	Bite	4	咬擊	4	Y	原版另有 `Fangs`/`Bite` 兩個沒有武器時的名字,但**選用的判斷式沒讀到** —— 引擎一律用 CMBT:5/7 的「拳頭」,不自己編一條規則(engine/internal/combat/field.go 的 msgBareHands)。	
-22	ds:94DE	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。道具損壞:魔法道具發動失敗時原版有機率弄壞它。	
+22	ds:94DE	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。道具損壞:魔法道具發動失敗時原版有機率弄壞它。	engine/use_item.go
 23	ds:9500	MONSTERS ALL DEAD	17	怪物全滅	8	Y		engine/internal/combat/field.go
 24	ds:951A	PARTY DIES!	11	隊伍全滅!	9	Y		engine/internal/combat/field.go
 26	ds:953A	DEAD	4	死亡	4	Y		engine/internal/original/chars.go

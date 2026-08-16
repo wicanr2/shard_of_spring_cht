@@ -81,7 +81,7 @@ type Item struct {
 	BasePrice int `json:"base_price"`
 	Col4      int `json:"col4"` // 裝備:傷害/護甲值  魔法道具:法術編號
 	Col5      int `json:"col5"` // 裝備:命中加值      魔法道具:投入的法術點數
-	Col6      int `json:"col6"` // 裝備:種類代碼      魔法道具:發動成功率(分母 26)
+	Col6      int `json:"col6"` // 裝備:種類代碼      魔法道具:**損壞率**(分母 100,docs/re/190)
 }
 
 // splitCSV 切原版的逗號分隔列。原版用 CRLF 分隔、0x1A 結尾。

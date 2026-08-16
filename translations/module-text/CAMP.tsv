@@ -79,7 +79,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 107	ds:77BA	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
 108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。同 106 列。	engine/camp_actions.go
 109	ds:780A	A roaring blast of wind buffets the party and when the noise subsides...	72	一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……	41	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。營地放某個法術之後的敘述(狂風),**是哪一個法術沒讀到**。	
-127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 CMBT:22(道具損壞)。	
+127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 CMBT:22(道具損壞)。	engine/use_item.go
 128	ds:7A2A	Spell Fails !	13	法術失效!	9	Y		engine/use_item.go
 130	ds:7A58	You don't have that skill.	26	你沒有那項技能。	16	Y	檔名/模組名,不是句子,⛔ 不譯 — spells.dat	engine/internal/town/camp.go
 131	ds:7A7E	That character is incapacitated.	32	這位角色行動不能。	18	Y		engine/internal/town/camp.go

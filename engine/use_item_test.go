@@ -122,10 +122,21 @@ func TestCombatUseItem_SelfTarget_AppliesEffectAndEndsTurn(t *testing.T) {
 	if g.actor == actor {
 		t.Errorf("回合應該換下一個人,g.actor 還是原本那位")
 	}
-	last := g.field.Log[len(g.field.Log)-1]
-	if !strings.Contains(last, "發動了「劍術」") {
-		t.Errorf("訊息要看得到法術名,got %q", last)
+	// ⚠ 找**整份 Log** 不是只看最後一行 —— 道具可能在效果之後壞掉
+	// (docs/re/190),那一句會排在後面。
+	if !logHas(g.field.Log, "發動了「劍術」") {
+		t.Errorf("訊息要看得到法術名,got %v", g.field.Log)
 	}
+}
+
+// logHas 回傳訊息紀錄裡有沒有哪一行含 sub。
+func logHas(log []string, sub string) bool {
+	for _, s := range log {
+		if strings.Contains(s, sub) {
+			return true
+		}
+	}
+	return false
 }
 
 func TestCombatUseItem_TossToAnother_AppliesEffectToTargetNotCaster(t *testing.T) {
@@ -164,9 +175,8 @@ func TestCombatUseItem_TossToAnother_AppliesEffectToTargetNotCaster(t *testing.T
 	if g.points[caster] != 0 {
 		t.Errorf("丟給別人一樣要結束施放者的回合,points = %d", g.points[caster])
 	}
-	last := g.field.Log[len(g.field.Log)-1]
-	if !strings.Contains(last, "丟給") || !strings.Contains(last, "米菈") {
-		t.Errorf("訊息要講清楚丟給誰,got %q", last)
+	if !logHas(g.field.Log, "丟給") || !logHas(g.field.Log, "米菈") {
+		t.Errorf("訊息要講清楚丟給誰,got %v", g.field.Log)
 	}
 }
 
@@ -413,5 +423,58 @@ func TestCampUseKey_StalePotionClearedOnReselect(t *testing.T) {
 	g.campUseKey(ebiten.Key1)
 	if g.campPotion != nil {
 		t.Errorf("重新選人應該清掉上一輪的殘留,got %+v", g.campPotion)
+	}
+}
+
+// ── 欄6 是損壞率不是發動率(docs/re/190)────────────────────────────────
+
+// TestMagicItemBreaksInsteadOfFailing 釘住這個方向。
+//
+// ⚠ 讀反了**沒有症狀**:戒指有時有效有時沒效,在這類遊戲裡看起來完全正常。
+// 這一條驗的是「法術照樣發動」+「壞掉的道具離開背包」兩件事一起成立。
+func TestMagicItemBreaksInsteadOfFailing(t *testing.T) {
+	g := newCombatUseItemTestGame(t)
+	actor := g.actor
+	// 欄6 = 100 → 必壞(火把那一類,docs/re/190 §3)
+	for i := range g.itemList {
+		if g.itemList[i].Index == g.members[0].Pack[0] {
+			g.itemList[i].Col6 = 100
+		}
+	}
+	before := g.field.Units[actor].Str
+
+	g.openUseItem()
+	g.pickUseItem(0)
+	g.combatPotionKey(ebiten.KeyY)
+
+	if g.field.Units[actor].Str == before {
+		t.Error("欄6 = 100 是「一定壞」不是「一定不發動」—— 法術該照樣生效")
+	}
+	if !logHas(g.field.Log, "道具損壞了!") {
+		t.Errorf("壞掉要說「道具損壞了!」,got %v", g.field.Log)
+	}
+	if g.members[0].Pack[0] != original.NotEquipped {
+		t.Errorf("壞掉的道具該離開背包,第 0 格還是 %d", g.members[0].Pack[0])
+	}
+}
+
+// TestMagicItemWithZeroBreakChanceSurvives:欄6 = 0(鑰匙那一類)永遠不壞。
+func TestMagicItemWithZeroBreakChanceSurvives(t *testing.T) {
+	g := newCombatUseItemTestGame(t)
+	idx := g.members[0].Pack[0]
+	for i := range g.itemList {
+		if g.itemList[i].Index == idx {
+			g.itemList[i].Col6 = 0
+		}
+	}
+	g.openUseItem()
+	g.pickUseItem(0)
+	g.combatPotionKey(ebiten.KeyY)
+
+	if logHas(g.field.Log, "道具損壞了!") {
+		t.Errorf("欄6 = 0 不該壞,got %v", g.field.Log)
+	}
+	if g.members[0].Pack[0] != idx {
+		t.Errorf("欄6 = 0 的道具該留在背包,第 0 格變成 %d", g.members[0].Pack[0])
 	}
 }

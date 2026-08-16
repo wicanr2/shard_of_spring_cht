@@ -293,18 +293,24 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		Message: fmt.Sprintf("%s 的效果類別 %d 不在規格裡", name, s.Effect)}
 }
 
-// ItemTriggers 判定一件魔法道具這次有沒有發動(docs/spec/09 §5)。
+// ItemBreaks 判定一件魔法道具這次用完會不會壞掉(docs/re/190)。
 //
-// **分母是 100,欄6 就是百分比**(docs/re/157):原版在 CMBT 0x17C67 擲
+// **分母是 100,欄6 就是百分比**(docs/re/157):原版在 `CMBT 0x17C67` 擲
 // `INT(RND × ds:977E) + 1` 再比 `≤ 欄6`,而 ds:977E = 100(docs/re/154)。
+//
+// ⚠ **欄6 是「壞掉」的機率,不是「發動」的機率**(docs/re/190)。
+// `157` 讀對了判定式卻讀錯了那一支做什麼 —— 結論在**旗標的消費端**,
+// 而那一端印的是 `Item Breaks !` 並把背包那一格清掉。
+//
+// ⚠ 讀反了**沒有症狀**:戒指有時有效有時沒效,在這類遊戲裡看起來完全正常。
+// 資料面的印證:火把／油燈欄6 = 100(一用就沒了 ✅,不是「必定發動」)、
+// 鑰匙欄6 = 0(永遠不壞 ✅,不是「永遠打不開門」)。
 //
 // ⚠ 這裡曾經用 26,理由是「與傷害公式的骰面同一個數」—— 而那個 26 是幻影
 // (`mov bx, 1Ah` 的 0x1A 是浮點累加器的位址,docs/re/153 §9)。
-// 借用 ToHitFaces 那一版**碰巧是對的**,但當時沒有依據:
-// 借錯了不會有任何症狀。
-func ItemTriggers(itemIndex, successRate int, r combat.Rand) bool {
+func ItemBreaks(itemIndex, breakChance int, r combat.Rand) bool {
 	if itemIndex <= MagicItemMin {
 		return false // 不是魔法道具
 	}
-	return r.Roll(combat.ToHitFaces) <= successRate
+	return r.Roll(combat.ToHitFaces) <= breakChance
 }

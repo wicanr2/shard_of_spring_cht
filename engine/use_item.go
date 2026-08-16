@@ -100,20 +100,24 @@ func (g *Game) useItemOn(who, slot, target int) {
 		ts.msg = fmt.Sprintf("%s：%s 的資料查不到,用不出效果。", c.Name, name)
 		return
 	}
-	if !magic.ItemTriggers(idx, it.Col6, g.rand) {
-		if self {
-			ts.msg = fmt.Sprintf("%s 用了%s,法術失效!", c.Name, name)
-		} else {
-			ts.msg = fmt.Sprintf("%s 把%s交給 %s,法術失效!", c.Name, name, tgt.Name)
-		}
-		return
-	}
 	s, ok := g.spellByIndex(it.Col4)
 	if !ok {
-		ts.msg = fmt.Sprintf("%s 用了%s,發動了,但對應的法術（編號 %d）查不到。", c.Name, name, it.Col4)
+		// CAMP:128「Spell Fails !」—— 道具指到的法術查不到。
+		// ⚠ 原版這一句的**實際條件沒讀到**(docs/re/190 §5),
+		// 這裡接在引擎唯一會「發動不出法術」的地方。
+		ts.msg = fmt.Sprintf("%s 用了%s,法術失效!(編號 %d 查不到)", c.Name, name, it.Col4)
 		return
 	}
 	invest := it.Col5
+	// 欄6 是**損壞**機率不是發動機率(docs/re/190)—— 法術照樣發動,
+	// 用完之後另擲一次看道具會不會壞。先擲後套是為了訊息的順序。
+	broke := magic.ItemBreaks(idx, it.Col6, g.rand)
+	defer func() {
+		if broke {
+			g.breakItem(c, slot)
+			ts.msg += "　道具損壞了!" // CAMP:127
+		}
+	}()
 
 	if self {
 		cUnit := campUnit(*c)
@@ -134,6 +138,25 @@ func (g *Game) useItemOn(who, slot, target int) {
 	g.syncMember(*tgt)
 	ts.msg = fmt.Sprintf("%s 把%s交給 %s,發動了「%s」：%s",
 		c.Name, name, tgt.Name, s.Name, campNoChange(r)) // CAMP:92 的 G)ive
+}
+
+// breakItem 把壞掉的道具從背包移除(docs/re/190)。
+//
+// ⚠ **裝備欄要跟著卸下** —— 位移 34/36 指的是背包格號,格子清空之後
+// 那兩個欄位會指向一個空格,而那個錯誤不會報錯(同 D)rop 那一支的處理)。
+// ⚠ 原版有沒有清裝備欄**沒讀到**(docs/re/190 §5),這裡照丟棄那一支做。
+func (g *Game) breakItem(c *original.Character, slot int) {
+	if slot < 0 || slot >= len(c.Pack) {
+		return
+	}
+	if c.Weapon == slot {
+		c.Weapon = original.NotEquipped
+	}
+	if c.Armor == slot {
+		c.Armor = original.NotEquipped
+	}
+	c.Pack[slot] = original.NotEquipped
+	g.syncMember(*c)
 }
 
 // campNoChange 是營地**用道具**那一條路的「什麼都沒發生」措辭(CAMP:106)。
@@ -339,17 +362,14 @@ func (g *Game) finishUseItem(slot, target int) {
 		switch {
 		case !ok:
 			f.Log = append(f.Log, fmt.Sprintf("%s：%s 的資料查不到,用不出效果。", caster.Name, name))
-		case !magic.ItemTriggers(itemIdx, it.Col6, g.rand):
-			if self {
-				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,法術失效!", caster.Name, name))
-			} else {
-				f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s,法術失效!",
-					caster.Name, name, f.Units[target].Name))
-			}
 		default:
+			// 欄6 是**損壞**機率不是發動機率(docs/re/190)。
+			broke := magic.ItemBreaks(itemIdx, it.Col6, g.rand)
 			s, ok := g.spellByIndex(it.Col4)
 			if !ok {
-				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,發動了,但對應的法術（編號 %d）查不到。",
+				// CMBT:141「Spell Fails」—— 實際條件沒讀到(docs/re/190 §5),
+				// 接在引擎唯一會「發動不出法術」的地方。
+				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,法術失效!(編號 %d 查不到)",
 					caster.Name, name, it.Col4))
 			} else {
 				// ⚠ 給別人用 vs 自己用有沒有效果差別**未解**——這裡是「目標
@@ -361,6 +381,11 @@ func (g *Game) finishUseItem(slot, target int) {
 					f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s,發動了「%s」：%s", // CMBT:165 的 T)oss
 						caster.Name, name, f.Units[target].Name, s.Name, r.Message))
 				}
+			}
+			if broke {
+				// CMBT:22「Item Breaks !」
+				g.breakItem(&g.members[idx], slot)
+				f.Log = append(f.Log, name+" 道具損壞了!")
 			}
 		}
 	}

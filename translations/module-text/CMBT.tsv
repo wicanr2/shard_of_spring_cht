@@ -19,7 +19,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 58	ds:96C2	Gold:	5	金幣：	6	Y		engine/exp.go
 59	ds:96CC	Gold:	5	金幣：	6	Y		engine/exp.go
 60	ds:96D8	 found 	7	 找到了 	8	8		engine/exp.go
-61	ds:96F6	finds	5	找到了	6	6	`finds` 是「某人找到一件道具」那一句(與 60 的 ` found ` 不同上下文),引擎的迷宮/戰鬥都不掉道具 —— 見 docs/spec/19-coverage.md §2.3。	
+61	ds:96F6	finds	5	找到了	6	6	⛔ 規則讀了一大半但**還差一步**(docs/re/200 §3.2):值域 2–46、三個常數(0.575/0.5/2)都讀出來了,但擲骰算式裡有三個 `INT 3F` 索引語意未知 —— 補上去會得到分佈錯誤而永遠沒人發現的掉落表。照 CLAUDE.md §2 的閘門不實作。	
 62	ds:9700	Do you take it?	15	要撿嗎?	7	Y		engine/exp.go
 63	ds:9714	(Y/N)	5	(Y/N)	5	Y		engine/exp.go
 69	ds:9758	attacks 	8	攻擊 	5	Y		engine/internal/combat/field.go

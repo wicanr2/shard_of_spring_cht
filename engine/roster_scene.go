@@ -33,6 +33,18 @@ type rosterState struct {
 	// docs/spec/15 §4),J)oin 沒辦法像遊戲中那樣直接假設「就是現在這隊」——
 	// 要現場問玩家選第幾隊(docs/spec/15 §5.1 的延伸)。
 	joinPick bool
+	// disbandPick:D)isband 正在問「解散第幾隊」(1–5,0 離開)。
+	disbandPick bool
+	// rename 非 nil = N)ew Name 的文字輸入開著。
+	rename *renameState
+	// info 非空 = I)nformation 的隊伍資訊頁開著,內容是要顯示的幾行。
+	info []string
+}
+
+// renameState 是 N)ew Name 的輸入狀態(CHARUTIL:7/8)。
+type renameState struct {
+	slot int    // 名冊索引
+	text string // 目前打到哪
 }
 
 // openRoster 讀名冊。名冊是 CHARS.DAT 全部 25 槽,不只在隊的那五個。
@@ -45,14 +57,30 @@ func (g *Game) openRoster() {
 }
 
 // rosterKey 處理名冊畫面的按鍵。
+//
+// 助憶鍵照原版(DOSBox 實跑,docs/re/143):
+//
+//	* Characters *  C)reate  R)emove  N)ew Name
+//	* Parties *     D)isband  J)oin  I)nformation  E)xit
 func (g *Game) rosterKey(k ebiten.Key) {
 	r := g.roster
-	if r.joinPick {
+	switch {
+	case r.info != nil:
+		// CHARUTIL:50「Any key to continue, (Q quits)...」—— 任意鍵關掉。
+		r.info = nil
+		return
+	case r.rename != nil:
+		g.rosterRenameKey(k)
+		return
+	case r.joinPick:
 		g.rosterJoinPick(k)
+		return
+	case r.disbandPick:
+		g.rosterDisbandPick(k)
 		return
 	}
 	switch k {
-	case ebiten.KeyEscape:
+	case ebiten.KeyEscape, ebiten.KeyE: // E)xit
 		r.open = false
 		g.saveRoster()
 	case ebiten.KeyUp:
@@ -65,22 +93,166 @@ func (g *Game) rosterKey(k ebiten.Key) {
 		}
 	case ebiten.KeyC: // C)reate
 		g.openCreate()
-	case ebiten.KeyJ: // J)OIN —— 沿用原版的助憶鍵
+	case ebiten.KeyJ: // J)oin
 		g.rosterJoin()
-	case ebiten.KeyD: // D)ISBAND / 移出隊伍
-		c := &g.chars[r.cursor]
-		town.LeaveParty(c, &g.group)
-		r.msg = c.Name + " 已離隊"
-	case ebiten.KeyX: // 刪除
+	case ebiten.KeyN: // N)ew Name
+		g.rosterRename()
+	case ebiten.KeyI: // I)nformation
+		g.rosterInfo()
+	case ebiten.KeyD: // D)isband —— 解散**整支隊伍**,不是把一個人移出去
+		r.disbandPick = true
+		r.msg = "要解散第幾隊　(0離開) ?" // CHARUTIL:52/70「 (0 exits) ? 」
+	case ebiten.KeyR: // R)emove
 		c := &g.chars[r.cursor]
 		if p, in := c.InParty(); in {
-			r.msg = fmt.Sprintf("%s 還在第 %d 隊,要先離隊", c.Name, p)
+			r.msg = fmt.Sprintf("%s 還在第 %d 隊,要先解散那一隊", c.Name, p)
 			return
 		}
 		name := c.Name
 		town.Delete(c)
 		r.msg = name + " 已刪除!" // CHARUTIL:53
 	}
+}
+
+// rosterRename 開始改名(CHARUTIL:7)。
+func (g *Game) rosterRename() {
+	r := g.roster
+	c := g.chars[r.cursor]
+	if !c.Occupied() {
+		r.msg = "這個槽位沒有角色"
+		return
+	}
+	r.rename = &renameState{slot: r.cursor}
+	r.msg = "要改名哪位角色?　" + c.Name
+}
+
+// rosterRenameRunes 收字元。名字沿用建立角色那一套上限。
+//
+// ⚠ **上限是 10 不是 9。** 原版自己打架:`TITLES.DAT` 第 89 列寫
+// `name (10 char)`、`CHARUTIL` 的提示寫 `(9 char max)`,而記錄欄位是
+// 10 bytes(docs/spec/19-module-text.md §4)。裁決之前照記錄欄位走,
+// 所以畫面上印的數字**不是**原版提示的那個 9。
+func (g *Game) rosterRenameRunes(rs []rune) {
+	st := g.roster.rename
+	if st == nil {
+		return
+	}
+	for _, ch := range rs {
+		if ch < ' ' || ch == 127 {
+			continue
+		}
+		if len([]rune(st.text)) >= town.NameMaxRunes {
+			return
+		}
+		st.text += string(ch)
+	}
+}
+
+// rosterRenameKey 處理改名的控制鍵。
+func (g *Game) rosterRenameKey(k ebiten.Key) {
+	r := g.roster
+	st := r.rename
+	switch k {
+	case ebiten.KeyEscape:
+		r.rename, r.msg = nil, ""
+	case ebiten.KeyBackspace:
+		if rs := []rune(st.text); len(rs) > 0 {
+			st.text = string(rs[:len(rs)-1])
+		}
+	case ebiten.KeyEnter, ebiten.KeyKPEnter:
+		if st.text == "" {
+			return
+		}
+		c := &g.chars[st.slot]
+		old := c.Name
+		town.Rename(c, st.text)
+		g.syncMember(*c)
+		r.rename = nil
+		r.msg = old + " → " + c.Name
+	}
+}
+
+// rosterDisbandPick 收「解散第幾隊」的答案。
+func (g *Game) rosterDisbandPick(k ebiten.Key) {
+	r := g.roster
+	if k == ebiten.KeyEscape {
+		r.disbandPick, r.msg = false, ""
+		return
+	}
+	n := countKey(k) // town_scene.go
+	if n < 0 {
+		return // 不是數字就繼續等
+	}
+	r.disbandPick = false
+	if n == 0 {
+		r.msg = ""
+		return
+	}
+	g.disbandParty(n)
+}
+
+// disbandParty 解散第 n 隊:把成員全部移出。
+//
+// ⚠ **不解散正在玩的那一隊。** 那會讓遊戲當場沒有隊員可以行動,
+// 而原版的 `CHARUTIL` 是**獨立的程式**,根本不會在遊戲進行中被叫起來 ——
+// 引擎把名冊併進遊戲裡,這道保護是併進來之後才需要的。
+func (g *Game) disbandParty(n int) {
+	r := g.roster
+	if n == g.slot {
+		r.msg = fmt.Sprintf("第 %d 隊正在遊戲中,不能解散", n)
+		return
+	}
+	var freed int
+	for i := range g.chars {
+		if p, in := g.chars[i].InParty(); in && p == n {
+			g.chars[i].Party = original.NoParty
+			freed++
+		}
+	}
+	if freed == 0 {
+		r.msg = fmt.Sprintf("沒有隊伍 #%d 可解散!", n) // CHARUTIL:58+59
+		return
+	}
+	groups, err := g.readGroupSlots()
+	if err != nil {
+		r.msg = "讀取隊伍失敗:" + err.Error()
+		return
+	}
+	if n >= 1 && n <= len(groups) {
+		for i := range groups[n-1].Members {
+			groups[n-1].Members[i] = 0
+		}
+	}
+	if err := writeGroups(g.savePath, groups); err != nil {
+		r.msg = "隊伍存檔失敗:" + err.Error()
+		return
+	}
+	r.msg = fmt.Sprintf("第 %d 隊已解散(%d 人)", n, freed)
+}
+
+// rosterInfo 組出 I)nformation 的隊伍資訊頁(CHARUTIL:39/42/44/45/50)。
+func (g *Game) rosterInfo() {
+	r := g.roster
+	groups, err := g.readGroupSlots()
+	if err != nil {
+		r.msg = "讀取隊伍失敗:" + err.Error()
+		return
+	}
+	out := []string{}
+	for i, grp := range groups {
+		n := i + 1
+		if grp.Blank() {
+			out = append(out, fmt.Sprintf("隊伍 #%d　（空）", n))
+			continue
+		}
+		where := fmt.Sprintf("目前位於 (%d,%d)", grp.WorldX, grp.WorldY)
+		if grp.MazeX > 0 || grp.MazeY > 0 {
+			where += fmt.Sprintf("　地城： (%d,%d)", grp.MazeX, grp.MazeY)
+		}
+		out = append(out, fmt.Sprintf("隊伍 #%d　金幣：%.0f　食糧：%d", n, grp.Gold, grp.Provisions))
+		out = append(out, fmt.Sprintf("　　存檔於月份 %d 日 %d　%s", grp.Month, grp.Day, where))
+	}
+	r.info = append(out, "", "按任意鍵繼續,(Q離開)……") // CHARUTIL:50
 }
 
 // rosterJoin 開始「加入隊伍」。
@@ -306,5 +478,21 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 		p.Draw(dst, party, col(cParty), y)
 		y += lh
 	}
-	g.drawMessage(dst, r.msg)
+	// I)nformation 的資訊頁蓋在名單上 —— 兩層字疊在一起讀不出來。
+	if r.info != nil {
+		y = float64(layout.View.Y+ui.PanelPad) + lh*1.3
+		for _, ln := range r.info {
+			p.Draw(dst, ln, x, y)
+			y += lh
+		}
+		return
+	}
+	msg := r.msg
+	if r.rename != nil {
+		// CHARUTIL:8「Please enter the new name (…): 」
+		// ⚠ 數字用引擎的上限,不是原文那個 9(rosterRenameRunes 有說明)。
+		msg = fmt.Sprintf("請輸入新名字(最多%d個字元)：%s_",
+			town.NameMaxRunes, r.rename.text)
+	}
+	g.drawMessage(dst, msg)
 }

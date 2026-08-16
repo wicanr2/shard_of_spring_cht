@@ -445,6 +445,11 @@ func (s rosterHotkey) Prompt() string     { return "" }
 func (s rosterHotkey) Name() string       { return "roster-hotkey" }
 func (s rosterHotkey) Draw(*ebiten.Image) {}
 func (s rosterHotkey) Handles(in Input) bool {
+	// ⚠ 名冊**已經開著**時不接手 —— 名冊裡的 `N` 是 N)ew Name(改名),
+	// 被這個熱鍵吃掉的話改名鍵在畫面上完全沒有反應。
+	if s.g.roster != nil && s.g.roster.open {
+		return false
+	}
 	playing := s.g.shell == nil || s.g.shell.mode == shellPlaying
 	return playing && in.Pressed(ebiten.KeyN)
 }
@@ -478,12 +483,17 @@ func (s createScene) Update(in Input) Transition {
 type rosterScene struct{ g *Game }
 
 func (s rosterScene) Prompt() string {
-	return "↑↓：選　　J：入隊　　D：離隊　　X：刪除　　ESC：返回"
+	// 助憶鍵照原版(docs/re/143):C)reate R)emove N)ew Name / D)isband J)oin
+	// I)nformation E)xit。
+	return "↑↓選　C造角色　R刪除　N改名　J入隊　D解散　I資訊　E離開"
 }
 func (s rosterScene) Name() string         { return "roster" }
 func (s rosterScene) Handles(Input) bool   { return s.g.roster != nil && s.g.roster.open }
 func (s rosterScene) Draw(d *ebiten.Image) { s.g.drawRoster(d) }
 func (s rosterScene) Update(in Input) Transition {
+	// 文字輸入要在按鍵之前收 —— Enter 會把 rename 收掉,
+	// 收完之後那一格的 Runes 就沒有地方去了。
+	s.g.rosterRenameRunes(in.Runes)
 	for _, k := range in.Keys {
 		s.g.rosterKey(k)
 	}

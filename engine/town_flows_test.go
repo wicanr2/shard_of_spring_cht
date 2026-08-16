@@ -152,3 +152,108 @@ func TestPartyAllDeadIsBlocked(t *testing.T) {
 		t.Error("一個成員都沒有的隊伍不算全滅 —— 那是「不存在」,另一句話")
 	}
 }
+
+// ── 名冊:F3 補回來的原版四個指令(docs/re/143 的助憶鍵)────────────────
+
+func newRosterGame(t *testing.T) *Game {
+	t.Helper()
+	g := newPlayingGame(t)
+	g.openRoster()
+	return g
+}
+
+// TestRosterRename 釘住 N)ew Name —— 規則層(town.Rename)一直都在,
+// **缺的是接線**,而選單上沒列出來所以「按不到」不像壞掉(19-coverage §2.1)。
+func TestRosterRename(t *testing.T) {
+	g := newRosterGame(t)
+	for i := range g.chars {
+		if g.chars[i].Occupied() {
+			g.roster.cursor = i
+			break
+		}
+	}
+	old := g.chars[g.roster.cursor].Name
+
+	g.testRunes = nil
+	press(t, g, ebiten.KeyN)
+	if g.roster.rename == nil {
+		t.Fatal("N 應該開改名輸入")
+	}
+	g.rosterRenameRunes([]rune("阿"))
+	g.rosterRenameKey(ebiten.KeyEnter)
+	if g.roster.rename != nil {
+		t.Error("Enter 之後輸入狀態要收掉")
+	}
+	if got := g.chars[g.roster.cursor].Name; got != "阿" {
+		t.Errorf("改名沒生效:%q → %q", old, got)
+	}
+}
+
+// TestRosterRenameRespectsLimit:上限是記錄欄位的 10,不是原版提示的 9
+// (spec/19 §4 的矛盾在裁決之前照記錄走)。
+func TestRosterRenameRespectsLimit(t *testing.T) {
+	g := newRosterGame(t)
+	g.roster.rename = &renameState{slot: 0}
+	g.rosterRenameRunes([]rune("一二三四五六七八九十百千"))
+	if got := len([]rune(g.roster.rename.text)); got != town.NameMaxRunes {
+		t.Errorf("輸入應該夾在 %d 個字,得到 %d", town.NameMaxRunes, got)
+	}
+}
+
+// TestRosterNKeyNotSwallowedByHotkey:名冊開著時 N 是改名,不是「再開一次名冊」。
+//
+// ⚠ 這條擋的是派工表的坑:rosterHotkey 排在 rosterScene 前面,
+// 只要它對 N 回 true,改名鍵就永遠到不了名冊 —— 而畫面上完全看不出來。
+func TestRosterNKeyNotSwallowedByHotkey(t *testing.T) {
+	g := newRosterGame(t)
+	in := Input{Keys: []ebiten.Key{ebiten.KeyN}}
+	if (rosterHotkey{g}).Handles(in) {
+		t.Error("名冊開著時 N 不該被熱鍵接手")
+	}
+}
+
+// TestDisbandRefusesActiveParty:不解散正在玩的那一隊。
+func TestDisbandRefusesActiveParty(t *testing.T) {
+	g := newRosterGame(t)
+	if g.slot < 1 {
+		t.Skipf("這個 fixture 沒有目前隊伍(slot=%d)", g.slot)
+	}
+	before := append([]original.Character(nil), g.chars...)
+	g.disbandParty(g.slot)
+	if !strings.Contains(g.roster.msg, "不能解散") {
+		t.Errorf("解散正在玩的隊伍要擋下來,得到 %q", g.roster.msg)
+	}
+	for i := range g.chars {
+		if g.chars[i].Party != before[i].Party {
+			t.Fatalf("被擋下來卻還是動了第 %d 槽的隊伍欄", i+1)
+		}
+	}
+}
+
+// TestDisbandEmptyPartySaysSo:空隊伍要說「沒有隊伍 #N 可解散!」(CHARUTIL:58/59)。
+func TestDisbandEmptyPartySaysSo(t *testing.T) {
+	g := newRosterGame(t)
+	empty := 0
+	for n := 1; n <= original.GroupSlots; n++ {
+		if n == g.slot {
+			continue
+		}
+		used := false
+		for i := range g.chars {
+			if p, in := g.chars[i].InParty(); in && p == n {
+				used = true
+			}
+		}
+		if !used {
+			empty = n
+			break
+		}
+	}
+	if empty == 0 {
+		t.Skip("這份名冊每一隊都有人")
+	}
+	g.disbandParty(empty)
+	if !strings.Contains(g.roster.msg, "可解散!") {
+		t.Errorf("空隊伍要說「沒有隊伍 #N 可解散!」,得到 %q", g.roster.msg)
+	}
+}

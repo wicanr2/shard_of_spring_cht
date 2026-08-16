@@ -1,9 +1,9 @@
 package main
 
 import (
-	"os"
 	"bytes"
 	"fmt"
+	"os"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
 

@@ -29,7 +29,6 @@ var Ending = []string{
 	"MB T108 O3 L8 BA", "O3 L8 G", "O3 L3 G",
 }
 
-
 // Userlib 是 `USERLIB.EXE` `0x0180E`–`0x01868` 的五段。
 //
 // ⚠ `T50` 比 Ending 慢一半;`USERLIB` 的匯出槽裡有死亡與結局兩個,

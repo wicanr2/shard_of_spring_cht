@@ -126,6 +126,11 @@ func (g *Game) rosterRename() {
 	r.msg = "要改名哪位角色?　" + c.Name
 }
 
+// renamePrompt 是 CHARUTIL:8。**數字寫死**,因為它要與原版逐字相同
+// (`tools/check_module_text.py` 比對的是字面);
+// `TestRenamePromptMatchesLimit` 釘住它與 `town.NameMaxRunes` 不會走散。
+const renamePrompt = "請輸入新名字(最多9個字元)："
+
 // rosterRenameRunes 收字元。名字沿用建立角色那一套上限。
 //
 // 上限是 **9**(`town.NameMaxRunes`,docs/re/199):原版創造與改名兩處都把
@@ -490,8 +495,7 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 	if r.rename != nil {
 		// CHARUTIL:8「Please enter the new name (9 char max): 」——
 		// 數字與原版一致(docs/re/199)。
-		msg = fmt.Sprintf("請輸入新名字(最多%d個字元)：%s_",
-			town.NameMaxRunes, r.rename.text)
+		msg = renamePrompt + r.rename.text + "_"
 	}
 	g.drawMessage(dst, msg)
 }

@@ -18,6 +18,7 @@ import (
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/original"
+	"shardofspring/internal/town"
 	"shardofspring/internal/rules"
 )
 
@@ -178,4 +179,96 @@ func TestTacticsLineNeedsARealTarget(t *testing.T) {
 	if got := g.tacticsLine(mon); got != "" {
 		t.Errorf("沒有鎖定對象時不該顯示,得到 %q", got)
 	}
+}
+
+// ── 戰後掉落(docs/re/200)────────────────────────────────────────────
+
+// TestLootIndexRange:編號永遠落在 2–46。
+func TestLootIndexRange(t *testing.T) {
+	for gold := 0; gold <= 2000; gold += 37 {
+		for seed := 1; seed <= 5; seed++ {
+			v := combat.LootIndex(gold, combat.NewRand(uint64(seed)))
+			if v < combat.LootMin || v > combat.LootMax {
+				t.Fatalf("金幣 %d 種子 %d 擲出 %d,超出 %d–%d",
+					gold, seed, v, combat.LootMin, combat.LootMax)
+			}
+		}
+	}
+}
+
+// TestLootIndexIsTwoWhenNoGold:金幣 0 → G 是 0 → 兩個 RND 項都是 0 → 編號 2。
+func TestLootIndexIsTwoWhenNoGold(t *testing.T) {
+	if v := combat.LootIndex(0, combat.NewRand(9)); v != combat.LootMin {
+		t.Errorf("金幣 0 應該固定擲出 %d,得到 %d", combat.LootMin, v)
+	}
+}
+
+// TestLootIndexUsesTwoRolls:兩個獨立 RND 相加是三角分佈 ——
+// 若被簡化成一次 RND,分佈會變平。這裡用「靠近中位數的比例」當訊號。
+//
+// ⚠ 這條測的是**分佈不是值**:同樣的值域下,兩次相加會把結果拉向中間。
+func TestLootIndexUsesTwoRolls(t *testing.T) {
+	// ⚠ 金幣要挑到**不會觸發重擲**的量,否則截斷會把分佈整個扭掉:
+	// G = round(70 × 0.575) = 40 → 上界 40×0.5×2 + 2 = 42 < 46。
+	const gold, n = 70, 4000
+	mid, total := 0, 0
+	r := combat.NewRand(1234)
+	for i := 0; i < n; i++ {
+		v := combat.LootIndex(gold, r)
+		total++
+		if v >= 17 && v <= 27 { // 峰值 22 附近的四分之一寬
+			mid++
+		}
+	}
+	// 兩個均勻分佈相加 → P(|S−1| ≤ 0.25) = 0.4375;單次 RND 只有 0.25。
+	if got := float64(mid) / float64(total); got < 0.35 {
+		t.Errorf("中段比例 %.2f 太低 —— 分佈看起來像單次 RND,不像兩次相加", got)
+	}
+}
+
+// TestSpoilsOffersLootAndAnswerSticks:結算會問「要撿嗎?」,
+// 答 Y 東西進背包而且是**未鑑定**的,答 N 什麼都不留。
+func TestSpoilsOffersLootAndAnswerSticks(t *testing.T) {
+	for _, yes := range []bool{true, false} {
+		g := newPlayingGame(t)
+		for i := range g.members {
+			for s := range g.members[i].Pack {
+				g.members[i].Pack[s] = original.NotEquipped
+			}
+			g.members[i].Status = 0
+		}
+		g.pendingGold, g.pendingLoot = 0, nil
+		msg := g.awardSpoils(deadMonsters())
+		if g.pendingLoot == nil {
+			t.Fatalf("結算應該問一次掉落,訊息 %q", msg)
+		}
+		if !strings.Contains(msg, "要撿嗎?(Y/N)") {
+			t.Errorf("要問「要撿嗎?(Y/N)」,得到 %q", msg)
+		}
+		p := *g.pendingLoot
+		g.takeLoot(yes)
+		got := g.members[p.who].Pack[p.slot]
+		if yes && got != p.item {
+			t.Errorf("答 Y 應該把 %d 放進第 %d 格,得到 %d", p.item, p.slot, got)
+		}
+		if !yes && got != original.NotEquipped {
+			t.Errorf("答 N 不該放東西,第 %d 格變成 %d", p.slot, got)
+		}
+		if yes && town.IsIdentified(g.members[p.who], p.slot) {
+			t.Error("撿來的東西應該是未鑑定的(docs/re/168 §2)")
+		}
+		if g.pendingLoot != nil {
+			t.Error("答完之後 pendingLoot 要清掉")
+		}
+	}
+}
+
+// deadMonsters 擺一組被打倒的怪物,讓 TotalGold 一定 > 0。
+func deadMonsters() []combat.Unit {
+	var us [combat.Slots]combat.Unit
+	for i := 0; i < 3; i++ {
+		us[combat.MonsterBase+i] = combat.Unit{Name: "地精", IsMonster: true,
+			HP: 0, Tier: 5, Exp: 20}
+	}
+	return us[:]
 }

@@ -344,6 +344,22 @@ func (s combatScene) Update(in Input) Transition {
 			return TransitionStay
 		}
 	}
+	// 戰後的兩個「要撿嗎?(Y/N)」(CMBT:62/63)——金幣先問、道具後問。
+	//
+	// ⚠ **先前這兩個問句印得出來卻答不了**:`takeGold` 只有測試在呼叫,
+	// 畫面上按 Y 沒有任何反應。那個缺口沒有症狀 ——
+	// 問句照樣出現,玩家只會以為自己按錯鍵(docs/spec/19-coverage §2.1 的同一類)。
+	if g.field.Outcome() != combat.Ongoing {
+		if yes, no := in.Pressed(ebiten.KeyY), in.Pressed(ebiten.KeyN); yes || no {
+			switch {
+			case g.pendingGold > 0:
+				g.takeGold(yes)
+			case g.pendingLoot != nil:
+				g.takeLoot(yes)
+			}
+			return TransitionStay
+		}
+	}
 	if in.Pressed(ebiten.KeyEscape) && g.field.Outcome() != combat.Ongoing {
 		g.leaveCombat()
 	}
@@ -361,6 +377,9 @@ func (g *Game) leaveCombat() {
 	outcome := g.field.Outcome()
 	f := g.field
 	g.field = nil
+	// 沒回答的「要撿嗎?」一律視為不撿(docs/re/200 §1.2)——
+	// ⚠ 靜靜地幫玩家撿起來會讓那句問話變成假的。
+	g.pendingGold, g.pendingLoot = 0, nil
 	switch {
 	case outcome == combat.PartyDead:
 		// A4 全滅(docs/spec/15 §6)。**不能帶著死掉的隊伍回世界地圖

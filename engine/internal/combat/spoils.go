@@ -1,5 +1,7 @@
 package combat
 
+import "math"
+
 // 戰利品:經驗值。整段算式讀出來了 —— docs/re/152。
 //
 //	每人所得 = INT( 九個怪物槽的屬性 19 總和 ÷ 有資格人數 )
@@ -55,19 +57,29 @@ func (u Unit) EarnsExp() bool { return !u.IsMonster && u.OnField() && u.Status <
 // 這裡不 import original,戰鬥層只認屬性編號。
 const StatusDead = 5
 
+// StatusIncapacitated 是「不能收東西」的門檻:狀態 **≥ 2** 的人
+// 在戰後掉落那一支會被跳過(`CMBT 0x130FA` 的 `cmp …, 2` / `jl`)。
+// 中毒(1)還算數,被縛(2)以上不算。
+const StatusIncapacitated = 2
+
 // TotalGold 回傳這一場戰鬥的金幣。
 //
 // ⚠ **這是具名的佔位,不是原版的公式。**
 //
-// 原版的管線讀出來了(docs/re/152 §2.3),形狀是:
+// 原版每隻怪物的形狀是(docs/re/152 §2.3、200 §3.2):
 //
-//	每隻怪物  FAC ← 難度階級 ^ ds:96B8 … 再一次次方 … × RND … + 1
-//	全部加完  總額 × ds:96E8,再走一次 × RND × 0.5
+//	FAC ← 難度階級 → ^ ds:96B8(1.7) → 存 → ^ ds:93C0(2.1) → 存
+//	→ RND × 後者 → + 前者 → + 1 → INT()
 //
-// 其中**兩個常數已經讀出來了**(docs/re/177 §6):兩次次方的指數分別是
-// `ds:96B8 = 1.7` 與 `ds:93C0 = 2.1`。**還缺的是組裝順序** ——
-// `INT 3F:71`/`3F:95`/`3F:85` 的運算元約定沒拆完,所以不知道
-// 哪一個乘上 RND、哪一個是底數。手冊沒有任何一頁講戰後金幣。
+// **運算子的約定已經定案**(`3F:71` 存、`3F:95` 乘、`3F:85` 加,
+// docs/re/77 §1 + 184 §7),擋住的只剩一件事:`3F:23`(次方)遇到
+// **非整數指數**(1.7 / 2.1)走的是哪一條路徑 —— 那一支有整數指數的
+// 特例處理,而 1.7 不是整數。⛔ 在讀完 `BRUN30 0x1B8A9` 的一般路徑之前
+// 不要把 `^1.7` 寫進來。
+//
+// ⚠ **「總額 × 0.575,再走一次 × RND × 0.5」那一段不是金幣的一部分** ——
+// 它是**戰後掉落道具**的擲骰(docs/re/200 §3.2),吃的是金幣總額當上限。
+// 先前這裡把它算進金幣的管線裡。
 //
 // ⚠ 先前這裡寫「四個常數是執行期變數,不在檔案映像裡」——**那是錯的**。
 // BASIC 把運算式裡的數字字面值放成 DGROUP 常數,而那些常數有初值、
@@ -93,6 +105,41 @@ func TotalGold(units []Unit, r Rand) int {
 		total += r.Roll(tier)
 	}
 	return total
+}
+
+// 戰後隨機掉落一件道具。規則出自 docs/re/200 §3。
+const (
+	// LootGoldFactor:`ds:96E8` 的 DGROUP 初值 = MBF 0.575。
+	LootGoldFactor = 0.575
+	// LootHalf:`ds:9460` = MBF 0.5,兩個 RND 項各乘一次。
+	LootHalf = 0.5
+	// LootBase:`ds:96EE` = MBF 2 —— 與值域下界是同一個 2。
+	LootBase = 2
+	// 值域:`0x130D6`/`0x130DF` 的兩個比較,超出就整段重擲。
+	// 上界 46 把火把/油燈/鑰匙/傳送器擋在外面,下界 2 擋掉匕首與小斧。
+	LootMin = 2
+	LootMax = 46
+	// lootTries 是重擲上限。⚠ **原版沒有上限**;金幣很高時 46 以下的機率
+	// 會變小,而引擎不能掛在這裡。用完就回 LootMin —— 那是**引擎的決定**。
+	lootTries = 500
+)
+
+// LootIndex 擲出戰後掉落的道具編號(docs/re/200 §3.2):
+//
+//	G   = round(總金幣 × 0.575)
+//	編號 = INT( G×RND₁×0.5 + G×RND₂×0.5 + 2 )，不在 2–46 就重擲
+//
+// ⚠ **兩個 RND 是獨立的兩次**,不能併成一次:值域一樣但分佈完全不同
+// (兩個均勻分佈相加是三角分佈,docs/re/156 記過同一個坑)。
+func LootIndex(gold int, r FloatRand) int {
+	g := float64(roundHalfUp(float64(gold) * LootGoldFactor))
+	for i := 0; i < lootTries; i++ {
+		v := int(math.Floor(g*r.Float01()*LootHalf + g*r.Float01()*LootHalf + LootBase))
+		if v >= LootMin && v <= LootMax {
+			return v
+		}
+	}
+	return LootMin
 }
 
 // GoldAssumption 是給畫面顯示用的說明。

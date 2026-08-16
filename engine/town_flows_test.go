@@ -6,6 +6,7 @@ package main
 // 沒有症狀:玩家只會覺得「按下去就扣錢了」,不會知道自己少了一次反悔的機會。
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -255,5 +256,16 @@ func TestDisbandEmptyPartySaysSo(t *testing.T) {
 	g.disbandParty(empty)
 	if !strings.Contains(g.roster.msg, "可解散!") {
 		t.Errorf("空隊伍要說「沒有隊伍 #N 可解散!」,得到 %q", g.roster.msg)
+	}
+}
+
+// TestRenamePromptMatchesLimit:提示裡寫死的數字要跟實際上限一致。
+//
+// ⚠ 這條擋的是「字面對得上原版、行為卻不同」—— 提示寫 9 而程式擋在 10,
+// F3 的字串檢查照樣綠燈,玩家卻能打第 10 個字。
+func TestRenamePromptMatchesLimit(t *testing.T) {
+	want := fmt.Sprintf("最多%d個字元", town.NameMaxRunes)
+	if !strings.Contains(renamePrompt, want) {
+		t.Errorf("提示 %q 與上限 %d 不一致", renamePrompt, town.NameMaxRunes)
 	}
 }

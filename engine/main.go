@@ -137,6 +137,9 @@ type Game struct {
 	// pendingGold > 0 = 戰後撿到的金幣還沒回答「要撿嗎?」(CMBT:60–63)。
 	// ⚠ 沒答就是不撿 —— 見 exp.go 的 takeGold。
 	pendingGold int
+	// pendingLoot 非 nil = 戰後掉落的道具還沒回答「要撿嗎?」(CMBT:61–63)。
+	// ⚠ 與金幣同一條規矩:沒答就是不撿(docs/re/200 §1.2)。
+	pendingLoot *pendingLoot
 
 	// dispelled 記著這一場戰鬥裡誰已經用過 D)ispell(角色編號 → 用過了)。
 	// 建新戰場時清空,不進存檔 —— 見 combat_scene.go 的 dispell()。

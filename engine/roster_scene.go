@@ -128,10 +128,9 @@ func (g *Game) rosterRename() {
 
 // rosterRenameRunes 收字元。名字沿用建立角色那一套上限。
 //
-// ⚠ **上限是 10 不是 9。** 原版自己打架:`TITLES.DAT` 第 89 列寫
-// `name (10 char)`、`CHARUTIL` 的提示寫 `(9 char max)`,而記錄欄位是
-// 10 bytes(docs/spec/19-module-text.md §4)。裁決之前照記錄欄位走,
-// 所以畫面上印的數字**不是**原版提示的那個 9。
+// 上限是 **9**(`town.NameMaxRunes`,docs/re/199):原版創造與改名兩處都把
+// 輸入常式的上限設成 9,讀完才補到 10 個字元存進記錄。
+// **欄位 10、輸入 9,兩個數字講的不是同一件事。**
 func (g *Game) rosterRenameRunes(rs []rune) {
 	st := g.roster.rename
 	if st == nil {
@@ -489,8 +488,8 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 	}
 	msg := r.msg
 	if r.rename != nil {
-		// CHARUTIL:8「Please enter the new name (…): 」
-		// ⚠ 數字用引擎的上限,不是原文那個 9(rosterRenameRunes 有說明)。
+		// CHARUTIL:8「Please enter the new name (9 char max): 」——
+		// 數字與原版一致(docs/re/199)。
 		msg = fmt.Sprintf("請輸入新名字(最多%d個字元)：%s_",
 			town.NameMaxRunes, r.rename.text)
 	}

@@ -349,6 +349,20 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 	if caster.SP < 0 {
 		caster.SP = 0
 	}
+	// 發動判定:效力 = round(欄4 × 投入 ÷ 欄5),要 ≥ d100 才成功
+	// (docs/re/201)。⚠ **法力照樣扣掉** —— 原版扣點的位置沒讀到,
+	// 這裡沿用引擎既有的順序,是具名的實作決定。
+	if magic.Fizzles(magic.EffectLevel(s, invest), g.field.Rand) {
+		g.field.Log = append(g.field.Log,
+			fmt.Sprintf("%s 施放 %s(投入 %d)", caster.Name, s.Name, invest))
+		g.field.Log = append(g.field.Log, magic.MsgSpellFails)
+		if g.castUnit == g.actor {
+			g.points[g.actor] = 0
+			g.nextActor()
+		}
+		g.castList = nil
+		return true
+	}
 	r := magic.Apply(s, invest, caster, targets)
 	// 施法扣 3 點,而且**做完直接結束這個人的回合**(手冊 p.35,docs/spec/12 §2)。
 	// ⚠ 攻擊的成本也是 3 但**不會**結束回合 —— 不能用成本判斷。

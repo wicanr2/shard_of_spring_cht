@@ -82,8 +82,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 136	ds:9C2E	still air and	13	凝滯的空氣,	11	Y		engine/internal/magic/magic.go
 137	ds:9C40	ice and	7	冰霜,	5	Y		engine/internal/magic/magic.go
 138	ds:9C4C	notices no effect	17	沒有感到效果	12	Y		engine/internal/magic/magic.go
-140	ds:9C6E	Item Fails	10	道具失效	8	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。`Item Fails` 與 `Spell Fails`(141)的分工沒讀到,引擎只有一次發動判定 —— 接到 141 那一句。	
-141	ds:9C7C	Spell Fails	11	法術失效	8	Y		engine/use_item.go
+140	ds:9C6E	Item Fails	10	道具失效	8	Y	發動判定失敗:`round(欄4 × 投入 ÷ 欄5) < d100`(CMBT 0x15ED9,docs/re/201)。⚠ 與 141 是**同一個判定**,`ds:9308` 決定印哪一句(用道具 vs 施法)。	engine/internal/magic/magic.go
+141	ds:9C7C	Spell Fails	11	法術失效	8	Y	同 140:同一個判定,`ds:9308 == 0`(施法)時印這一句(docs/re/201 §2)。	engine/internal/magic/magic.go
 142	ds:9C92	does not have	13	沒有	4	Y		engine/internal/combat/dispell.go
 143	ds:9CA4	the Priesthood	14	降魔術	6	Y		engine/internal/combat/dispell.go
 144	ds:9CB6	and cannot	10	無法	4	Y		engine/internal/combat/dispell.go

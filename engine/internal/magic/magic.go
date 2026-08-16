@@ -6,6 +6,7 @@ package magic
 
 import (
 	"fmt"
+	"math"
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/original"
@@ -180,6 +181,44 @@ func LightEffect(s original.Spell, invest int) (turns, visibility int, ok bool) 
 	level := s.Power * invest / s.UnitCost // Go 的整數除法就是截尾
 	return level*LightTurnFactor + LightTurnBase, s.Power, true
 }
+
+// 發動判定(`CMBT 0x1505A`–`0x15ED9`,docs/re/201)。
+//
+//	效力 = round(欄4 × 投入 ÷ 欄5)
+//	成功 ⟺ 效力 ≥ d100(1…100)
+//
+// 失敗時原版印哪一句由 `ds:9308` 決定:用道具是 `Item Fails`、施法是 `Spell Fails`
+// —— **同一個判定,兩句話**。
+const (
+	MsgItemFails  = "道具失效"  // 140 `Item Fails`
+	MsgSpellFails = "法術失效"  // 141 `Spell Fails`
+	// FailFaces:`ds:977E` = 100(d100,docs/re/154)。
+	FailFaces = 100
+)
+
+// EffectLevel 是發動判定用的效力值。
+//
+// ⚠ **不是 `Power()`**:`Power()` 先算等級再乘(`欄4 × INT(投入 ÷ 欄5)`),
+// 這裡是先乘再除再**四捨五入**(`0x150AF` 的 `3F:77` 沒配 `INT()`,
+// docs/re/185)。投入 5、單價 2 時兩者差 1。
+func EffectLevel(s original.Spell, invest int) int {
+	if s.UnitCost <= 0 {
+		return 0
+	}
+	return roundHalfUp(float64(s.Power) * float64(invest) / float64(s.UnitCost))
+}
+
+// Fizzles 回傳這一次發動失不失敗。
+//
+// ⚠ 擲骰是 `INT(RND × 100) + 1`(值域 1…100,配了 `INT 3D:03`)——
+// 與命中擲骰的 `round(RND×100+1)` **不是同一個成語**(docs/re/185)。
+func Fizzles(level int, r combat.Rand) bool {
+	return level < r.Roll(FailFaces)
+}
+
+// roundHalfUp 與 combat 那一份同形(docs/re/184 §5:`3F:77` 沒配 `INT()`
+// 時是四捨五入)。⛔ 不要換成截尾。
+func roundHalfUp(x float64) int { return int(math.Floor(x + 0.5)) }
 
 // 效果類別。docs/formats/04。
 const (

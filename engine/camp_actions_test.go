@@ -683,3 +683,68 @@ func TestUtterEscapeCancels(t *testing.T) {
 		t.Error("ESC 不該開門")
 	}
 }
+
+// ── 發動判定(docs/re/201)──────────────────────────────────────────────
+
+// TestEffectLevelRoundsHalfUp:發動判定用的效力是 `round(欄4 × 投入 ÷ 欄5)`,
+// **不是** `Power()` —— 後者根本不除單價。兩個量各有各的用途,別混用。
+func TestEffectLevelRoundsHalfUp(t *testing.T) {
+	s := original.Spell{Power: 3, UnitCost: 2}
+	if got := magic.EffectLevel(s, 5); got != 8 { // round(3×5/2) = round(7.5) = 8
+		t.Errorf("效力應該是 8,得到 %d", got)
+	}
+	if got := magic.Power(s, 5); got != 15 { // 3 × 5,沒有除單價
+		t.Errorf("Power 應該是 15,得到 %d", got)
+	}
+	// 四捨五入不是截尾(docs/re/185):7.5 → 8。
+	if got := magic.EffectLevel(original.Spell{Power: 1, UnitCost: 2}, 1); got != 1 {
+		t.Errorf("0.5 應該進位成 1,得到 %d", got)
+	}
+}
+
+// TestFizzlesThreshold:效力 ≥ 擲骰才成功。
+func TestFizzlesThreshold(t *testing.T) {
+	for _, c := range []struct {
+		level, roll int
+		want        bool
+	}{
+		{100, 100, false}, // 剛好夠
+		{99, 100, true},   // 差一點
+		{1, 1, false},
+		{0, 1, true},
+	} {
+		if got := magic.Fizzles(c.level, fixedRoll(c.roll)); got != c.want {
+			t.Errorf("效力 %d 對擲骰 %d:得到 %v,期望 %v", c.level, c.roll, got, c.want)
+		}
+	}
+}
+
+// fixedRoll 讓 Roll 永遠回同一個值。
+type fixedRoll int
+
+func (f fixedRoll) Roll(int) int { return int(f) }
+
+// TestCombatSpellCanFizzle:戰鬥施法失敗時說 CMBT:141,而且**法力照樣扣**。
+func TestCombatSpellCanFizzle(t *testing.T) {
+	g, s := groupSpellGame(t, 2, 14, 12)
+	g.field.Rand = alwaysHighRand{}
+	sp0 := g.field.Units[combat.PartyBase].SP
+	if !g.castAt(s, 1, 13, 12) { // 投入 1 → 效力很低 → 必定失敗
+		t.Fatal("失敗也算「這一次施過了」,castAt 應該回 true")
+	}
+	if !logHas(g.field.Log, magic.MsgSpellFails) {
+		t.Errorf("要說「%s」,得到 %v", magic.MsgSpellFails, g.field.Log)
+	}
+	if g.field.Units[combat.PartyBase].SP != sp0-1 {
+		t.Errorf("失敗也扣法力:%d → %d", sp0, g.field.Units[combat.PartyBase].SP)
+	}
+	if g.field.Units[combat.MonsterBase].HP != 20 {
+		t.Error("失敗不該造成傷害")
+	}
+}
+
+// alwaysHighRand 讓每一次擲骰都回最大值。
+type alwaysHighRand struct{}
+
+func (alwaysHighRand) Roll(n int) int      { return n }
+func (alwaysHighRand) Float01() float64    { return 0.999999 }

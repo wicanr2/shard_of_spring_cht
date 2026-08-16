@@ -371,6 +371,10 @@ func (g *Game) finishUseItem(slot, target int) {
 				// 接在引擎唯一會「發動不出法術」的地方。
 				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,法術失效!(編號 %d 查不到)",
 					caster.Name, name, it.Col4))
+			} else if magic.Fizzles(magic.EffectLevel(s, it.Col5), f.Rand) {
+				// 發動判定與施法同一條(docs/re/201),差別只在**印哪一句**:
+				// 用道具是 CMBT:140、施法是 CMBT:141。
+				f.Log = append(f.Log, caster.Name+" 用了"+name+"，"+magic.MsgItemFails)
 			} else {
 				// ⚠ 給別人用 vs 自己用有沒有效果差別**未解**——這裡是「目標
 				// 不同、效果相同」的假設,兩條路都走同一個 magic.Apply。

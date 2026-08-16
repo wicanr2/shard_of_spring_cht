@@ -48,6 +48,10 @@ func newCombatUseItemTestGame(t *testing.T) *Game {
 		rand:     combat.NewRand(1),
 	}
 	g.field = combat.Build(g.members, nil, g.items, g.rand)
+	// ⚠ 發動判定(docs/re/201)是 `效力 ≥ d100`,而這件道具的效力只有 4 ——
+	// 用真亂數的話這一組測試會有 96% 的機率在發動那一關就被擋掉。
+	// 這裡把擲骰固定成 1(必定發動),測的是**發動之後**的行為。
+	g.field.Rand = alwaysLowRand{}
 	g.field.Place()
 	g.field.ResetPoints(&g.points)
 	g.actor = g.firstActor()
@@ -478,3 +482,10 @@ func TestMagicItemWithZeroBreakChanceSurvives(t *testing.T) {
 		t.Errorf("欄6 = 0 的道具該留在背包,第 0 格變成 %d", g.members[0].Pack[0])
 	}
 }
+
+// alwaysLowRand 讓每一次擲骰都回最小值:Roll → 1、Float01 → 0。
+// 用途是把「發動判定」從測試裡拿掉,好單獨測發動之後那一段。
+type alwaysLowRand struct{}
+
+func (alwaysLowRand) Roll(int) int    { return 1 }
+func (alwaysLowRand) Float01() float64 { return 0 }

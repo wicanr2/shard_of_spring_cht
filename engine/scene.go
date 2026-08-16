@@ -768,6 +768,9 @@ func (g *Game) createPrompt() string {
 		// ⚠ ESC 在這一步**不是取消** —— 有勾選就重擲勾選的那幾項,
 		// 沒勾選才是「這組我接受了」,往下一步走(create_scene.go)。
 		return "1–5：勾選要重擲的屬性　　ESC：重擲勾選的（沒勾選就是接受這組）"
+	case stepKeep:
+		// CHARUTIL:33「Do you wish to keep this character (Y/N) ?」
+		return "要保留這位角色嗎?(Y/N)"
 	case stepClass:
 		return "F：戰士　　W：巫師　　ESC：取消"
 	default:

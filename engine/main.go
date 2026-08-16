@@ -134,6 +134,10 @@ type Game struct {
 	// healPay 非 nil = 治療所正在問「這將花費 N 金幣,付款嗎?(Y/N)」(TOWN:27/28)。
 	healPay *healPayState
 
+	// pendingGold > 0 = 戰後撿到的金幣還沒回答「要撿嗎?」(CMBT:60–63)。
+	// ⚠ 沒答就是不撿 —— 見 exp.go 的 takeGold。
+	pendingGold int
+
 	// 戰鬥中的 U)se an item + 藥劑「自己/丟給別人」(docs/spec/12-combat-board.md
 	// §5.3、docs/spec/19-coverage.md §2-1)。use_item.go。
 	useUnit      int           // 開道具選單的人(field.Units 索引,同 castUnit 的用法)

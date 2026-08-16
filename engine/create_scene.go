@@ -24,6 +24,7 @@ type createStep int
 const (
 	stepRace createStep = iota
 	stepAdjust
+	stepKeep // CHARUTIL:33「Do you wish to keep this character (Y/N) ?」
 	stepClass
 	stepName
 )
@@ -83,12 +84,24 @@ func (g *Game) createKey(k ebiten.Key) {
 			c.round++
 			return
 		}
-		// 沒選任何一項的 ESC = 這一步做完了
-		if allowed := rules.Races[c.race].Classes; len(allowed) == 1 {
-			c.class = allowed[0]
-			c.step = stepName
-		} else {
-			c.step = stepClass
+		// 沒選任何一項的 ESC = 這一步做完了。原版在這裡先問要不要留下
+		// 這一組擲骰(CHARUTIL:33)—— 不問的話,骰壞了只能建完再刪。
+		c.step = stepKeep
+
+	case stepKeep:
+		switch k {
+		case ebiten.KeyY:
+			if allowed := rules.Races[c.race].Classes; len(allowed) == 1 {
+				c.class = allowed[0]
+				c.step = stepName
+			} else {
+				c.step = stepClass
+			}
+		case ebiten.KeyN:
+			// 不留 → 重擲同一個種族,回合數歸 1(這是新的一位角色)。
+			c.rolled = town.RollAll(g.rand)
+			c.picked = map[int]bool{}
+			c.round, c.step = 1, stepAdjust
 		}
 
 	case stepClass:
@@ -217,6 +230,9 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 	case stepAdjust:
 		line(fmt.Sprintf("第 %d 輪調整:按 1–5 選要重擲的項目,ESC 執行;", c.round))
 		line("沒選任何一項時按 ESC 進到下一步。")
+	case stepKeep:
+		line("要保留這位角色嗎?(Y/N)") // CHARUTIL:33
+		line("(N 會用同一個種族重擲一組)")
 	case stepClass:
 		line("選職業:F) 戰士　W) 巫師")
 	case stepName:

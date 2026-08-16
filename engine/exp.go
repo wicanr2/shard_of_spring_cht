@@ -62,14 +62,34 @@ func (g *Game) awardSpoils(units []combat.Unit) string {
 	_, msg := g.awardExp(units)
 	gold := combat.TotalGold(units, combat.NewRand(g.spoilSeed()))
 	if gold > 0 {
-		g.group.Gold += float64(gold)
+		// CMBT:58–63:原版**先問要不要撿**,不是直接進口袋。
+		// 金幣先掛在 pendingGold,答 Y 才入帳。
+		g.pendingGold = gold
 		if msg != "" {
 			msg += "；"
 		}
-		// F3:CMBT:58/59 `Gold:`。係數未解的警語留著(見上面的說明)。
-		msg += fmt.Sprintf("金幣：%d（%s）", gold, combat.GoldAssumption)
+		msg += fmt.Sprintf("金幣：%d 找到了　要撿嗎?(Y/N)（%s）",
+			gold, combat.GoldAssumption)
 	}
 	return msg
+}
+
+// takeGold 回答戰後的「要撿嗎?」。
+//
+// ⚠ 不答就不入帳,**離開戰鬥時視為不撿** —— 靜靜地幫玩家撿起來會讓
+// 那句問話變成假的。
+func (g *Game) takeGold(yes bool) {
+	if g.pendingGold <= 0 {
+		return
+	}
+	if yes {
+		g.group.Gold += float64(g.pendingGold)
+		if g.field != nil {
+			g.field.Log = append(g.field.Log,
+				fmt.Sprintf("撿起了 %d 金幣", g.pendingGold))
+		}
+	}
+	g.pendingGold = 0
 }
 
 // spoilSeed 讓同一場戰鬥的戰利品可重現 —— 用戰場的亂數來源會把

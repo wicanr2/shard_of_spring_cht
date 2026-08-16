@@ -76,8 +76,15 @@ func TestPlayerKillingBlowAwardsSpoils(t *testing.T) {
 	if g.members[0].Exp <= exp0 {
 		t.Errorf("最後一擊由玩家打出時沒有發經驗:%v → %v", exp0, g.members[0].Exp)
 	}
-	if g.group.Gold < gold0 {
-		t.Errorf("金幣反而變少了:%.0f → %.0f", gold0, g.group.Gold)
+	// CMBT:60–63:金幣先掛著等玩家答「要撿嗎?」,答 Y 才入帳。
+	if g.group.Gold != gold0 {
+		t.Errorf("還沒答「要撿嗎?」就先入帳了:%.0f → %.0f", gold0, g.group.Gold)
+	}
+	if g.pendingGold > 0 {
+		g.takeGold(true)
+		if g.group.Gold <= gold0 {
+			t.Errorf("答 Y 之後金幣沒有進來:%.0f → %.0f", gold0, g.group.Gold)
+		}
 	}
 	if !hasLine(g.field.Log, "戰鬥結束") {
 		t.Errorf("紀錄裡應該有「戰鬥結束」,得到 %v", g.field.Log)
@@ -103,6 +110,13 @@ func TestSettleIsIdempotent(t *testing.T) {
 	}
 	if g.group.Gold != gold1 {
 		t.Errorf("重複結算把金幣發了第二次:%.0f → %.0f", gold1, g.group.Gold)
+	}
+	// 撿一次就沒了 —— 再答一次不該再給一份。
+	g.takeGold(true)
+	after := g.group.Gold
+	g.takeGold(true)
+	if g.group.Gold != after {
+		t.Errorf("「要撿嗎?」答了兩次拿到兩份:%.0f → %.0f", after, g.group.Gold)
 	}
 	if n := countLines(g.field.Log, "戰鬥結束"); n != 1 {
 		t.Errorf("「戰鬥結束」出現 %d 次,應該只有 1 次;log:%v", n, g.field.Log)

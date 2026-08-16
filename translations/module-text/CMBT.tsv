@@ -9,7 +9,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 24	ds:951A	PARTY DIES!	11	隊伍全滅!	9	Y		engine/internal/combat/field.go
 26	ds:953A	DEAD	4	死亡	4	Y		engine/internal/original/chars.go
 29	ds:955A	PARTY RAN!	10	隊伍逃跑了!	11	11		engine/internal/combat/field.go
-31	ds:9576	KEYPAD TEMPLATE	15	數字鍵盤對照表	14	Y	與 docs/spec/15 §8 A6 按鍵表候選內容,建議一併核對。	
+31	ds:9576	KEYPAD TEMPLATE	15	數字鍵盤對照表	14	Y	與 docs/spec/15 §8 A6 按鍵表候選內容,建議一併核對。	engine/shell_scene.go
 41	ds:95D4	FACING 	7	朝向 	5	Y		engine/combat_scene.go
 42	ds:95E0	MP=	3	行動點=	7	7		engine/combat_scene.go
 52	ds:963A	Sound is now on.	16	音效已開啟。	12	Y		engine/sound.go
@@ -18,10 +18,10 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 57	ds:9698	 (per character)	16	(每位角色)	10	Y		engine/exp.go
 58	ds:96C2	Gold:	5	金幣：	6	Y		engine/exp.go
 59	ds:96CC	Gold:	5	金幣：	6	Y		engine/exp.go
-60	ds:96D8	 found 	7	 找到了 	8	8		
-61	ds:96F6	finds	5	找到了	6	6		
-62	ds:9700	Do you take it?	15	要撿嗎?	7	Y		
-63	ds:9714	(Y/N)	5	(Y/N)	5	Y		
+60	ds:96D8	 found 	7	 找到了 	8	8		engine/exp.go
+61	ds:96F6	finds	5	找到了	6	6	`finds` 是「某人找到一件道具」那一句(與 60 的 ` found ` 不同上下文),引擎的迷宮/戰鬥都不掉道具 —— 見 docs/spec/19-coverage.md §2.3。	
+62	ds:9700	Do you take it?	15	要撿嗎?	7	Y		engine/exp.go
+63	ds:9714	(Y/N)	5	(Y/N)	5	Y		engine/exp.go
 69	ds:9758	attacks 	8	攻擊 	5	Y		engine/internal/combat/field.go
 70	ds:9764	with	4	使用	4	Y		engine/internal/combat/field.go
 71	ds:976E	and missed!	11	但沒打中!	9	Y		engine/internal/combat/field.go

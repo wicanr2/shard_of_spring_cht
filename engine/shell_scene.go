@@ -287,6 +287,10 @@ func (g *Game) shellUpdate(in Input) Transition {
 			case ebiten.KeyP: // P)rogram Notes —— 這裡改成按鍵表(docs/spec/15 §1.1)
 				g.overlay = shellKeyHelp
 			case ebiten.KeyQ: // Q)uit the Game
+				// WRLDMOVE:19 —— 原版離開時的道別。印到 stderr 而不是
+				// 開一個畫面:多一個「按任意鍵才真的關掉」的步驟,
+				// 與 docs/spec/15 §9 驗收 2「Q 真的關掉程式」相牴觸。
+				fmt.Fprintln(os.Stderr, farewell)
 				return TransitionQuit
 			}
 			break
@@ -396,11 +400,14 @@ func digitKey1to9(k ebiten.Key) (int, bool) {
 // 手冊 p.51 的 OUTSIDE OPTIONS 與 DOS 版不符(docs/re/139 §4 實跑),
 // 這裡照引擎實際行為寫,不照手冊抄。
 const shellKeyHelp = "按鍵表：" +
-	"主選單　L 載入隊伍、C 角色管理、P 本頁、Q 離開；" +
-	"存檔選擇　1–9 選存檔、ESC 回主選單；" +
-	"世界地圖／迷宮　方向鍵先轉再走、N 開名冊、S 存檔、A 另存新檔；" +
-	"戰鬥　方向鍵移動或轉身、A 攻擊、C 施法、Enter 結束回合；" +
-	"施法選格　I/J/K/M 移動游標、空白鍵施放、ESC 取消。" +
+	// CMBT:31「KEYPAD TEMPLATE」—— 原版在戰場上印一張小鍵盤方向對照圖。
+	// ⚠ 引擎用方向鍵,所以這裡只列**同樣有效的數字鍵**,
+	// ⛔ 不重畫那張九宮格(那張圖的實際佈局沒有讀過,見 19-coverage §4)。
+	"數字鍵盤對照表　1 北、2 東、3 南、4 西(與方向鍵同效);" +
+	"主選單　L 載入、C 角色管理、P 本頁、Q 離開；" +
+	"世界地圖／迷宮　方向鍵先轉再走、N 名冊、S 存檔、A 另存；" +
+	"戰鬥　方向鍵移動、A 攻擊、C 施法、U 道具、/ 看單位、S 音效；" +
+	"施法選格　方向鍵移動游標、空白鍵施放、ESC 取消。" +
 	"（按任意鍵關閉）"
 
 // endingText 是引擎暫用的結局文字。
@@ -409,6 +416,9 @@ const shellKeyHelp = "按鍵表：" +
 // (docs/re/66),但文字本身沒盤到。這不是原版台詞,只是佔位,
 // 標明「未盤到」不要假裝是原版的。
 const endingText = "希瑞雅妮（Siriadne）已經倒下,春之碎片重歸完整。"
+
+// farewell 是原版離開遊戲時的道別(WRLDMOVE:19)。
+const farewell = "感謝你造訪伊斯蘭迪亞(Islandia)。祝狩獵順利。"
 
 // credits 是原版 `P)rogram Notes` 那一頁的製作群謝辭(MENU:93)。
 const credits = "謹以此獻給 Lori Proudfoot。與 Applied Computing Services, Inc. " +

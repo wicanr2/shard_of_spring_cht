@@ -5,7 +5,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 23	ds:6C06	(ESC exits) ?	13	(ESC離開)?	10	Y	原版另一個畫面的離開提示(結尾 `?` 貼著括號),引擎沒有那一步。	
 30	ds:6C58	Skills left:	12	剩餘技能點：	12	Y		
 32	ds:6C7E	Skills left:	12	剩餘技能點：	12	Y		
-33	ds:6C96	Do you wish to keep this character (Y/N) ?	42	要保留這位角色嗎?(Y/N)	22	Y		
+33	ds:6C96	Do you wish to keep this character (Y/N) ?	42	要保留這位角色嗎?(Y/N)	22	Y		engine/create_scene.go
 39	ds:6D18	Party #	7	隊伍 #	6	Y		engine/roster_scene.go
 40	ds:6D24	Gold:	5	金幣：	6	Y		engine/party_panel.go
 41	ds:6D2E	 Provisions:	12	 食糧：	6	Y		engine/party_panel.go

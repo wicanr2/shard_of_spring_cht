@@ -113,6 +113,12 @@ type Result struct {
 	// CMBT:128/129、營地是 CAMP:106/108,措辭與標點都不同。
 	// 呼叫端照自己的情境挑句子,⛔ 不要在這裡把它們併成一句。
 	NoEffect bool
+	// Light = 這一次是照明法術(魔法火炬 / 水晶燈術)。
+	// Turns 是光源回合數、Visibility 是能見度 —— **兩個都由呼叫端寫進隊伍狀態**,
+	// 這個套件看不到隊伍記錄(docs/re/196 §3)。
+	Light      bool
+	LightTurns int
+	Visibility int
 	// WindWalk = 這一次是風行術:全隊傳送到世界座標 (8, 8) 並離開地城
 	// (docs/re/193)。**效果由呼叫端做** —— 這個套件看不到世界地圖,
 	// 也不該看得到。
@@ -137,6 +143,43 @@ const (
 // MsgWindWalk 是 CAMP:109。原版在傳送**之前**印它,所以句尾的刪節號
 // 接的就是「回到世界地圖」那一幕。
 const MsgWindWalk = "一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……"
+
+// 照明法術:類別 12 裡風行術以外的兩個(docs/re/196 §3)。
+const (
+	SpellMagicTorch  = 31 // 魔法火炬(`SPELLS.DAT` 第 32 列)
+	SpellCrystalight = 32 // 水晶燈術(第 33 列)
+	// LightTurnFactor / LightTurnBase:`ds:7866` = MBF 5、`ds:786A` = MBF 20。
+	LightTurnFactor = 5
+	LightTurnBase   = 20
+)
+
+// 照明訊息的字面(CAMP:134 + 135)。
+const (
+	MsgLightHead = "你現在大約還有 "
+	MsgLightTail = " 回合的照明。"
+)
+
+// LightEffect 回傳照明法術的（光源回合數、能見度）。
+//
+//	回合數 = INT(欄4 × 投入 ÷ 欄5) × 5 + 20
+//	能見度 = 欄4
+//
+// ⚠ **回合數用的不是 `Power()`**:原版先乘再除再截尾
+// (`INT(欄4 × 投入 ÷ 欄5)`),而 `Power()` 是先算等級再乘
+// (`欄4 × INT(投入 ÷ 欄5)`)。投入 5、單價 2 時兩者差 1 —— 照原版。
+//
+// ⚠ 能見度就是欄4 本身:魔法火炬 3、水晶燈術 4,而出貨存檔量到的
+// 「有光的能見度 = 3」正好對上火炬(docs/re/135、196 §3.1)。
+func LightEffect(s original.Spell, invest int) (turns, visibility int, ok bool) {
+	if s.Index != SpellMagicTorch && s.Index != SpellCrystalight {
+		return 0, 0, false
+	}
+	if s.UnitCost <= 0 {
+		return 0, 0, false
+	}
+	level := s.Power * invest / s.UnitCost // Go 的整數除法就是截尾
+	return level*LightTurnFactor + LightTurnBase, s.Power, true
+}
 
 // 效果類別。docs/formats/04。
 const (
@@ -307,6 +350,10 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		// 只有第一個解出來了(docs/re/193),另外兩個是照明,規則未讀。
 		if s.Index == SpellWindWalk {
 			return Result{WindWalk: true, Message: MsgWindWalk}
+		}
+		if turns, vis, ok := LightEffect(s, invest); ok {
+			return Result{Light: true, LightTurns: turns, Visibility: vis,
+				Message: fmt.Sprintf("%s%d%s", MsgLightHead, turns, MsgLightTail)}
 		}
 		return Result{Message: name + "(非戰鬥效用)"}
 

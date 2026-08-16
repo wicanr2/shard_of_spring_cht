@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"shardofspring/internal/original"
+	"shardofspring/internal/rules"
 )
 
 // Price 回傳某件道具在某間商店的售價。docs/spec/11 §3。
@@ -101,6 +102,42 @@ func Equip(c *original.Character, slot int, armor bool) bool {
 		c.Weapon = slot
 	}
 	return true
+}
+
+// weaponSkill 是「裝這件武器要哪一項技能」的查表,索引就是**道具編號**。
+//
+// 表值出自 `CAMP.EXE` 的 `DATA` 敘述原文 `0,1,0,2,2,0,1,0,2,0,1,0`
+// (docs/re/196 §1.1),原版讀進 `ds:6822 + 2i` 之後 `+ 42` 當記錄位移,
+// 而技能 n 的位移是 `41 + n` —— 所以表值 = **技能編號 − 1**。
+//
+// ⚠ **編號 0(匕首)不在檢查範圍**:原版的閘門是 `編號 > 0`(§1),
+// 所以誰都裝得上,巫師也是。留一格 0 只是為了索引對齊。
+var weaponSkill = [12]int{0, 1, 0, 2, 2, 0, 1, 0, 2, 0, 1, 0}
+
+// WeaponSkillOK 回傳這個角色能不能裝上這件武器。
+//
+//	巫師 → 一律不行(匕首除外)
+//	戰士 → 要有對應的武器技能(劍 / 斧 / 錘)
+//
+// ⚠ 第二個回傳值是**這件東西要不要檢查**:防具與編號 0 的匕首都回 false,
+// 呼叫端不該對它們印「沒有技能!」。
+func WeaponSkillOK(c original.Character, itemIndex int) (ok, checked bool) {
+	if itemIndex <= 0 || itemIndex >= len(weaponSkill) {
+		return true, false // 匕首(0)、防具與其他編號都不走這一支
+	}
+	if rules.Class(c.Class) == rules.ClassWizard {
+		return false, true
+	}
+	n := weaponSkill[itemIndex] + 1 // 技能編號(1 起算)
+	return skillFlag(c, n) == '1', true
+}
+
+// skillFlag 取第 n 項技能的旗標字元(n 從 1 起算)。
+func skillFlag(c original.Character, n int) byte {
+	if n < 1 || n > len(c.Skills) {
+		return '0'
+	}
+	return c.Skills[n-1]
 }
 
 // ---------------------------------------------------------------------------

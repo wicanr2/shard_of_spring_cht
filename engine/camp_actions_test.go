@@ -10,6 +10,7 @@ import (
 	"shardofspring/internal/combat"
 	"shardofspring/internal/magic"
 	"shardofspring/internal/original"
+	"shardofspring/internal/town"
 )
 
 // 測試全部**不開視窗**:直接呼叫方法,不跑 ebiten.RunGame,
@@ -527,6 +528,78 @@ func TestGroupSpellIgnoresOccupantOrder(t *testing.T) {
 	for _, i := range []int{combat.MonsterBase, combat.MonsterBase + 1} {
 		if g.field.Units[i].HP >= 20 {
 			t.Errorf("單位 %d 在範圍內卻沒吃到傷害(群體退化成單體)", i)
+		}
+	}
+}
+
+// ── 照明法術與武器技能閘門(docs/re/196)──────────────────────────────
+
+// TestLightSpellSetsTurnsAndVisibility:回合數 = INT(欄4×投入÷欄5)×5+20、
+// 能見度 = 欄4。
+func TestLightSpellSetsTurnsAndVisibility(t *testing.T) {
+	g := newPlayingGame(t)
+	g.town = &townState{mode: townCamp}
+	torch, ok := g.spellByIndex(magic.SpellMagicTorch)
+	if !ok {
+		t.Fatalf("找不到索引 %d 的法術", magic.SpellMagicTorch)
+	}
+	g.group.LightTurns, g.group.VisLit = 0, 0
+	g.town.castSpell, g.town.castInput = torch, "4"
+	g.castInCamp(0, 0)
+
+	wantTurns := torch.Power*4/torch.UnitCost*magic.LightTurnFactor + magic.LightTurnBase
+	if g.group.LightTurns != wantTurns {
+		t.Errorf("光源回合數應該是 %d,得到 %d", wantTurns, g.group.LightTurns)
+	}
+	if g.group.VisLit != torch.Power {
+		t.Errorf("能見度應該等於欄4(%d),得到 %d", torch.Power, g.group.VisLit)
+	}
+	if !strings.Contains(g.town.msg, "回合的照明") {
+		t.Errorf("要說 CAMP:134/135,得到 %q", g.town.msg)
+	}
+}
+
+// TestCrystalightIsBrighter:水晶燈術的能見度比魔法火炬高一格 ——
+// 欄4 同時決定亮度與持續回合(docs/re/196 §3.1)。
+func TestCrystalightIsBrighter(t *testing.T) {
+	g := newPlayingGame(t)
+	torch, ok1 := g.spellByIndex(magic.SpellMagicTorch)
+	crys, ok2 := g.spellByIndex(magic.SpellCrystalight)
+	if !ok1 || !ok2 {
+		t.Fatal("資產裡缺照明法術")
+	}
+	_, v1, _ := magic.LightEffect(torch, 4)
+	_, v2, _ := magic.LightEffect(crys, 4)
+	if v2 <= v1 {
+		t.Errorf("水晶燈術(%d)應該比魔法火炬(%d)亮", v2, v1)
+	}
+}
+
+// TestWeaponSkillGate:巫師裝不上武器、戰士要有對應技能,而**匕首誰都能裝**。
+func TestWeaponSkillGate(t *testing.T) {
+	swordsman := original.Character{Class: '1', Skills: "1000000000"} // 技能 1 = 劍
+	axeman := original.Character{Class: '1', Skills: "0100000000"}    // 技能 2 = 斧
+	wizard := original.Character{Class: '2', Skills: "1111111111"}
+
+	for _, c := range []struct {
+		who          original.Character
+		item         int
+		wantOK       bool
+		wantChecked  bool
+		desc         string
+	}{
+		{swordsman, 2, true, true, "會劍的裝短劍"},
+		{swordsman, 1, false, true, "會劍的裝小斧"},
+		{axeman, 1, true, true, "會斧的裝小斧"},
+		{axeman, 3, false, true, "會斧的裝釘錘"},
+		{wizard, 2, false, true, "巫師裝短劍"},
+		{wizard, 0, true, false, "巫師裝匕首 —— 編號 0 不檢查"},
+		{swordsman, 12, true, false, "防具不走這一支"},
+	} {
+		ok, checked := town.WeaponSkillOK(c.who, c.item)
+		if ok != c.wantOK || checked != c.wantChecked {
+			t.Errorf("%s:得到 (ok=%v, checked=%v),期望 (%v, %v)",
+				c.desc, ok, checked, c.wantOK, c.wantChecked)
 		}
 	}
 }

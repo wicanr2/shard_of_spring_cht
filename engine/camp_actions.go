@@ -103,6 +103,10 @@ func campCastCheck(c original.Character, s original.Spell, invest int) string {
 	return ""
 }
 
+// campNoSkill 是 CAMP:43「NO SKILL !」—— 裝不上這件武器。
+// 原版的條件是「巫師 或 沒有對應的武器技能」(docs/re/196 §1)。
+const campNoSkill = "沒有技能!"
+
 // campNotThatMuch 是 CAMP:84「You don't have that many!」。
 //
 // ⚠ 與 magic.FailNoPoints 的通用句(CAMP:85)**不是同一句**:
@@ -232,6 +236,13 @@ func (g *Game) castInCamp(casterIdx, targetIdx int) {
 	// 與選中的角色無關。營地的選目標步驟照走(引擎的流程),但結果一樣。
 	if r.WindWalk {
 		g.windWalk()
+	}
+	// 照明法術寫兩個隊伍欄位(docs/re/196 §3):位移 45 光源回合數、
+	// 位移 59 有光時的能見度。⚠ 兩個都在隊伍記錄上,不在角色身上 ——
+	// 照明是全隊的,選了誰當目標不影響結果。
+	if r.Light {
+		g.group.LightTurns = r.LightTurns
+		g.group.VisLit = r.Visibility
 	}
 }
 

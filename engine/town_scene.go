@@ -694,6 +694,15 @@ func (g *Game) campSubKey(k ebiten.Key) {
 			return
 		}
 		armor := ts.campMode == 'A'
+		// 武器技能閘門(docs/re/196 §1):巫師或沒有對應技能就裝不上。
+		// ⚠ 只擋武器,而且**編號 0 的匕首不檢查** —— 那是原版 `編號 > 0`
+		// 那一行的直接後果,不是特例補丁。
+		if !armor {
+			if ok, checked := town.WeaponSkillOK(*c, c.Pack[slot]); checked && !ok {
+				ts.msg = campNoSkill
+				return
+			}
+		}
 		town.Equip(c, slot, armor)
 		kind := "武器"
 		if armor {

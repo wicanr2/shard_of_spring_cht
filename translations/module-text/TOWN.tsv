@@ -40,7 +40,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 50	ds:7280	points left.	12	點可分配。	10	Y		engine/town_scene.go;engine/skill_alloc_scene.go
 51	ds:7290	Enter skill,	12	輸入技能,	9	Y		engine/skill_alloc_scene.go
 52	ds:72A0	(0 exits) 	10	(0離開) 	8	Y		engine/skill_alloc_scene.go
-54	ds:72B8	Not enough IQ !	15	智能不夠!	9	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。`Not enough IQ !`:智能不足的閘門,擋的是哪一步沒讀到。	
+54	ds:72B8	Not enough IQ !	15	智能不夠!	9	Y	學技能時「可用點數 < 該技能的成本」(TOWN 0x11637,docs/re/196 §2)。⚠「IQ」指的是剩餘技能點數(位移 89,創造時 = 智能),不是智能本身。	engine/internal/town/skill_alloc.go
 55	ds:72CE	Do you wish to: T)alk with other adventurers, B)uy food? (ESC to exit)	70	你想要：T)與其他冒險者交談,B)購買食糧?(ESC離開)	47	Y		engine/town_scene.go
 58	ds:732E	One day's food for the party costs	34	隊伍一天的食糧花費	18	Y		engine/town_scene.go
 59	ds:7354	 gold.  How many rations (1-9, 0 exits) ?	41	 金幣。要買幾份口糧?(1–9,0離開)	31	Y		engine/town_scene.go

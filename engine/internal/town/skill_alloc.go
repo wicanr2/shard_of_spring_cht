@@ -36,7 +36,10 @@ func (r LearnResult) String() string {
 	case LearnAlready:
 		return "已經學過這項技能了。"
 	case LearnNotEnough:
-		return "點數不夠,學不了這項技能。"
+		// TOWN:54「Not enough IQ !」——「IQ」指的是**剩餘技能點數**
+		// (`CHARS.DAT` 位移 89,創造時 = 智能),不是智能本身。
+		// 原版比的就是「可用點數 < 該技能的成本」(docs/re/196 §2)。
+		return "智能不夠!"
 	}
 	return ""
 }

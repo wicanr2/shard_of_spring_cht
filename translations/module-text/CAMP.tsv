@@ -22,7 +22,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 40	ds:7124	Weapon? 	8	武器? 	6	Y		engine/town_scene.go
 41	ds:7130	 skips.	7	 略過。	7	Y		engine/town_scene.go
 42	ds:7140	No Weapon	9	無武器	6	Y		engine/town_scene.go
-43	ds:7152	NO SKILL !	10	沒有技能!	9	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。裝備的武器技能閘門:引擎不檢查角色會不會用這件武器。	
+43	ds:7152	NO SKILL !	10	沒有技能!	9	Y	裝武器的閘門:**巫師 或 沒有對應的武器技能**(CAMP 0x10B27,docs/re/196 §1)。⚠ 編號 0 的匕首不檢查,誰都裝得上。	engine/camp_actions.go
 47	ds:717A	Armor?  	8	防具? 	6	Y		engine/town_scene.go
 48	ds:7186	 skips.	7	 略過。	7	Y		engine/town_scene.go
 49	ds:7192	No Armor  	10	無防具 	7	Y		engine/town_scene.go
@@ -85,8 +85,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 131	ds:7A7E	That character is incapacitated.	32	這位角色行動不能。	18	Y		engine/internal/town/camp.go
 132	ds:7AAA	You have used that skill today.	31	你今天已經用過那項技能了。	26	Y		engine/internal/town/camp.go
 133	ds:7AD6	That character is not a wizard.	31	這位角色不是巫師。	18	Y		engine/internal/town/camp.go
-134	ds:7B02	You now have about	18	你現在大約還有	14	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。照明剩餘回合:`GROUPS.DAT` 位移 45 有 LightTurns 這個欄位,但**它怎麼減、光源給幾回合沒讀過**。	
-135	ds:7B18	 turns of light.	16	 回合的照明。	13	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 134 列。	
+134	ds:7B02	You now have about	18	你現在大約還有	14	Y	照明法術(魔法火炬 / 水晶燈術)之後印:回合數 = INT(欄4 × 投入 ÷ 欄5) × 5 + 20,能見度 = 欄4(docs/re/196 §3)。兩段組成一句。	engine/internal/magic/magic.go
+135	ds:7B18	 turns of light.	16	 回合的照明。	13	Y	照明法術(魔法火炬 / 水晶燈術)之後印:回合數 = INT(欄4 × 投入 ÷ 欄5) × 5 + 20,能見度 = 欄4(docs/re/196 §3)。兩段組成一句。	engine/internal/magic/magic.go
 137	ds:7B5E	dies in the night.	18	在夜裡死去。	12	Y		engine/town_scene.go
 138	ds:7B78	 LVL: 	6	 等級： 	6	7		engine/camp_actions.go
 139	ds:7B8C	H.P.   	7	生命 	5	Y		engine/camp_actions.go

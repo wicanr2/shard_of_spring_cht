@@ -733,7 +733,9 @@ func (s combatScene) combatPrompt() string {
 	if s.g.field != nil && s.g.field.Outcome() != combat.Ongoing {
 		return "ESC：離開戰鬥"
 	}
-	return "方向鍵：移動　　A：攻擊　　C：施法　　U：用道具　　/：看單位　　S：音效　　Enter：結束回合"
+	// ⚠ 一行要放得進提示列的欄寬預算(倚天版 80 欄,docs/spec/04 §5)——
+	// 超出去不會報錯,字會壓在右邊的面板上(scene_test.go 的 TestEveryScenePrompt)。
+	return "方向鍵：移動　A：攻擊　C：施法　U：道具　/：看單位　S：音效　Enter：結束回合"
 }
 
 // potionPrompt 是「自己用 / 丟給隊友」兩個階段的提示(docs/spec/19 §2-1)。

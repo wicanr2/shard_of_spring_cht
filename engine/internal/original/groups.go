@@ -16,7 +16,10 @@ const (
 	GroupSlots  = 5
 
 	// MemberSlots 是成員槽的數量:位移 2i−1,i = 1…9(docs/re/135 §3)。
-	// ⚠ 槽有 9 個而人數上限是 5(PartySlots)—— **兩個數字不一致,原因未解**。
+	//
+	// **九個槽就是 3×3 的陣型格**(docs/re/203):營地的 `R)eorder` 把它畫成
+	// `A B C / D E F / G H I`,玩家用字母選位置。人數上限 5 而格子有 9,
+	// 是因為那是**站位**不是名額 —— 九格裡永遠有空位可以搬進去。
 	MemberSlots = 9
 	// 成員編號的有效範圍。原版是 `1 ≤ 值 ≤ 32`;不在範圍內(出貨檔用 99)= 空槽。
 	// ⚠ 上限 32 與名冊的 25 槽對不上,同樣未解。
@@ -133,6 +136,10 @@ func ParseGroups(d []byte) ([]Group, error) {
 	}
 	return out, nil
 }
+
+// ValidMemberID 回傳這個成員槽的值是不是一個真的角色編號。
+// 空槽在出貨資料裡是 `0x2020`(兩個空白)或 99 這類哨兵。
+func ValidMemberID(v int) bool { return v >= memberMin && v <= memberMax }
 
 // MemberIDs 回傳實際在隊的角色編號,依槽序。
 // 值不在 1–32 的槽(出貨檔用 99)略過 —— 與原版 0x114CA 的判斷相同。

@@ -13,13 +13,13 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 43	ds:6D5C	Wilderness	10	野外	4	Y		engine/camp_actions.go
 44	ds:6D6E	maze: 	6	地城： 	6	Y		engine/roster_scene.go
 45	ds:6D78	Currently in the 	17	目前位於 	9	Y		engine/roster_scene.go
-46	ds:6D8E	#) Name        Race   Class   Level   Status	44	#) 名字         種族   職業    等級    狀態	43	Y	⛔ **不接,理由是對齊方式**:原版的表頭靠**空白補位**對齊,引擎的欄位是**像素定位**(docs/spec/04 §5)—— 比例字型下把補位表頭畫出來會與資料列錯開。而且第五欄原版是「狀態」、引擎是「隊伍」。	
+46	ds:6D8E	#) Name        Race   Class   Level   Status	44	#) 名字         種族   職業    等級    狀態	43	Y	⛔ **不接,理由是對齊方式**:原版的表頭靠**空白補位**對齊,引擎的欄位是**像素定位**(docs/spec/04 §5)—— 比例字型下把補位表頭畫出來會與資料列錯開。而且第五欄原版是「狀態」、引擎是「隊伍」。	engine/roster_scene.go
 48	ds:6DD0	Hero	4	戰士	4	Y		engine/internal/original/chars.go
 49	ds:6DD8	Wizard	6	巫師	4	Y		engine/internal/original/chars.go
 50	ds:6DE4	Any key to continue, (Q quits)...	33	按任意鍵繼續,(Q離開)……	22	Y		engine/roster_scene.go
 52	ds:6E10	(0 exits) ? 	12	(0離開) ?	9	Y		engine/roster_scene.go
 53	ds:6E20	Is deleted !	12	已刪除!	7	Y		engine/roster_scene.go
-54	ds:6E30	(0 exits) ?	11	(0離開)?	8	Y	原版有兩種寫法:`(0 exits) ?`(括號後有空格,CHARUTIL:52/70,已接到解散提問)與這一列的 `(0 exits)?`。引擎只有一個提問,照 52/70 那一份。	
+54	ds:6E30	(0 exits) ?	11	(0離開)?	8	Y	原版有兩種寫法:`(0 exits) ?`(括號後有空格,CHARUTIL:52/70,已接到解散提問)與這一列的 `(0 exits)?`。引擎只有一個提問,照 52/70 那一份。	engine/roster_scene.go
 58	ds:6E5A	No party #	10	沒有隊伍 #	10	Y		engine/roster_scene.go
 59	ds:6E68	to disband !	12	可解散!	7	Y		engine/roster_scene.go
 63	ds:6EA8	Human	5	人類	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
@@ -27,5 +27,5 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 65	ds:6EC0	Dwarf	5	矮人	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
 66	ds:6ECA	Elf	3	精靈	4	4		engine/internal/original/chars.go;engine/internal/rules/race.go
 67	ds:6ED2	Gnome	5	地精	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
-69	ds:6EE6	 #) Name       Party         #) Name       Party	48	 #) 名字        隊伍          #) 名字        隊伍	49	49	⛔ 同 46 列(這一份是兩欄並排的隊伍檢視)。	
+69	ds:6EE6	 #) Name       Party         #) Name       Party	48	 #) 名字        隊伍          #) 名字        隊伍	49	49	⛔ 同 46 列(這一份是兩欄並排的隊伍檢視)。	engine/roster_scene.go
 70	ds:6F2A	(0 exits) ? 	12	(0離開) ?	9	Y		engine/roster_scene.go

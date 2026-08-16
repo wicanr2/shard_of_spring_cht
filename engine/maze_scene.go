@@ -236,7 +236,10 @@ func (g *Game) crossLevel(target int) {
 		}
 		g.level = lv
 		g.mazeState.Major, g.mazeState.Minor = e.StartMajor, e.StartMinor
-		g.overlay = fmt.Sprintf("你走到了另一層(DG%d)。", e.MazeFile)
+		// MAZEMOVE:29/32「One momement..」—— 原版在**載入另一層的迷宮檔**
+		// 之前印這一句(`0x123AC` / `0x12462`,兩處都緊接著組檔名再呼叫載入)。
+		// ⚠ 引擎讀檔是瞬間的,所以它與結果排在同一行,不是一個會停留的畫面。
+		g.overlay = mazeOneMoment + fmt.Sprintf("你走到了另一層(DG%d)。", e.MazeFile)
 		return
 	}
 	g.overlay = fmt.Sprintf("跨關卡目標未解(編號 %d)—— docs/spec/08 §5", target)
@@ -364,3 +367,10 @@ func (g *Game) drawPrompt(dst *ebiten.Image) {
 	g.overlayFont.Draw(dst, "（ESC 離開）",
 		float64(rc.X+pad), float64(rc.Y+rc.H-pad)-lh)
 }
+
+// mazeOneMoment 是 MAZEMOVE:29/32「One momement..」。
+//
+// 原版在跨層時要換讀一個 `DG*MAZE.SQZ`,所以先印一句「稍候」。
+// ⚠ 兩列是**同一句在兩個分支各出現一次**(迷宮 5 的兩個方向),
+// 引擎只有一支 crossLevel,兩列共用它。
+const mazeOneMoment = "稍候……　"

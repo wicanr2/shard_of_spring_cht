@@ -156,7 +156,9 @@ func (g *Game) poolKey(k ebiten.Key) {
 	g.group.PoolUses++
 	g.syncMember(*m)
 	g.prompt = nil
-	g.overlay = fmt.Sprintf("%s 已治療 %d 點。", m.Name, got) // MAZEMOVE:80+81
+	// MAZEMOVE:80+81+82「healed」+「 pts.」+「 is」。
+	// ⚠ 英文的繫詞在中文這一句是**體貌標記**不是「是」:`is healed` = 「已治療」。
+	g.overlay = fmt.Sprintf("%s 已治療 %d 點。", m.Name, got)
 }
 
 // riddleKey:Enter 收下目前這一個名字,四個收滿才判(docs/re/162 §3)。

@@ -269,3 +269,86 @@ func TestRenamePromptMatchesLimit(t *testing.T) {
 		t.Errorf("提示 %q 與上限 %d 不一致", renamePrompt, town.NameMaxRunes)
 	}
 }
+
+// ── 剩下十段接線之後的回歸(docs/re/203)──────────────────────────────
+
+// TestFormationGridIsThreeByThree:R)eorder 畫的是 3×3 的字母格,
+// 而九個成員槽就是那九格(CAMP:71/72/73)。
+func TestFormationGridIsThreeByThree(t *testing.T) {
+	if town.FormationSlots != 9 {
+		t.Fatalf("陣型格應該是九格,得到 %d", town.FormationSlots)
+	}
+	for _, row := range []string{formationRowABC, formationRowDEF, formationRowGHI} {
+		if got := strings.Count(row, " ") ; got == 0 {
+			t.Errorf("格子圖 %q 少了對齊用的空白", row)
+		}
+	}
+	if !strings.Contains(formationRowABC, "A B C") ||
+		!strings.Contains(formationRowGHI, "G H I") {
+		t.Error("格子圖的字母要照原版 A–I")
+	}
+}
+
+// TestRosterHeaderDrivesColumns:資料列的欄位起點是**從表頭量出來的**,
+// 不是另外寫一組數字 —— 改表頭就一定連帶改欄位。
+func TestRosterHeaderDrivesColumns(t *testing.T) {
+	c := rosterColumns(rosterHeader + "   隊伍")
+	if len(c) != 7 {
+		t.Fatalf("表頭應該量出 7 欄,得到 %d(%v)", len(c), c)
+	}
+	for i := 1; i < len(c); i++ {
+		if c[i] <= c[i-1] {
+			t.Errorf("欄位起點要遞增,第 %d 欄 %v <= 第 %d 欄 %v", i, c[i], i-1, c[i-1])
+		}
+	}
+	if c[0] != 0 {
+		t.Errorf("第一欄應該從 0 起,得到 %v", c[0])
+	}
+}
+
+// TestRemoveAsksBeforeDeleting:R)emove 是不可逆的,原版在刪之前問一句
+// (CHARUTIL:52)。⚠ 先前引擎按一下 R 就直接刪掉,連確認都沒有。
+func TestRemoveAsksBeforeDeleting(t *testing.T) {
+	g := newRosterGame(t)
+	free := -1
+	for i := range g.chars {
+		if _, in := g.chars[i].InParty(); g.chars[i].Occupied() && !in {
+			free = i
+			break
+		}
+	}
+	if free < 0 {
+		// 出貨名冊裡每個有人的槽都在隊伍裡 —— 造一個不在隊伍的來測。
+		g.chars[0].Party = ' '
+		free = 0
+	}
+	g.roster.cursor = free
+	g.testRunes = nil
+	press(t, g, ebiten.KeyR)
+	if !g.roster.removePick {
+		t.Fatal("R 應該先問一句,不是直接刪")
+	}
+	if !g.chars[g.roster.cursor].Occupied() {
+		t.Fatal("還沒回答就已經刪掉了")
+	}
+	if !strings.Contains(g.roster.msg, rosterRemoveAsk) {
+		t.Errorf("要問「%s」,得到 %q", rosterRemoveAsk, g.roster.msg)
+	}
+	g.rosterRemovePick(ebiten.Key0) // 取消
+	if !g.chars[g.roster.cursor].Occupied() {
+		t.Error("答 0 不該刪掉")
+	}
+	press(t, g, ebiten.KeyR)
+	g.rosterRemovePick(ebiten.KeyR) // 確認
+	if g.chars[g.roster.cursor].Occupied() {
+		t.Error("再按一次 R 應該刪掉")
+	}
+}
+
+// TestTwoExitVariantsAreDistinct:原版的 `(0 exits)` 有兩種空格寫法,
+// 分屬移除角色與解散隊伍兩個提問 —— 不要統一成一句。
+func TestTwoExitVariantsAreDistinct(t *testing.T) {
+	if rosterRemoveAsk == rosterDisbandAsk {
+		t.Error("兩個提問的寫法在原版是不同的(CHARUTIL:52 vs 54)")
+	}
+}

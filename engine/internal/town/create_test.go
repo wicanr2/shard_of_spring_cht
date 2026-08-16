@@ -232,29 +232,31 @@ func TestRerollUsesRoundingNotFloor(t *testing.T) {
 	}
 }
 
-// R)eorder:順序不只是顯示 —— 戰場佈陣直接用槽序算位置(docs/re/160)。
+// R)eorder:**搬到空格**,不是兩人互換(docs/re/203:原版問字母 A–I,
+// 而 `cmp [di+683Ch], 99 / jl → 重問` 要求那一格是空的)。
 //
-// ⚠ 要同時動 GROUPS 的成員槽與 members 切片。只動一邊的話存檔與畫面對不上,
-// 而畫面看起來完全正常 —— 所以這條兩邊都驗。
-func TestReorderMovesBothSides(t *testing.T) {
-	g := &original.Group{}
-	ms := []original.Character{{Name: "甲", ID: 1}, {Name: "乙", ID: 2}, {Name: "丙", ID: 3}}
-	for i, c := range ms {
-		g.Members[i] = c.ID
+// ⚠ 九個成員槽就是 3×3 的站位,槽序直接決定戰場佈陣(docs/re/160)。
+func TestMoveToSlotOnlyIntoEmpty(t *testing.T) {
+	var g original.Group
+	for i := range g.Members {
+		g.Members[i] = 99 // 空
 	}
-	if !Reorder(g, ms, 1, 3) {
-		t.Fatal("交換 1↔3 應該成功")
+	g.Members[0], g.Members[1] = 3, 7 // A、B 兩格有人
+
+	if MoveToSlot(&g, 1, 0) {
+		t.Error("B 搬到 A 應該失敗 —— 那一格有人")
 	}
-	if ms[0].Name != "丙" || ms[2].Name != "甲" {
-		t.Errorf("members 沒換:%s / %s", ms[0].Name, ms[2].Name)
+	if !MoveToSlot(&g, 1, 4) {
+		t.Fatal("B 搬到 E(空格)應該成功")
 	}
-	if g.Members[0] != 3 || g.Members[2] != 1 {
-		t.Errorf("成員槽沒換:%d / %d", g.Members[0], g.Members[2])
+	if g.Members[1] != 99 || g.Members[4] != 7 {
+		t.Errorf("搬完之後 B 應該空、E 應該是 7,得到 %v", g.Members)
 	}
-	for _, c := range [][2]int{{1, 1}, {0, 2}, {1, 9}} {
-		if Reorder(g, ms, c[0], c[1]) {
-			t.Errorf("(%d,%d) 應該被擋下來", c[0], c[1])
-		}
+	if got := g.MemberIDs(); len(got) != 2 || got[0] != 3 || got[1] != 7 {
+		t.Errorf("槽序就是隊伍順序,得到 %v", got)
+	}
+	if MoveToSlot(&g, 0, FormationSlots) {
+		t.Error("超出九格應該擋下來")
 	}
 }
 

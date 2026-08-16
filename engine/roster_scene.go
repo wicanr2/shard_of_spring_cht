@@ -35,6 +35,9 @@ type rosterState struct {
 	joinPick bool
 	// disbandPick:D)isband 正在問「解散第幾隊」(1–5,0 離開)。
 	disbandPick bool
+	// removePick:R)emove 正在問「真的要移除嗎」(0 取消)。
+	// ⚠ 刪角色是不可逆的,原版在這裡有一句問話(CHARUTIL:52)。
+	removePick bool
 	// rename 非 nil = N)ew Name 的文字輸入開著。
 	rename *renameState
 	// info 非空 = I)nformation 的隊伍資訊頁開著,內容是要顯示的幾行。
@@ -75,6 +78,9 @@ func (g *Game) rosterKey(k ebiten.Key) {
 	case r.joinPick:
 		g.rosterJoinPick(k)
 		return
+	case r.removePick:
+		g.rosterRemovePick(k)
+		return
 	case r.disbandPick:
 		g.rosterDisbandPick(k)
 		return
@@ -101,16 +107,22 @@ func (g *Game) rosterKey(k ebiten.Key) {
 		g.rosterInfo()
 	case ebiten.KeyD: // D)isband —— 解散**整支隊伍**,不是把一個人移出去
 		r.disbandPick = true
-		r.msg = "要解散第幾隊　(0離開) ?" // CHARUTIL:52/70「 (0 exits) ? 」
+		r.msg = "要解散第幾隊　" + rosterDisbandAsk // CHARUTIL:54
 	case ebiten.KeyR: // R)emove
 		c := &g.chars[r.cursor]
 		if p, in := c.InParty(); in {
 			r.msg = fmt.Sprintf("%s 還在第 %d 隊,要先解散那一隊", c.Name, p)
 			return
 		}
-		name := c.Name
-		town.Delete(c)
-		r.msg = name + " 已刪除!" // CHARUTIL:53
+		if !c.Occupied() {
+			r.msg = "那一槽是空的"
+			return
+		}
+		// 原版在刪除之前問一句(CHARUTIL:52,docs/re/203 §2)。
+		// ⚠ 先前引擎按一下 R 就直接刪掉,**沒有任何確認** ——
+		// 那是不可逆的動作,而畫面上看不出剛才刪了誰。
+		r.removePick = true
+		r.msg = "要移除 " + c.Name + " 嗎?　" + rosterRemoveAsk
 	}
 }
 
@@ -256,7 +268,47 @@ func (g *Game) rosterInfo() {
 		out = append(out, fmt.Sprintf("隊伍 #%d　金幣：%.0f　食糧：%d", n, grp.Gold, grp.Provisions))
 		out = append(out, fmt.Sprintf("　　存檔於月份 %d 日 %d　%s", grp.Month, grp.Day, where))
 	}
+	// 原版的資訊頁還有一段「誰在哪一隊」的兩欄表(CHARUTIL:69)。
+	out = append(out, "", rosterPartyHeader)
+	out = append(out, g.partyMembershipRows()...)
 	r.info = append(out, "", "按任意鍵繼續,(Q離開)……") // CHARUTIL:50
+}
+
+// partyMembershipRows 把「誰在哪一隊」排成兩欄,欄位對齊 rosterPartyHeader。
+//
+// ⚠ 欄位起點**從表頭量出來**(rosterColumns),不是另外寫一組數字 ——
+// 改表頭就一定連帶改資料列。
+func (g *Game) partyMembershipRows() []string {
+	c := rosterColumns(rosterPartyHeader)
+	if len(c) < 6 {
+		return nil
+	}
+	cell := func(i int, ch original.Character) string {
+		party := "—"
+		if n, in := ch.InParty(); in {
+			party = fmt.Sprint(n)
+		}
+		s := ui.PadTo(fmt.Sprintf("%d)", i+1), int(c[1]-c[0]))
+		s += ui.PadTo(ch.Name, int(c[2]-c[1]))
+		return s + party
+	}
+	var rows []string
+	var left string
+	for i, ch := range g.chars {
+		if !ch.Occupied() {
+			continue
+		}
+		if left == "" {
+			left = cell(i, ch)
+			continue
+		}
+		rows = append(rows, ui.PadTo(left, int(c[3]-c[0]))+cell(i, ch))
+		left = ""
+	}
+	if left != "" {
+		rows = append(rows, left)
+	}
+	return rows
 }
 
 // rosterJoin 開始「加入隊伍」。
@@ -451,32 +503,33 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 	// ⚠ **用像素定位排欄,不用空白補位** —— 字型是比例字
 	// (與 docs/spec/06 §5 的隊伍狀態欄同一條)。ui.PadTo 只用來算容量。
 	col := func(c float64) float64 { return x + c*ui.ColUnit }
-	const (
-		cNum, cName, cRace, cClass, cLevel, cParty = 2.0, 6.0, 22.0, 30.0, 40.0, 46.0
-	)
-	p.Draw(dst, "#", col(cNum), y)
-	p.Draw(dst, "名稱", col(cName), y)
-	p.Draw(dst, "種族", col(cRace), y)
-	p.Draw(dst, "職業", col(cClass), y)
-	p.Draw(dst, "等級", col(cLevel), y)
-	p.Draw(dst, "隊伍", col(cParty), y)
+	// 表頭照原版一整行畫(CHARUTIL:46),資料列的欄位起點**從同一行量出來** ——
+	// 這樣改表頭就一定連帶改欄位,不會兩邊各自漂走。
+	// ⚠ 原版最後一欄是「狀態」;引擎多一欄「隊伍」,因為它把原版的兩個畫面
+	// (角色清單與隊伍歸屬)併成一張表(docs/re/203 §3)。
+	head := rosterHeader + "   隊伍"
+	c := rosterColumns(head)
+	cNum, cName, cRace, cClass, cLevel, cStatus, cParty :=
+		c[0], c[1], c[2], c[3], c[4], c[5], c[6]
+	p.Draw(dst, head, x, y)
 	y += lh * 1.3
-	for i, c := range g.chars {
+	for i, ch := range g.chars {
 		if i == r.cursor {
 			p.Draw(dst, "▶", x, y)
 		}
 		p.DrawRight(dst, fmt.Sprint(i+1), col(cNum)+ui.ColUnit*2, y)
-		if !c.Occupied() {
+		if !ch.Occupied() {
 			p.Draw(dst, "（空）", col(cName), y)
 			y += lh
 			continue
 		}
-		p.Draw(dst, c.Name, col(cName), y)
-		p.Draw(dst, c.RaceName(), col(cRace), y)
-		p.Draw(dst, c.ClassName(), col(cClass), y)
-		p.DrawRight(dst, fmt.Sprint(c.Level), col(cLevel)+ui.ColUnit*2, y)
+		p.Draw(dst, ch.Name, col(cName), y)
+		p.Draw(dst, ch.RaceName(), col(cRace), y)
+		p.Draw(dst, ch.ClassName(), col(cClass), y)
+		p.DrawRight(dst, fmt.Sprint(ch.Level), col(cLevel)+ui.ColUnit*2, y)
+		p.Draw(dst, ch.StatusName(), col(cStatus), y)
 		party := "—"
-		if n, in := c.InParty(); in {
+		if n, in := ch.InParty(); in {
 			party = fmt.Sprint(n)
 		}
 		p.Draw(dst, party, col(cParty), y)
@@ -498,4 +551,55 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 		msg = renamePrompt + r.rename.text + "_"
 	}
 	g.drawMessage(dst, msg)
+}
+
+// 名冊的三句提問(CHARUTIL:46/52/54/69)。
+//
+// ⚠ 原版的 `(0 exits)` 有**兩種空格寫法**,分屬兩個不同的提問:
+// 移除角色是 `(0 exits) ? `(52)、解散隊伍是 `(0 exits) ?`(54)。
+// 兩句都照抄,不要統一成一句。
+const (
+	rosterRemoveAsk  = "(0離開) ?" // 52
+	rosterDisbandAsk = "(0離開)?"  // 54
+	// rosterHeader 是名冊主畫面的表頭(46)。⚠ 欄位間距照原版的空白數,
+	// 資料列用 ui.Cols 量同一組欄位起點,兩邊才對得齊。
+	rosterHeader = "#) 名字         種族   職業    等級    狀態"
+	// rosterPartyHeader 是 I)nformation 裡「誰在哪一隊」那一段的表頭(69),
+	// 原版是兩欄並排。
+	rosterPartyHeader = " #) 名字        隊伍          #) 名字        隊伍"
+)
+
+// rosterRemovePick 處理「真的要移除嗎」的回答。0 取消,R 確認。
+func (g *Game) rosterRemovePick(k ebiten.Key) {
+	r := g.roster
+	r.removePick = false
+	if k != ebiten.KeyR {
+		r.msg = "" // 0 或任何別的鍵 = 取消
+		return
+	}
+	c := &g.chars[r.cursor]
+	name := c.Name
+	town.Delete(c)
+	r.msg = name + " 已刪除!" // CHARUTIL:53
+}
+
+// rosterColumns 量出表頭每一欄的起始欄號(以空白分隔的每一段算一欄)。
+//
+// ⚠ 用 ui.Cols 算,全形字算兩欄。資料列照這組欄號排,
+// **改表頭就一定連帶改欄位** —— 兩邊各寫一組數字才會漂走。
+func rosterColumns(head string) []float64 {
+	var out []float64
+	rs := []rune(head)
+	prevSpace := true
+	for i, r := range rs {
+		if r == ' ' {
+			prevSpace = true
+			continue
+		}
+		if prevSpace {
+			out = append(out, float64(ui.Cols(string(rs[:i]))))
+		}
+		prevSpace = false
+	}
+	return out
 }

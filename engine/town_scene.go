@@ -629,21 +629,28 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		ts.campMode, ts.campWho = 0, -1
 		return
 	}
-	// R)eorder 與 T)rade 都要選第二個人
-	if ts.campMode == 'R' || ts.campMode == 'T' {
+	// R)eorder 選完人之後問**字母**(A–I),不是再選一個人
+	// (docs/re/203:原版畫一張 3×3 的格子圖,搬到空格)。
+	if ts.campMode == 'R' {
+		slot := int(k - ebiten.KeyA)
+		if slot < 0 || slot >= town.FormationSlots {
+			return
+		}
+		if town.MoveToSlot(&g.group, ts.campWho, slot) {
+			g.rebuildMembers()
+			ts.msg = formationMoved
+		} else {
+			ts.msg = formationTaken
+		}
+		ts.campMode, ts.campWho, ts.campWho2 = 0, -1, -1
+		return
+	}
+	// T)rade 要選第二個人
+	if ts.campMode == 'T' {
 		if ts.campWho2 < 0 {
 			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
 				ts.campWho2 = i
 			}
-			return
-		}
-		if ts.campMode == 'R' {
-			if town.Reorder(&g.group, g.members, ts.campWho+1, ts.campWho2+1) {
-				ts.msg = "調換了隊形順序（戰場站位跟著改）"
-			} else {
-				ts.msg = "那兩個位置換不了"
-			}
-			ts.campMode, ts.campWho, ts.campWho2 = 0, -1, -1
 			return
 		}
 		// T)rade:選完兩個人再選背包格
@@ -935,9 +942,11 @@ func (g *Game) campLines(ts *townState) []string {
 	}
 	c := g.members[ts.campWho]
 	if ts.campMode == 'R' {
-		// CAMP:68/69「Enter new 」+「position for:」
-		return []string{"輸入新的位置給：" + c.Name + "（再按一個編號,兩人交換）",
-			"（順序不只是顯示 —— 戰場站位直接用它算,docs/re/160）"}
+		// CAMP:68/69/70「Enter new 」+「position for:」+「 Letter?」,
+		// 底下是 CAMP:71/72/73 的 3×3 格子圖(docs/re/203)。
+		return []string{"輸入新的位置給：" + c.Name + " 字母?",
+			formationRowABC, formationRowDEF, formationRowGHI,
+			"（九格就是戰場站位,只能搬到空的那一格 —— docs/re/160、203）"}
 	}
 	if ts.campMode == 'T' {
 		if ts.campWho2 < 0 {
@@ -1126,4 +1135,30 @@ func (g *Game) identify(who, slot int) {
 		name = it.Name
 	}
 	ts.msg = c.Name + " 辨識了 " + name
+}
+
+// 陣型格子圖(CAMP:71/72/73)。**九個成員槽就是 3×3 的站位**,
+// 玩家用字母選要搬到哪一格(docs/re/203)。
+//
+// ⚠ 三行的前導空白照原版留著 —— 那是格子圖對齊用的。
+const (
+	formationRowABC = "  A B C "
+	formationRowDEF = "  D E F "
+	formationRowGHI = "  G H I "
+	formationMoved  = "換好站位了（戰場站位跟著改）"
+	formationTaken  = "那一格有人了 —— 只能搬到空的格子"
+)
+
+// rebuildMembers 依成員槽的順序重建 g.members。
+//
+// ⚠ **槽序就是隊伍順序** —— 搬完位置之後不重建的話,
+// 畫面與戰場站位還停在舊順序,而存檔已經改了。
+func (g *Game) rebuildMembers() {
+	var out []original.Character
+	for _, id := range g.group.MemberIDs() {
+		if id >= 1 && id <= len(g.chars) {
+			out = append(out, g.chars[id-1])
+		}
+	}
+	g.members = out
 }

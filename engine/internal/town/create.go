@@ -248,23 +248,45 @@ func raceSkills(race rules.Race, class rules.Class) string {
 
 // ── 營地的 R)eorder 與 T)rade ────────────────────────────────────────
 //
-// 兩者的**效果**都由已解的資料結構決定,⚠ 但**原版的操作介面沒有讀到**
-// (docs/re/150 §5.2 只讀到選單上有這兩個字母)。
-// 引擎用最小的忠實操作:交換兩個成員槽 / 搬一格背包。
+// `R)eorder` 的操作介面**已經讀出來了**(docs/re/203):3×3 字母格、
+// 只能搬到空格 —— 見上面的 `MoveToSlot`。`T)rade` 仍然只讀到選單上有那個字母。
 
-// Reorder 交換隊伍裡第 a、b 兩個成員槽(1-based)。
+// FormationSlots 是陣型格子的數量:`GROUPS.DAT` 位移 1–18 的**九個成員槽**
+// (docs/formats/02)。原版的 `R)eorder` 把它畫成 3×3 的字母格
+// `A B C / D E F / G H I`(CAMP:71/72/73,docs/re/203)。
+const FormationSlots = original.MemberSlots
+
+// MoveToSlot 把第 memberIdx 位成員(0 起算,依槽位順序)搬到第 slot 格
+// (0 起算,對應字母 A–I)。
 //
-// 順序**不只是顯示** —— 戰場的初始佈陣直接用槽序算位置
-// (`欄 = (i−1) mod 3 − 1`,docs/re/160),所以調順序就是調站位。
+// ⚠ **只能搬到空格**(`CAMP 0x1151B` 的 `cmp [di+683Ch], 99 / jl → 重問`)——
+// 原版不是「兩人互換」,是「移到一個沒人的位置」。九格裡最多五個人,
+// 所以永遠有空位。
 //
-// ⚠ 要同時動 `GROUPS.DAT` 的成員槽**與**引擎的 members 切片,
-// 只動一邊會讓存檔與畫面對不上,而畫面看起來完全正常。
-func Reorder(g *original.Group, members []original.Character, a, b int) bool {
-	if a == b || a < 1 || b < 1 || a > len(members) || b > len(members) {
+// ⚠ 搬完之後**成員的先後順序**跟著槽位走 —— 而先後順序就是戰場站位
+// (docs/re/160),所以這個指令不只是換顯示。
+func MoveToSlot(g *original.Group, memberIdx, slot int) bool {
+	if slot < 0 || slot >= FormationSlots {
 		return false
 	}
-	members[a-1], members[b-1] = members[b-1], members[a-1]
-	g.Members[a-1], g.Members[b-1] = g.Members[b-1], g.Members[a-1]
+	from, seen := -1, 0
+	for i, v := range g.Members {
+		if !original.ValidMemberID(v) {
+			continue
+		}
+		if seen == memberIdx {
+			from = i
+			break
+		}
+		seen++
+	}
+	if from < 0 || from == slot {
+		return false
+	}
+	if original.ValidMemberID(g.Members[slot]) {
+		return false // 那一格有人
+	}
+	g.Members[slot], g.Members[from] = g.Members[from], g.Members[slot]
 	return true
 }
 

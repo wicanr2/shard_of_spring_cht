@@ -244,6 +244,8 @@ const (
 	// 134–138 `is not bound in` + `chains and` + `still air and` + `ice and`
 	// + `notices no effect` —— 原版把三種束縛狀態逐一列出來。
 	MsgNotBound = "沒有被鐵鍊束縛,凝滯的空氣,冰霜,沒有感到效果"
+	// MsgPts 是 CAMP:102「 pts!」的單位。
+	MsgPts = " 點!"
 )
 
 // 束縛類的狀態值。`CHARS.DAT` 位移 1 的狀態碼:
@@ -326,7 +328,14 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		attr := map[int]string{
 			EffStrength: "力量", EffHitPoints: "生命值", EffSpeed: "速度",
 		}[s.Effect]
-		return Result{Message: fmt.Sprintf("%s：%s %+d", name, attr, p)}
+		// CAMP:102「 pts!」—— 原版在側欄那一格印回復量並加上這個單位。
+		// ⚠ **只有生命值那一支**(效果類別 5)走那一欄;其餘走法力欄
+		// (docs/re/194 §2),而引擎沒有動法力的效果類別。
+		unit := ""
+		if s.Effect == EffHitPoints {
+			unit = MsgPts
+		}
+		return Result{Message: fmt.Sprintf("%s：%s %+d%s", name, attr, p, unit)}
 
 	case EffProtect:
 		for _, t := range targets {

@@ -436,3 +436,97 @@ func TestOtherUtilitySpellsDoNotTeleport(t *testing.T) {
 		}
 	}
 }
+
+// ── 群體傷害:第一回合的閘門與 5×5 作用範圍(docs/re/195)──────────────
+
+// groupSpellGame 擺一場戰鬥,施法者是隊員,場上有一隻怪。
+func groupSpellGame(t *testing.T, round, mx, my int) (*Game, original.Spell) {
+	t.Helper()
+	g := newPlayingGame(t)
+	var group original.Spell
+	for _, s := range g.spells {
+		if s.Effect == magic.EffGroupDamage {
+			group = s
+			break
+		}
+	}
+	if group.Name == "" {
+		t.Fatal("資產裡找不到類別 1 的法術")
+	}
+	f := &combat.Field{Rand: combat.NewRand(7), Round: round}
+	f.Units[combat.MonsterBase] = combat.Unit{Name: "地精", HP: 20,
+		Facing: combat.South, IsMonster: true, X: mx, Y: my}
+	f.Units[combat.PartyBase] = combat.Unit{Name: "凱恩", HP: 20, SP: 50,
+		Facing: combat.North, X: 13, Y: 13}
+	g.field = f
+	g.castUnit = combat.PartyBase
+	return g, group
+}
+
+// TestGroupSpellBlockedOnRoundOne:第 1 回合放不出來,而且**不扣法力**。
+func TestGroupSpellBlockedOnRoundOne(t *testing.T) {
+	g, s := groupSpellGame(t, 1, 13, 11)
+	sp0 := g.field.Units[combat.PartyBase].SP
+	if g.castAt(s, 10, 13, 11) {
+		t.Error("第 1 回合不該施放成功")
+	}
+	if g.field.Units[combat.PartyBase].SP != sp0 {
+		t.Errorf("被擋下來不該扣法力:%d → %d", sp0, g.field.Units[combat.PartyBase].SP)
+	}
+	if !logHas(g.field.Log, "下一回合") {
+		t.Errorf("要說 CMBT:97–100 那一句,得到 %v", g.field.Log)
+	}
+}
+
+// TestGroupSpellHitsOnlyInArea:5×5 之外的怪打不到,而且會說「區域內沒有人」。
+func TestGroupSpellHitsOnlyInArea(t *testing.T) {
+	// 怪在 (13,13),游標放到 (13,20) —— 差 7 格,遠超過 ±2。
+	g, s := groupSpellGame(t, 2, 13, 13)
+	if g.castAt(s, 10, 13, 20) {
+		t.Error("範圍內沒有怪,不該施放成功")
+	}
+	if !logHas(g.field.Log, "目標區域內沒有人") {
+		t.Errorf("要說 CMBT:124/125,得到 %v", g.field.Log)
+	}
+	if g.field.Units[combat.MonsterBase].HP != 20 {
+		t.Error("範圍外的怪不該掉血")
+	}
+}
+
+// TestGroupSpellAreaEdge:剛好在半徑上(±2)算在範圍內。
+func TestGroupSpellAreaEdge(t *testing.T) {
+	g, s := groupSpellGame(t, 2, 15, 11) // 與游標 (13,12) 差 (2,-1)
+	if !g.castAt(s, 10, 13, 12) {
+		t.Fatalf("±2 應該算在範圍內,卻沒施放成功:%v", g.field.Log)
+	}
+	if g.field.Units[combat.MonsterBase].HP >= 20 {
+		t.Error("範圍內的怪應該吃到傷害")
+	}
+}
+
+// TestUnitsInAreaIsFiveByFive:半徑就是 2,別的數字會讓上面兩條同時通過。
+func TestUnitsInAreaIsFiveByFive(t *testing.T) {
+	if combat.AreaRadius != 2 {
+		t.Fatalf("docs/re/195 §2 讀到的是 ±2(5×5),得到 ±%d", combat.AreaRadius)
+	}
+}
+
+// TestGroupSpellIgnoresOccupantOrder:游標壓在某個單位身上時,群體法術仍然
+// 打**整塊 5×5**,不是只打那一個。
+//
+// ⚠ 這條擋的是一個排序缺陷:類別 1 的分支若排在「游標那一格上的單位」之後,
+// 群體法術會在游標壓到人時退化成單體 —— 而傷害照樣出現,畫面上看不出差別。
+func TestGroupSpellIgnoresOccupantOrder(t *testing.T) {
+	g, s := groupSpellGame(t, 2, 14, 12)
+	// 再放一隻,兩隻都在游標 (13,12) 的 5×5 內。
+	g.field.Units[combat.MonsterBase+1] = combat.Unit{Name: "狗頭人", HP: 20,
+		Facing: combat.South, IsMonster: true, X: 13, Y: 12}
+	if !g.castAt(s, 10, 13, 12) { // 游標正壓在第二隻身上
+		t.Fatalf("應該施放成功:%v", g.field.Log)
+	}
+	for _, i := range []int{combat.MonsterBase, combat.MonsterBase + 1} {
+		if g.field.Units[i].HP >= 20 {
+			t.Errorf("單位 %d 在範圍內卻沒吃到傷害(群體退化成單體)", i)
+		}
+	}
+}

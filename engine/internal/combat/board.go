@@ -104,6 +104,29 @@ func (f *Field) Occupant(x, y int) int {
 	return -1
 }
 
+// AreaRadius 是群體傷害的作用半徑:以游標為中心**兩軸各 ±2**,合起來 5×5
+// (docs/re/195 §2 —— `CMBT 0x15A19` 的 `游標 + 2` 與 `0x15A1C` 的 `游標 − 2`)。
+//
+// ⚠ 原版畫的範圍框(`0x159C2` 的 1…5 × 1…5 雙重迴圈)與判定用的是**同一塊**。
+const AreaRadius = 2
+
+// UnitsInArea 回傳作用範圍內、活著而且在場的單位索引。
+//
+// ⚠ **「類別 1 不選目標」不等於「打敵方全部」**(docs/re/195 §2):
+// 它跳過的是「指定一個單位」,游標仍然決定範圍。
+func (f *Field) UnitsInArea(cx, cy int) []int {
+	var out []int
+	for i, u := range f.Units {
+		if !u.Alive() || !u.OnField() {
+			continue
+		}
+		if abs(u.X-cx) <= AreaRadius && abs(u.Y-cy) <= AreaRadius {
+			out = append(out, i)
+		}
+	}
+	return out
+}
+
 // ActResult 說明一個動作為什麼沒做成。
 type ActResult int
 

@@ -37,6 +37,10 @@ const (
 	castSPPrompt   = " 花費幾點法力? "            // 101
 	castNotThatMuch = "你沒有 那麼多!"            // 102+103
 	castNoTarget   = "沒有選定目標!"             // 108+109
+	// 97+98+99+100:群體傷害法術在第 1 回合放不出來(docs/re/195 §1)。
+	castNotPrepared = "你將還沒準備好那個法術,要到下一回合才行。"
+	// 124+125:游標周圍 5×5 一個單位都沒有(docs/re/195 §2)。
+	castNoOneInArea = "目標區域內沒有人!"
 	castPageHint   = "按 PgDn 鍵"                // 113
 	castWhere      = "你想施放到哪裡?"           // 118+119
 	castEscExit    = "(ESC離開)"                 // 114
@@ -279,6 +283,12 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 	if invest < 1 {
 		invest = 1
 	}
+	// 群體傷害在第 1 回合施放不出來(docs/re/195 §1)。
+	// ⚠ 擋在**扣法力之前** —— 原版那一段也是先擋再扣。
+	if s.Effect == magic.EffGroupDamage && g.field.Round <= 1 {
+		g.field.Log = append(g.field.Log, castNotPrepared)
+		return false
+	}
 	caster := &g.field.Units[g.castUnit]
 
 	// 目標:游標那一格上的單位。
@@ -289,14 +299,27 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 	// 先前引擎在這裡落回「敵方全部」,那是**實作決定**,而且會讓玩家
 	// 以為自己打中了。
 	var targets []*combat.Unit
-	if j := g.field.Occupant(cx, cy); j >= 0 {
-		targets = append(targets, &g.field.Units[j])
-	} else if s.Effect == magic.EffGroupDamage {
-		for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
-			if g.field.Units[i].Alive() {
+	if s.Effect == magic.EffGroupDamage {
+		// 類別 1 **完全跳過選目標**(docs/re/172 §3),游標決定的是
+		// 以它為中心的 5×5 範圍(docs/re/195 §2)。
+		//
+		// ⚠ 順序重要:這一支要排在「游標那一格上的單位」**之前**。
+		// 排在後面的話,游標剛好壓在某個單位身上時就只打那一個,
+		// 而畫面上看起來完全正常 —— 群體法術變成單體。
+		//
+		// ⚠ 範圍內的**隊員**會不會一起吃到**沒有讀出來**(docs/re/195 §3),
+		// 引擎只打怪物 —— 這是實作決定,不是原版行為。
+		for _, i := range g.field.UnitsInArea(cx, cy) {
+			if g.field.Units[i].IsMonster {
 				targets = append(targets, &g.field.Units[i])
 			}
 		}
+		if len(targets) == 0 {
+			g.field.Log = append(g.field.Log, castNoOneInArea)
+			return false
+		}
+	} else if j := g.field.Occupant(cx, cy); j >= 0 {
+		targets = append(targets, &g.field.Units[j])
 	} else {
 		g.field.Log = append(g.field.Log, castNoTarget)
 		return false

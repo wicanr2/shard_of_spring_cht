@@ -54,6 +54,10 @@ type townState struct {
 	castStage int            // 0=選施法者(用 campWho) 1=選法術 2=輸入投入點數 3=選目標(用 campWho2)
 	castSpell original.Spell // 選定的法術
 	castInput string         // 投入點數的數字輸入緩衝(docs/spec/16 §1 的 'Spell Pts ?')
+	// utter 非 nil = 正在打咒語(docs/re/197 §5)。
+	// ⚠ 原版的「施放哪個法術?」整格就是自由輸入,咒語打在那裡;
+	// 引擎是字母選單,所以另開一個輸入 —— **那個按鍵是引擎的決定**。
+	utter *string
 }
 
 // shopPageSize 是一頁的商品數。主視野高 612、行高 26 → 扣掉標題約 20 列。

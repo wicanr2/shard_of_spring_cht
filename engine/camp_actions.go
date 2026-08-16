@@ -147,10 +147,22 @@ func (g *Game) campCastKey(k ebiten.Key) {
 
 	switch ts.castStage {
 	case 1: // 選法術
+		if ts.utter != nil {
+			g.utterKey(k)
+			return
+		}
 		// CAMP:77「(ENTER exits)」—— 原版用 ENTER 從法術清單離開。
 		if k == ebiten.KeyEnter || k == ebiten.KeyKPEnter {
 			ts.campMode, ts.campWho, ts.castStage = 0, -1, 0
 			ts.msg = ""
+			return
+		}
+		// 空白鍵 → 唸咒語(docs/re/197 §5)。⚠ **原版沒有這個鍵** ——
+		// 原版整格就是自由輸入,咒語打在「施放哪個法術?」那裡。
+		// ⛔ 不把咒語列進選單:那等於把答案送給玩家(CLAUDE.md §1)。
+		if k == ebiten.KeySpace {
+			empty := ""
+			ts.utter = &empty
 			return
 		}
 		n := int(k - ebiten.KeyA)
@@ -260,6 +272,88 @@ func (g *Game) windWalk() {
 	g.overlay = magic.MsgWindWalk
 }
 
+// 咒語相關的字面(CAMP:78/79/80)。
+const (
+	// gatePhrase 是通關咒語本身。⛔ **不譯**(glossary 硬規則 5):
+	// 玩家要一字不差打回去的東西不能翻譯。
+	gatePhrase   = "DAZA REVELI"
+	gateOpensMsg = "大門開啟了"                      // 79
+	gateMumble   = "喃喃自語,你剛剛說的是哪個法術?" // 80
+	// gateMazeNumber 是唯一認這句咒語的地城(`CAMP 0x116C6` 的 `cmp ds:3534, 5`)。
+	gateMazeNumber = 5
+	utterPrompt    = "唸出咒語(Enter 確認、ESC 取消)："
+)
+
+// utterRunes 把打進來的字收進咒語緩衝。**只收 ASCII** ——
+// 咒語本身是 ASCII,而中文輸入法在 Ebitengine 裡不可靠(docs/re/197 §5)。
+func (g *Game) utterRunes(rs []rune) {
+	if g.town == nil || g.town.utter == nil {
+		return
+	}
+	for _, r := range rs {
+		if r >= 0x20 && r < 0x7f && len(*g.town.utter) < 40 {
+			*g.town.utter += string(r)
+		}
+	}
+}
+
+// utterKey 處理咒語輸入的一次按鍵。
+func (g *Game) utterKey(k ebiten.Key) {
+	ts := g.town
+	switch k {
+	case ebiten.KeyEscape:
+		ts.utter = nil
+	case ebiten.KeyBackspace:
+		if n := len(*ts.utter); n > 0 {
+			*ts.utter = (*ts.utter)[:n-1]
+		}
+	case ebiten.KeyEnter, ebiten.KeyKPEnter:
+		said := strings.TrimSpace(*ts.utter)
+		ts.utter = nil
+		ts.campMode, ts.campWho, ts.castStage = 0, -1, 0
+		g.sayPhrase(said)
+	}
+}
+
+// sayPhrase 判定唸出來的那一句。三個出口與原版相同(docs/re/197 §4):
+// 咒語成功 / 是法術名 / 都不是。
+//
+// ⚠ **兩個條件**:字串相符**而且**人在第 5 座地城。在別處唸沒有用,
+// 會掉進「哪個法術?」那一支。
+func (g *Game) sayPhrase(said string) {
+	ts := g.town
+	if said == "" {
+		ts.msg = ""
+		return
+	}
+	if said == gatePhrase && g.mazeNumber() == gateMazeNumber {
+		g.group.GateOpen = 1
+		ts.msg = gateOpensMsg
+		return
+	}
+	for _, s := range g.spells {
+		if s.Name == said {
+			ts.msg = s.Name + "：" + campSelectPrompt('C')
+			return
+		}
+	}
+	ts.msg = gateMumble
+}
+
+// mazeNumber 是目前所在的地城編號(`DG<n>MAZE.SQZ` 的 n);不在地城回 99。
+//
+// ⚠ **99 是原版的哨兵值**(`ds:3534`,docs/re/169 §1),不是隨手挑的 ——
+// 用 0 或 −1 會與地城 0 混在一起。
+func (g *Game) mazeNumber() int {
+	if g.level == nil {
+		return NotInMaze
+	}
+	return g.level.entry.MazeFile
+}
+
+// NotInMaze 是「不在地城」的哨兵(原版 `ds:3534 = 99`)。
+const NotInMaze = 99
+
 // campUnit 把一個 Character 包成一個用完即丟的 combat.Unit,純粹是為了
 // 讓既有的 magic.Apply 能在營地(沒有 combat.Field)也能跑。
 //
@@ -302,7 +396,11 @@ func (g *Game) campCastLines(ts *townState) []string {
 	caster := g.members[ts.campWho]
 	switch ts.castStage {
 	case 1:
-		out := []string{caster.Name + "：施放哪個法術?(ENTER離開)"} // CAMP:76 + 77
+		if ts.utter != nil {
+			return []string{caster.Name + "：施放哪個法術?(ENTER離開)",
+				utterPrompt + *ts.utter + "_"}
+		}
+		out := []string{caster.Name + "：施放哪個法術?(ENTER離開)　空白鍵：唸出咒語"} // CAMP:76 + 77
 		for i, s := range g.spells {
 			if i >= 26 {
 				out = append(out, fmt.Sprintf("…還有 %d 個(未列出)", len(g.spells)-26))

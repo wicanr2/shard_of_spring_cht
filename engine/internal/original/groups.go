@@ -40,6 +40,9 @@ const (
 	// `< 11` 才能用,用完原版印 `This pool is empty!`。
 	// ⚠ **跨迷宮共用一個計數器** —— 它存在隊伍記錄裡,不在迷宮資料裡。
 	offPoolUses  = 63
+	// offGateOpen 是 `DAZA REVELI` 大門已開啟的旗標(docs/re/197 §3)。
+	// ⚠ 存在**隊伍記錄**裡 → 跨存檔留著,不是只在這一趟有效。
+	offGateOpen  = 65
 	offMazeX     = 79
 	offMazeY     = 81
 	offLightPick = 83
@@ -65,11 +68,12 @@ type Group struct {
 	LightTurns            int
 	VisLit, VisDark       int
 	PoolUses              int // 位移 63:治療池已使用次數(docs/re/155)
+	GateOpen              int // 位移 65:`DAZA REVELI` 大門已開啟(docs/re/197)
 	MazeX, MazeY          int // 1-based
 	LightPick             int // 99 = 沒帶光源
 	Fled                  int
 
-	// Raw 是原始 90 bytes。**未解的欄位(39、43、47–57、63–77、87–90)
+	// Raw 是原始 90 bytes。**未解的欄位(39、43、47–57、67–77、87–90)
 	// 只存在於這裡** —— 存檔往返靠它逐位元組保留(docs/spec/06 §3)。
 	Raw []byte
 }
@@ -115,6 +119,7 @@ func ParseGroups(d []byte) ([]Group, error) {
 			VisLit:     u16(r, offVisLit),
 			VisDark:    u16(r, offVisDark),
 			PoolUses:   u16(r, offPoolUses),
+			GateOpen:   u16(r, offGateOpen),
 			MazeX:      u16(r, offMazeX),
 			MazeY:      u16(r, offMazeY),
 			LightPick:  u16(r, offLightPick),
@@ -166,7 +171,7 @@ func (g Group) Bytes() []byte {
 		{offMonth, g.Month}, {offDay, g.Day}, {offHour, g.Hour}, {offSub, g.Sub},
 		{offWorldX, g.WorldX}, {offWorldY, g.WorldY}, {offFacing, g.Facing},
 		{offLightTurns, g.LightTurns}, {offVisLit, g.VisLit}, {offVisDark, g.VisDark},
-		{offPoolUses, g.PoolUses},
+		{offPoolUses, g.PoolUses}, {offGateOpen, g.GateOpen},
 		{offMazeX, g.MazeX}, {offMazeY, g.MazeY},
 		{offLightPick, g.LightPick}, {offFled, g.Fled},
 	} {

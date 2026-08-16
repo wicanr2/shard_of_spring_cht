@@ -603,3 +603,83 @@ func TestWeaponSkillGate(t *testing.T) {
 		}
 	}
 }
+
+// ── DAZA REVELI 大門(docs/re/197)──────────────────────────────────────
+
+// utterGame 擺一個站在指定地城編號裡、正在唸咒語的隊伍。
+func utterGame(t *testing.T, mazeFile int) *Game {
+	t.Helper()
+	g := newPlayingGame(t)
+	if mazeFile != NotInMaze {
+		g.level = &mazeLevel{entry: original.MazeEntry{MazeFile: mazeFile}}
+	}
+	g.town = &townState{mode: townCamp, campMode: 'C', campWho: 0, castStage: 1}
+	empty := ""
+	g.town.utter = &empty
+	return g
+}
+
+func say(g *Game, phrase string) {
+	g.utterRunes([]rune(phrase))
+	g.utterKey(ebiten.KeyEnter)
+}
+
+// TestGateOpensInMazeFive:在第 5 座地城唸對 → 位移 65 的旗標立起來。
+func TestGateOpensInMazeFive(t *testing.T) {
+	g := utterGame(t, gateMazeNumber)
+	g.group.GateOpen = 0
+	say(g, gatePhrase)
+	if g.group.GateOpen != 1 {
+		t.Errorf("大門旗標應該立起來,得到 %d", g.group.GateOpen)
+	}
+	if g.town.msg != gateOpensMsg {
+		t.Errorf("要說「%s」,得到 %q", gateOpensMsg, g.town.msg)
+	}
+}
+
+// TestGatePhraseElsewhereMumbles:同一句咒語在別的地城沒有用 ——
+// 條件是**兩個**(字串相符 + 在第 5 座),不是一個。
+func TestGatePhraseElsewhereMumbles(t *testing.T) {
+	for _, n := range []int{1, 6, NotInMaze} {
+		g := utterGame(t, n)
+		g.group.GateOpen = 0
+		say(g, gatePhrase)
+		if g.group.GateOpen != 0 {
+			t.Errorf("地城 %d 不該開得了門", n)
+		}
+		if g.town.msg != gateMumble {
+			t.Errorf("地城 %d 應該喃喃自語,得到 %q", n, g.town.msg)
+		}
+	}
+}
+
+// TestUtterNonsenseMumbles:亂打 → CAMP:80。
+func TestUtterNonsenseMumbles(t *testing.T) {
+	g := utterGame(t, gateMazeNumber)
+	say(g, "XYZZY")
+	if g.town.msg != gateMumble {
+		t.Errorf("要說 CAMP:80,得到 %q", g.town.msg)
+	}
+}
+
+// TestUtterOnlyTakesASCII:中文字不進緩衝(咒語是 ASCII,而 IME 不可靠)。
+func TestUtterOnlyTakesASCII(t *testing.T) {
+	g := utterGame(t, gateMazeNumber)
+	g.utterRunes([]rune("風行術AB"))
+	if got := *g.town.utter; got != "AB" {
+		t.Errorf("只該收 ASCII,得到 %q", got)
+	}
+}
+
+// TestUtterEscapeCancels:ESC 取消,不留下訊息也不動旗標。
+func TestUtterEscapeCancels(t *testing.T) {
+	g := utterGame(t, gateMazeNumber)
+	g.utterRunes([]rune(gatePhrase))
+	g.utterKey(ebiten.KeyEscape)
+	if g.town.utter != nil {
+		t.Error("ESC 之後緩衝要收掉")
+	}
+	if g.group.GateOpen != 0 {
+		t.Error("ESC 不該開門")
+	}
+}

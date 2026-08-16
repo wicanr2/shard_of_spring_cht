@@ -51,9 +51,9 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 75	ds:73BC	Character # to cast spell ? (ESC exits)	39	哪位角色要施法?(ESC離開)	24	Y		engine/town_scene.go
 76	ds:73EC	Cast what spell?	16	施放哪個法術?	13	Y		engine/camp_actions.go
 77	ds:7400	(ENTER exits)	13	(ENTER離開)	11	Y		engine/camp_actions.go
-78	ds:7412	DAZA REVELI	11	DAZA REVELI	11	Y	⛔ 不譯:玩家要打回去的通關咒語(glossary 硬規則5)。	
-79	ds:7422	The gate opens	14	大門開啟了	10	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。`DAZA REVELI` 大門:對著大門唸咒語的機關,規則沒讀過。	
-80	ds:7436	Mumble, mumble, what spell did you say ?	40	喃喃自語,你剛剛說的是哪個法術?	30	Y	保留戲謔語氣('Mumble, mumble'),spec/19 §6 明訂範例。	
+78	ds:7412	DAZA REVELI	11	DAZA REVELI	11	Y	⛔ 不譯:玩家要一字不差打回去的通關咒語(glossary 硬規則5)。條件是**字串相符 且 人在第 5 座地城**(CAMP 0x116C6,docs/re/197 §2)。	engine/camp_actions.go
+79	ds:7422	The gate opens	14	大門開啟了	10	Y	唸對咒語 → `GROUPS.DAT` 位移 65 = 1(大門已開啟,docs/re/197 §3)。⚠ 引擎另開一個 ASCII 自由輸入(空白鍵),因為引擎的施法是字母選單而咒語不能列進選單。	engine/camp_actions.go
+80	ds:7436	Mumble, mumble, what spell did you say ?	40	喃喃自語,你剛剛說的是哪個法術?	30	Y	三個出口的第三個:唸的既不是咒語也不是法術名(CAMP 0x11750,docs/re/197 §4)。保留戲謔語氣。	engine/camp_actions.go
 81	ds:746A	That is a combat spell !	24	那是戰鬥法術!	13	Y		engine/camp_actions.go
 82	ds:7498	You don't know that spell!	26	你不會那個法術!	15	Y		engine/internal/magic/magic.go
 83	ds:74BE	Spell Pts ?	11	花費幾點法力?	13	13		engine/camp_actions.go

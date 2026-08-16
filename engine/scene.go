@@ -558,6 +558,8 @@ func (s townScene) Name() string         { return "town" }
 func (s townScene) Handles(Input) bool   { return s.g.town != nil && s.g.town.mode != townClosed }
 func (s townScene) Draw(d *ebiten.Image) { s.g.drawTown(d) }
 func (s townScene) Update(in Input) Transition {
+	// 咒語輸入要先收字元 —— 按鍵那一圈會把 Enter 當成送出。
+	s.g.utterRunes(in.Runes)
 	for _, k := range in.Keys {
 		if k == ebiten.KeyEscape && s.g.town.mode == townBuildings {
 			s.g.town = nil

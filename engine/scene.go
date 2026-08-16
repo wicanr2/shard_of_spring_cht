@@ -702,6 +702,8 @@ func (s worldScene) Update(in Input) Transition {
 		if g.party.Step(world.Facing(d), g.world) != world.Moved {
 			continue
 		}
+		// 站到拱門那一格且朝南 → 印敘述(docs/re/198)
+		g.archwayCheck()
 		// 踩到地城入口 → 進迷宮(docs/spec/08 §6)
 		if g.enterMaze(g.party.X, g.party.Y) {
 			return TransitionStay

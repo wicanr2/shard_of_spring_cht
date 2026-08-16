@@ -553,3 +553,28 @@ func TestCombatPromptIsNotStale(t *testing.T) {
 		}
 	}
 }
+
+// TestArchwayNeedsPositionAndFacing:拱門敘述要**站對格子而且朝南**
+// (docs/re/198)。⚠ 少了朝向那一項,從南邊走上來也會看到「你面前是……」,
+// 而那時玩家背對著拱門 —— 那個錯誤不會顯示成錯誤。
+func TestArchwayNeedsPositionAndFacing(t *testing.T) {
+	g := newPlayingGame(t)
+	for _, c := range []struct {
+		x, y int
+		f    world.Facing
+		want bool
+	}{
+		{archwayX, archwayY, world.South, true},
+		{archwayX, archwayY, world.North, false},
+		{archwayX, archwayY, world.East, false},
+		{archwayX + 1, archwayY, world.South, false},
+		{archwayX, archwayY - 1, world.South, false},
+	} {
+		g.overlay = ""
+		g.party.X, g.party.Y, g.party.Facing = c.x, c.y, c.f
+		g.archwayCheck()
+		if got := g.overlay == archwayText; got != c.want {
+			t.Errorf("(%d,%d) 朝向 %d:印了 %v,期望 %v", c.x, c.y, c.f, got, c.want)
+		}
+	}
+}

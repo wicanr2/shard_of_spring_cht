@@ -141,6 +141,29 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 	return roll, true, dmg
 }
 
+// ArmorRating 是這個單位的防護總量:防具的欄4 + 護甲技能。
+//
+// ⚠ 這兩項就是傷害公式裡的減項(docs/spec/01 §5 的 `− 護甲技能 − 防具值`)——
+// 面板顯示的數字與公式用的是**同一份**,不是另外算一套。
+func (f *Field) ArmorRating(i int) int {
+	if i < 0 || i >= len(f.Units) {
+		return 0
+	}
+	u := f.Units[i]
+	return f.item(u.Armor).Main + u.ArmSkin
+}
+
+// WeaponName 是這個單位的攻擊方式(面板的 `Attacks with:`)。
+func (f *Field) WeaponName(i int) string {
+	if i < 0 || i >= len(f.Units) {
+		return msgBareHands
+	}
+	if n := f.item(f.Units[i].Weapon).Name; n != "" {
+		return n
+	}
+	return msgBareHands
+}
+
 // weaponPhrase 回傳「 使用 <武器>」。
 //
 // 武器格用 60／99 當「沒有武器」的哨兵(docs/spec/01 §5、docs/formats/03),

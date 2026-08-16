@@ -134,26 +134,43 @@ func (g *Game) townKey(k ebiten.Key) {
 		switch ts.mode {
 		case townInn:
 			// 手冊 p.37:睡一晚回 2 HP、10 SP,而且供餐(不耗食糧)。
+			// 原版問住幾晚(TOWN:30/31),不是一次一晚。
 			if k == ebiten.KeyR {
-				cost := town.Price(town.TownInnPrice, ts.shop.PriceMult)
-				if float64(cost) > g.group.Gold {
-					ts.msg = "你沒有足夠的金幣!" // TOWN:76+77
+				g.townCount = 'R'
+				ts.msg = innNightsPrompt(town.Price(town.TownInnPrice, ts.shop.PriceMult))
+				return
+			}
+			if n := countKey(k); g.townCount == 'R' && n >= 0 {
+				g.townCount = 0
+				if n == 0 {
+					ts.msg = ""
 					return
 				}
-				g.group.Gold -= float64(cost)
-				g.members = town.InnSleep(g.members)
-				g.party.Clock.Tick()
-				// TOWN:32「You sleep...」
-				ts.msg = fmt.Sprintf("你們睡了一覺……花 %d 金幣,全隊回 %d 生命 %d 法力",
-					cost, town.InnHealHP, town.InnHealSP)
+				g.innSleep(n)
 			}
 		case townTavern:
 			// 原版的酒館選單是 `T)alk … B)uy food`(docs/re/142 §3)。
 			// ⚠ 食糧買在**酒館**,不是旅店。
 			if k == ebiten.KeyB {
-				g.buyProvisions(1)
+				g.townCount = 'B'
+				ts.msg = rationsPrompt(town.Price(town.TownFoodPrice, ts.shop.PriceMult))
+				return
+			}
+			if n := countKey(k); g.townCount == 'B' && n >= 0 {
+				g.townCount = 0
+				if n == 0 {
+					ts.msg = ""
+					return
+				}
+				g.buyProvisions(n)
 			}
 		case townHealer:
+			// 付款確認開著時只收 Y/N(TOWN:27/28)——⚠ 要放在選人之前,
+			// 否則 `1`–`5` 會在確認畫面上把選到的人換掉。
+			if g.healPay != nil {
+				g.answerHealPay(k)
+				return
+			}
 			// 1–5 選人,再按 W/P/B/R 選服務(docs/re/142 的四項)。
 			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
 				ts.page = i // 借 page 當「選到第幾個人」
@@ -173,7 +190,7 @@ func (g *Game) townKey(k ebiten.Key) {
 			default:
 				return
 			}
-			g.healMember(ts.page, kind)
+			g.askHealPay(ts.page, kind)
 		case townTrainer:
 			// 選成員的編號升級。訓練免費(手冊 p.37)。
 			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
@@ -215,7 +232,7 @@ func (g *Game) townKey(k ebiten.Key) {
 				it := stock[n]
 				ts.pendingBuy = &it
 				// 「價格為」「交給角色 #」都是原版的字(TOWN:14 / TOWN:15)。
-				ts.msg = fmt.Sprintf("價格為 %d　交給角色 #(1–%d,ESC 取消)",
+				ts.msg = fmt.Sprintf("價格為 %d　交給角色 #(1–%d,(ESC離開))",
 					town.Price(it.BasePrice, ts.shop.PriceMult), len(g.members))
 			}
 		}
@@ -261,6 +278,48 @@ func (g *Game) townKey(k ebiten.Key) {
 	}
 }
 
+// countKey 把數字鍵轉成 0–9;不是數字鍵回 −1。原版的「幾個」一律是
+// 單鍵 1–9、0 離開(TOWN:31/59),沒有多位數輸入。
+func countKey(k ebiten.Key) int {
+	switch {
+	case k >= ebiten.KeyDigit0 && k <= ebiten.KeyDigit9:
+		return int(k - ebiten.KeyDigit0)
+	case k >= ebiten.KeyKP0 && k <= ebiten.KeyKP9:
+		return int(k - ebiten.KeyKP0)
+	}
+	return -1
+}
+
+// innNightsPrompt / rationsPrompt 是原版問「幾個」的兩句話。
+// TOWN:30+31、TOWN:58+59。
+func innNightsPrompt(cost int) string {
+	return fmt.Sprintf("房間將花費 %d 金幣一晚。要住幾晚?(1–9,0離開)", cost)
+}
+
+func rationsPrompt(cost int) string {
+	return fmt.Sprintf("隊伍一天的食糧花費 %d 金幣。要買幾份口糧?(1–9,0離開)", cost)
+}
+
+// innSleep 在旅店住 n 晚。⚠ **錢不夠就一晚都不住** ——
+// 住一半再說「錢不夠」會讓玩家搞不清楚自己到底住了幾晚。
+func (g *Game) innSleep(n int) {
+	ts := g.town
+	each := town.Price(town.TownInnPrice, ts.shop.PriceMult)
+	cost := each * n
+	if float64(cost) > g.group.Gold {
+		ts.msg = "你沒有足夠的金幣!" // TOWN:76+77
+		return
+	}
+	g.group.Gold -= float64(cost)
+	for i := 0; i < n; i++ {
+		g.members = town.InnSleep(g.members)
+		g.party.Clock.Tick()
+	}
+	// TOWN:32「You sleep...」
+	ts.msg = fmt.Sprintf("你們睡了一覺……住 %d 晚,花 %d 金幣,全隊回 %d 生命 %d 法力",
+		n, cost, town.InnHealHP*n, town.InnHealSP*n)
+}
+
 // buyItem 讓隊伍第一位成員買第 i 件道具。
 //
 // ⚠ **買給誰未解** —— 原版的商店介面沒有讀到選人的步驟。
@@ -300,7 +359,8 @@ func (g *Game) buyItem(it original.Item, who int) {
 	}
 	g.group.Gold = gold
 	g.syncMember(g.members[who]) // 背包改了要寫回名冊,否則存檔會蓋掉
-	g.town.msg = fmt.Sprintf("%s 買下 %s(%d 金幣)", g.members[who].Name, it.Name, price)
+	// TOWN:17「 ok!」
+	g.town.msg = fmt.Sprintf("好!%s 買下 %s(%d 金幣)", g.members[who].Name, it.Name, price)
 }
 
 // drawTown 畫城鎮畫面。清單在主視野(61 欄)。
@@ -615,6 +675,44 @@ func (g *Game) buyProvisions(n int) {
 }
 
 // healMember 在治療所替第 i 位成員做一項服務。
+// healPayState 是治療所的付款確認(TOWN:27+28)。
+//
+// ⚠ 原版**先報價再收錢**;引擎先前直接扣 —— 那不只是少一句話,
+// 玩家在復活這種昂貴服務上沒有反悔的機會。
+type healPayState struct {
+	who  int
+	kind town.HealKind
+	cost int
+}
+
+// askHealPay 報價並等 Y/N。價格 0(不需要這項服務)就直接走原本的路,
+// 那一支會說「不需要」。
+func (g *Game) askHealPay(i int, k town.HealKind) {
+	if i < 0 || i >= len(g.members) {
+		return
+	}
+	cost := town.HealCost(g.members[i], k, g.town.shop.PriceMult)
+	if cost == 0 {
+		g.healMember(i, k)
+		return
+	}
+	g.healPay = &healPayState{who: i, kind: k, cost: cost}
+	g.town.msg = fmt.Sprintf("這將花費 %d 金幣,付款嗎?(Y/N)", cost)
+}
+
+// answerHealPay 收 Y/N。其他鍵一律忽略 —— 問句還在畫面上。
+func (g *Game) answerHealPay(k ebiten.Key) {
+	p := g.healPay
+	switch k {
+	case ebiten.KeyY:
+		g.healPay = nil
+		g.healMember(p.who, p.kind)
+	case ebiten.KeyN, ebiten.KeyEscape:
+		g.healPay = nil
+		g.town.msg = ""
+	}
+}
+
 func (g *Game) healMember(i int, k town.HealKind) {
 	if i < 0 || i >= len(g.members) {
 		return
@@ -814,7 +912,7 @@ func (g *Game) buildingLines(ts *townState) []string {
 			fmt.Sprintf("醫療　每點生命 %d　　解毒　%d",
 				town.Price(town.HealPerHP, ts.shop.PriceMult),
 				town.Price(town.UnpoisonPrice, ts.shop.PriceMult)),
-			fmt.Sprintf("解除束縛　每級 %d　　復活　每級 %d",
+			fmt.Sprintf("解除束縛　%d/等級　　復活　%d/等級", // TOWN:25「/lvl」
 				town.Price(town.UnbindPerLv, ts.shop.PriceMult),
 				town.Price(town.ResurrectPerLv, ts.shop.PriceMult)),
 			"",

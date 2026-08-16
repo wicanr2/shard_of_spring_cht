@@ -122,6 +122,18 @@ type Game struct {
 	// castPage 是法術清單的分頁(CMBT:113 的 PgDn)。
 	castPage int
 
+	// inspect 非 nil = 戰場的單位檢視面板開著(CMBT:179–192,inspect_scene.go)。
+	inspect *inspectState
+
+	// townCount 非 0 = 城鎮正在問「要幾個」(1–9,0 離開):
+	// 'R' 住幾晚(TOWN:30/31)、'B' 買幾份口糧(TOWN:58/59)。
+	// ⚠ 放在 Game 而不是 townState —— townState 是唯讀邊界(use_item.go 有說明),
+	// 子流程狀態一律放這裡,與 campPotion 同一種做法。
+	townCount byte
+
+	// healPay 非 nil = 治療所正在問「這將花費 N 金幣,付款嗎?(Y/N)」(TOWN:27/28)。
+	healPay *healPayState
+
 	// 戰鬥中的 U)se an item + 藥劑「自己/丟給別人」(docs/spec/12-combat-board.md
 	// §5.3、docs/spec/19-coverage.md §2-1)。use_item.go。
 	useUnit      int           // 開道具選單的人(field.Units 索引,同 castUnit 的用法)

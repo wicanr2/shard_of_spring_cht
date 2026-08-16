@@ -21,6 +21,32 @@ type sound struct {
 	ctx *audio.Context
 	// warned 讓警告只出現一次 —— 每一格都噴一行會把提示列洗掉。
 	warned bool
+	// off = 玩家自己關掉的(CMBT:52/53 的 `Sound is now on./off.`)。
+	// ⚠ 與 `g.sound == nil` **不是同一件事**:nil 是「這台機器放不出聲音」,
+	// off 是「玩家不想聽」。合成一個的話,關過聲音之後就分不出
+	// 「音訊壞了」與「自己關的」——而前者要警告、後者不要。
+	off bool
+}
+
+// 音效開關的兩句話,照 `translations/module-text/CMBT.tsv` 第 52/53 列(F3)。
+const (
+	soundOnMsg  = "音效已開啟。"
+	soundOffMsg = "音效已關閉。"
+)
+
+// toggleSound 切換音效,回傳要顯示的那一句。
+//
+// ⚠ 音訊 context 開不起來時**照樣讓玩家切**,只是切了沒有聲音 ——
+// 這台機器有沒有音效卡不該改變按鍵的行為。
+func (g *Game) toggleSound() string {
+	if g.sound == nil {
+		g.sound = &sound{} // 只保存開關狀態,沒有 ctx 就不會播
+	}
+	g.sound.off = !g.sound.off
+	if g.sound.off {
+		return soundOffMsg
+	}
+	return soundOnMsg
 }
 
 // NoSoundEnv 設了(任何非空值)就完全不建音訊 context。
@@ -50,7 +76,7 @@ func (g *Game) initSound() {
 
 // play 放一段樂譜。**不阻塞**,也不保證放得出來。
 func (g *Game) play(score []string) {
-	if g.sound == nil || g.sound.ctx == nil {
+	if g.sound == nil || g.sound.ctx == nil || g.sound.off {
 		return
 	}
 	pcm := music.RenderPCM16(music.ParseAll(score), music.SampleRate)

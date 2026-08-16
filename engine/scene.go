@@ -102,6 +102,7 @@ var dirs = map[ebiten.Key]int{
 func (g *Game) inputChain() []Scene {
 	return []Scene{
 		overlayScene{g},
+		inspectScene{g},
 		castCursorScene{g},
 		combatPotionScene{g},
 		castSPScene{g},
@@ -137,6 +138,7 @@ func (g *Game) drawOrder() []Scene {
 		castMenuScene{g},
 		castSPScene{g},
 		useMenuScene{g},
+		inspectScene{g},
 		overlayScene{g},
 		mazePromptScene{g},
 		saveAsScene{g},
@@ -191,6 +193,24 @@ func (s combatPotionScene) Draw(*ebiten.Image) {} // 提示畫在道具選單裡
 func (s combatPotionScene) Update(in Input) Transition {
 	for _, k := range in.Keys {
 		if s.g.combatPotionKey(k) {
+			break
+		}
+	}
+	return TransitionStay
+}
+
+// inspectScene 是戰場的單位檢視面板(CMBT:179–192)。**唯讀**,開著時吃掉全部輸入。
+type inspectScene struct{ g *Game }
+
+func (s inspectScene) Prompt() string {
+	return "↑／↓：換單位　　ESC：關閉　" + inspectScroll
+}
+func (s inspectScene) Name() string         { return "inspect" }
+func (s inspectScene) Handles(Input) bool   { return s.g.field != nil && s.g.inspect != nil }
+func (s inspectScene) Draw(d *ebiten.Image) { s.g.drawInspect(d) }
+func (s inspectScene) Update(in Input) Transition {
+	for _, k := range in.Keys {
+		if s.g.inspectKey(k) {
 			break
 		}
 	}
@@ -296,6 +316,19 @@ func (s combatScene) Update(in Input) Transition {
 	}
 	if in.Pressed(ebiten.KeyU) {
 		g.openUseItem()
+		return TransitionStay
+	}
+	// ⚠ **開檢視面板的鍵是引擎挑的**(inspect_scene.go 有說明):
+	// CMBT 的指令鏈有 `?` 與 `/`,但哪一個對到這個面板沒有讀到。
+	if in.Pressed(ebiten.KeySlash) {
+		g.openInspect()
+		return TransitionStay
+	}
+	// CMBT:52/53「Sound is now on./off.」——`S` 在 CMBT 的指令鏈裡
+	// (docs/re/70),而戰場沒有別的 `S` 指令。
+	// ⚠ 世界地圖與迷宮的 `S` 是**本引擎的存檔鍵**,不動它。
+	if in.Pressed(ebiten.KeyS) {
+		g.field.Log = append(g.field.Log, g.toggleSound())
 		return TransitionStay
 	}
 	for _, k := range in.Keys {
@@ -700,7 +733,7 @@ func (s combatScene) combatPrompt() string {
 	if s.g.field != nil && s.g.field.Outcome() != combat.Ongoing {
 		return "ESC：離開戰鬥"
 	}
-	return "方向鍵：移動（先轉再走）　　A：攻擊　　C：施法　　U：用道具　　Enter：結束回合"
+	return "方向鍵：移動　　A：攻擊　　C：施法　　U：用道具　　/：看單位　　S：音效　　Enter：結束回合"
 }
 
 // potionPrompt 是「自己用 / 丟給隊友」兩個階段的提示(docs/spec/19 §2-1)。

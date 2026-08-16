@@ -58,6 +58,17 @@ type Unit struct {
 	IsMonster bool
 }
 
+// StatusText 是檢視面板要顯示的狀態名。**正常時顯示「無」(CMBT:9 `None`)**,
+// 不是空白 —— 這裡與側欄不同:側欄五個人排在一起,空白才看得出誰異常;
+// 面板一次只看一個人,空白會讓人以為那一欄壞了。
+func (u Unit) StatusText() string {
+	names := [...]string{"無", "中毒", "束縛", "凝滯", "冰封", "死亡"}
+	if u.Status < 0 || u.Status >= len(names) {
+		return "?"
+	}
+	return names[u.Status]
+}
+
 // Alive 回傳這個單位還在不在場上。
 //
 // ⚠ **「活著」與「在場」是兩個欄位**(docs/spec/07 §6):

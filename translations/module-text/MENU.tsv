@@ -9,7 +9,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 94	ds:76A0	Which party do you wish to use (1-5,0 Quits) ?	46	要使用哪一支隊伍?(1–5,0離開)	28	Y		engine/shell_scene.go
 95	ds:76DA	Please use a party numbered between 1 and 5 !	45	請使用編號 1 到 5 之間的隊伍!	29	Y		engine/shell_scene.go
 97	ds:7726	I'm sorry, this party does not exist !  Use the Utilities to create it.	71	很抱歉,這支隊伍不存在!請用角色管理工具建立它。	46	Y		engine/shell_scene.go
-99	ds:7792	Parties of dead characters are not allowed !!! 	47	全滅的隊伍不能選!!!	19	Y		
+99	ds:7792	Parties of dead characters are not allowed !!! 	47	全滅的隊伍不能選!!!	19	Y		engine/shell_scene.go
 100	ds:77CE	# CHARACTER HP  SP	18	# 角色　　　生命　法力	22	22		engine/shell_scene.go
 104	ds:7806	Gold:	5	金幣：	6	Y		engine/party_panel.go
 105	ds:7810	Provisions:	11	食糧：	6	Y		engine/party_panel.go

@@ -32,6 +32,7 @@ import (
 func TestInputChainOrder(t *testing.T) {
 	want := []string{
 		"overlay",
+		"inspect",
 		"cast-cursor", "combat-potion", "cast-sp", "cast-menu", "use-menu", "combat",
 		"save-as", "skill-alloc",
 		"roster-hotkey",
@@ -139,6 +140,28 @@ func TestT3EveryScenePressReacts(t *testing.T) {
 				}
 				if g.cursor.x != 6 {
 					return "K 應該把游標往右移一格"
+				}
+				return ""
+			},
+		},
+		{
+			// CMBT:179–192 的單位檢視面板。⚠ **唯讀** —— 這條驗的是
+			// 「↓ 真的換了一個單位」,不是「按了有事發生」。
+			scene: "inspect",
+			setup: func(t *testing.T) *Game {
+				g := newFightingGame(t)
+				if !g.openInspect() {
+					t.Fatal("戰場上應該有單位可以看")
+				}
+				return g
+			},
+			keys: []ebiten.Key{ebiten.KeyDown},
+			want: func(g *Game) string {
+				if g.inspect == nil {
+					return "面板不該被關掉"
+				}
+				if g.inspect.idx == 0 {
+					return "↓ 應該換到下一個有名字的單位"
 				}
 				return ""
 			},

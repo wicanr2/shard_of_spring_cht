@@ -189,12 +189,40 @@ func (g *Game) selectParty(slot int) {
 			"第 %d 隊：很抱歉,這支隊伍不存在!請用角色管理工具建立它。", slot)
 		return
 	}
+	// MENU:99「Parties of dead characters are not allowed !!!」
+	// ⚠ 判準是**每個成員的狀態都是 5(陣亡)**,不是生命值 —— 兩者在原版是
+	// 不同欄位(docs/spec/07 §6),而生命值 0 的人可能只是還沒被判死。
+	if g.partyAllDead(g.shell.slots[slot-1]) {
+		g.shell.msg = partyAllDeadMsg
+		return
+	}
 	if err := g.loadParty(slot); err != nil {
 		g.shell.msg = "載入失敗:" + err.Error()
 		return
 	}
 	g.resumeMaze(slot) // docs/spec/18 §3.2 MazeFile:在迷宮裡存的檔,讀回要回到迷宮裡
 	g.shell.mode = shellPlaying
+}
+
+// partyAllDeadMsg 是 MENU:99 的字面。
+const partyAllDeadMsg = "請使用編號 1 到 5 之間的隊伍!全滅的隊伍不能選!!!"
+
+// partyAllDead 回傳這支隊伍是不是全員陣亡。
+//
+// ⚠ **一個成員都沒有時回 false** —— 那是「空隊伍」,由上面 Blank() 那一支
+// 用另一句話擋掉;混在一起會讓玩家看到「全滅」而不是「不存在」。
+func (g *Game) partyAllDead(grp original.Group) bool {
+	n := 0
+	for _, id := range grp.MemberIDs() {
+		if id < 1 || id > len(g.chars) || !g.chars[id-1].Occupied() {
+			continue
+		}
+		n++
+		if g.chars[id-1].Status != original.StatusDead {
+			return false
+		}
+	}
+	return n > 0
 }
 
 // returnToMainMenu 清掉這一局的暫存狀態,回到主選單。docs/spec/15 §6/§7。

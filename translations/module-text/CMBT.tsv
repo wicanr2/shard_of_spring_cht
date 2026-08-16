@@ -2,7 +2,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 5	ds:92DC	Hands	5	拳頭	4	Y		engine/internal/combat/field.go
 6	ds:92E6	Fangs	5	獠牙	4	Y	原版另有 `Fangs`/`Bite` 兩個沒有武器時的名字,但**選用的判斷式沒讀到** —— 引擎一律用 CMBT:5/7 的「拳頭」,不自己編一條規則(engine/internal/combat/field.go 的 msgBareHands)。	
 7	ds:92F0	Hands	5	拳頭	4	Y		engine/internal/combat/field.go
-9	ds:9338	None	4	無	2	Y		
+9	ds:9338	None	4	無	2	Y		engine/inspect_scene.go
 10	ds:9340	Bite	4	咬擊	4	Y	原版另有 `Fangs`/`Bite` 兩個沒有武器時的名字,但**選用的判斷式沒讀到** —— 引擎一律用 CMBT:5/7 的「拳頭」,不自己編一條規則(engine/internal/combat/field.go 的 msgBareHands)。	
 22	ds:94DE	Item Breaks !	13	道具損壞了!	11	Y		
 23	ds:9500	MONSTERS ALL DEAD	17	怪物全滅	8	Y		engine/internal/combat/field.go
@@ -12,8 +12,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 31	ds:9576	KEYPAD TEMPLATE	15	數字鍵盤對照表	14	Y	與 docs/spec/15 §8 A6 按鍵表候選內容,建議一併核對。	
 41	ds:95D4	FACING 	7	朝向 	5	Y		engine/combat_scene.go
 42	ds:95E0	MP=	3	行動點=	7	7		engine/combat_scene.go
-52	ds:963A	Sound is now on.	16	音效已開啟。	12	Y		
-53	ds:9652	Sound is now off.	17	音效已關閉。	12	Y		
+52	ds:963A	Sound is now on.	16	音效已開啟。	12	Y		engine/sound.go
+53	ds:9652	Sound is now off.	17	音效已關閉。	12	Y		engine/sound.go
 56	ds:9688	Experience:	11	經驗：	6	Y		engine/exp.go
 57	ds:9698	 (per character)	16	(每位角色)	10	Y		engine/exp.go
 58	ds:96C2	Gold:	5	金幣：	6	Y		engine/exp.go
@@ -111,15 +111,15 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 169	ds:9EFC	character?	10	角色?	5	Y		engine/use_item.go
 170	ds:9F0A	char #: 	8	角色 #： 	8	Y		engine/use_item.go
 172	ds:9F20	Aack!  There is something wrong with the data files, please restore!	68	啊咧!資料檔好像出了問題,請重新還原!	35	Y		engine/main.go
-179	ds:9FF6	Status: 	8	狀態： 	6	Y		
+179	ds:9FF6	Status: 	8	狀態： 	6	Y		engine/inspect_scene.go
 180	ds:A002	Seeks> 	7	目標> 	6	Y		engine/combat_scene.go
-181	ds:A012	YES	3	是	2	Y		
-182	ds:A01A	no	2	否	2	Y		
-183	ds:A020	Speed:    	10	速度： 	6	Y		
-184	ds:A02E	Skill:    	10	技巧： 	6	Y		
-185	ds:A03C	Strength: 	10	力量： 	6	Y		
-186	ds:A04A	Magical:  	10	魔法： 	6	Y		
-187	ds:A058	Armor rating:	13	護甲等級：	10	Y		
-188	ds:A06A	Attacks with:	13	攻擊方式：	10	Y		
-191	ds:A08A	(ESC, 	6	(ESC,	5	Y		
-192	ds:A094	 scrolls)	9	捲動)	5	Y		
+181	ds:A012	YES	3	是	2	Y		engine/inspect_scene.go
+182	ds:A01A	no	2	否	2	Y		engine/inspect_scene.go
+183	ds:A020	Speed:    	10	速度： 	6	Y		engine/inspect_scene.go
+184	ds:A02E	Skill:    	10	技巧： 	6	Y		engine/inspect_scene.go
+185	ds:A03C	Strength: 	10	力量： 	6	Y		engine/inspect_scene.go
+186	ds:A04A	Magical:  	10	魔法： 	6	Y		engine/inspect_scene.go
+187	ds:A058	Armor rating:	13	護甲等級：	10	Y		engine/inspect_scene.go
+188	ds:A06A	Attacks with:	13	攻擊方式：	10	Y		engine/inspect_scene.go
+191	ds:A08A	(ESC, 	6	(ESC,	5	Y		engine/inspect_scene.go
+192	ds:A094	 scrolls)	9	捲動)	5	Y		engine/inspect_scene.go

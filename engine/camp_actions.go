@@ -226,6 +226,27 @@ func (g *Game) castInCamp(casterIdx, targetIdx int) {
 	}
 	ts.msg = fmt.Sprintf("%s %s施放「%s」(投入 %d)：%s",
 		caster.Name, verb, s.Name, invest, msg)
+
+	// 風行術是唯一一個會把隊伍搬走的法術(docs/re/193)。
+	// ⚠ 它**不看目標** —— 原版寫的是隊伍記錄的兩個世界座標欄位,
+	// 與選中的角色無關。營地的選目標步驟照走(引擎的流程),但結果一樣。
+	if r.WindWalk {
+		g.windWalk()
+	}
+}
+
+// windWalk 執行風行術:全隊到世界座標 (8, 8),離開地城與營地。
+//
+// 原版寫**兩份**:`GROUPS.DAT` 的位移 35/37 與記憶體副本 `ds:3518/351A`
+// (docs/re/193 §2)。引擎只有一份 —— `g.party` 是唯一真相,
+// 存檔時才寫回記錄(`main.go` 的 `grp.WorldX, grp.WorldY = g.party.X, g.party.Y`)。
+//
+// ⚠ 原版是**轉交 `WRLDMOVE` 模組**,所以地城、營地、城鎮的狀態一律不留。
+// 這裡三個都清掉,不是只清地城。
+func (g *Game) windWalk() {
+	g.party.X, g.party.Y = magic.WindWalkX, magic.WindWalkY
+	g.level, g.town = nil, nil
+	g.overlay = magic.MsgWindWalk
 }
 
 // campUnit 把一個 Character 包成一個用完即丟的 combat.Unit,純粹是為了

@@ -375,3 +375,64 @@ func TestCastInputDigitsAndBackspace(t *testing.T) {
 		t.Fatalf("輸入緩衝應該可以解析成 1,got %q", g.town.castInput)
 	}
 }
+
+// ── 風行術(docs/re/193)────────────────────────────────────────────────
+
+// TestWindWalkTeleportsAndLeaves:營地放風行術 → 全隊到 (8,8),地城與營地都收掉。
+//
+// ⚠ 這一條同時釘住「離開地城」——原版是轉交 WRLDMOVE 模組,
+// 只把座標改掉而留在地城裡,玩家會站在原地看著一段狂風敘述什麼都沒發生。
+func TestWindWalkTeleportsAndLeaves(t *testing.T) {
+	g := newPlayingGame(t)
+	g.level = &mazeLevel{}
+	g.town = &townState{mode: townCamp}
+	g.party.X, g.party.Y = 40, 40
+
+	wind, ok := g.spellByIndex(magic.SpellWindWalk)
+	if !ok {
+		t.Fatalf("資產裡找不到索引 %d 的法術", magic.SpellWindWalk)
+	}
+	if wind.Effect != magic.EffUtility {
+		t.Fatalf("索引 %d 應該是效果類別 %d,得到 %d(資產與 docs/re/193 對不上)",
+			magic.SpellWindWalk, magic.EffUtility, wind.Effect)
+	}
+
+	g.town.castSpell, g.town.castInput = wind, "10"
+	g.castInCamp(0, 0)
+
+	if g.party.X != magic.WindWalkX || g.party.Y != magic.WindWalkY {
+		t.Errorf("應該傳送到 (%d,%d),得到 (%d,%d)",
+			magic.WindWalkX, magic.WindWalkY, g.party.X, g.party.Y)
+	}
+	if g.level != nil {
+		t.Error("風行術之後不該還在地城裡")
+	}
+	if g.town != nil {
+		t.Error("風行術之後不該還在營地裡")
+	}
+	if !strings.Contains(g.overlay, "狂風") {
+		t.Errorf("要印 CAMP:109 的狂風敘述,得到 %q", g.overlay)
+	}
+}
+
+// TestOtherUtilitySpellsDoNotTeleport:類別 12 的另外兩個(照明)不會搬人。
+// ⚠ 它們的規則沒讀出來(docs/re/193 §5),但「不傳送」是讀到的 ——
+// 那個判斷式比的是列號 22,不是效果類別。
+func TestOtherUtilitySpellsDoNotTeleport(t *testing.T) {
+	g := newPlayingGame(t)
+	g.town = &townState{mode: townCamp}
+	g.party.X, g.party.Y = 40, 40
+	for _, s := range g.spells {
+		if s.Effect != magic.EffUtility || s.Index == magic.SpellWindWalk {
+			continue
+		}
+		g.town.castSpell, g.town.castInput = s, "10"
+		g.castInCamp(0, 0)
+		if g.town == nil {
+			t.Fatalf("「%s」(索引 %d)不該把隊伍搬走", s.Name, s.Index)
+		}
+		if g.party.X != 40 || g.party.Y != 40 {
+			t.Fatalf("「%s」動到了座標:(%d,%d)", s.Name, g.party.X, g.party.Y)
+		}
+	}
+}

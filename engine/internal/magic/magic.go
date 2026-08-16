@@ -113,7 +113,30 @@ type Result struct {
 	// CMBT:128/129、營地是 CAMP:106/108,措辭與標點都不同。
 	// 呼叫端照自己的情境挑句子,⛔ 不要在這裡把它們併成一句。
 	NoEffect bool
+	// WindWalk = 這一次是風行術:全隊傳送到世界座標 (8, 8) 並離開地城
+	// (docs/re/193)。**效果由呼叫端做** —— 這個套件看不到世界地圖,
+	// 也不該看得到。
+	WindWalk bool
 }
+
+// SpellWindWalk 是「風行術」在 `assets/data/spells.json` 的索引。
+//
+// ⚠ **原版比的是 `ds:7430 == 22`,那是 `SPELLS.DAT` 的列號(1 起算)**;
+// 轉出的 `index` 是 0 起算,所以這裡是 21(docs/re/193 §1)。
+const SpellWindWalk = 21
+
+// WindWalkX / WindWalkY 是風行術的落點。
+//
+// 翠綠村在 (9, 8),所以這是**它西邊一格** —— 踩在城鎮格上會直接進城,
+// 而這個法術要做的是回到文明世界,不是進城(docs/re/193 §3)。
+const (
+	WindWalkX = 8
+	WindWalkY = 8
+)
+
+// MsgWindWalk 是 CAMP:109。原版在傳送**之前**印它,所以句尾的刪節號
+// 接的就是「回到世界地圖」那一幕。
+const MsgWindWalk = "一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……"
 
 // 效果類別。docs/formats/04。
 const (
@@ -280,6 +303,11 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		return Result{Message: fmt.Sprintf("%s %s", name, s.HitMsg)}
 
 	case EffUtility:
+		// 類別 12 有三個成員:風行術(21)、魔法火炬(31)、水晶燈術(32)。
+		// 只有第一個解出來了(docs/re/193),另外兩個是照明,規則未讀。
+		if s.Index == SpellWindWalk {
+			return Result{WindWalk: true, Message: MsgWindWalk}
+		}
 		return Result{Message: name + "(非戰鬥效用)"}
 
 	case EffTransference:

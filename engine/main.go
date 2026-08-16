@@ -69,6 +69,11 @@ type Game struct {
 	// M10:戰場(docs/spec/12)
 	points combat.Points
 	actor  int // 目前輪到的隊員索引;−1 = 沒有人能動
+	// settled = 這一場已經結算過(發過經驗與金幣)。結算有三個入口:
+	// 玩家的最後一擊、怪物回合結束、stepCombat —— 全部走 g.settle()
+	// (combat_scene.go),靠這個旗標保證同一場只發一次。
+	// 建新戰場時歸零,不是每回合。
+	settled bool
 
 	// M5:迷宮(docs/spec/08)
 	assets      string

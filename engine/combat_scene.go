@@ -46,6 +46,7 @@ func (g *Game) startCombat() bool {
 		g.items, g.rand)
 	g.field.Place() // docs/spec/12 §5:初始佈陣(原版陣型未解,這裡是佔位)
 	g.field.ResetPoints(&g.points)
+	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
 	g.actor = g.firstActor()
 	g.field.Log = append(g.field.Log,
 		fmt.Sprintf("遭遇 %s！", g.monsters[pick].Name))
@@ -92,6 +93,7 @@ func (g *Game) startScriptedCombat(target int) bool {
 	g.field = combat.Build(g.members, monsters, g.items, g.rand)
 	g.field.Place() // docs/spec/12 §5:近似值,原版擲座標找空格的兩個範圍未解(docs/re/164 §3)
 	g.field.ResetPoints(&g.points)
+	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
 	g.actor = g.firstActor()
 	if target == maze.TargetPriest {
 		// 固定字串,兼做「這場是不是祭司事件」的識別 —— 見
@@ -137,12 +139,7 @@ func (g *Game) stepCombat() {
 			break
 		}
 	}
-	if o := f.Outcome(); o != combat.Ongoing {
-		f.Log = append(f.Log, "戰鬥結束："+o.String())
-		if msg := g.awardSpoils(f.Units[:]); msg != "" {
-			f.Log = append(f.Log, msg)
-		}
-	}
+	g.settle() // 結束了才會做事(settle 自己判斷),與戰場操作走同一條路
 }
 
 // pickTarget 挑一個還活著的敵方單位。
@@ -205,10 +202,54 @@ func (g *Game) boardKey(k ebiten.Key) bool {
 	if r != combat.ActOK {
 		f.Log = append(f.Log, f.Units[g.actor].Name+"："+r.String())
 	}
+	// ⚠ **最後一擊也要結算。** 勝負在怪物倒下的那一刻就定了,而結算原本
+	// 只寫在 endTurn 裡 —— 隊員砍死最後一隻怪之後如果還有行動點數,
+	// 或還有別人沒動,endTurn 就不會被呼叫,於是**打贏了卻沒拿到經驗與金幣**。
+	// 沒有任何症狀:畫面照樣顯示「戰鬥結束」之外的一切,ESC 也照樣回世界地圖。
+	if f.Outcome() != combat.Ongoing {
+		g.settle()
+		return true
+	}
 	if g.points[g.actor] <= 0 || !f.Units[g.actor].OnField() {
 		g.nextActor()
 	}
 	return true
+}
+
+// settle 結算一場已經分出勝負的戰鬥:發經驗與金幣、寫結束訊息、收掉行動權。
+//
+// ⚠ **冪等**(靠 g.settled)—— 玩家的最後一擊、怪物回合結束、
+// stepCombat 三條路都會走到這裡,不擋的話同一場會發兩次經驗。
+// 旗標在 startCombat / startScriptedCombat 建新戰場時歸零。
+func (g *Game) settle() {
+	f := g.field
+	if f == nil || g.settled {
+		return
+	}
+	o := f.Outcome()
+	if o == combat.Ongoing {
+		return
+	}
+	g.settled = true
+	f.Log = append(f.Log, "戰鬥結束："+o.String())
+	if msg := g.awardSpoils(f.Units[:]); msg != "" {
+		f.Log = append(f.Log, msg)
+	}
+	if o == combat.PartyDead {
+		// ⚠ `USERLIB` 那五段的**用途是推測**(docs/re/148 §2):
+		// 它慢一半、而 USERLIB 有死亡與結局兩個匯出槽。
+		// 全滅時放它是本引擎的選擇,不是讀到呼叫端。
+		g.play(music.Userlib)
+	}
+	// docs/spec/17 §3:打贏 204(祭司事件)之後顯示祭司的後續文字。
+	// ⚠ 祝福的效果未解(docs/re/161 §4 只讀到這句字串)——
+	// 只顯示文字,⛔ 不附加任何屬性加成。
+	// 用 f.Log[0] 判斷「這場是不是祭司事件」—— 理由見
+	// rules.PriestEncounterMark 的說明。
+	if o == combat.MonstersDead && len(f.Log) > 0 && f.Log[0] == rules.PriestEncounterMark {
+		f.Log = append(f.Log, rules.PriestBlessing)
+	}
+	g.actor = -1
 }
 
 // moveOrTurn 沿用世界地圖的「先轉再走」手感:朝向不同時只轉身。
@@ -247,26 +288,8 @@ func (g *Game) endTurn() {
 			f.MonsterTurn(&g.points, i)
 		}
 	}
-	if o := f.Outcome(); o != combat.Ongoing {
-		f.Log = append(f.Log, "戰鬥結束："+o.String())
-		if msg := g.awardSpoils(f.Units[:]); msg != "" {
-			f.Log = append(f.Log, msg)
-		}
-		if o == combat.PartyDead {
-			// ⚠ `USERLIB` 那五段的**用途是推測**(docs/re/148 §2):
-			// 它慢一半、而 USERLIB 有死亡與結局兩個匯出槽。
-			// 全滅時放它是本引擎的選擇,不是讀到呼叫端。
-			g.play(music.Userlib)
-		}
-		// docs/spec/17 §3:打贏 204(祭司事件)之後顯示祭司的後續文字。
-		// ⚠ 祝福的效果未解(docs/re/161 §4 只讀到這句字串)——
-		// 只顯示文字,⛔ 不附加任何屬性加成。
-		// 用 f.Log[0] 判斷「這場是不是祭司事件」—— 理由見
-		// rules.PriestEncounterMark 的說明。
-		if o == combat.MonstersDead && len(f.Log) > 0 && f.Log[0] == rules.PriestEncounterMark {
-			f.Log = append(f.Log, rules.PriestBlessing)
-		}
-		g.actor = -1
+	if f.Outcome() != combat.Ongoing {
+		g.settle()
 		return
 	}
 	if combat.ReorderEachRound {

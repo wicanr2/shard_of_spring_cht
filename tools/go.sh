@@ -11,8 +11,11 @@
 #   --log-opt           daemon 預設的 json-file 沒有 rotation(370 GB 事故)
 #   -u $(id -u)         不留 root-owned 檔案
 #   --memory/--pids     上限
-#   只掛 engine/ build/ workplace/ game/ 與快取,不掛整個 repo
+#   只掛 engine/ build/ workplace/ game/ assets/ 與快取,不掛整個 repo
 #   game/ 一律 **:ro** —— CLAUDE.md §8「game/ 與 original/ 唯讀」
+#   assets/ 也是 **:ro** —— T1 整合測試(docs/spec/14 §8)要讀真正的資產,
+#     但存檔會寫回 <assets>/save/*.DAT,所以測試自己複製一份到 t.TempDir(),
+#     版控裡的那份只讀不寫。路徑由 SHARD_ASSETS 傳進去。
 #
 # ⛔ 本腳本**不做任何 docker 清理**。要空間請人工列候選清單再決定,
 #    禁止 image/system/volume/builder prune 與 rmi(CLAUDE.md §8)。
@@ -41,12 +44,14 @@ run() {
     -u "$(id -u):$(id -g)" \
     -e HOME=/tmp -e GOCACHE=/gocache/build -e GOMODCACHE=/gocache/mod \
     -e GOFLAGS=-buildvcs=false \
+    -e SHARD_ASSETS=/assets \
     --memory 4g --pids-limit 512 \
     ${NET_ARGS[@]+"${NET_ARGS[@]}"} \
     -v "$ROOT/engine":/src \
     -v "$ROOT/build":/out \
     -v "$ROOT/workplace":/workplace \
     -v "$ROOT/game":/game:ro \
+    -v "$ROOT/assets":/assets:ro \
     -v "$ROOT/translations":/translations:ro \
     -v /usr/share/fonts:/usr/share/fonts:ro \
     -v "$CACHE":/gocache \

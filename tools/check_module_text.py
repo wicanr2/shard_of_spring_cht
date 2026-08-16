@@ -82,7 +82,46 @@ def main():
     total = wired_ok + len(mismatches)
     print(f"\n已接 {wired_ok} 段、對不上 {len(mismatches)} 段"
           f"(wired 非空共 {total} 段)。")
-    return 1 if mismatches else 0
+    rc = coverage()
+    return 1 if (mismatches or rc) else 0
+
+
+def coverage() -> int:
+    """F1 的覆蓋率:清冊裡每一段 `ui` 是不是都有譯文。
+
+    ⚠ **不要用「總數相等」判斷完成。** 譯文分在兩個地方:主檔
+    `module-text/<模組>.tsv` 用清冊的 `row` 對應,而 11 段酒館傳聞在
+    `module-text/TOWN-rumors.tsv`,那個檔有自己的 `id`(1–11)、對到清冊的
+    TOWN 第 62–72 列。兩邊總數剛好都是 381 —— **相加相等是巧合**,
+    逐段比對才看得出主檔其實少了那 11 段。
+    """
+    src = {}
+    for path in sorted((ROOT / "translations" / "source").glob("module-*.tsv")):
+        mod = path.stem[len("module-"):]
+        with path.open(encoding="utf-8") as fh:
+            for row in csv.DictReader(fh, delimiter="\t"):
+                if row.get("category") == "ui":
+                    src[(mod, row["row"])] = row["original"]
+
+    done = set()
+    for path in sorted((ROOT / "translations" / "module-text").glob("*.tsv")):
+        with path.open(encoding="utf-8") as fh:
+            for row in csv.DictReader(fh, delimiter="\t"):
+                if not (row.get("translation") or "").strip():
+                    continue
+                if path.stem == "TOWN-rumors":
+                    # 傳聞的 id 1–11 對到清冊 TOWN 的第 62–72 列(docs/re/138 §4)。
+                    done.add(("TOWN", str(61 + int(row["id"]))))
+                else:
+                    done.add((path.stem, row["row"]))
+
+    missing = sorted(src.keys() - done)
+    print(f"F1 覆蓋率:清冊 ui {len(src)} 段,有譯文 {len(src) - len(missing)} 段。")
+    for mod, row in missing[:20]:
+        print(f"  缺:{mod} 第 {row} 列  {src[(mod, row)][:40]!r}")
+    if missing:
+        print(f"  ⚠ 還有 {len(missing)} 段沒有譯文")
+    return 1 if missing else 0
 
 
 if __name__ == "__main__":

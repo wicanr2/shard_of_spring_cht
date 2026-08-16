@@ -138,6 +138,10 @@ type Game struct {
 	// ⚠ 沒答就是不撿 —— 見 exp.go 的 takeGold。
 	pendingGold int
 
+	// dispelled 記著這一場戰鬥裡誰已經用過 D)ispell(角色編號 → 用過了)。
+	// 建新戰場時清空,不進存檔 —— 見 combat_scene.go 的 dispell()。
+	dispelled map[int]bool
+
 	// 戰鬥中的 U)se an item + 藥劑「自己/丟給別人」(docs/spec/12-combat-board.md
 	// §5.3、docs/spec/19-coverage.md §2-1)。use_item.go。
 	useUnit      int           // 開道具選單的人(field.Units 索引,同 castUnit 的用法)

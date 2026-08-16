@@ -84,24 +84,24 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 138	ds:9C4C	notices no effect	17	沒有感到效果	12	Y		engine/internal/magic/magic.go
 140	ds:9C6E	Item Fails	10	道具失效	8	Y		
 141	ds:9C7C	Spell Fails	11	法術失效	8	Y		engine/use_item.go
-142	ds:9C92	does not have	13	沒有	4	Y		
-143	ds:9CA4	the Priesthood	14	降魔術	6	Y		
-144	ds:9CB6	and cannot	10	無法	4	Y		
-145	ds:9CC4	dispell.	8	驅散。	6	Y		
-146	ds:9CD2	has already	11	這回合已經	10	Y		
-147	ds:9CE2	dispelled	9	驅散過	6	Y		
-148	ds:9CF0	this combat.	12	了。	4	Y		
-149	ds:9D02	is not a	8	不是	4	Y		
-150	ds:9D0E	wizard	6	巫師	4	Y		
-151	ds:9D18	and cannot	10	無法	4	Y		
-152	ds:9D26	dispell.	8	驅散。	6	Y		
-153	ds:9D36	None of these	13	這些	4	Y		
-154	ds:9D48	monsters are	12	怪物都不是	10	Y		
-155	ds:9D58	undead!	7	不死生物!	9	9		
-156	ds:9D68	Attempting	10	正試圖	6	Y		
-157	ds:9D76	dispell	7	驅散	4	Y		
-158	ds:9D84	Ignores priest.	15	無視祭司。	10	Y		
-159	ds:9DA0	dies.	5	死去。	6	6		
+142	ds:9C92	does not have	13	沒有	4	Y		engine/internal/combat/dispell.go
+143	ds:9CA4	the Priesthood	14	降魔術	6	Y		engine/internal/combat/dispell.go
+144	ds:9CB6	and cannot	10	無法	4	Y		engine/internal/combat/dispell.go
+145	ds:9CC4	dispell.	8	驅散。	6	Y		engine/internal/combat/dispell.go
+146	ds:9CD2	has already	11	這回合已經	10	Y		engine/internal/combat/dispell.go
+147	ds:9CE2	dispelled	9	驅散過	6	Y		engine/internal/combat/dispell.go
+148	ds:9CF0	this combat.	12	了。	4	Y		engine/internal/combat/dispell.go
+149	ds:9D02	is not a	8	不是	4	Y		engine/internal/combat/dispell.go
+150	ds:9D0E	wizard	6	巫師	4	Y		engine/internal/combat/dispell.go
+151	ds:9D18	and cannot	10	無法	4	Y		engine/internal/combat/dispell.go
+152	ds:9D26	dispell.	8	驅散。	6	Y		engine/internal/combat/dispell.go
+153	ds:9D36	None of these	13	這些	4	Y		engine/internal/combat/dispell.go
+154	ds:9D48	monsters are	12	怪物都不是	10	Y		engine/internal/combat/dispell.go
+155	ds:9D58	undead!	7	不死生物!	9	9		engine/internal/combat/dispell.go
+156	ds:9D68	Attempting	10	正試圖	6	Y		engine/internal/combat/dispell.go
+157	ds:9D76	dispell	7	驅散	4	Y		engine/internal/combat/dispell.go
+158	ds:9D84	Ignores priest.	15	無視祭司。	10	Y		engine/internal/combat/dispell.go
+159	ds:9DA0	dies.	5	死去。	6	6		engine/internal/combat/dispell.go
 162	ds:9DF0	This character has no items to use!	35	這位角色沒有可用的道具!	23	Y		engine/use_item.go
 163	ds:9E20	Use:  (ESC exits)	17	使用：(ESC離開)	15	Y		engine/use_item.go
 164	ds:9E38	Not a valid magical item!	25	不是有效的魔法道具!	19	Y		engine/use_item.go

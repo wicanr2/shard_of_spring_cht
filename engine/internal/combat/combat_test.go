@@ -369,3 +369,95 @@ func TestSeedZeroStillVaries(t *testing.T) {
 		t.Errorf("種子 0 的 50 次擲骰只有 %d 種結果 —— 狀態卡住了", len(seen))
 	}
 }
+
+// ── D)ispell(docs/re/188)────────────────────────────────────────────────
+
+// TestUndeadClassesAreTheReadSet 釘住不死生物的判準。
+//
+// ⚠ 原版比的是**戰鬥屬性 11** 的 65/73/81(已確認),而換算回
+// `MONSTERS.DAT` 欄6 的 {4,5,6} 是**推的**(docs/re/188 §3.1 附推翻條件)。
+// 改這張表等於改規則,要先有新的反組譯證據。
+func TestUndeadClassesAreTheReadSet(t *testing.T) {
+	if UndeadClasses != [3]int{4, 5, 6} {
+		t.Errorf("不死類別表被改了:%v", UndeadClasses)
+	}
+	// 骷髏/殭屍/食屍鬼是欄6 = 5,骷髏巫師是 6 —— 都算。
+	for _, k := range []int{4, 5, 6} {
+		if !IsUndead(Unit{IsMonster: true, Kind: k}) {
+			t.Errorf("類別 %d 應該算不死", k)
+		}
+	}
+	// 幽靈/邪靈/魅影是欄6 = 7,**不算**(本作把它們歸成靈體)。
+	if IsUndead(Unit{IsMonster: true, Kind: 7}) {
+		t.Error("類別 7(靈體)不該算不死")
+	}
+	// 隊員永遠不算 —— 他們的屬性 11 走 41/57 那一組。
+	if IsUndead(Unit{IsMonster: false, Kind: 5}) {
+		t.Error("隊員不該被判成不死生物")
+	}
+}
+
+// TestDispellThreshold 釘住成功門檻的算式與那個 3.6。
+func TestDispellThreshold(t *testing.T) {
+	if DispellFactor != 3.6 {
+		t.Errorf("乘數 %v,原版 ds:9D98 是 3.6", DispellFactor)
+	}
+	// 智能 20 打階級 1 → (20−1+1)×3.6 = 72
+	if got := DispellThreshold(20, 1); got != 72 {
+		t.Errorf("智能 20／階級 1 的門檻應該是 72,得到 %v", got)
+	}
+	// 智能 10 打階級 5 → (10−5+1)×3.6 = 21.6
+	if got := DispellThreshold(10, 5); got < 21.5 || got > 21.7 {
+		t.Errorf("智能 10／階級 5 的門檻應該約 21.6,得到 %v", got)
+	}
+	// ⚠ 門檻可以是負的 —— 照原版**不夾在 0**,那時擲多少都失敗。
+	if got := DispellThreshold(3, 10); got >= 0 {
+		t.Errorf("智能 3／階級 10 的門檻應該是負的,得到 %v", got)
+	}
+}
+
+// TestHasUndeadAndDispell:場上沒有不死就回 false;有就逐隻各擲一次。
+func TestHasUndeadAndDispell(t *testing.T) {
+	f := &Field{Rand: NewRand(5)}
+	f.Units[MonsterBase] = Unit{Name: "哥布林", HP: 10, Facing: South,
+		IsMonster: true, Kind: 12, Tier: 3}
+	if f.HasUndead() {
+		t.Error("只有哥布林時不該說有不死生物")
+	}
+	f.Units[MonsterBase+1] = Unit{Name: "骷髏", HP: 10, Facing: South,
+		IsMonster: true, Kind: 5, Tier: 1}
+	if !f.HasUndead() {
+		t.Error("有骷髏就該說有不死生物")
+	}
+
+	// 智能 20 打階級 1 → 門檻 72,種子固定 → 只驗「非不死的沒被碰到」。
+	before := f.Units[MonsterBase].HP
+	f.Dispell(20)
+	if f.Units[MonsterBase].HP != before {
+		t.Errorf("哥布林不是不死生物,不該被驅散:%d → %d",
+			before, f.Units[MonsterBase].HP)
+	}
+}
+
+// TestDispellAlwaysKillsAtImpossibleThreshold / …NeverKills:兩端各釘一條,
+// 免得把比較方向寫反 —— 反了之後「智能越高越難成功」,而畫面上看不出來。
+func TestDispellDirectionOfThreshold(t *testing.T) {
+	newField := func() *Field {
+		f := &Field{Rand: NewRand(11)}
+		f.Units[MonsterBase] = Unit{Name: "骷髏", HP: 10, Facing: South,
+			IsMonster: true, Kind: 5, Tier: 1}
+		return f
+	}
+	// 智能 100 → 門檻 360,d100 打不破 → 必定成功
+	f := newField()
+	f.Dispell(100)
+	if f.Units[MonsterBase].Alive() {
+		t.Error("門檻遠高於 d100 時應該必定驅散成功")
+	}
+	// 智能 0、階級 10 → 門檻負的 → 必定失敗
+	f = newField()
+	f.Dispell(0)
+	if !f.Units[MonsterBase].Alive() {
+		t.Error("門檻是負的時候不該驅散成功")
+	}
+}

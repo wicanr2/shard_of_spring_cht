@@ -54,6 +54,7 @@ func (g *Game) startCombat() bool {
 	g.field.Place() // docs/spec/12 §5:初始佈陣(原版陣型未解,這裡是佔位)
 	g.field.ResetPoints(&g.points)
 	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
+	g.dispelled = nil // D)ispell 是「這一場一次」(docs/re/188 §2.2)
 	g.actor = g.firstActor()
 	// WRLDMOVE:44 / MAZEMOVE:90「    C O M B A T !」—— 原版遭遇時的橫幅。
 	g.field.Log = append(g.field.Log, CombatBanner,
@@ -102,6 +103,7 @@ func (g *Game) startScriptedCombat(target int) bool {
 	g.field.Place() // docs/spec/12 §5:近似值,原版擲座標找空格的兩個範圍未解(docs/re/164 §3)
 	g.field.ResetPoints(&g.points)
 	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
+	g.dispelled = nil // D)ispell 是「這一場一次」(docs/re/188 §2.2)
 	g.actor = g.firstActor()
 	if target == maze.TargetPriest {
 		// 固定字串,兼做「這場是不是祭司事件」的識別 —— 見
@@ -419,6 +421,52 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 		lines = lines[len(lines)-max:]
 	}
 	g.drawMessageLines(dst, lines)
+}
+
+// dispell 是戰場的 `D)ispell`。三道閘門照 docs/re/188 §2 的順序:
+// 有沒有 Priesthood → 這場用過沒有 → 是不是巫師。
+//
+// ⚠ **「這場用過沒有」放在記憶體裡,不是角色記錄。** 原版存在 `CHARS.DAT`
+// 位移 87,而**它在哪裡清回去沒有讀到**(docs/re/188 §5)——
+// 照抄一個不知道怎麼清的持久旗標,會讓玩家永久失去這個指令。
+func (g *Game) dispell() {
+	f := g.field
+	i := g.actor
+	if f == nil || i < combat.PartyBase || i >= combat.PartyBase+combat.PartyMax {
+		return
+	}
+	idx := i - combat.PartyBase
+	if idx >= len(g.members) {
+		return
+	}
+	c := g.members[idx]
+	name := f.Units[i].Name
+	switch {
+	case !combat.HasPriesthood(c):
+		f.Log = append(f.Log, name+combat.MsgNoPriesthood)
+		return
+	case g.dispelled[c.ID]:
+		f.Log = append(f.Log, name+combat.MsgAlreadyDispell)
+		return
+	case c.Class != combat.WizardClassChar:
+		f.Log = append(f.Log, name+combat.MsgDispellNotWiz)
+		return
+	case !f.HasUndead():
+		f.Log = append(f.Log, combat.MsgNoUndead)
+		return
+	}
+	// ⚠ 旗標在**擲骰之前**就設掉 —— 原版跑完整輪也是無條件設(re/188 §2.2),
+	// 一隻都沒驅掉照樣算用過。
+	if g.dispelled == nil {
+		g.dispelled = map[int]bool{}
+	}
+	g.dispelled[c.ID] = true
+	f.Log = append(f.Log, f.Dispell(c.Int)...)
+	// 驅散花一次行動,而且結束這個人的回合 —— 與施法同一種成本
+	// (docs/spec/12 §2)。⚠ 原版怎麼算**沒有讀到**,這是引擎的選擇。
+	g.points[i] = 0
+	g.nextActor()
+	g.settle()
 }
 
 // facingName 是四個朝向的中文。手冊 p.33 的戰場是俯視圖,北在上。

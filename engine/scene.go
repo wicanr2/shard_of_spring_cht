@@ -331,6 +331,11 @@ func (s combatScene) Update(in Input) Transition {
 		g.field.Log = append(g.field.Log, g.toggleSound())
 		return TransitionStay
 	}
+	// D)ispell —— `D` 在 CMBT 的指令鏈裡,語意由 docs/re/188 解出來。
+	if in.Pressed(ebiten.KeyD) {
+		g.dispell()
+		return TransitionStay
+	}
 	for _, k := range in.Keys {
 		if g.boardKey(k) {
 			return TransitionStay
@@ -745,7 +750,7 @@ func (s combatScene) combatPrompt() string {
 	}
 	// ⚠ 一行要放得進提示列的欄寬預算(倚天版 80 欄,docs/spec/04 §5)——
 	// 超出去不會報錯,字會壓在右邊的面板上(scene_test.go 的 TestEveryScenePrompt)。
-	return "方向鍵：移動　A：攻擊　C：施法　U：道具　/：看單位　S：音效　Enter：結束回合"
+	return "方向鍵：移動　A：攻擊　C：施法　D：驅散　U：道具　/：檢視　S：音效　Enter：結束"
 }
 
 // potionPrompt 是「自己用 / 丟給隊友」兩個階段的提示(docs/spec/19 §2-1)。

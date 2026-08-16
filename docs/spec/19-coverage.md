@@ -100,11 +100,7 @@ E1/E2/E3 記錄了接線過程,晚於 `11`)。`11` 那一段的敘述已經過�
 | 缺什麼 | 原文(模組:索引)| 說明 |
 |---|---|---|
 | **單位檢視面板** | `Status: ` / `Speed:` / `Skill:` / `Strength:` / `Magical:` / `Armor rating:` / `Attacks with:` / `YES` / `no` / `(ESC, ` / ` scrolls)`(CMBT:179–192)| 原版可以在戰場上翻看每個單位的屬性。引擎的單位列只有名字/生命/速度 |
-| **驅散不死生物 D)ispell** | CMBT:142–159(18 段)| 祭司職能:`the Priesthood` 的角色可以驅散,一場一次,對非不死生物回 `None of these monsters are undead!` |
 | **攻擊附帶中毒** | `and is poisoned!`(CMBT:79)| 引擎的 `Attack()` 只算傷害,不會讓目標中毒 —— 而中毒狀態本身是有的(睡覺扣血、治療所解毒都吃它)|
-
-⚠ 驅散那一塊**規則完全沒讀過**,不只是接線 —— 成功率、對哪些怪物有效、
-「一場一次」的旗標存在哪,全部未知。照 §2 的閘門,補之前要先回 RE。
 
 ### 2.3 戰後與道具
 
@@ -147,6 +143,7 @@ E1/E2/E3 記錄了接線過程,晚於 `11`)。`11` 那一段的敘述已經過�
 | 升級的屬性成長與技能點 | 規則解出來了([`re/183`](../re/183-levelup-attribute-growth.md)):擲三次、每次五選一 +1、夾 20;技能點每級無條件 +1。畫面接上 `skill_alloc_scene.go` |
 | `P)rogram Notes` 的製作群謝辭 | 移到標題畫面(MENU:93)|
 | 離開遊戲的道別文字 | 接在結局畫面(MENU:148)|
+| **驅散不死生物 D)ispell**(CMBT:142–159)| 規則解出來了([`re/188`](../re/188-dispell-undead.md)):三道閘門(降魔術／這場用過沒有／是不是巫師)、不死 = `MONSTERS.DAT` 欄6 ∈ {4,5,6}、成功率 = `d100 ≤ (智能 − 難度階級 + 1) × 3.6`。戰場按 `D` |
 | 施法游標只收 I/J/K/M | 方向鍵也收了 —— DOS 版自己的字串是 `Use arrow keys to position cursor.`(CMBT:110/111),手冊 p.34 講的是 Apple II 版 |
 | `docs/spec/11` 說「P/C/U 未實作」 | 三項都已實作,見 [`16-camp-actions.md`](16-camp-actions.md) |
 

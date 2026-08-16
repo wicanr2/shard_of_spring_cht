@@ -21,8 +21,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 81	ds:951C	 pts.	5	 點。	5	Y		engine/maze_prompt.go
 82	ds:9526	 is	3	 是	3	Y	原句是治療池的 `<名字> is healed <N> pts.`(MAZEMOVE 0x13847,docs/re/194 §1)。引擎印「<名字> 已治療 N 點。」—— 中文沒有繫詞可以放,**該說的話一個字都沒少**,少的是英文文法要求的連接詞。不接。	
 83	ds:952E	This pool is empty!	19	這座池子已經枯竭!	17	Y		engine/maze_prompt.go
-84	ds:9552	found an item.	14	找到了一件道具。	16	16	⛔ 迷宮的六件定點道具已認出(鑰匙/油燈/銅鑰匙/戰斧/金鑰匙/風暴戒,docs/re/200 §2),但**六處各對應哪個事件編號只認出兩個**(DT2:202 鑰匙、DT3:305 戰斧)—— 接線需要那個對應表。	
-85	ds:9568	Your party is full of items, please discard some from Camp.	59	隊伍的道具已經滿了,請在營地丟棄一些。	37	Y	⛔ 迷宮的六件定點道具已認出(鑰匙/油燈/銅鑰匙/戰斧/金鑰匙/風暴戒,docs/re/200 §2),但**六處各對應哪個事件編號只認出兩個**(DT2:202 鑰匙、DT3:305 戰斧)—— 接線需要那個對應表。	
+84	ds:9552	found an item.	14	找到了一件道具。	16	16	迷宮的六件定點道具(docs/re/202 §3):202 鑰匙、303 油燈、304 銅鑰匙、305 戰斧、314 金鑰匙、705 風暴戒(謎題獎賞)。⚠ 掃背包是**由隊尾往隊首**,與戰後掉落相反(docs/re/168 §1)。	engine/maze_loot.go
+85	ds:9568	Your party is full of items, please discard some from Camp.	59	隊伍的道具已經滿了,請在營地丟棄一些。	37	Y	同 84:全隊背包都滿的分支。spec/19 §1.1 範例句,一字不差。	engine/maze_loot.go
 88	ds:95DC	Leaving maze ..     	20	離開地城……	10	Y		engine/maze_scene.go
 89	ds:95FC	Making Camp..       	20	紮營中……	8	Y		engine/town_scene.go
 90	ds:9614	    C O M B A T !   	20	　　戰　鬥　!　　	9	Y		engine/combat_scene.go

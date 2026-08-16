@@ -181,6 +181,12 @@ func (g *Game) fireTrigger(t maze.Trigger) {
 	}
 	// 五個機關同時也有 DT 文字,原版是**先印文字再做事**(docs/re/161 §3)。
 	g.overlay = t.Text
+	// 六個定點道具其中五個是「踩到就給」(docs/re/202);第六個是謎題的獎賞。
+	// ⚠ **先印房間敘述再給東西** —— 原版的順序就是這樣(handler 開頭是
+	// `mov ax, ds:3532` 取 DT 文字,`call sub_1393E` 在最後一行)。
+	if item, ok := maze.LootEvents[t.Number]; ok {
+		g.overlay += "　" + g.giveMazeItem(item)
+	}
 	if g.tombs == nil {
 		g.tombs = map[int]bool{}
 	}

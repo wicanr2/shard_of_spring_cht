@@ -9,6 +9,7 @@ import (
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/magic"
+	"shardofspring/internal/maze"
 	"shardofspring/internal/original"
 	"shardofspring/internal/town"
 )
@@ -748,3 +749,73 @@ type alwaysHighRand struct{}
 
 func (alwaysHighRand) Roll(n int) int      { return n }
 func (alwaysHighRand) Float01() float64    { return 0.999999 }
+
+// ── 迷宮定點道具(docs/re/202)──────────────────────────────────────────
+
+// TestMazeLootGoesToLastMember:由**隊尾往隊首**找空格(docs/re/168 §1)——
+// 與戰鬥掉落的由前往後相反,兩支各自照抄。
+func TestMazeLootGoesToLastMember(t *testing.T) {
+	g := newPlayingGame(t)
+	if len(g.members) < 2 {
+		t.Skip("這個 fixture 只有一位隊員,分不出方向")
+	}
+	for i := range g.members {
+		for s := range g.members[i].Pack {
+			g.members[i].Pack[s] = original.NotEquipped
+		}
+	}
+	last := len(g.members) - 1
+	msg := g.giveMazeItem(49)
+	if g.members[last].Pack[0] != 49 {
+		t.Errorf("應該給隊尾那一位,%s 的第 0 格是 %d", g.members[last].Name, g.members[last].Pack[0])
+	}
+	if g.members[0].Pack[0] != original.NotEquipped {
+		t.Error("隊首不該拿到")
+	}
+	if town.IsIdentified(g.members[last], 0) {
+		t.Error("撿來的東西要是未鑑定的(docs/re/168 §2)")
+	}
+	if !strings.Contains(msg, mazeFoundItem) {
+		t.Errorf("要說 MAZEMOVE:84,得到 %q", msg)
+	}
+}
+
+// TestMazeLootPackFull:全隊背包都滿 → MAZEMOVE:85,而且不覆蓋任何東西。
+func TestMazeLootPackFull(t *testing.T) {
+	g := newPlayingGame(t)
+	for i := range g.members {
+		for s := range g.members[i].Pack {
+			g.members[i].Pack[s] = 3
+		}
+	}
+	if msg := g.giveMazeItem(49); msg != mazePackFull {
+		t.Errorf("要說 MAZEMOVE:85,得到 %q", msg)
+	}
+	for i := range g.members {
+		for s := range g.members[i].Pack {
+			if g.members[i].Pack[s] != 3 {
+				t.Fatalf("背包滿的時候不該動任何一格")
+			}
+		}
+	}
+}
+
+// TestLootEventTable:六件定點道具的對照表(docs/re/202 §3)。
+// ⚠ 705 **不在表裡** —— 它是謎題的獎賞,不是踩到就給。
+func TestLootEventTable(t *testing.T) {
+	want := map[int]int{202: 49, 303: 48, 304: 50, 305: 6, 314: 52}
+	if len(maze.LootEvents) != len(want) {
+		t.Fatalf("表應該有 %d 筆,得到 %d", len(want), len(maze.LootEvents))
+	}
+	for ev, item := range want {
+		if got := maze.LootEvents[ev]; got != item {
+			t.Errorf("事件 %d 應該給道具 %d,得到 %d", ev, item, got)
+		}
+	}
+	if _, in := maze.LootEvents[maze.TargetRiddle]; in {
+		t.Error("705 不該在踩到就給的那張表裡")
+	}
+	if maze.RiddleReward != 29 {
+		t.Errorf("謎題獎賞應該是風暴戒(29),得到 %d", maze.RiddleReward)
+	}
+}

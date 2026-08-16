@@ -184,7 +184,10 @@ func (g *Game) riddleKey(k ebiten.Key) {
 	g.prompt = nil
 	if maze.ClanSolved(p.names) {
 		g.clanRewarded = true
-		g.overlay = g.dungeonText(708, "Eldron 賜給你一枚戒指。")
+		// 那枚戒指是**風暴戒**(道具 29,`MAZEMOVE 0x13042`,docs/re/202)——
+		// 先前只印那句話,東西沒有真的進背包。
+		g.overlay = g.dungeonText(708, "Eldron 賜給你一枚戒指。") +
+			"　" + g.giveMazeItem(maze.RiddleReward)
 		return
 	}
 	g.overlay = g.dungeonText(709, "Eldron 說:再試一次吧。")

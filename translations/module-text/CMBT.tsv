@@ -4,7 +4,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 7	ds:92F0	Hands	5	拳頭	4	Y		engine/internal/combat/field.go
 9	ds:9338	None	4	無	2	Y		engine/inspect_scene.go
 10	ds:9340	Bite	4	咬擊	4	Y	原版另有 `Fangs`/`Bite` 兩個沒有武器時的名字,但**選用的判斷式沒讀到** —— 引擎一律用 CMBT:5/7 的「拳頭」,不自己編一條規則(engine/internal/combat/field.go 的 msgBareHands)。	
-22	ds:94DE	Item Breaks !	13	道具損壞了!	11	Y		
+22	ds:94DE	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。道具損壞:魔法道具發動失敗時原版有機率弄壞它。	
 23	ds:9500	MONSTERS ALL DEAD	17	怪物全滅	8	Y		engine/internal/combat/field.go
 24	ds:951A	PARTY DIES!	11	隊伍全滅!	9	Y		engine/internal/combat/field.go
 26	ds:953A	DEAD	4	死亡	4	Y		engine/internal/original/chars.go
@@ -29,7 +29,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 74	ds:97AA	and hacks for 	14	劈砍造成 	9	Y		engine/internal/combat/field.go
 76	ds:97C6	and hits for 	13	命中造成 	9	Y		engine/internal/combat/field.go
 77	ds:97D8	 damage.	8	 點傷害。	9	9		engine/internal/combat/field.go
-79	ds:97F0	and is poisoned!	16	並中毒了!	9	Y		
+79	ds:97F0	and is poisoned!	16	並中毒了!	9	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。攻擊附帶中毒:引擎的 Attack() 只算傷害,不會讓目標中毒(狀態本身是有的)。	
 81	ds:9810	 He Dies!	9	 他死了!	8	Y		engine/internal/combat/field.go
 82	ds:981E	 It dies!	9	 牠死了!	8	Y		engine/internal/combat/field.go
 83	ds:9832	All Monsters Dead	17	怪物全滅	8	Y		engine/internal/combat/field.go
@@ -40,16 +40,16 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 88	ds:989E	Which spell do	14	要施放	6	Y		engine/cast_scene.go
 89	ds:98B0	you wish to cast?	17	哪個法術?	9	Y		engine/cast_scene.go
 90	ds:98C6	 (ENTER exits)	14	(ENTER離開)	11	Y		engine/cast_scene.go
-91	ds:98DE	 There is no     	17	沒有這個 	9	Y		
-92	ds:98F4	 such spell!     	17	法術!	5	Y		
+91	ds:98DE	 There is no     	17	沒有這個 	9	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。引擎用字母選單,選不到不存在的法術。	
+92	ds:98F4	 such spell!     	17	法術!	5	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 91 列。	
 93	ds:990C	 That is not a   	17	那不是	6	Y		engine/cast_scene.go
 94	ds:9922	 combat spell!   	17	戰鬥法術!	9	Y		engine/cast_scene.go
 95	ds:993A	 You don't know  	17	你不會	6	Y		engine/cast_scene.go
 96	ds:9950	 that spell!     	17	那個法術!	9	Y		engine/cast_scene.go
-97	ds:9968	You will not be  	17	你將	4	Y		
-98	ds:997E	prepared for that	17	還沒準備好	10	Y		
-99	ds:9994	spell until the  	17	那個法術,要到	13	Y		
-100	ds:99AA	next round.	11	下一回合才行。	14	14		
+97	ds:9968	You will not be  	17	你將	4	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。法術「要到下一回合才準備好」——這條規則沒讀過。	
+98	ds:997E	prepared for that	17	還沒準備好	10	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 97 列。	
+99	ds:9994	spell until the  	17	那個法術,要到	13	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 97 列。	
+100	ds:99AA	next round.	11	下一回合才行。	14	14	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 97 列。	
 101	ds:99BC	 # SP ? 	8	 花費幾點法力? 	15	15		engine/cast_scene.go
 102	ds:99C8	 You don't have	15	你沒有	6	Y		engine/cast_scene.go
 103	ds:99DC	 that many!	11	 那麼多!	8	Y		engine/cast_scene.go
@@ -69,8 +69,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 119	ds:9AEC	to cast it?	11	哪裡?	5	Y		engine/cast_scene.go
 120	ds:9AFC	to cast.	8	施放。	6	Y		engine/cast_scene.go
 122	ds:9B38	and Dies!	9	並死亡!	7	Y		engine/internal/magic/magic.go
-124	ds:9B56	NO ONE IN	9	目標區域內	10	10		
-125	ds:9B64	TARGET AREA	11	沒有人!	7	Y		
+124	ds:9B56	NO ONE IN	9	目標區域內	10	10	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。`NO ONE IN TARGET AREA` 是**範圍法術**的空範圍訊息,而法術的作用範圍未解(docs/spec/09 §3)。單體的空格子走 CMBT:108/109。	
+125	ds:9B64	TARGET AREA	11	沒有人!	7	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 124 列。	
 126	ds:9B8C	and Dies	8	並死亡	6	Y		engine/internal/magic/magic.go
 128	ds:9BAC	notices no	10	沒有感到	8	Y		engine/internal/magic/magic.go
 129	ds:9BBA	difference.	11	任何變化。	10	Y		engine/internal/magic/magic.go
@@ -82,7 +82,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 136	ds:9C2E	still air and	13	凝滯的空氣,	11	Y		engine/internal/magic/magic.go
 137	ds:9C40	ice and	7	冰霜,	5	Y		engine/internal/magic/magic.go
 138	ds:9C4C	notices no effect	17	沒有感到效果	12	Y		engine/internal/magic/magic.go
-140	ds:9C6E	Item Fails	10	道具失效	8	Y		
+140	ds:9C6E	Item Fails	10	道具失效	8	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。`Item Fails` 與 `Spell Fails`(141)的分工沒讀到,引擎只有一次發動判定 —— 接到 141 那一句。	
 141	ds:9C7C	Spell Fails	11	法術失效	8	Y		engine/use_item.go
 142	ds:9C92	does not have	13	沒有	4	Y		engine/internal/combat/dispell.go
 143	ds:9CA4	the Priesthood	14	降魔術	6	Y		engine/internal/combat/dispell.go

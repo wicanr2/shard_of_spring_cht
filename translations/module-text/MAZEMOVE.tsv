@@ -19,9 +19,9 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 79	ds:94D4	That character can't be helped here !	37	這位角色在這裡沒辦法治療!	25	Y		engine/maze_prompt.go
 80	ds:9512	healed	6	已治療	6	Y		engine/maze_prompt.go
 81	ds:951C	 pts.	5	 點。	5	Y		engine/maze_prompt.go
-82	ds:9526	 is	3	 是	3	Y		
+82	ds:9526	 is	3	 是	3	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。`is` 是句中片段,引擎的對應句子沒有拆成這個形狀。	
 83	ds:952E	This pool is empty!	19	這座池子已經枯竭!	17	Y		engine/maze_prompt.go
-84	ds:9552	found an item.	14	找到了一件道具。	16	16		
+84	ds:9552	found an item.	14	找到了一件道具。	16	16	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。迷宮撿道具:引擎的迷宮不會掉道具。	
 85	ds:9568	Your party is full of items, please discard some from Camp.	59	隊伍的道具已經滿了,請在營地丟棄一些。	37	Y	spec/19 §1.1 範例句,一字不差	
 88	ds:95DC	Leaving maze ..     	20	離開地城……	10	Y		engine/maze_scene.go
 89	ds:95FC	Making Camp..       	20	紮營中……	8	Y		engine/town_scene.go

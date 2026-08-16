@@ -22,7 +22,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 40	ds:7124	Weapon? 	8	武器? 	6	Y		engine/town_scene.go
 41	ds:7130	 skips.	7	 略過。	7	Y		engine/town_scene.go
 42	ds:7140	No Weapon	9	無武器	6	Y		engine/town_scene.go
-43	ds:7152	NO SKILL !	10	沒有技能!	9	Y		
+43	ds:7152	NO SKILL !	10	沒有技能!	9	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。裝備的武器技能閘門:引擎不檢查角色會不會用這件武器。	
 47	ds:717A	Armor?  	8	防具? 	6	Y		engine/town_scene.go
 48	ds:7186	 skips.	7	 略過。	7	Y		engine/town_scene.go
 49	ds:7192	No Armor  	10	無防具 	7	Y		engine/town_scene.go
@@ -32,7 +32,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 53	ds:71F2	Dropped ! 	10	已丟棄! 	8	Y		engine/town_scene.go
 54	ds:7200	You have slept !	16	你們睡了一覺!	13	Y		engine/town_scene.go
 55	ds:7216	You are not tired	17	你們還不累	10	Y		engine/town_scene.go
-56	ds:722C	You sleep...	12	你們睡了一覺……	14	14		
+56	ds:722C	You sleep...	12	你們睡了一覺……	14	14	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。`You sleep...` 與 CAMP:54 `You have slept !` 是同一件事的兩句,引擎用 54。	
 58	ds:724A	Character # wishing to identify? (ESC exits)	44	哪位角色要鑑定?(ESC離開)	24	Y		engine/town_scene.go
 60	ds:7284	Item to ID ?	12	要鑑定哪件?	11	Y		engine/town_scene.go
 61	ds:729C	You are not trained in that lore!	33	你沒有受過這方面的知識訓練!	27	Y		engine/town_scene.go
@@ -45,14 +45,14 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 68	ds:735C	Enter new 	10	輸入新的	8	Y		engine/town_scene.go
 69	ds:736A	position for:	13	位置給：	8	Y		engine/town_scene.go
 70	ds:737C	 Letter?	8	 字母?	6	Y		engine/town_scene.go
-71	ds:7388	  A B C 	8	  A B C 	8	Y		
-72	ds:7394	  D E F 	8	  D E F 	8	Y		
-73	ds:73A0	  G H I 	8	  G H I 	8	Y		
+71	ds:7388	  A B C 	8	  A B C 	8	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。原版把背包畫成 3×3 的字母格,引擎直接列道具名稱。	
+72	ds:7394	  D E F 	8	  D E F 	8	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 71 列。	
+73	ds:73A0	  G H I 	8	  G H I 	8	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 71 列。	
 75	ds:73BC	Character # to cast spell ? (ESC exits)	39	哪位角色要施法?(ESC離開)	24	Y		engine/town_scene.go
 76	ds:73EC	Cast what spell?	16	施放哪個法術?	13	Y		engine/camp_actions.go
 77	ds:7400	(ENTER exits)	13	(ENTER離開)	11	Y		engine/camp_actions.go
 78	ds:7412	DAZA REVELI	11	DAZA REVELI	11	Y	⛔ 不譯:玩家要打回去的通關咒語(glossary 硬規則5)。	
-79	ds:7422	The gate opens	14	大門開啟了	10	Y		
+79	ds:7422	The gate opens	14	大門開啟了	10	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。`DAZA REVELI` 大門:對著大門唸咒語的機關,規則沒讀過。	
 80	ds:7436	Mumble, mumble, what spell did you say ?	40	喃喃自語,你剛剛說的是哪個法術?	30	Y	保留戲謔語氣('Mumble, mumble'),spec/19 §6 明訂範例。	
 81	ds:746A	That is a combat spell !	24	那是戰鬥法術!	13	Y		engine/camp_actions.go
 82	ds:7498	You don't know that spell!	26	你不會那個法術!	15	Y		engine/internal/magic/magic.go
@@ -71,22 +71,22 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 97	ds:76D4	char #: 	8	角色 #： 	8	Y		engine/use_item.go
 100	ds:76F0	That is a Combat Item!	22	那是戰鬥用道具!	15	Y	spec/19 §1.1 範例句,一字不差	engine/camp_actions.go
 101	ds:7712	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
-102	ds:774A	 pts!	5	 點!	4	Y		
+102	ds:774A	 pts!	5	 點!	4	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。` pts!` 是句尾片段,引擎的對應句子沒有拆成這個形狀。	
 103	ds:7754	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
 104	ds:7786	Lives !	7	活過來了!	9	9		engine/internal/magic/magic.go
 105	ds:7796	Is cured.	9	被治癒了。	10	10		engine/internal/magic/magic.go
-106	ds:77A4	Notices no change	17	沒有感到變化	12	Y		
+106	ds:77A4	Notices no change	17	沒有感到變化	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。與 CMBT:128/129 同一句,標點不同 —— 引擎用 magic.MsgNoDifference(CMBT 那一份)。	
 107	ds:77BA	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
-108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y		
-109	ds:780A	A roaring blast of wind buffets the party and when the noise subsides...	72	一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……	41	Y		
-127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y		
+108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。同 106 列。	
+109	ds:780A	A roaring blast of wind buffets the party and when the noise subsides...	72	一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……	41	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。營地放某個法術之後的敘述(狂風),**是哪一個法術沒讀到**。	
+127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 CMBT:22(道具損壞)。	
 128	ds:7A2A	Spell Fails !	13	法術失效!	9	Y		engine/use_item.go
 130	ds:7A58	You don't have that skill.	26	你沒有那項技能。	16	Y	檔名/模組名,不是句子,⛔ 不譯 — spells.dat	engine/internal/town/camp.go
 131	ds:7A7E	That character is incapacitated.	32	這位角色行動不能。	18	Y		engine/internal/town/camp.go
 132	ds:7AAA	You have used that skill today.	31	你今天已經用過那項技能了。	26	Y		engine/internal/town/camp.go
 133	ds:7AD6	That character is not a wizard.	31	這位角色不是巫師。	18	Y		engine/internal/town/camp.go
-134	ds:7B02	You now have about	18	你現在大約還有	14	Y		
-135	ds:7B18	 turns of light.	16	 回合的照明。	13	Y		
+134	ds:7B02	You now have about	18	你現在大約還有	14	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。照明剩餘回合:`GROUPS.DAT` 位移 45 有 LightTurns 這個欄位,但**它怎麼減、光源給幾回合沒讀過**。	
+135	ds:7B18	 turns of light.	16	 回合的照明。	13	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 134 列。	
 137	ds:7B5E	dies in the night.	18	在夜裡死去。	12	Y		engine/town_scene.go
 138	ds:7B78	 LVL: 	6	 等級： 	6	7		engine/camp_actions.go
 139	ds:7B8C	H.P.   	7	生命 	5	Y		engine/camp_actions.go

@@ -99,10 +99,10 @@ def main():
     total = wired_ok + len(mismatches)
     print(f"\n已接 {wired_ok} 段、對不上 {len(mismatches)} 段"
           f"(wired 非空共 {total} 段)。")
-    wiring()
+    rw = wiring()
     rp = punctuation()
     rc = coverage()
-    return 1 if (mismatches or rc or rp) else 0
+    return 1 if (mismatches or rc or rp or rw) else 0
 
 
 # 全形版本在本專案的譯文裡一律不用(docs/spec/19 §6)。冒號相反:
@@ -144,7 +144,7 @@ def punctuation() -> int:
     return 0
 
 
-def wiring() -> None:
+def wiring() -> int:
     """F3 的接線進度:哪幾個模組還有多少段沒接回引擎。
 
     ⚠ **未接不等於沒做完翻譯**(那是 F1,已經 381/381),也不等於缺功能 ——
@@ -154,17 +154,26 @@ def wiring() -> None:
     """
     done = todo = 0
     per: dict[str, int] = {}
+    silent = []  # 未接**又沒有說明為什麼**的
     for path in sorted(MODULE_TEXT_DIR.glob("*.tsv")):
         for row in load_rows(path):
             if not (row.get("translation") or "").strip():
                 continue
             if (row.get("wired") or "").strip():
                 done += 1
-            else:
-                todo += 1
-                per[path.stem] = per.get(path.stem, 0) + 1
+                continue
+            todo += 1
+            per[path.stem] = per.get(path.stem, 0) + 1
+            if not (row.get("note") or "").strip():
+                silent.append(f"{path.stem}:{row.get('row') or row.get('id')}")
     detail = "、".join(f"{k} {v}" for k, v in sorted(per.items(), key=lambda kv: -kv[1]))
     print(f"F3 接線進度:{done} / {done + todo} 段已接回引擎;未接 {todo} 段({detail})。")
+    if silent:
+        # ⚠ 「未接」本身不是錯,**沒說為什麼**才是:那樣的一列與「還沒輪到它」
+        # 長得一模一樣,下一個人得重新查一遍才知道它是不是漏掉的。
+        print(f"⚠ 有 {len(silent)} 段未接但 note 欄是空的:{'、'.join(silent[:20])}")
+        return 1
+    return 0
 
 
 def coverage() -> int:

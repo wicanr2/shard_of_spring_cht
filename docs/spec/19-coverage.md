@@ -74,94 +74,89 @@ E1/E2/E3 記錄了接線過程,晚於 `11`)。`11` 那一段的敘述已經過�
 
 ## 2. 缺口:功能不存在,不是措辭問題
 
-### 2-1 ⚠ 藥劑「用給自己還是給別人」的分支,兩處都沒接
+> 這一節列的是**引擎沒有那個畫面或那一步**的原版訊息 —— 不是措辭不同。
+> 措辭的接線是 [`19-module-text.md`](19-module-text.md) §6.1 的 `wired` 欄,
+> 進度由 `tools/check_module_text.py` 印出來。
+>
+> ⛔ **列出來不等於要補。** 補不補是另一個決定;其中幾項還卡在
+> [`CLAUDE.md`](../../CLAUDE.md) §2 的閘門 —— 規則沒讀出來之前不能實作。
 
-原版有**兩支不同的字串**,對應兩個不同情境:
+### 2.1 規則層寫好了、按鍵沒接:**改名**
 
-| 情境 | 原文 | 模組:索引 |
+`town.Rename()`(`engine/internal/town/roster.go:67`)已經實作並有測試,
+但 `engine/` 底下**沒有任何呼叫端** —— 名冊畫面收不到改名這個指令。
+對應原文 `Which character to rename ?` / `Please enter the new name (9 char max): `
+(CHARUTIL:7/8)。
+
+⚠ 這是 `H)unt` / `I)dentify` 那一類的第三例:**規則做完了、接線斷了,
+而畫面上看不出來**(選單根本沒列出這個指令,所以「按不到」不像壞掉)。
+原版的字串表是現成的檢查表,這一項就是對字串時掉出來的。
+
+⚠ 名字長度上限**兩份原版資料自己打架**(10 vs 9),
+見 [`19-module-text.md`](19-module-text.md) §4 —— 接改名之前要先裁決。
+
+### 2.2 戰鬥缺三塊
+
+| 缺什麼 | 原文(模組:索引)| 說明 |
 |---|---|---|
-| 營地用道具 | `Do you wish to use the potion on Y)ourself or G)ive it to another character?` | CAMP:92 |
-| 戰鬥用道具 | `Do you wish to use the potion on Y)ourself or T)oss it to another character?` | CMBT:165 |
+| **單位檢視面板** | `Status: ` / `Speed:` / `Skill:` / `Strength:` / `Magical:` / `Armor rating:` / `Attacks with:` / `YES` / `no` / `(ESC, ` / ` scrolls)`(CMBT:179–192)| 原版可以在戰場上翻看每個單位的屬性。引擎的單位列只有名字/生命/速度 |
+| **驅散不死生物 D)ispell** | CMBT:142–159(18 段)| 祭司職能:`the Priesthood` 的角色可以驅散,一場一次,對非不死生物回 `None of these monsters are undead!` |
+| **攻擊附帶中毒** | `and is poisoned!`(CMBT:79)| 引擎的 `Attack()` 只算傷害,不會讓目標中毒 —— 而中毒狀態本身是有的(睡覺扣血、治療所解毒都吃它)|
 
-**營地**:`engine/camp_actions.go:333`(`useItem`)套用效果時**固定 `campUnit(*c)` 打自己
-`&cUnit`**(見同檔 421 行呼叫處 `magic.Apply(s, invest, &cUnit, []*combat.Unit{&cUnit})`),
-沒有選「自己/別人」這一步。這不是實作漏掉——`docs/spec/16-camp-actions.md` §3(E2)
-描述的流程本身就是「選人 → 列出背包 → 選一件 → 套用」,**規格層級就沒有納入這個分支**。
-相對原版,仍然是一個功能缺口,一併回報。
+⚠ 驅散那一塊**規則完全沒讀過**,不只是接線 —— 成功率、對哪些怪物有效、
+「一場一次」的旗標存在哪,全部未知。照 §2 的閘門,補之前要先回 RE。
 
-**戰鬥**:`engine/combat_scene.go` 的按鍵處理(`boardKey`)與 `engine/main.go` 的戰鬥
-分派(216-260 行)只認 `方向鍵`/`A`(攻擊)/`C`(施法)/`Enter`/`ESC`——**沒有 `U`
-或任何「使用道具」的入口**。CMBT 索引 162-192(`This character has no items to use!`
-到 `(ESC, scrolls)`,共 31 段)整段功能在引擎裡**完全不存在**,不是措辭問題。
+### 2.3 戰後與道具
 
-### 2-2 「那是戰鬥用道具!」的閘門沒有實作
-
-原文 `That is a Combat Item!`(CAMP:100,一字不差對應 `docs/spec/19-module-text.md`
-§1.1 表列的範例句)—— 全域搜尋 `engine/` 沒有任何「戰鬥」+「道具」的閘門字串,
-`useItem()`(`engine/camp_actions.go:333`)對編號 ≤ `magic.MagicItemMin` 的道具
-只回「不是魔法道具,什麼事也沒發生」,**不會擋下「這是戰鬥限定道具,不能在營地用」**
-這一類。原版會先判斷道具類別再擋,引擎目前沒有這個判斷式。
-
-### 2-3 升級只長生命/法力,原版的「屬性成長」與「新技能點」都沒實作
-
-原版 TOWN 升級流程完整字串鏈(索引 40-52):
-
-```
-The Guild decides you need N experience before gaining a level.
-You made a level!  You gain N hit points.
-You also gain N Spell Points!
-Stats are up by:
-1 pt of *  ⟵ 屬性名重複套用,列出這次隨機漲的屬性
-You have N points left.
-Enter skill, (0 exits)
-```
-
-`docs/re/`、`docs/spec/` 全文搜尋 `Stats are up by` / `屬性提升` 只在原始字串
-清冊(`generated-string-refs.json`/`generated-text-inventory.json`)裡出現,
-**沒有任何規格文件討論過這個機制,也沒有標成已知未解項**——這是本輪稽核新發現的
-缺口,先前沒人記錄過。
-
-對照引擎 `Train()`(`engine/internal/town/train.go:44-71`):只動
-`c.Level`、`c.MaxHP`/`c.HP`、`c.MaxSP`/`c.SP` 三組欄位,**不動任何 Trait
-(速度/力量/智能/體能/技巧)**,也**不發新的技能點**——`SkillPts` 只在
-`engine/internal/town/create.go:52`(角色創建)寫入,升級流程完全不碰它。
-換句話說:「升級後可以再分配技能點」這件事,在角色創建**之後就再也碰不到**。
-
-⚠ 這一項底層規則(隨骰決定漲哪個屬性、漲多少;技能點的發放量)完全沒讀過,
-屬於**新的 RE 缺口**,不是單純接線問題——照 `CLAUDE.md` §2 的閘門,補這一段
-之前要先回 RE 階段解出公式,不能直接猜一個數字實作。
-
-### 2-4 兩則「已被規格明確裁定不做」的文字(非遺漏,列出以求「一句不漏報」)
-
-| 原文 | 模組:索引 | 狀態 |
+| 缺什麼 | 原文 | 說明 |
 |---|---|---|
-| `P)rogram Notes.` 的原內容(`Dedicated to Lori Proudfoot...` 製作人員名單)| MENU:93 | 按鍵位置被 `docs/spec/15-game-shell.md` §1.1 明確裁定改成「遊戲內按鍵表」,原文不會被搬進 remake |
-| `Don, Leslie, and Martin thank you for playing the Shard of Spring.`(離開遊戲的道別文字)| MENU:148 | `docs/spec/15-game-shell.md` §9 驗收 2 只要求「`Q` 真的關掉程式」;`engine/shell_scene.go:255` 的 `Q` 直接 `ebiten.Termination`,沒有道別畫面。規格沒有明講要不要留這段道別,**先列出來,是否補一個「感謝遊玩」畫面待裁決** |
+| 拾取確認 | `Gold: N found` / `Do you take it?` / `(Y/N)`(CMBT:58–63)| 引擎的金幣直接進隊伍,沒有問要不要撿 |
+| 道具損壞 | `Item Breaks !`(CMBT:22 / CAMP:127)| 魔法道具發動失敗時原版有機率弄壞它;引擎只回「法術失效!」 |
+| 迷宮撿道具 | `found an item.` / `Your party is full of items, please discard some from Camp.`(MAZEMOVE:84/85)| 引擎的迷宮不會掉道具,也就沒有背包滿的分支 |
+| 照明剩餘回合 | `You now have about N turns of light.`(CAMP:134/135)| 引擎有能見度,但沒有「照明會燒完」這件事 |
 
-## 3. 未直接查核的部分(誠實列出,不是查過沒寫)
+### 2.4 城鎮與營地的小分支
 
-- **CMBT 的 `KEYPAD TEMPLATE`(索引31)與周邊 `[ESC]`/`[ATK]`/`[D][` 等方塊字元
-  (索引32-40)**:原版是小鍵盤方向對照圖。引擎按鍵表(`shell_scene.go:364`)有列出
-  戰鬥鍵位,但不是同一種「九宮格對照圖」版面——判定成「措辭/版面不同,功能覆蓋」,
-  沒有另外去讀 CMBT 那張圖實際佈局,若未來要重建視覺對照圖需要回頭補這一步。
-- **CAMP 的 `T)rade`/`R)eorder` 訊息措辭**細節(NO ROOM/OK 等)只核對了功能存在
-  (`docs/spec/11-town-camp-roster.md` 已記錄兩者接線),沒有逐句比對引擎現在顯示
-  的中文是否與本輪譯文一致——留給日後把 `translations/module-text/*.tsv` 接回
-  引擎那一輪(§驗收5)處理。
-- **`(0 exits)` 系列提示的離開鍵語意**(部分模組寫 `(ESC exits)`,部分寫
-  `(0 exits)`)沒有逐一核對引擎目前用的是哪一種收單鍵——兩者在原版是不同輸入
-  習慣(數字 0 vs ESC),translation TSV 已如實照原文分別記錄,是否要在引擎裡
-  統一由後續實作決定。
+| 缺什麼 | 原文 |
+|---|---|
+| 旅店住**幾晚** | `Your rooms will cost N gold each night.  How many nights…(1-9, 0 exits) ?`(TOWN:30/31)—— 引擎一次只住一晚 |
+| 一次買**幾份**口糧 | `…How many rations (1-9, 0 exits) ?`(TOWN:59)—— 引擎一次買一份 |
+| 付款確認 | `That will cost N gold, Pay (Y/N)?`(TOWN:27/28)—— 引擎直接扣 |
+| 智能不足 | `Not enough IQ !`(TOWN:54) |
+| 睡覺時死亡 | `dies in the night.`(TOWN:81 / CAMP:137)—— 引擎會扣到 0,但不報這件事 |
+| 不累就不睡 | `You are not tired`(CAMP:55) |
+| 裝備的武器技能閘門 | `NO SKILL !`(CAMP:43)—— 引擎不檢查會不會用這件武器 |
+| `DAZA REVELI` 大門 | CAMP:78–80(`The gate opens` / `Mumble, mumble, what spell did you say ?`)—— 對著大門唸咒語的機關 |
 
-## 4. 結論摘要
+### 2.5 外殼與世界地圖
 
-| # | 缺口 | 類型 |
-|---|---|---|
-| 1 | 藥劑使用的「自己/給別人」分支——營地固定打自己,戰鬥整支功能不存在 | 功能缺失(戰鬥) + 規格層級簡化(營地)|
-| 2 | 「那是戰鬥用道具!」閘門沒實作 | 功能缺失 |
-| 3 | 升級只長 HP/SP,屬性成長與新技能點沒有規則也沒有實作 | 新發現的 RE 缺口 + 功能缺失 |
-| 4 | `docs/spec/11` 的「P/C/U 未實作」敘述已過期 | 文件落後於程式碼 |
-| 5 | 離開遊戲的道別文字沒有畫面(是否要補,待裁決)| 規格未決 |
+| 缺什麼 | 原文 |
+|---|---|
+| 全滅的隊伍不能選 | `Parties of dead characters are not allowed !!!`(MENU:99)—— `selectParty()` 只擋空隊伍 |
+| 解散隊伍 | `No party # to disband !`(CHARUTIL:58/59) |
+| 隊伍資訊頁 | `Saved in the month of the ` / `Currently in the ` / `maze: `(CHARUTIL:42/44/45)—— 存檔時間與所在地城 |
+| 音效開關 | `Sound is now on.` / `Sound is now off.`(CMBT:52/53) |
+| 拱門敘述與離場謝詞 | WRLDMOVE:18/19 —— 世界地圖邊界的兩段文字 |
 
-第 1–3 項在 `CLAUDE.md` §2 的閘門下,**要補之前都得先確認規則**(尤其第 3 項的
-屬性成長骰法與技能點發放量,目前完全沒讀過,不能用猜的數字實作)。
+## 3. 已補起來的(先前列在這裡,現在有了)
+
+| 原本的缺口 | 現況 |
+|---|---|
+| 藥劑「用給自己還是給別人」 | 兩處都做了:營地 `G)ive`、戰鬥 `T)oss`(`engine/use_item.go`)|
+| 「那是戰鬥用道具!」閘門 | `engine/camp_actions.go` 有了。⚠ `isCombatOnlyItem` 的判斷式是**猜的**,不是讀到的 |
+| 升級的屬性成長與技能點 | 規則解出來了([`re/183`](../re/183-levelup-attribute-growth.md)):擲三次、每次五選一 +1、夾 20;技能點每級無條件 +1。畫面接上 `skill_alloc_scene.go` |
+| `P)rogram Notes` 的製作群謝辭 | 移到標題畫面(MENU:93)|
+| 離開遊戲的道別文字 | 接在結局畫面(MENU:148)|
+| 施法游標只收 I/J/K/M | 方向鍵也收了 —— DOS 版自己的字串是 `Use arrow keys to position cursor.`(CMBT:110/111),手冊 p.34 講的是 Apple II 版 |
+| `docs/spec/11` 說「P/C/U 未實作」 | 三項都已實作,見 [`16-camp-actions.md`](16-camp-actions.md) |
+
+## 4. 未逐條查核的部分(誠實列出,不是查過沒寫)
+
+- **`KEYPAD TEMPLATE`(CMBT:31)與周邊的方塊字元**(索引 32–40):原版是小鍵盤
+  方向對照圖。引擎的按鍵表(`shell_scene.go`)有列戰鬥鍵位,但不是九宮格對照圖 ——
+  沒有去讀 CMBT 那張圖的實際佈局,要重建視覺對照圖得回頭補這一步。
+- **`(0 exits)` 與 `(ESC exits)` 的收單鍵不一致**:原版有些地方用數字 `0`、
+  有些用 `ESC`,譯文如實分別記錄。引擎目前多半兩個都收,但**沒有逐畫面核對**。
+- **原版把一句話拆成多段**的那些(例如 `is not a` + `wizard` + `and cannot` +
+  `cast spells.`),引擎併成一句時用的是**另一個模組的同義句**(CAMP 版),
+  所以 CMBT 那幾段留著沒接。這不是缺功能,是同一句話在原版有兩份。

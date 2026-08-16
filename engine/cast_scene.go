@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
@@ -196,9 +195,7 @@ func (g *Game) drawCastMenu(dst *ebiten.Image) {
 	}
 	// 蓋掉底下的訊息 —— 兩層字疊在一起是「看得到但讀不出來」,
 	// 而那比缺字更難察覺。
-	rc := layout.Message
-	vector.DrawFilledRect(dst, float32(rc.X+2), float32(rc.Y+2),
-		float32(rc.W-4), float32(rc.H-4), cgaBlack, false)
+	clearMessage(dst) // message.go
 	p := g.panel
 	lh := p.LineHeight()
 	x := float64(layout.Message.X + ui.PanelPad)

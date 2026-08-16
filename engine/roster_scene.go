@@ -306,11 +306,5 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 		p.Draw(dst, party, col(cParty), y)
 		y += lh
 	}
-	if r.msg != "" {
-		my := float64(layout.Message.Y + ui.PanelPad)
-		for _, ln := range ui.Wrap(r.msg, 30) {
-			p.Draw(dst, ln, float64(layout.Message.X+ui.PanelPad), my)
-			my += lh
-		}
-	}
+	g.drawMessage(dst, r.msg)
 }

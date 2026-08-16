@@ -294,12 +294,13 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	r := float32(layout.View.Y + half*layout.TileDst)
 	vector.StrokeRect(dst, c, r, layout.TileDst, layout.TileDst, 3, cgaWhite, false)
 
-	lh := p.LineHeight()
-	p.Draw(dst, fmt.Sprintf("地城 DG%d　(%d, %d)　朝向 %d　能見度 %d",
-		lv.entry.MazeFile, g.mazeState.Major, g.mazeState.Minor,
-		g.mazeState.Facing, g.mazeState.Visibility),
-		float64(layout.Message.X+ui.PanelPad),
-		float64(layout.Message.Y+ui.PanelPad)+lh*0)
+	// ⚠ 自己斷成兩行,不要靠折行 —— 這段固定超過訊息面板的 30 欄,
+	// 而 ui.Wrap 是按欄數硬斷的,會把「能見度」從中間切開。
+	g.drawMessageLines(dst, []string{
+		fmt.Sprintf("地城 DG%d　(%d, %d)", lv.entry.MazeFile,
+			g.mazeState.Major, g.mazeState.Minor),
+		fmt.Sprintf("朝向 %d　能見度 %d", g.mazeState.Facing, g.mazeState.Visibility),
+	})
 }
 
 // drawOverlay 畫敘述覆蓋層。docs/spec/04 §3:置中於**畫布**,不是主視野。

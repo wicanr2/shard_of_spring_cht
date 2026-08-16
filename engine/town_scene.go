@@ -348,14 +348,7 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		}
 	}
 
-	if ts.msg != "" {
-		// 訊息面板 30 欄,折行不截斷(docs/spec/04 §5)
-		my := float64(layout.Message.Y + ui.PanelPad)
-		for _, ln := range ui.Wrap(ts.msg, 30) {
-			p.Draw(dst, ln, float64(layout.Message.X+ui.PanelPad), my)
-			my += lh
-		}
-	}
+	g.drawMessage(dst, ts.msg) // message.go:折行不截斷(docs/spec/04 §5)
 }
 
 // campLetter 把按鍵換成營地子畫面的代號。

@@ -10,13 +10,16 @@ package main
 // ⚠ 全部走 `g.Update()`,不直呼 handler —— 直呼測到的是規則,不是接線。
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"shardofspring/internal/combat"
+	"shardofspring/internal/layout"
 	"shardofspring/internal/maze"
 	"shardofspring/internal/original"
+	"shardofspring/internal/ui"
 	"shardofspring/internal/world"
 )
 
@@ -402,5 +405,85 @@ func TestT3EveryScenePressReacts(t *testing.T) {
 				t.Error(msg)
 			}
 		})
+	}
+}
+
+// ── C3:提示列與訊息面板的收斂(docs/spec/14 §4)────────────────────────
+
+// TestEveryScenePrompt 確認每個場景都說得出自己的指令提示,而且**放得進提示列**。
+//
+// ⚠ 畫到框外的字**照樣印得出來**,只是壓在別的面板上 —— 沒有錯誤訊息,
+// 也沒有測試會紅,只有一團看不懂的畫面。戰鬥那一行就這樣壓著隊伍面板很久,
+// 是拍截圖才看見的。
+func TestEveryScenePrompt(t *testing.T) {
+	// 這兩個沒有自己的提示列:熱鍵不是畫面;外殼的提示由各自的畫面直接畫
+	// (shell 接管整個畫布,走 Game.Draw 的另一條路)。
+	noPrompt := map[string]bool{"roster-hotkey": true, "shell": true}
+
+	// 動態提示要在**有狀態**時量,不然量到的是預設分支。
+	g := newFightingGame(t)
+	g.combatPotion = &potionPrompt{slot: 0, stage: 2}
+	g.create = &createState{step: stepAdjust, picked: map[int]bool{}}
+	g.prompt = &mazePrompt{kind: promptGem}
+
+	for _, s := range g.inputChain() {
+		p := s.Prompt()
+		if noPrompt[s.Name()] {
+			if p != "" {
+				t.Errorf("場景 %q 不該有提示列,得到 %q", s.Name(), p)
+			}
+			continue
+		}
+		if p == "" {
+			t.Errorf("場景 %q 沒有指令提示 —— 玩家不知道這個畫面能按什麼", s.Name())
+			continue
+		}
+		if n := ui.Cols(p); n > layout.PromptCols {
+			t.Errorf("場景 %q 的提示列 %d 欄,超過 %d —— 會畫到框外壓住別的面板:%q",
+				s.Name(), n, layout.PromptCols, p)
+		}
+	}
+}
+
+// TestPromptFollowsActiveScene 釘住「提示列跟著實際接手者走」。
+//
+// ⚠ 這是 C3 的重點:提示列先前自己寫了一份 switch 去猜現在是哪個畫面,
+// 與 Update() 的派工是**兩份各自演化的判斷** —— 戰鬥那一行因此停在
+// 「空白鍵:推進一回合」,而那個鍵在 M10 就移除了。
+func TestPromptFollowsActiveScene(t *testing.T) {
+	g := newPlayingGame(t)
+	if got := g.activeScene().Name(); got != "world" {
+		t.Fatalf("世界地圖上應該是 world 接手,得到 %q", got)
+	}
+	s := g.townSites[0]
+	if !g.enterTown(s.X, s.Y) {
+		t.Fatalf("進不了城鎮 (%d,%d)", s.X, s.Y)
+	}
+	if got := g.activeScene().Name(); got != "town" {
+		t.Fatalf("進城之後應該是 town 接手,得到 %q", got)
+	}
+	if g.activeScene().Prompt() != (townScene{g}).Prompt() {
+		t.Error("提示列沒有跟著接手的場景走")
+	}
+	// 覆蓋層蓋上來時,提示列也要跟著換 —— 它吃掉所有按鍵。
+	g.overlay = "測試用敘述"
+	if got := g.activeScene().Name(); got != "overlay" {
+		t.Errorf("覆蓋層開著時應該由 overlay 接手,得到 %q", got)
+	}
+}
+
+// TestCombatPromptIsNotStale 直接擋住那一行舊文字回來。
+func TestCombatPromptIsNotStale(t *testing.T) {
+	g := newFightingGame(t)
+	p := (combatScene{g}).Prompt()
+	for _, gone := range []string{"空白鍵", "固定投一級"} {
+		if strings.Contains(p, gone) {
+			t.Errorf("戰鬥提示列還寫著已經移除的操作 %q:%q", gone, p)
+		}
+	}
+	for _, want := range []string{"A：攻擊", "Enter"} {
+		if !strings.Contains(p, want) {
+			t.Errorf("戰鬥提示列缺了 %q:%q", want, p)
+		}
 	}
 }

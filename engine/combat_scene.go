@@ -357,7 +357,10 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 			g.cursor.spell.Name), x, y)
 		y += lh * 1.2
 	} else if g.actor >= 0 {
-		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d　方向鍵移動(先轉再走)　A 攻擊　C 施法　U 用道具　Enter 結束",
+		// ⚠ **按鍵表不寫在這裡** —— 提示列已經有一份(scene.go 的
+		// combatPrompt),兩份會各自演化;而且這一行加上按鍵表之後
+		// 長度超過主視野的框,字直接壓到右邊的隊伍面板上。
+		p.Draw(dst, fmt.Sprintf("輪到 %s　行動點數 %d／%d",
 			f.Units[g.actor].Name, g.points[g.actor], f.Units[g.actor].Speed), x, y)
 		y += lh * 1.2
 	}
@@ -380,23 +383,17 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 		y += lh
 	}
 
-	// 訊息列:只顯示最後幾條,新的在下面。
-	my := float64(layout.Message.Y + ui.PanelPad)
-	max := int((float64(layout.Message.H) - 2*ui.PanelPad) / lh)
-	// 折行:訊息面板 340 px 內距 16 → 內寬 308 px = 30 欄
-	// (docs/spec/04 §5)。**不截斷** —— 截掉的字看不出來,折行看得出來。
-	const msgCols = 30
+	// 訊息列:只顯示最後幾條,新的在下面。折行與取尾要一起算 ——
+	// 先折再取尾,取尾之後才知道放得下哪幾行(message.go 的 drawMessageLines
+	// 只負責畫)。
 	var lines []string
 	for _, s := range f.Log {
-		lines = append(lines, ui.Wrap(s, msgCols)...)
+		lines = append(lines, ui.Wrap(s, layout.MsgCols)...)
 	}
-	if len(lines) > max {
+	if max := g.messageLines(); len(lines) > max {
 		lines = lines[len(lines)-max:]
 	}
-	for _, s := range lines {
-		p.Draw(dst, s, float64(layout.Message.X+ui.PanelPad), my)
-		my += lh
-	}
+	g.drawMessageLines(dst, lines)
 }
 
 func unitLine(u combat.Unit) string {

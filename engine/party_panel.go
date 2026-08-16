@@ -43,23 +43,15 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	y += lh
 	g.panel.Draw(dst, fmt.Sprintf("補給：%d", g.group.Provisions), at(ui.ColNum), y)
 
-	// 提示列:可用按鍵 + 載入時發現的不一致(docs/spec/06 §1)——
-	// 不自行修正,但也不安靜吞掉。
-	px := float64(layout.Prompt.X + ui.PanelPad)
-	py := float64(layout.Prompt.Y + ui.PanelPad)
-	switch {
-	case g.field != nil:
-		g.panel.Draw(dst, "空白鍵：推進一回合　　C：施法（固定投一級）　　ESC：離開", px, py)
-	case g.roster != nil && g.roster.open:
-		g.panel.Draw(dst, "↑↓：選　　J：入隊　　D：離隊　　X：刪除　　ESC：返回", px, py)
-	case g.town != nil && g.town.mode != townClosed:
-		g.panel.Draw(dst, "字母：選項　　+／-：翻頁　　ESC：返回／離開城鎮", px, py)
-	case g.level != nil:
-		g.panel.Draw(dst, "方向鍵／1234：移動　　ESC：離開地城　　S：存檔", px, py)
-	default:
-		g.panel.Draw(dst, "方向鍵／1234：移動　　N：名冊　　S：存檔", px, py)
+	// 提示列:**由實際會接手按鍵的場景自己說**(message.go 的 activeScene)。
+	// ⚠ 先前這裡是一個 switch,自己判斷「現在是哪個畫面」—— 與 Update() 的
+	// 派工是兩份各自演化的判斷,戰鬥那一行因此停在早就移除的
+	// 「空白鍵:推進一回合」,而畫面上看不出那是舊的。
+	px, py := promptOrigin()
+	if line := g.activeScene().Prompt(); line != "" {
+		g.panel.Draw(dst, line, px, py)
+		py += lh
 	}
-	py += lh
 	// 未解項在**執行時**也要看得見(docs/spec/07 §3),不是只寫在文件裡。
 	//
 	// ⚠ **畫在下一行,不要跟指令列擠同一行。** 先前是 `px+460` 同一行,

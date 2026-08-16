@@ -69,11 +69,18 @@ const (
 //	Handles → 這一格的輸入歸不歸我管(優先序由 inputChain 的順序決定)
 //	Update  → 吃掉這一格的輸入
 //	Draw    → 畫自己(每一格都會被呼叫,自己判斷該不該畫)
+//	Prompt  → 底部指令提示列要顯示什麼(C3)
+//
+// ⚠ **Prompt 與 Handles 必須是同一個場景說了算。** 提示列先前自己寫了一份
+// switch 去猜「現在是哪個畫面」,兩份判斷各自演化 —— 結果戰鬥那一行停在
+// 「空白鍵:推進一回合」,而那個鍵在 M10 之後已經不存在。
+// 現在提示列直接問**實際會接手這一格的場景**(message.go 的 activeScene)。
 type Scene interface {
 	Name() string
 	Handles(in Input) bool
 	Update(in Input) Transition
 	Draw(dst *ebiten.Image)
+	Prompt() string
 }
 
 // dirs 是方向鍵 → 朝向編號(1 北 2 東 3 南 4 西)。世界地圖與迷宮共用。
@@ -140,6 +147,7 @@ func (g *Game) drawOrder() []Scene {
 // A6 按鍵表(docs/spec/15 §8)借用同一個機制,不專屬迷宮敘述。
 type overlayScene struct{ g *Game }
 
+func (s overlayScene) Prompt() string       { return "任意鍵：繼續" }
 func (s overlayScene) Name() string         { return "overlay" }
 func (s overlayScene) Handles(Input) bool   { return s.g.overlay != "" }
 func (s overlayScene) Draw(d *ebiten.Image) { s.g.drawOverlay(d) }
@@ -155,6 +163,9 @@ func (s overlayScene) Update(in Input) Transition {
 // castCursorScene 是施法的選格階段(手冊 p.34 的 I/J/K/M + 空白鍵)。
 type castCursorScene struct{ g *Game }
 
+func (s castCursorScene) Prompt() string {
+	return "I／J／K／M：移動游標　　空白鍵：施放　　ESC：取消"
+}
 func (s castCursorScene) Name() string       { return "cast-cursor" }
 func (s castCursorScene) Handles(Input) bool { return s.g.field != nil && s.g.cursor != nil }
 func (s castCursorScene) Draw(*ebiten.Image) {} // 游標畫在戰場上(drawCombat)
@@ -170,6 +181,7 @@ func (s castCursorScene) Update(in Input) Transition {
 // combatPotionScene 是「自己用 / 丟給隊友」的子流程(docs/spec/19 §2-1)。
 type combatPotionScene struct{ g *Game }
 
+func (s combatPotionScene) Prompt() string     { return s.potionPrompt() }
 func (s combatPotionScene) Name() string       { return "combat-potion" }
 func (s combatPotionScene) Handles(Input) bool { return s.g.field != nil && s.g.combatPotion != nil }
 func (s combatPotionScene) Draw(*ebiten.Image) {} // 提示畫在道具選單裡
@@ -185,6 +197,7 @@ func (s combatPotionScene) Update(in Input) Transition {
 // castMenuScene:施法選單開著時只吃字母。
 type castMenuScene struct{ g *Game }
 
+func (s castMenuScene) Prompt() string       { return "字母：選法術　　ESC：取消" }
 func (s castMenuScene) Name() string         { return "cast-menu" }
 func (s castMenuScene) Handles(Input) bool   { return s.g.field != nil && len(s.g.castList) > 0 }
 func (s castMenuScene) Draw(d *ebiten.Image) { s.g.drawCastMenu(d) }
@@ -204,6 +217,7 @@ func (s castMenuScene) Update(in Input) Transition {
 // useMenuScene:道具選單開著時只吃字母(docs/spec/12 §5.3 的 U)。
 type useMenuScene struct{ g *Game }
 
+func (s useMenuScene) Prompt() string       { return "字母：選道具　　ESC：取消" }
 func (s useMenuScene) Name() string         { return "use-menu" }
 func (s useMenuScene) Handles(Input) bool   { return s.g.field != nil && len(s.g.useList) > 0 }
 func (s useMenuScene) Draw(d *ebiten.Image) { s.g.drawUseMenu(d) }
@@ -228,6 +242,7 @@ func (s useMenuScene) Update(in Input) Transition {
 // (一套算行動點數、一套不算),而畫面上分不出剛才用了哪一套。
 type combatScene struct{ g *Game }
 
+func (s combatScene) Prompt() string       { return s.combatPrompt() }
 func (s combatScene) Name() string         { return "combat" }
 func (s combatScene) Handles(Input) bool   { return s.g.field != nil }
 func (s combatScene) Draw(d *ebiten.Image) { s.g.drawCombat(d) }
@@ -303,6 +318,9 @@ func (g *Game) leaveCombat() {
 // ⚠ 要優先於 N)ames 等其他按鍵 —— 否則打名稱打到 `n` 會被別的畫面搶走。
 type saveAsScene struct{ g *Game }
 
+func (s saveAsScene) Prompt() string {
+	return "打字：輸入檔名　　Enter：存檔　　ESC：取消"
+}
 func (s saveAsScene) Name() string         { return "save-as" }
 func (s saveAsScene) Handles(Input) bool   { return s.g.saveAs != nil }
 func (s saveAsScene) Draw(d *ebiten.Image) { s.g.drawSaveAs(d) }
@@ -324,6 +342,9 @@ func (s saveAsScene) Update(in Input) Transition {
 // 這個畫面開著時要吃光所有按鍵,不能讓底下的畫面漏接。
 type skillAllocScene struct{ g *Game }
 
+func (s skillAllocScene) Prompt() string {
+	return "數字：技能編號　　Enter：確定　　0＋Enter：結束　　ESC：離開"
+}
 func (s skillAllocScene) Name() string         { return "skill-alloc" }
 func (s skillAllocScene) Handles(Input) bool   { return s.g.skillAlloc != nil }
 func (s skillAllocScene) Draw(d *ebiten.Image) { s.g.drawSkillAlloc(d) }
@@ -345,6 +366,7 @@ func (s skillAllocScene) Update(in Input) Transition {
 // 移到前面會蓋掉技能點分配,移到後面則城鎮與迷宮裡按 N 會失效。
 type rosterHotkey struct{ g *Game }
 
+func (s rosterHotkey) Prompt() string     { return "" }
 func (s rosterHotkey) Name() string       { return "roster-hotkey" }
 func (s rosterHotkey) Draw(*ebiten.Image) {}
 func (s rosterHotkey) Handles(in Input) bool {
@@ -359,6 +381,7 @@ func (s rosterHotkey) Update(Input) Transition {
 // createScene 是建立角色(蓋在名冊之上)。
 type createScene struct{ g *Game }
 
+func (s createScene) Prompt() string       { return s.g.createPrompt() }
 func (s createScene) Name() string         { return "create" }
 func (s createScene) Handles(Input) bool   { return s.g.create != nil }
 func (s createScene) Draw(d *ebiten.Image) { s.g.drawCreate(d) }
@@ -379,6 +402,9 @@ func (s createScene) Update(in Input) Transition {
 // (docs/spec/15 §4,見 openMainMenu 的說明)。
 type rosterScene struct{ g *Game }
 
+func (s rosterScene) Prompt() string {
+	return "↑↓：選　　J：入隊　　D：離隊　　X：刪除　　ESC：返回"
+}
 func (s rosterScene) Name() string         { return "roster" }
 func (s rosterScene) Handles(Input) bool   { return s.g.roster != nil && s.g.roster.open }
 func (s rosterScene) Draw(d *ebiten.Image) { s.g.drawRoster(d) }
@@ -397,6 +423,7 @@ func (s rosterScene) Update(in Input) Transition {
 // 下一格自然落回這裡,也就「回到主選單」。
 type shellScene struct{ g *Game }
 
+func (s shellScene) Prompt() string     { return "" }
 func (s shellScene) Name() string       { return "shell" }
 func (s shellScene) Draw(*ebiten.Image) {} // 外殼接管整個畫布,見 Game.Draw
 func (s shellScene) Handles(Input) bool {
@@ -408,6 +435,9 @@ func (s shellScene) Update(in Input) Transition { return s.g.shellUpdate(in) }
 
 type townScene struct{ g *Game }
 
+func (s townScene) Prompt() string {
+	return "字母：選項　　+／-：翻頁　　ESC：返回／離開城鎮"
+}
 func (s townScene) Name() string         { return "town" }
 func (s townScene) Handles(Input) bool   { return s.g.town != nil && s.g.town.mode != townClosed }
 func (s townScene) Draw(d *ebiten.Image) { s.g.drawTown(d) }
@@ -427,6 +457,7 @@ func (s townScene) Update(in Input) Transition {
 // mazePromptScene 是迷宮機關的問答(寶石謎題、治療池、Eldron 氏族)。
 type mazePromptScene struct{ g *Game }
 
+func (s mazePromptScene) Prompt() string       { return s.g.mazePromptHint() }
 func (s mazePromptScene) Name() string         { return "maze-prompt" }
 func (s mazePromptScene) Handles(Input) bool   { return s.g.prompt != nil }
 func (s mazePromptScene) Draw(d *ebiten.Image) { s.g.drawPrompt(d) }
@@ -443,6 +474,9 @@ func (s mazePromptScene) Update(in Input) Transition {
 
 type mazeScene struct{ g *Game }
 
+func (s mazeScene) Prompt() string {
+	return "方向鍵／1234：移動　　ESC：離開地城　　S：存檔　　A：另存新檔"
+}
 func (s mazeScene) Name() string         { return "maze" }
 func (s mazeScene) Handles(Input) bool   { return s.g.level != nil }
 func (s mazeScene) Draw(d *ebiten.Image) { s.g.drawMaze(d) }
@@ -474,6 +508,9 @@ func (s mazeScene) Update(in Input) Transition {
 
 type worldScene struct{ g *Game }
 
+func (s worldScene) Prompt() string {
+	return "方向鍵／1234：移動　　N：名冊　　S：存檔　　A：另存新檔"
+}
 func (s worldScene) Name() string       { return "world" }
 func (s worldScene) Handles(Input) bool { return true }
 
@@ -583,4 +620,61 @@ func (g *Game) saveHere() {
 		return
 	}
 	g.saveMsg = fmt.Sprintf("已存到第 %d 隊(%s)", g.slot, g.savePath)
+}
+
+// ── 動態的提示列(內容隨子狀態變)────────────────────────────────────────
+
+// combatPrompt 是戰場的指令提示。
+//
+// ⚠ 這一行先前寫在 party_panel.go 的一個 switch 裡,而且已經**過期**:
+// 它寫「空白鍵:推進一回合」,但那個操作在 M10 改成戰場操作時就移除了
+// (docs/spec/12);「C:施法(固定投一級)」也在 E5 之後不成立。
+// 提示列現在由場景自己說,不會再各自演化。
+func (s combatScene) combatPrompt() string {
+	if s.g.field != nil && s.g.field.Outcome() != combat.Ongoing {
+		return "ESC：離開戰鬥"
+	}
+	return "方向鍵：移動（先轉再走）　　A：攻擊　　C：施法　　U：用道具　　Enter：結束回合"
+}
+
+// potionPrompt 是「自己用 / 丟給隊友」兩個階段的提示(docs/spec/19 §2-1)。
+func (s combatPotionScene) potionPrompt() string {
+	if s.g.combatPotion != nil && s.g.combatPotion.stage == 2 {
+		return "1–5：選要丟給誰"
+	}
+	return "Y：自己用　　T：丟給隊友"
+}
+
+// createPrompt 依創角走到哪一步給提示(create_scene.go 的四步)。
+func (g *Game) createPrompt() string {
+	if g.create == nil {
+		return ""
+	}
+	switch g.create.step {
+	case stepRace:
+		return "H／D／T／E／G：選種族　　ESC：取消"
+	case stepAdjust:
+		// ⚠ ESC 在這一步**不是取消** —— 有勾選就重擲勾選的那幾項,
+		// 沒勾選才是「這組我接受了」,往下一步走(create_scene.go)。
+		return "1–5：勾選要重擲的屬性　　ESC：重擲勾選的（沒勾選就是接受這組）"
+	case stepClass:
+		return "F：戰士　　W：巫師　　ESC：取消"
+	default:
+		return "打字：輸入名字　　Enter：完成　　ESC：取消"
+	}
+}
+
+// mazePromptHint 依機關種類給提示(docs/re/155、162)。
+func (g *Game) mazePromptHint() string {
+	if g.prompt == nil {
+		return ""
+	}
+	switch g.prompt.kind {
+	case promptGem:
+		return "B／G／V／R：依序輸入四個寶石顏色　　ESC：離開"
+	case promptPool:
+		return "1–5：選要治療的隊員　　ESC：離開"
+	default:
+		return "打字：輸入名字　　Enter：送出　　ESC：離開"
+	}
 }

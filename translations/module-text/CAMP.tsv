@@ -20,18 +20,18 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 38	ds:70F2	 OK	3	 完成	5	5		engine/internal/town/create.go
 39	ds:70FA	Character # to equip ? (ESC exits)	34	哪位角色要裝備?(ESC離開)	24	Y		engine/town_scene.go
 40	ds:7124	Weapon? 	8	武器? 	6	Y		engine/town_scene.go
-41	ds:7130	 skips.	7	 略過。	7	Y		
-42	ds:7140	No Weapon	9	無武器	6	Y		
+41	ds:7130	 skips.	7	 略過。	7	Y		engine/town_scene.go
+42	ds:7140	No Weapon	9	無武器	6	Y		engine/town_scene.go
 43	ds:7152	NO SKILL !	10	沒有技能!	9	Y		
 47	ds:717A	Armor?  	8	防具? 	6	Y		engine/town_scene.go
-48	ds:7186	 skips.	7	 略過。	7	Y		
-49	ds:7192	No Armor  	10	無防具 	7	Y		
+48	ds:7186	 skips.	7	 略過。	7	Y		engine/town_scene.go
+49	ds:7192	No Armor  	10	無防具 	7	Y		engine/town_scene.go
 50	ds:71A0	OK !	4	好!	3	Y		engine/town_scene.go
 51	ds:71A8	Character # dropping item ? (ESC exits)	39	哪位角色要丟棄道具?(ESC離開)	28	Y		engine/town_scene.go
 52	ds:71D8	Item to drop ?	14	要丟棄哪件?	11	Y		engine/town_scene.go
 53	ds:71F2	Dropped ! 	10	已丟棄! 	8	Y		engine/town_scene.go
 54	ds:7200	You have slept !	16	你們睡了一覺!	13	Y		engine/town_scene.go
-55	ds:7216	You are not tired	17	你們還不累	10	Y		
+55	ds:7216	You are not tired	17	你們還不累	10	Y		engine/town_scene.go
 56	ds:722C	You sleep...	12	你們睡了一覺……	14	14		
 58	ds:724A	Character # wishing to identify? (ESC exits)	44	哪位角色要鑑定?(ESC離開)	24	Y		engine/town_scene.go
 60	ds:7284	Item to ID ?	12	要鑑定哪件?	11	Y		engine/town_scene.go
@@ -50,14 +50,14 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 73	ds:73A0	  G H I 	8	  G H I 	8	Y		
 75	ds:73BC	Character # to cast spell ? (ESC exits)	39	哪位角色要施法?(ESC離開)	24	Y		engine/town_scene.go
 76	ds:73EC	Cast what spell?	16	施放哪個法術?	13	Y		engine/camp_actions.go
-77	ds:7400	(ENTER exits)	13	(ENTER離開)	11	Y		
+77	ds:7400	(ENTER exits)	13	(ENTER離開)	11	Y		engine/camp_actions.go
 78	ds:7412	DAZA REVELI	11	DAZA REVELI	11	Y	⛔ 不譯:玩家要打回去的通關咒語(glossary 硬規則5)。	
 79	ds:7422	The gate opens	14	大門開啟了	10	Y		
 80	ds:7436	Mumble, mumble, what spell did you say ?	40	喃喃自語,你剛剛說的是哪個法術?	30	Y	保留戲謔語氣('Mumble, mumble'),spec/19 §6 明訂範例。	
 81	ds:746A	That is a combat spell !	24	那是戰鬥法術!	13	Y		engine/camp_actions.go
 82	ds:7498	You don't know that spell!	26	你不會那個法術!	15	Y		engine/internal/magic/magic.go
 83	ds:74BE	Spell Pts ?	11	花費幾點法力?	13	13		engine/camp_actions.go
-84	ds:74D0	You don't have that many!	25	你沒有那麼多!	13	Y		
+84	ds:74D0	You don't have that many!	25	你沒有那麼多!	13	Y		engine/camp_actions.go
 85	ds:74F8	You need more spell points than that!	37	你需要更多法力點數!	19	Y	spec/19 §1.1 範例句,一字不差	engine/internal/magic/magic.go
 87	ds:7532	Aack!  there is something wrong with the data files, please restore!	68	啊咧!資料檔好像出了問題,請重新還原!	35	Y		engine/main.go
 88	ds:7582	Character # to use item ?  (ESC exits)	38	哪位角色要使用道具?(ESC離開)	28	Y		engine/town_scene.go
@@ -65,7 +65,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 90	ds:75C2	This character has no items to use!	35	這位角色沒有可用的道具!	23	Y		engine/camp_actions.go
 91	ds:75F2	You really can't make use of this!	34	你真的沒辦法用這個!	19	Y		engine/use_item.go
 92	ds:7628	Do you wish to use the potion on Y)ourself or G)ive it to another character?       	83	你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?	48	Y	spec/19 §1.1 範例句(CAMP 版:G)ive;CMBT #165 是同一句的 T)oss 版)	engine/use_item.go
-93	ds:7680	                  (ESC cancels)	31	                  (ESC取消)	27	Y		
+93	ds:7680	                  (ESC cancels)	31	                  (ESC取消)	27	Y		engine/use_item.go
 95	ds:76B2	Give it to which	16	要交給哪位	10	Y		engine/use_item.go
 96	ds:76C6	character?	10	角色?	5	Y		engine/use_item.go
 97	ds:76D4	char #: 	8	角色 #： 	8	Y		engine/use_item.go
@@ -87,7 +87,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 133	ds:7AD6	That character is not a wizard.	31	這位角色不是巫師。	18	Y		engine/internal/town/camp.go
 134	ds:7B02	You now have about	18	你現在大約還有	14	Y		
 135	ds:7B18	 turns of light.	16	 回合的照明。	13	Y		
-137	ds:7B5E	dies in the night.	18	在夜裡死去。	12	Y		
+137	ds:7B5E	dies in the night.	18	在夜裡死去。	12	Y		engine/town_scene.go
 138	ds:7B78	 LVL: 	6	 等級： 	6	7		engine/camp_actions.go
 139	ds:7B8C	H.P.   	7	生命 	5	Y		engine/camp_actions.go
 140	ds:7B98	S.P.   	7	法力 	5	Y		engine/camp_actions.go

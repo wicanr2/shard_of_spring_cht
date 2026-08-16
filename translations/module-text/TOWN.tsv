@@ -48,7 +48,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 75	ds:7B80	Aack!, There is something wrong with your disks!	48	啊咧!你的磁片好像有問題!	24	Y	原版這一句說的是**磁片**(`your disks`),CMBT:172／CAMP:87 說的是**資料檔**。引擎只有一句(照資料檔那一份),磁片這一份沒有對應。	
 76	ds:7BC6	You don't have	14	你沒有	6	Y	與 CAMP #85 同義,合併對照 spec/19 §1.1	engine/internal/town/town.go
 77	ds:7BD8	enough gold!	12	足夠的金幣!	11	Y		engine/internal/town/town.go
-81	ds:7C20	dies in the night.	18	在夜裡死去。	12	Y		
+81	ds:7C20	dies in the night.	18	在夜裡死去。	12	Y		engine/town_scene.go
 82	ds:7C3A	 LVL: 	6	 等級： 	6	7		engine/camp_actions.go
 83	ds:7C4E	H.P.   	7	生命 	5	Y		engine/camp_actions.go
 84	ds:7C5A	S.P.   	7	法力 	5	Y		engine/camp_actions.go

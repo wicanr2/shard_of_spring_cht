@@ -95,10 +95,20 @@ func campCastCheck(c original.Character, s original.Spell, invest int) string {
 		return msg
 	}
 	if f := magic.CanCast(c, s, invest); f != magic.OK {
+		if f == magic.FailNoPoints {
+			return campNotThatMuch // CAMP:84
+		}
 		return f.String()
 	}
 	return ""
 }
+
+// campNotThatMuch 是 CAMP:84「You don't have that many!」。
+//
+// ⚠ 與 magic.FailNoPoints 的通用句(CAMP:85)**不是同一句**:
+// 這一句專指「投入的點數比你有的多」,那一句是「法力不夠施這個法術」。
+// 原版兩句分開,引擎的閘門只有一個,所以在這裡依情境挑。
+const campNotThatMuch = "你沒有那麼多!"
 
 // campMaxInvestDigits 是投入點數輸入框允許的最大位數。法力點數全遊戲
 // 沒有三位數的角色(手冊 p.48/49 的成長表封頂個位數乘級數),三位數綽綽有餘,
@@ -133,6 +143,12 @@ func (g *Game) campCastKey(k ebiten.Key) {
 
 	switch ts.castStage {
 	case 1: // 選法術
+		// CAMP:77「(ENTER exits)」—— 原版用 ENTER 從法術清單離開。
+		if k == ebiten.KeyEnter || k == ebiten.KeyKPEnter {
+			ts.campMode, ts.campWho, ts.castStage = 0, -1, 0
+			ts.msg = ""
+			return
+		}
 		n := int(k - ebiten.KeyA)
 		if n < 0 || n >= len(g.spells) || n >= 26 {
 			return
@@ -248,7 +264,7 @@ func (g *Game) campCastLines(ts *townState) []string {
 	caster := g.members[ts.campWho]
 	switch ts.castStage {
 	case 1:
-		out := []string{caster.Name + "：施放哪個法術?"} // CAMP:76
+		out := []string{caster.Name + "：施放哪個法術?(ENTER離開)"} // CAMP:76 + 77
 		for i, s := range g.spells {
 			if i >= 26 {
 				out = append(out, fmt.Sprintf("…還有 %d 個(未列出)", len(g.spells)-26))

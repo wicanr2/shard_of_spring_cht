@@ -176,7 +176,8 @@ func (g *Game) campPotionLines(ts *townState) []string {
 	case 1:
 		// CAMP:92 的原句只說「the potion」,不說是哪一件 —— 這裡把剛選的
 		// 那件的名字放在句子前面,問句本身照原版。
-		return []string{name + "　你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?"}
+		// CAMP:92 + 93「 (ESC cancels)」
+		return []string{name + "　你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?(ESC取消)"}
 	case 2:
 		out := []string{"要交給哪位角色?　角色 #："} // CAMP:95/96/97
 		for i, m := range g.members {

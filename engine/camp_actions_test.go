@@ -117,8 +117,10 @@ func TestCampCastCheck_InvestGates(t *testing.T) {
 		Power: 3, UnitCost: 5}
 	c := testWizard("巫師丁", "0000100000") // 系別 5 → 索引 4
 
-	if got := campCastCheck(c, s, 25); got != magic.FailNoPoints.String() {
-		t.Errorf("投超過 SP:got %q,want %q", got, magic.FailNoPoints.String())
+	// 投超過 SP 走 CAMP:84 那一句(「你沒有那麼多!」),不是 magic 的通用句 ——
+	// 原版兩句分開,引擎的閘門只有一個,依情境挑(campCastCheck 有說明)。
+	if got := campCastCheck(c, s, 25); got != campNotThatMuch {
+		t.Errorf("投超過 SP:got %q,want %q", got, campNotThatMuch)
 	}
 	if got := campCastCheck(c, s, 3); got != magic.FailBelowOneLevel.String() {
 		t.Errorf("投不到一級(3 < 單價 5):got %q,want %q", got, magic.FailBelowOneLevel.String())

@@ -264,7 +264,15 @@ func (g *Game) townKey(k ebiten.Key) {
 			}
 		case ebiten.KeyS:
 			// 手冊 p.38:每人耗 1 份食糧,回 1 HP、5 SP;沒得吃的人扣 1 HP。
+			// CAMP:55「You are not tired」—— 全隊生命與法力都滿就不用睡。
+			// ⚠ 「累不累」的判準**沒有讀到**,這是引擎的定義;
+			// 擋下來的理由是睡覺要吃食糧,滿血滿魔時睡是純損失。
+			if partyRested(g.members) {
+				ts.msg = "你們還不累"
+				return
+			}
 			before := g.group.Provisions
+			alive := aliveNames(g.members)
 			g.members, g.group.Provisions = town.CampSleep(g.members, before)
 			for i := 0; i < town.CampSleepHours; i++ {
 				g.party.Clock.Tick()
@@ -272,10 +280,65 @@ func (g *Game) townKey(k ebiten.Key) {
 			// CAMP:54「You have slept !」+ CAMP:56「You sleep...」
 			ts.msg = fmt.Sprintf("你們睡了一覺!吃掉 %d 份食糧(剩 %d)",
 				before-g.group.Provisions, g.group.Provisions)
+			// CAMP:137 / TOWN:81「dies in the night.」—— 中毒或沒得吃的人
+			// 可能撐不過去。⚠ 不講的話玩家隔天才會發現少了一個人。
+			for _, n := range diedOvernight(alive, g.members) {
+				ts.msg += "　" + n + " 在夜裡死去。"
+			}
 		case ebiten.KeyEscape:
 			ts.mode, ts.msg = townBuildings, "拔營中……" // CAMP:19「Breaking Camp..」
 		}
 	}
+}
+
+// equippedName 回傳裝備欄指到的道具名;沒裝就回 fallback
+// (CAMP:42「No Weapon」/ 49「No Armor」)。
+func (g *Game) equippedName(c original.Character, slot int, fallback string) string {
+	if slot < 0 || slot >= town.PackSlots || c.Pack[slot] == original.NotEquipped {
+		return fallback
+	}
+	if it, ok := g.itemByIndex(c.Pack[slot]); ok {
+		return it.Name
+	}
+	return fallback
+}
+
+// partyRested 回傳全隊是不是生命與法力都滿(CAMP:55 的「不累」)。
+// ⚠ 這是**引擎的定義**,原版怎麼判沒有讀到。
+func partyRested(party []original.Character) bool {
+	for _, c := range party {
+		if !c.Occupied() {
+			continue
+		}
+		if c.HP < c.MaxHP || c.SP < c.MaxSP {
+			return false
+		}
+	}
+	return true
+}
+
+// aliveNames / diedOvernight 用來認出「睡前活著、睡後倒下」的人。
+//
+// ⚠ 用**名字**而不是索引比對是刻意的:CampSleep 收的是切片、回的也是切片,
+// 兩份在呼叫端是同一個底層陣列 —— 先存下來的是誰活著,不是他們的生命值。
+func aliveNames(party []original.Character) map[string]bool {
+	out := map[string]bool{}
+	for _, c := range party {
+		if c.Occupied() && c.HP > 0 {
+			out[c.Name] = true
+		}
+	}
+	return out
+}
+
+func diedOvernight(before map[string]bool, after []original.Character) []string {
+	var out []string
+	for _, c := range after {
+		if before[c.Name] && c.HP <= 0 {
+			out = append(out, c.Name)
+		}
+	}
+	return out
 }
 
 // countKey 把數字鍵轉成 0–9;不是數字鍵回 −1。原版的「幾個」一律是
@@ -590,6 +653,13 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		}
 		return
 	}
+	// CAMP:41/48「 skips.」—— 武器/防具那一步按 Enter 直接略過。
+	if (ts.campMode == 'W' || ts.campMode == 'A') &&
+		(k == ebiten.KeyEnter || k == ebiten.KeyKPEnter) {
+		ts.msg = g.members[ts.campWho].Name + "：略過。"
+		ts.campMode, ts.campWho = 0, -1
+		return
+	}
 	// `E)quip` 選完人再選武器還是防具 —— **分類不在 `ITEMS.DAT` 裡,在呼叫端**
 	// (docs/formats/04)。用編號範圍去猜會在資料外的編號上默默猜錯。
 	if ts.campMode == 'E' {
@@ -858,11 +928,20 @@ func (g *Game) campLines(ts *townState) []string {
 	if ts.campMode == 'E' {
 		// CAMP:40/47 是兩段獨立的提問(`Weapon? ` / `Armor?  `),
 		// 原版先問武器再問防具;引擎併成一步讓玩家自己選要裝哪一格。
+		// CAMP:42/49「No Weapon」/「No Armor」—— 現在裝什麼要看得見,
+		// 否則玩家得自己記得剛才裝了哪一格。
 		return []string{c.Name + "：W)武器?　A)防具?",
+			"目前　" + g.equippedName(c, c.Weapon, "無武器") +
+				"　" + g.equippedName(c, c.Armor, "無防具"),
 			"（`ITEMS.DAT` 沒有「武器還是防具」這個欄位,分類在呼叫端）"}
 	}
 	// CAMP:70「Letter?」—— 原版問完「哪一件」之後才問字母。
-	out := []string{fmt.Sprintf("%s 的背包（%s 字母?）", c.Name, title)}
+	// CAMP:41/48「 skips.」—— 原版在武器/防具那一步可以直接略過。
+	head := fmt.Sprintf("%s 的背包（%s 字母?", c.Name, title)
+	if ts.campMode == 'W' || ts.campMode == 'A' {
+		head += "，Enter 略過。"
+	}
+	out := []string{head + "）"}
 	return append(out, g.packLines(c)...)
 }
 

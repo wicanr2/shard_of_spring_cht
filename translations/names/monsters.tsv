@@ -70,6 +70,6 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 68	name	Cercion	7	瑟西恩(Cercion)	15	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 69	name	Vandiguard	10	范迪加德(Vandiguard)	20	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 70	name	Lothian	7	洛西安(Lothian)	15	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
-71	name	Siriadne !	10	希瑞雅妮！(Siriadne !)	22	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
+71	name	Siriadne !	10	希瑞雅妮!(Siriadne !)	21	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 72	name	R A L I T H	11	拉利斯(RALITH)	17	—	專有名詞附原文對照(硬規則 4);16-byte 上限對 remake 不成立(硬規則 2)
 73	name	Dark Raven	10	黑暗渡鴉	8	Y	疑似專有名詞或稱號,語意未確認

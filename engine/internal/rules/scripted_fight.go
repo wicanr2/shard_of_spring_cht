@@ -29,7 +29,7 @@ var ScriptedFight = map[int][]int{
 // ⚠ **祝福的實際效果沒有讀到**(docs/re/161 §4 只讀到這句字串,
 // `0x131D0` 起那一長串是結局文字的排版,不是屬性設定)——
 // 這裡只顯示文字,⛔ 不附加任何屬性加成。
-const PriestBlessing = "祭司感謝你們把他從山丘巨人手中救出,並為隊伍獻上祝福。"
+const PriestBlessing = "祭司感謝你們從巨人囚禁中救出他,並祝福了這支隊伍。"
 
 // PriestEncounterMark 是腳本戰鬥 204 開場寫進 combat.Field.Log 第一行的
 // 固定字串。

@@ -5,16 +5,16 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 35	ds:9164	Enter gem to	12	輸入要碰觸的	12	Y		engine/maze_prompt.go
 36	ds:9174	touch (B,G,V,R)	15	寶石(B,G,V,R)	13	Y		engine/maze_prompt.go
 37	ds:9188	or ESC	6	或按ESC	7	7		engine/maze_prompt.go
-42	ds:9202	MURTHIN	7	莫辛(Murthin)	13	13	glossary §6 硬規則4 已有譯名	
-43	ds:920E	CERCION	7	瑟西恩(Cercion)	15	15	glossary §6 硬規則4 已有譯名	
-44	ds:921A	LOTHIAN	7	洛西安(Lothian)	15	15	glossary §6 硬規則4 已有譯名	
-45	ds:9226	VANDIGUARD	10	范迪加德(Vandiguard)	20	20	glossary §6 硬規則4 已有譯名	
+42	ds:9202	MURTHIN	7	莫辛(Murthin)	13	13	四座墓的答案,玩家要**照原文拼寫**才過(engine/internal/maze 的 ClanNames)。譯名只在墓室敘述裡出現,這一段本身不接回引擎。	
+43	ds:920E	CERCION	7	瑟西恩(Cercion)	15	15	四座墓的答案,玩家要**照原文拼寫**才過(engine/internal/maze 的 ClanNames)。譯名只在墓室敘述裡出現,這一段本身不接回引擎。	
+44	ds:921A	LOTHIAN	7	洛西安(Lothian)	15	15	四座墓的答案,玩家要**照原文拼寫**才過(engine/internal/maze 的 ClanNames)。譯名只在墓室敘述裡出現,這一段本身不接回引擎。	
+45	ds:9226	VANDIGUARD	10	范迪加德(Vandiguard)	20	20	四座墓的答案,玩家要**照原文拼寫**才過(engine/internal/maze 的 ClanNames)。譯名只在墓室敘述裡出現,這一段本身不接回引擎。	
 46	ds:9234	The brothers are:	17	這幾位兄弟是：	14	Y		engine/maze_prompt.go
-47	ds:924C	#1 	3	#1 	3	Y		
-48	ds:9254	#2 	3	#2 	3	Y		
-49	ds:925C	#3 	3	#3 	3	Y		
-50	ds:9264	#4 	3	#4 	3	Y		
-51	ds:9294	The priest thanks you for freeing him from his giant captor and blesses the party.	82	祭司感謝你們從巨人囚禁中救出他,並祝福了這支隊伍。	49	Y		
+47	ds:924C	#1 	3	#1 	3	Y		engine/maze_prompt.go
+48	ds:9254	#2 	3	#2 	3	Y		engine/maze_prompt.go
+49	ds:925C	#3 	3	#3 	3	Y		engine/maze_prompt.go
+50	ds:9264	#4 	3	#4 	3	Y		engine/maze_prompt.go
+51	ds:9294	The priest thanks you for freeing him from his giant captor and blesses the party.	82	祭司感謝你們從巨人囚禁中救出他,並祝福了這支隊伍。	49	Y		engine/internal/rules/scripted_fight.go
 78	ds:9494	Which party member do you wish to heal? (0 exits) 	50	要治療哪位隊員?(0離開)	22	Y	spec/19 §1.1 範例句	engine/maze_prompt.go
 79	ds:94D4	That character can't be helped here !	37	這位角色在這裡沒辦法治療!	25	Y		engine/maze_prompt.go
 80	ds:9512	healed	6	已治療	6	Y		engine/maze_prompt.go
@@ -25,5 +25,5 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 85	ds:9568	Your party is full of items, please discard some from Camp.	59	隊伍的道具已經滿了,請在營地丟棄一些。	37	Y	spec/19 §1.1 範例句,一字不差	
 88	ds:95DC	Leaving maze ..     	20	離開地城……	10	Y		engine/maze_scene.go
 89	ds:95FC	Making Camp..       	20	紮營中……	8	Y		
-90	ds:9614	    C O M B A T !   	20	　　戰　鬥　！　　	18	Y		
-91	ds:962C	    B A T T L E !   	20	　　交　戰　！　　	18	Y		
+90	ds:9614	    C O M B A T !   	20	　　戰　鬥　!　　	9	Y		engine/combat_scene.go
+91	ds:962C	    B A T T L E !   	20	　　交　戰　!　　	9	Y		engine/combat_scene.go

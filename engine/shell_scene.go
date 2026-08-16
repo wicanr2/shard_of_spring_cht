@@ -382,6 +382,11 @@ const shellKeyHelp = "按鍵表：" +
 // 標明「未盤到」不要假裝是原版的。
 const endingText = "希瑞雅妮（Siriadne）已經倒下,春之碎片重歸完整。"
 
+// endingThanks 是原版跑完結局印的謝幕詞(MENU:148)——**這一句是原版的**,
+// 與上面那段佔位不同。⚠ 分成兩個常數不是排版偏好:ui.Wrap 不處理 `\n`,
+// 併成一個字串會把換行當成一個有寬度的字排進去。
+const endingThanks = "唐(Don)、萊斯莉(Leslie)與馬丁(Martin)感謝你遊玩《春之石》。"
+
 // drawShell 依 g.shell.mode 畫外殼接管的整個畫布。
 func (g *Game) drawShell(dst *ebiten.Image) {
 	if g.shell == nil {
@@ -452,10 +457,12 @@ func (g *Game) drawMainMenu(dst *ebiten.Image) {
 
 	line("主選單")
 	y += lh * 0.5
-	line("L) 載入隊伍(Load a Party)── 進入遊戲")
-	line("C) 角色管理(Char Utilities)── 造角色、組隊")
-	line("P) 按鍵表(Program Notes)")
-	line("Q) 離開程式(Quit the Game)")
+	// 主選單四項的字面照 MENU.tsv 第 13/14/17/18 列(F3)。
+	// ⚠ 括號後面**不留空格**:原版是 `L)oad a Party.`,那個字母就是要按的鍵。
+	line("L)讀取隊伍。── 進入遊戲")
+	line("C)角色管理工具。── 造角色、組隊")
+	line("P)製作者的話。── 本引擎改成按鍵表")
+	line("Q)結束遊戲。")
 	if g.shell.msg != "" {
 		y += lh * 0.5
 		line("⚠ " + g.shell.msg)
@@ -554,7 +561,8 @@ func (g *Game) drawPartySelect(dst *ebiten.Image) {
 	y := float64(layout.View.Y + ui.PanelPad)
 	line := func(s string) { p.Draw(dst, s, x, y); y += lh }
 
-	line("隊伍選擇")
+	// MENU:94「Which party do you wish to use (1-5,0 Quits) ?」
+	line("要使用哪一支隊伍?(1–5,0離開)")
 	y += lh * 0.5
 	for i, grp := range g.shell.slots {
 		n := i + 1
@@ -570,7 +578,9 @@ func (g *Game) drawPartySelect(dst *ebiten.Image) {
 	}
 
 	py := float64(layout.Prompt.Y + ui.PanelPad)
-	p.Draw(dst, "1–5 選隊伍　ESC 回主選單", float64(layout.Prompt.X+ui.PanelPad), py)
+	// MENU:95「Please use a party numbered between 1 and 5 !」
+	p.Draw(dst, "請使用編號 1 到 5 之間的隊伍!　ESC 回主選單",
+		float64(layout.Prompt.X+ui.PanelPad), py)
 }
 
 // drawWipe 畫 A4 全滅畫面。docs/spec/15 §6。
@@ -597,7 +607,8 @@ func (g *Game) drawEnding(dst *ebiten.Image) {
 	y := float64(layout.Margin * 2)
 	drawCenter(g.panel, dst, "結局", cx, y)
 	y += g.panel.LineHeight() * 2
-	for _, ln := range ui.Wrap(endingText, 50) {
+	for _, ln := range append(ui.Wrap(endingText, 50), append([]string{""},
+		ui.Wrap(endingThanks, 50)...)...) {
 		drawCenter(g.panel, dst, ln, cx, y)
 		y += g.panel.LineHeight()
 	}

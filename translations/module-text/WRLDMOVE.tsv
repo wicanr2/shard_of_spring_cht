@@ -5,5 +5,5 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 40	ds:D026	Welcome to ...	14	歡迎來到……	10	Y		
 42	ds:D048	Entering ...	12	正在進入……	10	Y		
 43	ds:D058	Making Camp..	13	紮營中……	8	Y		
-44	ds:D06A	    C O M B A T !	17	　　戰　鬥　！	14	Y		
-45	ds:D080	    B A T T L E !	17	　　交　戰　！	14	Y		
+44	ds:D06A	    C O M B A T !	17	　　戰　鬥　!	9	Y		engine/combat_scene.go
+45	ds:D080	    B A T T L E !	17	　　交　戰　!	9	Y		engine/combat_scene.go

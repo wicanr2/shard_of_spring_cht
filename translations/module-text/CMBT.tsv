@@ -83,7 +83,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 137	ds:9C40	ice and	7	冰霜,	5	Y		
 138	ds:9C4C	notices no effect	17	沒有感到效果	12	Y		
 140	ds:9C6E	Item Fails	10	道具失效	8	Y		
-141	ds:9C7C	Spell Fails	11	法術失效	8	Y		
+141	ds:9C7C	Spell Fails	11	法術失效	8	Y		engine/use_item.go
 142	ds:9C92	does not have	13	沒有	4	Y		
 143	ds:9CA4	the Priesthood	14	降魔術	6	Y		
 144	ds:9CB6	and cannot	10	無法	4	Y		
@@ -105,10 +105,10 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 162	ds:9DF0	This character has no items to use!	35	這位角色沒有可用的道具!	23	Y		engine/use_item.go
 163	ds:9E20	Use:  (ESC exits)	17	使用：(ESC離開)	15	Y		
 164	ds:9E38	Not a valid magical item!	25	不是有效的魔法道具!	19	Y		engine/use_item.go
-165	ds:9E60	Do you wish to use the potion on Y)ourself or T)oss it to another character?       	83	你要把藥劑用在 Y)自己身上,還是 T)丟給另一位角色?	48	Y	spec/19 §1.1 範例句(CMBT 版:T)oss;CAMP #92 是同一句的 G)ive 版)	
+165	ds:9E60	Do you wish to use the potion on Y)ourself or T)oss it to another character?       	83	你要把藥劑用在 Y)自己身上,還是 T)丟給另一位角色?	48	Y	spec/19 §1.1 範例句(CMBT 版:T)oss;CAMP #92 是同一句的 G)ive 版)	engine/use_item.go
 167	ds:9ECE	 (ESC cancels)	14	(ESC取消)	9	Y		
 168	ds:9EE8	Toss it to which	16	要丟給哪位	10	Y		engine/use_item.go
-169	ds:9EFC	character?	10	角色?	5	Y		
+169	ds:9EFC	character?	10	角色?	5	Y		engine/use_item.go
 170	ds:9F0A	char #: 	8	角色 #： 	8	Y		
 172	ds:9F20	Aack!  There is something wrong with the data files, please restore!	68	啊咧!資料檔好像出了問題,請重新還原!	35	Y		
 179	ds:9FF6	Status: 	8	狀態： 	6	Y		

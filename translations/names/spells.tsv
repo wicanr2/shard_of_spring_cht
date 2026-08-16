@@ -2,7 +2,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 0	1	COLUMN OF FIRE	14	火柱	4	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「火焰之柱」已汰換
 0	6	Burnt for	9	灼燒造成	8	Y	
 1	1	FLAME STRIKE	12	烈焰猛擊術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「烈焰打擊」已汰換
-1	6	Struck down by   fire	21	被烈焰擊倒，造成	16	Y	
+1	6	Struck down by   fire	21	被烈焰擊倒,造成	15	Y	
 2	1	FIRE STORM	10	狂焰暴風術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「火焰風暴」已汰換
 2	6	Burnt for	9	灼燒造成	8	Y	
 3	1	SWORD	5	劍術	4	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「劍刃術」已汰換
@@ -14,7 +14,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 6	1	STRENGTH	8	強壯術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「力量術」已汰換
 6	6	IS Strengthened	15	力量增強	8	Y	
 7	1	TEMPEST	7	暴風雨術	8	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「暴風術」已汰換
-7	6	Struck by storm for	19	遭風暴擊中，造成	16	Y	
+7	6	Struck by storm for	19	遭風暴擊中,造成	15	Y	
 8	1	STILL AIR	9	空氣凝結術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「凝滯氣場」已汰換
 8	6	Frozen in space	15	被凝滯於空中	12	Y	
 9	1	WINGS OF VICTORY	16	勝利之翼	8	Y	
@@ -22,7 +22,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 10	1	WINGS	5	魔翼術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「疾風之翼」已汰換
 10	6	Flys with speed	15	疾飛而起	8	Y	
 11	1	HAIL STORM	10	冰雹暴風術	10	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「冰雹風暴」已汰換
-11	6	Hailed on for	13	冰雹擊中，造成	14	N	超出原文 1 bytes
+11	6	Hailed on for	13	冰雹擊中,造成	13	N	超出原文 1 bytes
 12	1	CHILL	5	寒風術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「寒冷術」已汰換
 12	6	Chilled	7	受寒	4	Y	
 13	1	SLOW	4	遲緩術	6	N	超出原文 2 bytes
@@ -48,7 +48,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 23	1	HEAL	4	醫療術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「治療術」已汰換
 23	6	Is healed for	13	恢復	4	Y	
 24	1	RESURRECT	9	復活術	6	Y	
-24	6	Is revived!	11	復活了！	8	Y	
+24	6	Is revived!	11	復活了!	7	Y	
 25	1	CURE POISON	11	解毒術	6	Y	
 25	6	Is unpoisoned	13	解除中毒	8	Y	
 26	1	TRANSFERENCE	12	移轉術	6	Y	精訊 1987 官方譯名(手冊 p.26–29);原譯「轉移術」已汰換

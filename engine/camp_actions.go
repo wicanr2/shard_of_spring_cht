@@ -263,7 +263,9 @@ func (g *Game) campCastLines(ts *townState) []string {
 			"輸入數字,Enter 確認、Backspace 修改：" + ts.castInput + "_",
 		}
 	case 3:
-		out := []string{fmt.Sprintf("%s 對哪一位角色施放「%s」?", caster.Name, ts.castSpell.Name)}
+		// CAMP:101/103/107「Character # to cast on ?  (ESC exits)」
+		out := []string{fmt.Sprintf("要對哪位角色施法?(ESC離開)　%s／%s",
+			caster.Name, ts.castSpell.Name)}
 		for i, c := range g.members {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, c.Name))
 		}
@@ -375,7 +377,7 @@ func (g *Game) campUseLines(ts *townState) []string {
 		return g.campPotionLines(ts) // use_item.go
 	}
 	c := g.members[ts.campWho]
-	out := []string{c.Name + " 的背包（按字母選要用的道具）"}
+	out := []string{c.Name + "　使用道具：（按字母選）"} // CAMP:89
 	n := len(out)
 	for i, v := range c.Pack {
 		if v == original.NotEquipped {

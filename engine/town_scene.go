@@ -252,7 +252,8 @@ func (g *Game) townKey(k ebiten.Key) {
 			for i := 0; i < town.CampSleepHours; i++ {
 				g.party.Clock.Tick()
 			}
-			ts.msg = fmt.Sprintf("睡了一晚,吃掉 %d 份食糧(剩 %d)",
+			// CAMP:54「You have slept !」+ CAMP:56「You sleep...」
+			ts.msg = fmt.Sprintf("你們睡了一覺!吃掉 %d 份食糧(剩 %d)",
 				before-g.group.Provisions, g.group.Provisions)
 		case ebiten.KeyEscape:
 			ts.mode, ts.msg = townBuildings, ""
@@ -361,13 +362,23 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	case townCamp:
 		p.Draw(dst, "營地：", x, y) // CAMP:6
 		y += lh * 1.5
-		p.Draw(dst, fmt.Sprintf("S) 睡覺（每人耗 %d 份食糧,回 %d 生命 %d 法力；目前 %d 份）",
+		// 指令列的字面照 CAMP.tsv 第 7–18 列(F3)——**十一個指令 + ESC**,
+		// 順序與原版選單相同。⚠ 括號後面**不留空格**:原版是 `P)rint char(s)`,
+		// 字母與詞是連著的,那個字母就是要按的鍵。
+		for _, ln := range []string{
+			" S)睡覺　　#)查看角色　　P)列印角色卡",
+			" C)施放法術　　R)調整隊形　　T)交易",
+			" D)丟棄　　E)裝備　　H)打獵　　I)鑑定　　U)使用道具",
+			" ESC離開",
+		} {
+			p.Draw(dst, ln, x, y)
+			y += lh
+		}
+		// 睡覺的代價與收益原版沒有印,但那幾個數字是規則的一部分
+		// (手冊 p.38),放在指令列下面當註腳。
+		p.Draw(dst, fmt.Sprintf("（睡覺每人耗 %d 份食糧,回 %d 生命 %d 法力；目前 %d 份）",
 			town.CampSleepFood, town.CampSleepHP, town.CampSleepSP,
 			g.group.Provisions), x, y)
-		y += lh
-		p.Draw(dst, "1–5) 檢視角色　E) 裝備　D) 丟棄　R) 調整隊形　T) 交易", x, y)
-		y += lh
-		p.Draw(dst, "P) 列印角色卡　H) 打獵　I) 鑑定　C) 施法　U) 使用道具", x, y)
 		y += lh
 		if ts.campMode != 0 {
 			y += lh * 0.5
@@ -546,11 +557,12 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		}
 		armor := ts.campMode == 'A'
 		town.Equip(c, slot, armor)
-		kind := "當武器"
+		kind := "武器"
 		if armor {
-			kind = "當防具"
+			kind = "防具"
 		}
-		ts.msg = fmt.Sprintf("%s 把 %s %s", c.Name, it.Name, kind)
+		// CAMP:50「OK !」—— 原版裝備成功只回一聲「好!」。
+		ts.msg = fmt.Sprintf("好!%s 的%s換成 %s", c.Name, kind, it.Name)
 	case 'D':
 		it, _ := g.itemByIndex(c.Pack[slot])
 		// 丟掉的東西拿不回來(手冊 p.39)。卸下同一格的裝備,
@@ -563,7 +575,8 @@ func (g *Game) campSubKey(k ebiten.Key) {
 		}
 		// ⚠ 空格填 99 不是 0(docs/re/144 §3)—— 填 0 會讓那一格看起來裝著第 0 號道具
 		c.Pack[slot] = original.NotEquipped
-		ts.msg = fmt.Sprintf("%s 丟掉了 %s(拿不回來)", c.Name, it.Name)
+		// CAMP:53「Dropped ! 」
+		ts.msg = fmt.Sprintf("已丟棄!%s 的 %s(拿不回來)", c.Name, it.Name)
 	}
 	if c.ID >= 1 && c.ID <= len(g.chars) {
 		g.chars[c.ID-1] = *c
@@ -711,8 +724,10 @@ func (g *Game) campLines(ts *townState) []string {
 	if ts.campMode == '#' && ts.campWho >= 0 && ts.campWho < len(g.members) {
 		return g.charCard(g.members[ts.campWho])
 	}
-	title := map[byte]string{'E': "裝備", 'W': "拿武器", 'A': "穿防具", 'D': "丟棄",
-		'R': "調整隊形", 'T': "交易", 'H': "打獵", 'I': "鑑定"}[ts.campMode]
+	// 背包標題的字面照 CAMP.tsv(F3):`Item to drop ?`(52)、`Item to ID ?`(60)、
+	// `Trade which ?`(35)、`Weapon? `(40)、`Armor?  `(47)。
+	title := map[byte]string{'E': "裝備", 'W': "武器?", 'A': "防具?", 'D': "要丟棄哪件?",
+		'R': "調整隊形", 'T': "交易哪一件?", 'H': "打獵", 'I': "要鑑定哪件?"}[ts.campMode]
 	if ts.campWho < 0 {
 		out := []string{campSelectPrompt(ts.campMode)}
 		for i, c := range g.members {
@@ -722,19 +737,22 @@ func (g *Game) campLines(ts *townState) []string {
 	}
 	c := g.members[ts.campWho]
 	if ts.campMode == 'R' {
-		return []string{c.Name + "：再按一個編號,兩人交換隊形順序",
+		// CAMP:68/69「Enter new 」+「position for:」
+		return []string{"輸入新的位置給：" + c.Name + "（再按一個編號,兩人交換）",
 			"（順序不只是顯示 —— 戰場站位直接用它算,docs/re/160）"}
 	}
 	if ts.campMode == 'T' {
 		if ts.campWho2 < 0 {
-			return []string{c.Name + "：再按一個編號選對方"}
+			return []string{c.Name + "：交給誰?（再按一個編號）"} // CAMP:36
 		}
 		out := []string{fmt.Sprintf("%s → %s（按字母選要給的那一格）",
 			c.Name, g.members[ts.campWho2].Name)}
 		return append(out, g.packLines(c)...)
 	}
 	if ts.campMode == 'E' {
-		return []string{c.Name + "：W) 當武器　A) 當防具",
+		// CAMP:40/47 是兩段獨立的提問(`Weapon? ` / `Armor?  `),
+		// 原版先問武器再問防具;引擎併成一步讓玩家自己選要裝哪一格。
+		return []string{c.Name + "：W)武器?　A)防具?",
 			"（`ITEMS.DAT` 沒有「武器還是防具」這個欄位,分類在呼叫端）"}
 	}
 	out := []string{fmt.Sprintf("%s 的背包（%s,按字母選格）", c.Name, title)}

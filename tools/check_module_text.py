@@ -83,8 +83,48 @@ def main():
     print(f"\n已接 {wired_ok} 段、對不上 {len(mismatches)} 段"
           f"(wired 非空共 {total} 段)。")
     wiring()
+    rp = punctuation()
     rc = coverage()
-    return 1 if (mismatches or rc) else 0
+    return 1 if (mismatches or rc or rp) else 0
+
+
+# 全形版本在本專案的譯文裡一律不用(docs/spec/19 §6)。冒號相反:
+# 標籤用全形 `：`(docs/spec/06 §7 驗收 7 訂的),所以它不在這張表上。
+BANNED_PUNCT = {"，": ",", "！": "!", "？": "?"}
+
+
+def punctuation() -> int:
+    """譯文的標點必須與引擎用同一套,否則 `wired` 的逐字比對會無聲地對不上。
+
+    ⚠ 這條檢查的價值不在美觀,在**可比對**:同一句話兩邊各用一種標點時,
+    畫面看起來完全正常,只有接線檢查會說「沒找到」——而那訊息看起來像
+    「這段還沒接」,不像「標點不一樣」。抓在這裡比抓在那裡便宜。
+    """
+    bad = []
+    for path in sorted((ROOT / "translations").rglob("*.tsv")):
+        if path.parent.name == "source":
+            continue  # 原文清冊,不是譯文
+        with path.open(encoding="utf-8", newline="") as f:
+            r = csv.reader(f, delimiter="\t")
+            header = next(r)
+            if "translation" not in header:
+                continue
+            ti = header.index("translation")
+            key = header[0]
+            for row in r:
+                if len(row) <= ti:
+                    continue
+                hit = [c for c in BANNED_PUNCT if c in row[ti]]
+                if hit:
+                    bad.append((path.name, row[0] if row else "?", key, "".join(hit)))
+    for name, rid, key, hit in bad[:20]:
+        print(f"  標點:{name} {key}={rid} 用了全形 {hit}")
+    if bad:
+        print(f"⚠ 有 {len(bad)} 列譯文用了全形 ,!? —— 本專案一律用半形"
+              f"(docs/spec/19 §6);全形冒號 `：` 不在此限")
+        return 1
+    print("標點檢查:譯文沒有全形 ,!?。")
+    return 0
 
 
 def wiring() -> None:

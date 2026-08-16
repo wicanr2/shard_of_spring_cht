@@ -62,7 +62,7 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 60	prompt	SPACE for	9	按空白鍵	8	Y	原文跨 2 行(60–61):SPACE for next page
 61	prompt	next page	9	換頁	4	Y	
 62	prompt	ESC when	8	按 ESC 鍵	9	N	原文跨 2 行(62–63,63 有格式異常見下); 超出原文 1 bytes
-63	prompt	"done.	6	完成。	6	Y	原始檔案格式異常:原文為 `"done.`,開頭多一個未配對的雙引號(見 translations/source/README.md),譯文已略去異常引號
+63	prompt	"done.	6	完成。	6	Y	原始檔案格式異常:原文為 `done.`,開頭多一個未配對的雙引號(見 translations/source/README.md),譯文已略去異常引號"
 64	stat	Skills (	8	技能（還剩 	11	N	原文跨 2 行(64–65)組成模板「Skills (N Left)」,譯文改為「技能（還剩 N 點）」語序,分成前後兩段; 超出原文 3 bytes
 65	stat	  Left)	7	 點）	5	Y	
 66	skill_hero	1)  Sword           (2)	23	1) 劍術 (2)	11	Y	
@@ -91,12 +91,12 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 89	prompt	above....	9	於上方……	10	N	超出原文 1 bytes
 90	prompt	# to remove	11	輸入編號以移除	14	N	超出原文 3 bytes
 91	prompt	Must disband party	18	必須先解散隊伍	14	Y	原文跨 2 行(91–92)
-92	prompt	before removing!	16	才能移除！	10	Y	
+92	prompt	before removing!	16	才能移除!	9	Y	
 93	prompt	Input number	12	請輸入	6	Y	原文跨 3 行(93–95):Input number of party to create:
 94	prompt	of party	8	隊伍	4	Y	
 95	prompt	to create:	10	編號以建立：	12	N	超出原文 2 bytes
 96	prompt	Party already	13	隊伍已經	8	Y	原文跨 2 行(96–97)
-97	prompt	exists!	7	存在！	6	Y	
+97	prompt	exists!	7	存在!	5	Y	
 98	prompt	Enter characters	16	請輸入角色	10	Y	
 99	prompt	for party:	10	加入隊伍：	10	Y	
 100	prompt	Player #	8	角色編號	8	Y	
@@ -111,4 +111,4 @@ row	field	original	orig_bytes	translation	trans_bytes	fits	note
 109	prompt	disbanded.	10	已解散。	8	Y	
 110	prompt	Party number	12	隊伍編號	8	Y	原文跨 3 行(110–112):Party number to display information on
 111	prompt	to display	10	顯示	4	Y	
-112	prompt	"information on"	17	相關資訊	8	Y	原始檔案格式異常:原文含頭尾雙引號 `"information on"`(見 translations/source/README.md),譯文已略去引號
+112	prompt	information on	17	相關資訊	8	Y	"原始檔案格式異常:原文含頭尾雙引號 `""information on""`(見 translations/source/README.md),譯文已略去引號"

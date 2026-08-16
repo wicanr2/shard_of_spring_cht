@@ -21,6 +21,13 @@ import (
 // 那要先解「攻擊的射程條件」,而 docs/spec/01 沒有那一條。
 // 這裡是「按一次鍵推一回合」的最小可玩形式,規則本身是完整的。
 
+// 開戰橫幅的兩句,字面照 WRLDMOVE.tsv 第 44/45 列(MAZEMOVE 有同樣兩句)。
+// 原版用全形空白把字拉開,這裡照做 —— 那是它在畫面上的樣子。
+const (
+	CombatBanner = "　　戰　鬥　!"
+	BattleBanner = "　　交　戰　!"
+)
+
 // startCombat 依遭遇建一場戰鬥。回 false 表示這次沒有觸發。
 func (g *Game) startCombat() bool {
 	if len(g.members) == 0 || len(g.monsters) == 0 {
@@ -48,7 +55,8 @@ func (g *Game) startCombat() bool {
 	g.field.ResetPoints(&g.points)
 	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
 	g.actor = g.firstActor()
-	g.field.Log = append(g.field.Log,
+	// WRLDMOVE:44 / MAZEMOVE:90「    C O M B A T !」—— 原版遭遇時的橫幅。
+	g.field.Log = append(g.field.Log, CombatBanner,
 		fmt.Sprintf("遭遇 %s!", g.monsters[pick].Name))
 	return true
 }
@@ -101,7 +109,9 @@ func (g *Game) startScriptedCombat(target int) bool {
 		// 顯示 rules.PriestBlessing)。
 		g.field.Log = append(g.field.Log, rules.PriestEncounterMark)
 	} else {
-		g.field.Log = append(g.field.Log,
+		// 腳本戰鬥走另一句(WRLDMOVE:45 / MAZEMOVE:91「    B A T T L E !」)——
+		// ⚠ 原版兩句的分工**沒有讀到**,這裡的分派是引擎自己定的。
+		g.field.Log = append(g.field.Log, BattleBanner,
 			fmt.Sprintf("遭遇 %s!", strings.Join(names, "、")))
 	}
 	if target == maze.TargetFinalBoss {

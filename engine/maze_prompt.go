@@ -224,10 +224,14 @@ func (p *mazePrompt) lines() []string {
 	out := []string{p.head}
 	switch p.kind {
 	case promptRiddle:
-		for i := 0; i < p.idx; i++ {
-			out = append(out, fmt.Sprintf("#%d %s", i+1, p.names[i]))
+		// MAZEMOVE:47–50 是四段各自獨立的字串(`#1 `…`#4 `),不是格式化出來的。
+		slot := [4]string{"#1 ", "#2 ", "#3 ", "#4 "}
+		for i := 0; i < p.idx && i < len(slot); i++ {
+			out = append(out, slot[i]+p.names[i])
 		}
-		out = append(out, fmt.Sprintf("#%d %s_", p.idx+1, p.input))
+		if p.idx < len(slot) {
+			out = append(out, slot[p.idx]+p.input+"_")
+		}
 	case promptGem:
 		out = append(out, p.input+strings.Repeat(".", len(maze.GemAnswer)-len(p.input)))
 	}

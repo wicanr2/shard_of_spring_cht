@@ -186,14 +186,16 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 				t.Status = 0
 			}
 		}
-		return Result{Message: name + " 讓倒下的同伴復活"}
+		// CAMP:104「Lives !」
+		return Result{Message: name + "：活過來了!"}
 
 	case EffCure:
 		for _, t := range targets {
 			t.Status = 0
 			t.StatMag = 0
 		}
-		return Result{Message: name + " 解除了不良狀態"}
+		// CAMP:105「Is cured.」
+		return Result{Message: name + "：被治癒了。"}
 
 	case EffUnbind:
 		for _, t := range targets {

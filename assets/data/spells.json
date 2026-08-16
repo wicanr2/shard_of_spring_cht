@@ -15,7 +15,7 @@
   "effect": 2,
   "power": 25,
   "unit_cost": 16,
-  "hit_msg": "被烈焰擊倒，造成"
+  "hit_msg": "被烈焰擊倒,造成"
  },
  {
   "index": 2,
@@ -69,7 +69,7 @@
   "effect": 1,
   "power": 6,
   "unit_cost": 6,
-  "hit_msg": "遭風暴擊中，造成"
+  "hit_msg": "遭風暴擊中,造成"
  },
  {
   "index": 8,
@@ -105,7 +105,7 @@
   "effect": 1,
   "power": 8,
   "unit_cost": 7,
-  "hit_msg": "冰雹擊中，造成"
+  "hit_msg": "冰雹擊中,造成"
  },
  {
   "index": 12,
@@ -222,7 +222,7 @@
   "effect": 8,
   "power": 25,
   "unit_cost": 25,
-  "hit_msg": "復活了！"
+  "hit_msg": "復活了!"
  },
  {
   "index": 25,

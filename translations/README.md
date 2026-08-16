@@ -76,6 +76,28 @@ translations/
 └── dungeon-text/            ← DT0–DT7TEXT.DAT 的譯文,一檔一個地城
 ```
 
+## 2.1 標點:半形 `,!?` + 全形 `：。、`
+
+全部譯文(`module-text/`、`dungeon-text/`、`names/`)用**同一套**:
+
+| 用 | 不用 |
+|---|---|
+| `,` `!` `?` 半形 | `，` `！` `？` |
+| `：` `。` `、` 全形 | `:` |
+
+冒號用全形是 [`docs/spec/06`](../docs/spec/06-party-and-save.md) §7 驗收 7 訂的;
+其餘跟著本專案文件一貫的寫法。
+
+⚠ **這條的理由不是美觀,是可比對。** `module-text/` 的 `wired` 欄要拿譯文
+**逐字**去比引擎原始碼([`docs/spec/19`](../docs/spec/19-module-text.md) §6.1),
+兩邊各用一種標點時畫面看起來完全正常,只有接線檢查會說「沒找到」——
+而那句話看起來像「這段還沒接」,不像「標點不一樣」。
+`tools/check_module_text.py` 有一條 `punctuation()` 擋這件事。
+
+⚠ 改了譯文的標點,**`assets/` 要跟著重跑 `cmd/convert`** ——
+`dungeon-text/` 與 `names/` 進的是 JSON 資產,不是原始碼,
+不重跑的話遊戲裡看到的還是舊的(§4 的同一個坑)。
+
 ## 3. `fits` 欄怎麼讀
 
 `fits = N` **不代表壞掉**。這一欄量的是**顯示欄寬**(全形 2、半形 1),

@@ -1,40 +1,40 @@
 row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 6	ds:6F2A	      Camp:	11	      營地：	6	Y		engine/town_scene.go
-7	ds:6F3A	 P)rint char(s)	15	 P)列印角色卡	13	Y		
-8	ds:6F4E	 S)leep	7	 S)睡覺	7	Y		
-9	ds:6F5A	 #)inspect char 	16	 #)查看角色 	12	Y		
-10	ds:6F6E	 C)ast spell	12	 C)施放法術	11	Y		
-11	ds:6F7E	 R)eorder	9	 R)調整隊形	11	11		
-12	ds:6F8C	 T)rade	7	 T)交易	7	Y		
-13	ds:6F98	 D)rop	6	 D)丟棄	7	7		
-14	ds:6FA2	 E)quip	7	 E)裝備	7	Y		
-15	ds:6FAE	 H)unt	6	 H)打獵	7	7		
-16	ds:6FB8	 I)dentify	10	 I)鑑定	7	Y		
-17	ds:6FC6	 U)se an item	13	 U)使用道具	11	Y		
-18	ds:6FD8	 ESC to leave	13	 ESC離開	8	Y		
+7	ds:6F3A	 P)rint char(s)	15	 P)列印角色卡	13	Y		engine/town_scene.go
+8	ds:6F4E	 S)leep	7	 S)睡覺	7	Y		engine/town_scene.go
+9	ds:6F5A	 #)inspect char 	16	 #)查看角色 	12	Y		engine/town_scene.go
+10	ds:6F6E	 C)ast spell	12	 C)施放法術	11	Y		engine/town_scene.go
+11	ds:6F7E	 R)eorder	9	 R)調整隊形	11	11		engine/town_scene.go
+12	ds:6F8C	 T)rade	7	 T)交易	7	Y		engine/town_scene.go
+13	ds:6F98	 D)rop	6	 D)丟棄	7	7		engine/town_scene.go
+14	ds:6FA2	 E)quip	7	 E)裝備	7	Y		engine/town_scene.go
+15	ds:6FAE	 H)unt	6	 H)打獵	7	7		engine/town_scene.go
+16	ds:6FB8	 I)dentify	10	 I)鑑定	7	Y		engine/town_scene.go
+17	ds:6FC6	 U)se an item	13	 U)使用道具	11	Y		engine/town_scene.go
+18	ds:6FD8	 ESC to leave	13	 ESC離開	8	Y		engine/town_scene.go
 19	ds:6FEA	Breaking Camp..	15	拔營中……	8	Y		
 34	ds:7078	Character # to trade from ?, (ESC exits)	40	從哪位角色交易?(ESC離開)	24	Y		engine/town_scene.go
-35	ds:70A8	Trade which ?	13	交易哪一件?	11	Y		
-36	ds:70C8	    Give to ? 	14	    交給誰? 	12	Y		
+35	ds:70A8	Trade which ?	13	交易哪一件?	11	Y		engine/town_scene.go
+36	ds:70C8	    Give to ? 	14	    交給誰? 	12	Y		engine/town_scene.go
 37	ds:70E0	NO ROOM !	9	沒有空間!	9	Y		
 38	ds:70F2	 OK	3	 完成	5	5		
 39	ds:70FA	Character # to equip ? (ESC exits)	34	哪位角色要裝備?(ESC離開)	24	Y		engine/town_scene.go
-40	ds:7124	Weapon? 	8	武器? 	6	Y		
+40	ds:7124	Weapon? 	8	武器? 	6	Y		engine/town_scene.go
 41	ds:7130	 skips.	7	 略過。	7	Y		
 42	ds:7140	No Weapon	9	無武器	6	Y		
 43	ds:7152	NO SKILL !	10	沒有技能!	9	Y		
-47	ds:717A	Armor?  	8	防具? 	6	Y		
+47	ds:717A	Armor?  	8	防具? 	6	Y		engine/town_scene.go
 48	ds:7186	 skips.	7	 略過。	7	Y		
 49	ds:7192	No Armor  	10	無防具 	7	Y		
-50	ds:71A0	OK !	4	好!	3	Y		
+50	ds:71A0	OK !	4	好!	3	Y		engine/town_scene.go
 51	ds:71A8	Character # dropping item ? (ESC exits)	39	哪位角色要丟棄道具?(ESC離開)	28	Y		engine/town_scene.go
-52	ds:71D8	Item to drop ?	14	要丟棄哪件?	11	Y		
-53	ds:71F2	Dropped ! 	10	已丟棄! 	8	Y		
-54	ds:7200	You have slept !	16	你們睡了一覺!	13	Y		
+52	ds:71D8	Item to drop ?	14	要丟棄哪件?	11	Y		engine/town_scene.go
+53	ds:71F2	Dropped ! 	10	已丟棄! 	8	Y		engine/town_scene.go
+54	ds:7200	You have slept !	16	你們睡了一覺!	13	Y		engine/town_scene.go
 55	ds:7216	You are not tired	17	你們還不累	10	Y		
 56	ds:722C	You sleep...	12	你們睡了一覺……	14	14		
 58	ds:724A	Character # wishing to identify? (ESC exits)	44	哪位角色要鑑定?(ESC離開)	24	Y		engine/town_scene.go
-60	ds:7284	Item to ID ?	12	要鑑定哪件?	11	Y		
+60	ds:7284	Item to ID ?	12	要鑑定哪件?	11	Y		engine/town_scene.go
 61	ds:729C	You are not trained in that lore!	33	你沒有受過這方面的知識訓練!	27	Y		engine/town_scene.go
 62	ds:72DA	Failed	6	失敗	4	Y		
 63	ds:72E4	You're inside!	14	你在室內!	9	Y		engine/internal/town/camp.go
@@ -42,8 +42,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 65	ds:7326	The hunt was	12	這次打獵	8	Y		engine/town_scene.go
 66	ds:7336	not successful.	15	沒有收穫。	10	Y		engine/town_scene.go
 67	ds:734A	successful!	11	有收穫!	7	Y		engine/town_scene.go
-68	ds:735C	Enter new 	10	輸入新的	8	Y		
-69	ds:736A	position for:	13	位置給：	8	Y		
+68	ds:735C	Enter new 	10	輸入新的	8	Y		engine/town_scene.go
+69	ds:736A	position for:	13	位置給：	8	Y		engine/town_scene.go
 70	ds:737C	 Letter?	8	 字母?	6	Y		
 71	ds:7388	  A B C 	8	  A B C 	8	Y		
 72	ds:7394	  D E F 	8	  D E F 	8	Y		
@@ -61,26 +61,26 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 85	ds:74F8	You need more spell points than that!	37	你需要更多法力點數!	19	Y	spec/19 §1.1 範例句,一字不差	engine/internal/magic/magic.go
 87	ds:7532	Aack!  there is something wrong with the data files, please restore!	68	啊咧!資料檔好像出了問題,請重新還原!	35	Y		
 88	ds:7582	Character # to use item ?  (ESC exits)	38	哪位角色要使用道具?(ESC離開)	28	Y		engine/town_scene.go
-89	ds:75B0	Use Item:	9	使用道具：	10	Y		
+89	ds:75B0	Use Item:	9	使用道具：	10	Y		engine/camp_actions.go
 90	ds:75C2	This character has no items to use!	35	這位角色沒有可用的道具!	23	Y		engine/camp_actions.go
 91	ds:75F2	You really can't make use of this!	34	你真的沒辦法用這個!	19	Y		
-92	ds:7628	Do you wish to use the potion on Y)ourself or G)ive it to another character?       	83	你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?	48	Y	spec/19 §1.1 範例句(CAMP 版:G)ive;CMBT #165 是同一句的 T)oss 版)	
+92	ds:7628	Do you wish to use the potion on Y)ourself or G)ive it to another character?       	83	你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?	48	Y	spec/19 §1.1 範例句(CAMP 版:G)ive;CMBT #165 是同一句的 T)oss 版)	engine/use_item.go
 93	ds:7680	                  (ESC cancels)	31	                  (ESC取消)	27	Y		
 95	ds:76B2	Give it to which	16	要交給哪位	10	Y		engine/use_item.go
-96	ds:76C6	character?	10	角色?	5	Y		
+96	ds:76C6	character?	10	角色?	5	Y		engine/use_item.go
 97	ds:76D4	char #: 	8	角色 #： 	8	Y		
 100	ds:76F0	That is a Combat Item!	22	那是戰鬥用道具!	15	Y	spec/19 §1.1 範例句,一字不差	engine/camp_actions.go
-101	ds:7712	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		
+101	ds:7712	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
 102	ds:774A	 pts!	5	 點!	4	Y		
-103	ds:7754	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		
-104	ds:7786	Lives !	7	活過來了!	9	9		
-105	ds:7796	Is cured.	9	被治癒了。	10	10		
+103	ds:7754	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
+104	ds:7786	Lives !	7	活過來了!	9	9		engine/internal/magic/magic.go
+105	ds:7796	Is cured.	9	被治癒了。	10	10		engine/internal/magic/magic.go
 106	ds:77A4	Notices no change	17	沒有感到變化	12	Y		
-107	ds:77BA	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		
+107	ds:77BA	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
 108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y		
 109	ds:780A	A roaring blast of wind buffets the party and when the noise subsides...	72	一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……	41	Y		
 127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y		
-128	ds:7A2A	Spell Fails !	13	法術失效!	9	Y		
+128	ds:7A2A	Spell Fails !	13	法術失效!	9	Y		engine/use_item.go
 130	ds:7A58	You don't have that skill.	26	你沒有那項技能。	16	Y	檔名/模組名,不是句子,⛔ 不譯 — spells.dat	engine/internal/town/camp.go
 131	ds:7A7E	That character is incapacitated.	32	這位角色行動不能。	18	Y		engine/internal/town/camp.go
 132	ds:7AAA	You have used that skill today.	31	你今天已經用過那項技能了。	26	Y		engine/internal/town/camp.go

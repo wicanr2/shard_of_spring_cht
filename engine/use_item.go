@@ -102,9 +102,9 @@ func (g *Game) useItemOn(who, slot, target int) {
 	}
 	if !magic.ItemTriggers(idx, it.Col6, g.rand) {
 		if self {
-			ts.msg = fmt.Sprintf("%s 用了%s,這次沒有發動。", c.Name, name)
+			ts.msg = fmt.Sprintf("%s 用了%s,法術失效!", c.Name, name)
 		} else {
-			ts.msg = fmt.Sprintf("%s 把%s交給 %s,這次沒有發動。", c.Name, name, tgt.Name)
+			ts.msg = fmt.Sprintf("%s 把%s交給 %s,法術失效!", c.Name, name, tgt.Name)
 		}
 		return
 	}
@@ -174,9 +174,11 @@ func (g *Game) campPotionLines(ts *townState) []string {
 	name := g.itemDisplayName(c, p.slot)
 	switch p.stage {
 	case 1:
-		return []string{fmt.Sprintf("你要把%s用在 Y)自己身上,還是 G)交給另一位角色?", name)} // CAMP:92
+		// CAMP:92 的原句只說「the potion」,不說是哪一件 —— 這裡把剛選的
+		// 那件的名字放在句子前面,問句本身照原版。
+		return []string{name + "　你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?"}
 	case 2:
-		out := []string{"要交給哪位"} // CAMP:95
+		out := []string{"要交給哪位角色?"} // CAMP:95/96
 		for i, m := range g.members {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, m.Name))
 		}
@@ -322,9 +324,9 @@ func (g *Game) finishUseItem(slot, target int) {
 			f.Log = append(f.Log, fmt.Sprintf("%s：%s 的資料查不到,用不出效果。", caster.Name, name))
 		case !magic.ItemTriggers(itemIdx, it.Col6, g.rand):
 			if self {
-				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,這次沒有發動。", caster.Name, name))
+				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,法術失效!", caster.Name, name))
 			} else {
-				f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s,這次沒有發動。",
+				f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s,法術失效!",
 					caster.Name, name, f.Units[target].Name))
 			}
 		default:
@@ -376,9 +378,9 @@ func (g *Game) drawUseMenu(dst *ebiten.Image) {
 		name := g.itemDisplayName(g.members[idx], g.combatPotion.slot)
 		switch g.combatPotion.stage {
 		case 1:
-			p.Draw(dst, fmt.Sprintf("你要把%s用在 Y)自己身上,還是 T)丟給另一位角色?", name), x, y) // CMBT:165
+			p.Draw(dst, name+"　你要把藥劑用在 Y)自己身上,還是 T)丟給另一位角色?", x, y) // CMBT:165
 		case 2:
-			p.Draw(dst, "要丟給哪位", x, y) // CMBT:168
+			p.Draw(dst, "要丟給哪位角色?", x, y) // CMBT:168/169
 			y += lh
 			for i, m := range g.members {
 				// ⚠ 不要把 "%d) %s" 這種格式化字串直接寫在 Draw() 呼叫裡 ——

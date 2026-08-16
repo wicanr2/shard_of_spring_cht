@@ -243,32 +243,110 @@ func (f *Field) Place() {
 		f.Units[i].Facing = North
 		slot++
 	}
-	mx, my := PartyBaseX-4, PartyBaseY-6
 	for i := MonsterBase; i < MonsterBase+MonsterMax; i++ {
 		if !f.Units[i].Alive() {
 			continue
 		}
-		f.Units[i].X, f.Units[i].Y = mx, my
-		f.Units[i].Facing = South
-		mx++
-		if mx > PartyBaseX+4 {
-			mx, my = PartyBaseX-4, my+1
-		}
+		x, y := f.rollMonsterSpot()
+		f.Units[i].X, f.Units[i].Y = x, y
+		f.Units[i].Facing = South // 常數 3:出場全部面南(docs/re/96)
 	}
 }
 
-// MonsterTurn 是怪物的佔位 AI:朝最近的隊員直線靠近,相鄰就攻擊。
+// MonsterAnchors 是怪物出場的 8 個錨點(docs/re/186 §1)——
+// `CMBT 0x115B1`–`0x11611` 的字面常數,**讀出來的**。
 //
-// ⚠ **這不是原版的策略**(docs/spec/12 §5)。手冊 p.35 提到 `TACTICS`
-// 技能可以看出「怪物正追蹤哪一個同伴」—— 所以原版是**每隻怪物鎖定一個人**,
-// 形狀相容,但選法不同。可預測比「看起來聰明」重要。
+// 排出來是 3×3 的格局而**中間那格空著**:中間 (11,11) 正是隊伍所在的區塊
+// (隊伍基準 13,13)。錨點 6/11/16 各加 0…4 的抖動,接起來就是 6…20 的
+// 15 格 —— 手冊 p.33 的「15×15」因此不只是畫面,也是怪物實際會出現的範圍。
+var MonsterAnchors = [8][2]int{
+	{6, 6}, {11, 6}, {16, 6},
+	{6, 11} /* 中間留給隊伍 */, {16, 11},
+	{6, 16}, {11, 16}, {16, 16},
+}
+
+const (
+	// MonsterAnchorFaces:`INT(RND × 7) + 1` 的面數。
+	//
+	// ⚠ **值域是 1…7,而錨點表有 8 列** —— 第 8 列 (16,16) 永遠挑不到。
+	// 常數 `ds:94B4 = 7.0` 是讀出來的;「原版是不是本來想寫 8」無從得知,
+	// 所以照抄(docs/re/186 §1.1)。
+	MonsterAnchorFaces = 7
+	// MonsterJitterFaces:每軸再加 `INT(RND × 5)` = 0…4(`ds:94B8 = 5.0`)。
+	MonsterJitterFaces = 5
+	// monsterPlaceTries 是重擲上限。⚠ **原版沒有上限**,湊不到就當掉;
+	// 引擎不能當,所以有限次之後改用線性掃描找空格 —— 那是**本引擎的選擇**,
+	// 不是原版行為。
+	monsterPlaceTries = 200
+)
+
+// rollMonsterSpot 依 docs/re/186 §1 擲一個出場位置。
+func (f *Field) rollMonsterSpot() (int, int) {
+	for try := 0; try < monsterPlaceTries; try++ {
+		a := MonsterAnchors[f.Rand.Roll(MonsterAnchorFaces)-1]
+		x := a[0] + f.Rand.Roll(MonsterJitterFaces) - 1
+		y := a[1] + f.Rand.Roll(MonsterJitterFaces) - 1
+		if InBoard(x, y) && f.Occupant(x, y) < 0 {
+			return x, y
+		}
+	}
+	// 退路:從錨點區掃第一個空格。⚠ 原版不會走到這裡(它會一直重擲)。
+	for _, a := range MonsterAnchors {
+		for dy := 0; dy < MonsterJitterFaces; dy++ {
+			for dx := 0; dx < MonsterJitterFaces; dx++ {
+				x, y := a[0]+dx, a[1]+dy
+				if InBoard(x, y) && f.Occupant(x, y) < 0 {
+					return x, y
+				}
+			}
+		}
+	}
+	return MonsterAnchors[0][0], MonsterAnchors[0][1]
+}
+
+// Retarget 依 docs/re/186 §2 更新一隻怪物鎖定的目標(屬性 15)。
+//
+// 規則:**目標倒下(狀態陣亡)或離場才重挑**,否則保持不變 ——
+// 這就是手冊 p.35 的 `TACTICS` 看得到的那個對象。
+// 重挑是 `INT(RND × 隊伍人數) + 9`,也就是**在隊員裡均勻隨機**
+// (`ds:34F8` = 隊伍人數、`ds:94D2 = 9.0` = 隊員起始索引)。
+//
+// 回傳鎖定的單位索引;找不到任何可鎖的隊員回 −1。
+func (f *Field) Retarget(i int) int {
+	if t := f.Units[i].Target; t >= PartyBase && t < PartyBase+PartyMax {
+		if u := f.Units[t]; u.Alive() && u.OnField() {
+			return t // 還活著也還在場上 → 不換
+		}
+	}
+	// 只在**還能鎖定的**隊員裡挑 —— 原版擲的是隊伍人數,而死掉的人
+	// 仍然佔著槽位;擲到死人時原版下一輪會再擲,引擎直接跳過,結果同形。
+	var live []int
+	for u := PartyBase; u < PartyBase+PartyMax; u++ {
+		if f.Units[u].Alive() && f.Units[u].OnField() {
+			live = append(live, u)
+		}
+	}
+	if len(live) == 0 {
+		f.Units[i].Target = 0
+		return -1
+	}
+	t := live[f.Rand.Roll(len(live))-1]
+	f.Units[i].Target = t
+	return t
+}
+
+// MonsterTurn 讓一隻怪物用完它的行動點數:朝**鎖定的目標**靠近,相鄰就攻擊。
+//
+// ⚠ 目標選擇是讀出來的(docs/re/186 §2);**逐步的選格不是** ——
+// 原版還帶一個每單位一份的 ±1 側向偏好(屬性 18,docs/re/158),
+// 那個偏好怎麼與「朝目標走」合成一步沒有讀完。這裡走直線,是可預測的佔位。
 func (f *Field) MonsterTurn(p *Points, i int) {
 	for p[i] > 0 {
 		u := f.Units[i]
 		if !u.Alive() || !u.OnField() {
 			return
 		}
-		j := f.nearestFoe(i)
+		j := f.Retarget(i)
 		if j < 0 {
 			return
 		}

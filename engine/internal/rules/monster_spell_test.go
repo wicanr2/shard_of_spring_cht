@@ -77,3 +77,38 @@ func TestRoundOneRerollsGroupDamage(t *testing.T) {
 		}
 	}
 }
+
+// ── 施法時機(docs/re/186 §3)────────────────────────────────────────────
+
+func TestMonsterCastsNeedsSPAboveOne(t *testing.T) {
+	// ⚠ 門檻是 **> 1**,不是 ≥ 1 —— 法力剛好 1 的怪物不施法。
+	for _, sp := range []int{0, 1} {
+		if MonsterCasts(sp, MonsterForcedCastRound, 0) {
+			t.Errorf("法力 %d 不該施法(門檻是 > 1)", sp)
+		}
+	}
+	if !MonsterCasts(2, MonsterForcedCastRound, 1) {
+		t.Error("法力 2、第二回合應該施法")
+	}
+}
+
+func TestMonsterCastsForcedOnRoundTwo(t *testing.T) {
+	// 第二回合**必定**施法:擲骰再差也一樣(這是 re/170「第二回合起固定放
+	// 暴風系」的來源)。
+	if !MonsterCasts(10, 2, 0.99) {
+		t.Error("第二回合應該不看擲骰就施法")
+	}
+	// ⚠ 第三回合又回到擲骰 —— 原版比的是 `== 2`,不是 `>= 2`。
+	if MonsterCasts(10, 3, 0.99) {
+		t.Error("第三回合擲骰沒過就不該施法")
+	}
+}
+
+func TestMonsterCastsRollThreshold(t *testing.T) {
+	if !MonsterCasts(10, 1, MonsterCastChance) {
+		t.Errorf("擲骰剛好等於 %v 應該過(原版是 ≤)", MonsterCastChance)
+	}
+	if MonsterCasts(10, 1, MonsterCastChance+0.01) {
+		t.Error("擲骰超過門檻不該施法")
+	}
+}

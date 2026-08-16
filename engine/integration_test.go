@@ -149,8 +149,9 @@ func worldStep(t *testing.T, g *Game, dir world.Facing) bool {
 // 否則往差距大的那一軸靠一格。⚠ 這是**測試的驅動策略**,不是遊戲規則。
 func fightToEnd(t *testing.T, g *Game) combat.Outcome {
 	t.Helper()
-	const maxKeys = 4000 // 上限只為了「卡住時要紅,不要掛住」
-	last := ""
+	const maxKeys = 40000 // 上限只為了「卡住時要紅,不要掛住」
+	detours := []ebiten.Key{ebiten.KeyUp, ebiten.KeyRight, ebiten.KeyDown, ebiten.KeyLeft}
+	last, detour := "", 0
 	for i := 0; i < maxKeys; i++ {
 		f := g.field
 		if f == nil {
@@ -165,14 +166,24 @@ func fightToEnd(t *testing.T, g *Game) combat.Outcome {
 			continue
 		}
 		// ⚠ 失敗的動作**不扣行動點數**(board.go 的 spend 只在成功時扣)——
-		// 被隊友擋住的隊員會讓同一個鍵永遠沒有效果。原地打轉就直接
-		// 結束這一輪(玩家在畫面上按 ENTER 的那個鍵),讓怪物動、重發點數。
+		// 被隊友擋住的隊員按同一個鍵會永遠沒有效果。沒進展就**換一個方向**
+		// (轉身會扣點,所以點數終究會用完、換下一個人),四個方向都試過
+		// 才結束這一輪。
+		//
+		// ⚠ 這一段是接上原版目標鎖定(docs/re/186)之後補的:怪物改從八個
+		// 錨點出場,隊形與距離都變了,而原本「只往一個方向推」的驅動剛好在
+		// 舊佈陣下走得通 —— **測試通過過,不代表驅動是對的**。
 		if now := fieldFingerprint(g); now == last {
-			press(t, g, ebiten.KeyEnter)
-			last = ""
+			detour++
+			if detour > len(detours) {
+				press(t, g, ebiten.KeyEnter)
+				detour, last = 0, ""
+				continue
+			}
+			press(t, g, detours[detour-1])
 			continue
 		} else {
-			last = now
+			last, detour = now, 0
 		}
 		u := f.Units[g.actor]
 		j := -1
@@ -197,7 +208,19 @@ func fightToEnd(t *testing.T, g *Game) combat.Outcome {
 		}
 		press(t, g, dir) // 朝向不同 → 轉身;相同 → 前進一格
 	}
-	t.Fatalf("按了 %d 次還沒打完 —— 戰場驅動卡住了", maxKeys)
+	var st strings.Builder
+	for i := range g.field.Units {
+		if u := g.field.Units[i]; u.Name != "" {
+			fmt.Fprintf(&st, "\n  #%d %s (%d,%d) 朝%d HP%d 點%d",
+				i, u.Name, u.X, u.Y, int(u.Facing), u.HP, g.points[i])
+		}
+	}
+	tail := g.field.Log
+	if len(tail) > 6 {
+		tail = tail[len(tail)-6:]
+	}
+	t.Fatalf("按了 %d 次還沒打完 —— 戰場驅動卡住了。actor=%d 回合=%d%s\n  log:%v",
+		maxKeys, g.actor, g.field.Round, st.String(), tail)
 	return combat.Ongoing
 }
 

@@ -134,3 +134,34 @@ func countLines(log []string, sub string) int {
 	}
 	return n
 }
+
+// ── D4:TACTICS 顯示(docs/re/186 §2、手冊 p.35)────────────────────────
+
+func TestTacticsLineOnlyWithTheSkill(t *testing.T) {
+	g := newKillingBlowGame(t)
+	mon := &g.field.Units[combat.MonsterBase]
+	mon.Target = combat.PartyBase // 鎖定第一位隊員
+
+	g.field.Tactics = false
+	if got := g.tacticsLine(*mon); got != "" {
+		t.Errorf("沒有策略技能時不該顯示任何東西,得到 %q", got)
+	}
+
+	g.field.Tactics = true
+	got := g.tacticsLine(*mon)
+	if !strings.Contains(got, g.field.Units[combat.PartyBase].Name) {
+		t.Errorf("有策略技能時應該顯示鎖定對象的名字,得到 %q", got)
+	}
+}
+
+// TestTacticsLineNeedsARealTarget:還沒鎖定就不顯示 ——
+// ⚠ 顯示「未知」會洩漏「牠有目標」這件事,而那本身就是資訊。
+func TestTacticsLineNeedsARealTarget(t *testing.T) {
+	g := newKillingBlowGame(t)
+	g.field.Tactics = true
+	mon := g.field.Units[combat.MonsterBase]
+	mon.Target = 0 // 還沒鎖定(0 不在隊員範圍 9…13)
+	if got := g.tacticsLine(mon); got != "" {
+		t.Errorf("沒有鎖定對象時不該顯示,得到 %q", got)
+	}
+}

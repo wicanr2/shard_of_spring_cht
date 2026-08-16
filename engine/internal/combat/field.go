@@ -4,9 +4,12 @@ import "sort"
 
 // Field 是一場戰鬥。docs/spec/07-combat-scene.md。
 type Field struct {
-	Units [Slots]Unit
-	Order []int // 先攻表:單位編號,速度高的在前
-	Round int
+	// Tactics = 隊上有人會「策略」技能 → 畫面可以顯示怪物的鎖定對象
+	// (手冊 p.35、docs/re/186 §2)。**只影響顯示。**
+	Tactics bool
+	Units   [Slots]Unit
+	Order   []int // 先攻表:單位編號,速度高的在前
+	Round   int
 	// ⚠ 型別是 FloatRand 不是 Rand —— 命中與狂暴擲骰要用 Float01()
 	// 算 round(RND×N+1)(docs/re/185),不能只靠 Roll()。
 	Rand FloatRand

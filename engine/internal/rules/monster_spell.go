@@ -73,3 +73,33 @@ func MonsterSpell(family, round, roll int) (spell int, reroll bool) {
 	}
 	return got, false
 }
+
+// ── 施法時機(docs/re/186 §3)────────────────────────────────────────────
+
+// MonsterCastChance 是「這一回合要不要施法」的擲骰門檻:**0.3**。
+// `CMBT 0x12491` 的 `mov di, 941Eh` → `ds:941E` 的初值是 MBF 0.3
+// (`9a 99 19 7f`),讀出來的。
+const MonsterCastChance = 0.3
+
+// MonsterCastMinSP 是施法的硬門檻:法力**大於** 1(`CMBT 0x12481` 的
+// `cmp [屬性7], 1` 配 `jle`)。⚠ 是 > 1 不是 ≥ 1。
+const MonsterCastMinSP = 1
+
+// MonsterForcedCastRound 是必定施法的那一回合。原版寫死比較 `== 2`
+// (`CMBT 0x1249F`),不是「第二回合起」——第三回合又回到擲骰。
+const MonsterForcedCastRound = 2
+
+// MonsterCasts 回答「這隻怪物這一回合施不施法」。
+//
+//	法力 > 1  且  ( 回合 == 2  或  擲骰 ≤ 0.3 )
+//
+// docs/re/186 §3 讀到的形狀:`(回合==2 OR 擲骰) AND 法力足夠`。
+// ⚠ 法力是**硬門檻**,在 OR 的外面 —— 第二回合也不能無中生有。
+//
+// 這與 MonsterSpell 的分工:這裡決定「施不施」,那裡決定「施哪一招」。
+func MonsterCasts(sp, round int, roll float64) bool {
+	if sp <= MonsterCastMinSP {
+		return false
+	}
+	return round == MonsterForcedCastRound || roll <= MonsterCastChance
+}

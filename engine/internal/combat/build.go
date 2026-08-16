@@ -12,6 +12,15 @@ func Build(party []original.Character, monsters []original.Monster,
 
 	f := &Field{Rand: r, Items: items}
 
+	// 隊上只要有一個人會「策略」,畫面就顯示怪物在追誰(手冊 p.35)。
+	// ⚠ 這是**顯示**能力,不影響任何規則 —— 怪物的鎖定照樣進行。
+	for _, c := range party {
+		if skill(c, TacticsSkill) > 0 {
+			f.Tactics = true
+			break
+		}
+	}
+
 	for i, m := range monsters {
 		if i >= MonsterMax {
 			break

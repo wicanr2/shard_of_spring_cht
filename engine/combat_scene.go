@@ -382,7 +382,7 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 	}
 	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
 		if u := f.Units[i]; u.Name != "" {
-			line(unitLine(u))
+			line(unitLine(u) + g.tacticsLine(u))
 		}
 	}
 	y += lh * 0.5
@@ -413,6 +413,26 @@ func unitLine(u combat.Unit) string {
 		return ui.PadTo(u.Name, ui.CombatNameCols) + "  倒下"
 	}
 	return fmt.Sprintf("%s  HP %3d  速 %2d", ui.PadTo(u.Name, ui.CombatNameCols), u.HP, u.Speed)
+}
+
+// tacticsLine 在怪物那一列後面補上「→ 它在追誰」。
+//
+// 手冊 p.35 的 `TACTICS`(精訊譯「策略」)技能:隊上有人會,就看得出
+// 每隻怪物正在追蹤哪一位同伴。鎖定對象是戰鬥屬性 15(docs/re/186 §2)。
+// ⚠ 沒有那個技能就**什麼都不顯示** —— 不是顯示「未知」,那會洩漏「有目標」這件事。
+func (g *Game) tacticsLine(u combat.Unit) string {
+	f := g.field
+	if f == nil || !f.Tactics || !u.IsMonster || !u.Alive() {
+		return ""
+	}
+	t := u.Target
+	if t < combat.PartyBase || t >= combat.PartyBase+combat.PartyMax {
+		return ""
+	}
+	if f.Units[t].Name == "" {
+		return ""
+	}
+	return "　→ " + f.Units[t].Name
 }
 
 // pickMonster 依區域挑一隻怪物,照原版的「不合就重擲」。

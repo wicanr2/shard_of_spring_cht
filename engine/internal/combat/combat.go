@@ -123,6 +123,11 @@ const BerserkThreshold = 75
 // 空手時若攻擊者有這一項,傷害改走「命中能力 − 5」那條式子。
 const KarateSkill = 4
 
+// TacticsSkill 是「策略」(`TACTICS`)在戰士技能表裡的編號。
+// 手冊 p.35:有這個技能就看得出**每隻怪物正在追蹤哪一位同伴** ——
+// 追蹤對象是戰鬥屬性 15,由 docs/re/186 §2 解出來的規則維護。
+const TacticsSkill = 6
+
 // 屬性 14 的行動類型(docs/re/163)。隊員由 `CHARS.DAT` 位移 15 的職業字元決定;
 // 怪物則擲 `INT(RND × N) + 1`。
 //

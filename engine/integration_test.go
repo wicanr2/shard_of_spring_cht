@@ -12,12 +12,11 @@ package main
 // 資產先整份複製到 t.TempDir():存檔會寫回 <assets>/save/*.DAT,
 // 版控裡那份不能被測試改到(tools/go.sh 也是 :ro 掛進來的)。
 //
-// ⚠ **涵蓋範圍的邊界**:main.go 的 Update() 只有一部分走 g.testKeys 接縫
-// (覆蓋層、外殼、名冊、技能點分配、另存新檔),世界地圖移動、迷宮、城鎮、
-// 戰場那幾段是直接呼叫 inpututil 的 —— 不跑 ebiten.RunGame 就讀不到任何鍵。
-// 所以這一份對那幾段是**直呼場景 handler**,底下 worldStep() 是 main.go
-// 世界地圖分支的鏡像。**Update() 裡那幾行 dispatch 不在涵蓋範圍內**:
-// 那一段改了(或按鍵接錯)這裡不會紅,要靠 T3 或把接縫補完才擋得住。
+// ⚠ **一律走 Update() 的真按鍵路徑。** 輸入在 Update() 開頭收一次
+// (scene.go 的 Input),測試用 g.testKeys 餵進去 —— 所以派工表
+// (scene.go 的 inputChain)本身也在涵蓋範圍內:某個場景漏接一個鍵,
+// 或優先序被改動,這裡會紅。⛔ 不要為了方便改成直呼 g.townKey() 之類的
+// handler:那樣測到的是規則,測不到接線,而接線斷掉的代價見 docs/spec/14 §8。
 
 import (
 	"fmt"
@@ -120,28 +119,28 @@ func press(t *testing.T, g *Game, keys ...ebiten.Key) {
 	}
 }
 
-// worldStep 是 main.go 世界地圖分支(g.field/g.level/g.town 都是 nil 那一段)
-// 的鏡像:移動成功 → 先試地城入口、再試城鎮、最後檢查遭遇倒數。
+// dirKey 是朝向 → 方向鍵。世界地圖與迷宮共用同一組(scene.go 的 dirs)。
+func dirKey(dir world.Facing) ebiten.Key {
+	switch dir {
+	case world.North:
+		return ebiten.KeyUp
+	case world.East:
+		return ebiten.KeyRight
+	case world.South:
+		return ebiten.KeyDown
+	}
+	return ebiten.KeyLeft
+}
+
+// worldStep 按一次方向鍵,回傳有沒有**實際位移**。
 //
-// ⚠ **鏡像不是呼叫** —— main.go 那一段內嵌在 Update() 裡、且直接讀
-// inpututil,沒有可呼叫的 handler。那邊改了這裡不會自動跟上(見檔頭)。
-func worldStep(g *Game, dir world.Facing) world.Result {
-	r := g.party.Step(dir, g.world)
-	if r != world.Moved {
-		return r
-	}
-	if g.enterMaze(g.party.X, g.party.Y) {
-		return r
-	}
-	if v := g.world.At(g.party.X, g.party.Y); v >= 30 && v <= 32 {
-		if g.enterTown(g.party.X, g.party.Y) {
-			return r
-		}
-	}
-	if g.party.Encounter == 0 {
-		g.startCombat()
-	}
-	return r
+// ⚠ 朝向不同時只轉身不位移(docs/spec/05 §6),所以第一下常常是 false。
+// 走的是 Update() → inputChain → worldScene 的完整路徑,不是呼叫內部函式。
+func worldStep(t *testing.T, g *Game, dir world.Facing) bool {
+	t.Helper()
+	x, y := g.party.X, g.party.Y
+	press(t, g, dirKey(dir))
+	return g.party.X != x || g.party.Y != y
 }
 
 // fightToEnd 用戰場按鍵把一場戰鬥打到分出結果。
@@ -169,7 +168,7 @@ func fightToEnd(t *testing.T, g *Game) combat.Outcome {
 		// 被隊友擋住的隊員會讓同一個鍵永遠沒有效果。原地打轉就直接
 		// 結束這一輪(玩家在畫面上按 ENTER 的那個鍵),讓怪物動、重發點數。
 		if now := fieldFingerprint(g); now == last {
-			g.boardKey(ebiten.KeyEnter)
+			press(t, g, ebiten.KeyEnter)
 			last = ""
 			continue
 		} else {
@@ -193,10 +192,10 @@ func fightToEnd(t *testing.T, g *Game) combat.Outcome {
 		tgt := f.Units[j]
 		dir := towardKey(u.X, u.Y, tgt.X, tgt.Y)
 		if best == 1 && u.Facing == facingOf(dir) {
-			g.boardKey(ebiten.KeyA) // 面對面了 → 攻擊
+			press(t, g, ebiten.KeyA) // 面對面了 → 攻擊
 			continue
 		}
-		g.boardKey(dir) // 朝向不同 → 轉身;相同 → 前進一格
+		press(t, g, dir) // 朝向不同 → 轉身;相同 → 前進一格
 	}
 	t.Fatalf("按了 %d 次還沒打完 —— 戰場驅動卡住了", maxKeys)
 	return combat.Ongoing
@@ -291,7 +290,7 @@ func TestT1FullLoop(t *testing.T) {
 	clock0 := g.party.Clock
 	moved := 0
 	for _, d := range []world.Facing{world.North, world.North, world.North} {
-		if worldStep(g, d) == world.Moved {
+		if worldStep(t, g, d) {
 			moved++
 		}
 		if g.field != nil || g.town != nil || g.level != nil {
@@ -311,7 +310,7 @@ func TestT1FullLoop(t *testing.T) {
 		g.party.Encounter = 0
 		for i := 0; i < 8 && g.field == nil; i++ {
 			// 朝向已經是北,所以每一下都是實際位移
-			if worldStep(g, world.North) != world.Moved {
+			if !worldStep(t, g, world.North) {
 				break
 			}
 		}
@@ -368,7 +367,7 @@ func TestT1FullLoop(t *testing.T) {
 	// 站到城鎮西邊一格,朝東,再走一步進去 —— 走的是 worldStep 的城鎮分支,
 	// 不是直接呼叫 enterTown。
 	g.party.X, g.party.Y, g.party.Facing = site.X-1, site.Y, world.East
-	if worldStep(g, world.East) != world.Moved {
+	if !worldStep(t, g, world.East) {
 		t.Fatalf("走不進城鎮 (%d,%d)", site.X, site.Y)
 	}
 	if g.town == nil {
@@ -390,7 +389,7 @@ func TestT1FullLoop(t *testing.T) {
 	if shopIdx < 0 {
 		t.Fatalf("%s 沒有賣道具的店 —— 換一個城鎮或檢查 shops.json", g.town.name)
 	}
-	g.townKey(ebiten.KeyA + ebiten.Key(shopIdx))
+	press(t, g, ebiten.KeyA+ebiten.Key(shopIdx))
 	if g.town.mode != townShop {
 		t.Fatalf("按 %c 應進商店,得到 %v", 'A'+shopIdx, g.town.mode)
 	}
@@ -413,7 +412,7 @@ func TestT1FullLoop(t *testing.T) {
 			gold0, town.Price(stock[0].BasePrice, g.town.shop.PriceMult))
 	}
 	packBefore := g.members[0].Pack
-	g.townKey(ebiten.KeyA + ebiten.Key(buyIdx))
+	press(t, g, ebiten.KeyA+ebiten.Key(buyIdx))
 	if g.group.Gold >= gold0 {
 		t.Fatalf("買了東西金幣卻沒減少:%.0f → %.0f(msg=%q)",
 			gold0, g.group.Gold, g.town.msg)
@@ -425,16 +424,18 @@ func TestT1FullLoop(t *testing.T) {
 	t.Logf("買下 %s:金幣 %.0f → %.0f", stock[buyIdx].Name, gold0, g.group.Gold)
 
 	// 離開商店與城鎮 —— ESC 回建築清單,城鎮本身由世界地圖分支關掉。
-	g.townKey(ebiten.KeyEscape)
+	press(t, g, ebiten.KeyEscape)
 	if g.town.mode != townBuildings {
 		t.Fatalf("商店按 ESC 應回建築清單,得到 %v", g.town.mode)
 	}
 	g.town = nil
 
 	// ── 7. 存檔 ────────────────────────────────────────────────────────
-	g.party.Tick() // 存檔也推進時鐘一格(docs/re/149)
-	if err := g.save(); err != nil {
-		t.Fatal("存檔失敗:", err)
+	// S)ave 走 worldScene → saveHere:**它自己會推進時鐘一格**
+	// (docs/re/149:只按 S 不移動,位移 33 仍 +1)。
+	press(t, g, ebiten.KeyS)
+	if g.saveMsg == "" || strings.Contains(g.saveMsg, "失敗") {
+		t.Fatal("存檔沒成功:", g.saveMsg)
 	}
 	savedPath := save.Path(g.effectiveSaveDir(), g.effectiveSaveName())
 	if _, err := os.Stat(savedPath); err != nil {
@@ -522,11 +523,11 @@ func t2Run(t *testing.T) string {
 
 	// 固定的一段路:三步向北,然後把遭遇倒數清零再走到開打為止。
 	for i := 0; i < 3; i++ {
-		worldStep(g, world.North)
+		worldStep(t, g, world.North)
 	}
 	g.party.Encounter = 0
 	for i := 0; i < 8 && g.field == nil; i++ {
-		worldStep(g, world.North)
+		worldStep(t, g, world.North)
 	}
 	if g.field == nil {
 		t.Fatal("腳本沒有觸發戰鬥")

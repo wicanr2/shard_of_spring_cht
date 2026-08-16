@@ -238,16 +238,19 @@ func (g *Game) partySummary(grp original.Group) string {
 }
 
 // shellUpdate 處理外殼接管畫面時的按鍵。只在 g.shell.mode != shellPlaying
-// 時被 Update() 呼叫。
-func (g *Game) shellUpdate() error {
+// 時由 shellScene(scene.go)呼叫。
+//
+// ⚠ 回 TransitionQuit 的只有主選單的 Q —— Game.Update 把它翻成
+// ebiten.Termination,對外行為與先前直接回傳 Termination 相同。
+func (g *Game) shellUpdate(in Input) Transition {
 	switch g.shell.mode {
 	case shellTitle: // A1:任意鍵進主選單(docs/spec/15 §3)
-		if len(g.pressedKeys()) > 0 {
+		if len(in.Keys) > 0 {
 			g.openMainMenu()
 		}
 
 	case shellMainMenu: // A2(docs/spec/15 §4)
-		for _, k := range g.pressedKeys() {
+		for _, k := range in.Keys {
 			switch k {
 			case ebiten.KeyL: // L)oad a Party —— 開局的唯一入口,B2 存檔選擇(§4)
 				g.openSaveList()
@@ -256,13 +259,13 @@ func (g *Game) shellUpdate() error {
 			case ebiten.KeyP: // P)rogram Notes —— 這裡改成按鍵表(docs/spec/15 §1.1)
 				g.overlay = shellKeyHelp
 			case ebiten.KeyQ: // Q)uit the Game
-				return ebiten.Termination
+				return TransitionQuit
 			}
 			break
 		}
 
 	case shellSaveList: // B2(docs/spec/18 §2/§4)
-		for _, k := range g.pressedKeys() {
+		for _, k := range in.Keys {
 			if k == ebiten.KeyEscape {
 				g.openMainMenu()
 				break
@@ -275,7 +278,7 @@ func (g *Game) shellUpdate() error {
 		}
 
 	case shellImportPrompt: // B3(docs/spec/18 §4)
-		for _, k := range g.pressedKeys() {
+		for _, k := range in.Keys {
 			switch k {
 			case ebiten.KeyEnter, ebiten.KeyKPEnter:
 				// 不匯入,直接沿用 <assets>/save/ 底下目前的 .DAT
@@ -290,7 +293,7 @@ func (g *Game) shellUpdate() error {
 		}
 
 	case shellPartySelect: // A3(docs/spec/15 §5)
-		for _, k := range g.pressedKeys() {
+		for _, k := range in.Keys {
 			if k == ebiten.KeyEscape {
 				g.openMainMenu()
 				break
@@ -302,11 +305,11 @@ func (g *Game) shellUpdate() error {
 		}
 
 	case shellWipe, shellEnding: // A4/A5:任意鍵回主選單(docs/spec/15 §6/§7)
-		if len(g.pressedKeys()) > 0 {
+		if len(in.Keys) > 0 {
 			g.returnToMainMenu()
 		}
 	}
-	return nil
+	return TransitionStay
 }
 
 // digitKey 把 1–5 的數字鍵翻成整數。逐一列舉,不靠鍵值範圍相減 ——

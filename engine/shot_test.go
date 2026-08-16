@@ -112,7 +112,11 @@ func TestShots(t *testing.T) {
 			g.overlay = ""
 		}},
 		{"06-combat", func(g *Game) {
-			if !g.startScriptedCombat(533) {
+			// ⚠ **setup 必須冪等。** ebiten 可能在一次 Draw 之前跑好幾次
+			// Update(掉格時就會),而 startScriptedCombat 每次都重建 *Field
+			// 並重擲怪物生命 —— 拍到的數字因此會隨機器忙碌程度變動,
+			// 兩次跑出來的 PNG 不一樣。這不是遊戲的不確定性,是拍照工具的。
+			if g.field == nil && !g.startScriptedCombat(533) {
 				t.Log("⚠ 腳本戰鬥開不起來")
 			}
 			g.overlay = ""

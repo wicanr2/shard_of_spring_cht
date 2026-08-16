@@ -19,15 +19,12 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/vector"
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
 	"shardofspring/internal/maze"
-	"shardofspring/internal/music"
 	"shardofspring/internal/original"
 	"shardofspring/internal/render"
-	"shardofspring/internal/rules"
 	"shardofspring/internal/save"
 	"shardofspring/internal/world"
 )
@@ -232,282 +229,21 @@ func (g *Game) inputRunes() []rune {
 }
 
 func (g *Game) Update() error {
-	// 覆蓋層開著時吃掉所有按鍵(docs/spec/04 §3:出現時遊戲暫停)。
-	// 這個機制同時被 A6 按鍵表(docs/spec/15 §8)借用 —— 不專屬迷宮敘述。
-	if g.overlay != "" {
-		if len(g.pressedKeys()) > 0 {
-			g.overlay = ""
+	// 輸入**整格只收一次**,再往下傳(scene.go 的 Input)——
+	// 先前每個分支各自呼叫 inpututil,其中一半繞過了 g.testKeys 接縫。
+	in := Input{Keys: g.pressedKeys(), Runes: g.inputRunes()}
+
+	// 派工是一張表,順序就是優先序(scene.go 的 inputChain)。
+	// 第一個 Handles 為真的場景吃掉這一格 —— 唯一會「不吃就往下傳」的是
+	// N)ames 熱鍵,它的 Handles 只在真的按下 N 時為真。
+	for _, sc := range g.inputChain() {
+		if !sc.Handles(in) {
+			continue
+		}
+		if sc.Update(in) == TransitionQuit {
+			return ebiten.Termination
 		}
 		return nil
-	}
-
-	// 戰鬥中:方向鍵不移動,空白鍵推一回合、ESC 離開結束的戰鬥。
-	if g.field != nil {
-		// 施法的選格階段:I/J/K/M 移動、空白鍵施放、ESC 取消
-		if g.cursor != nil {
-			for _, k := range inpututil.AppendJustPressedKeys(nil) {
-				if g.cursorKey(k) {
-					break
-				}
-			}
-			return nil
-		}
-		// 用道具的「自己/丟給別人」子流程(use_item.go,docs/spec/19-coverage.md §2-1)
-		if g.combatPotion != nil {
-			for _, k := range inpututil.AppendJustPressedKeys(nil) {
-				if g.combatPotionKey(k) {
-					break
-				}
-			}
-			return nil
-		}
-		// 施法選單開著時只吃字母
-		if len(g.castList) > 0 {
-			for i := 0; i < len(g.castList) && i < 26; i++ {
-				if inpututil.IsKeyJustPressed(ebiten.KeyA + ebiten.Key(i)) {
-					g.pickSpell(i)
-					break
-				}
-			}
-			if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-				g.castList = nil
-			}
-			return nil
-		}
-		// 道具選單開著時只吃字母(use_item.go,docs/spec/12 §5.3 的 U)
-		if len(g.useList) > 0 {
-			for i := 0; i < len(g.useList) && i < 26; i++ {
-				if inpututil.IsKeyJustPressed(ebiten.KeyA + ebiten.Key(i)) {
-					g.pickUseItem(i)
-					break
-				}
-			}
-			if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-				g.useList = nil
-			}
-			return nil
-		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyC) {
-			g.openCast()
-			return nil
-		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyU) {
-			g.openUseItem()
-			return nil
-		}
-		// M10 之後戰鬥由戰場操作(docs/spec/12);
-		// ⚠ 先前的「空白鍵推一整回合」已經移除 —— 兩套並存會讓同一場戰鬥
-		// 有兩種規則(一套算行動點數、一套不算),而畫面上分不出剛才用了哪一套。
-		for _, k := range inpututil.AppendJustPressedKeys(nil) {
-			if g.boardKey(k) {
-				return nil
-			}
-		}
-		if g.pressed(ebiten.KeyEscape) && g.field.Outcome() != combat.Ongoing {
-			outcome := g.field.Outcome()
-			// docs/re/181 §4 + docs/spec/18 §1 第 3 項:打完一場由迷宮事件
-			// 引發的戰鬥,要把那個目標的事件作廢,否則走出迷宮再走回來會
-			// 再打一次。要在 g.field 被清成 nil 之前先讀 f.Log[0] ——
-			// combat_scene.go 的 startScriptedCombat 已經把它當「這場是不是
-			// 祭司事件」的識別(rules.PriestEncounterMark 的說明),endTurn()
-			// 顯示祝福文字用的是同一個判準,這裡沿用。
-			f := g.field
-			g.field = nil
-			switch {
-			case outcome == combat.PartyDead:
-				// A4 全滅(docs/spec/15 §6)。**不能帶著死掉的隊伍回世界
-				// 地圖繼續走路** —— 直接進全滅畫面,按鍵後回主選單。
-				// 死亡曲(music.Userlib)已經在 endTurn() 判定 PartyDead
-				// 的那一刻放過(combat_scene.go),這裡不重放。
-				if g.shell != nil {
-					g.shell.mode = shellWipe
-				}
-			case outcome == combat.MonstersDead && g.bossFight:
-				// A5 結局(docs/spec/15 §7):這場戰鬥是迷宮事件目標 533
-				// (maze.TargetFinalBoss)引發的劇情戰鬥,打贏了。
-				// ⚠ g.bossFight 目前沒有任何呼叫端會設成 true —— 見它
-				// 在 Game 結構裡的說明,這裡只是接介面,不是宣告
-				// 「已經打得到最終首領」。
-				//
-				// 533 打完遊戲基本上結束了,但仍然照規則作廢這個目標
-				// (不因為「反正要回主選單了」就跳過)。
-				g.disableMazeEvent(maze.TargetFinalBoss)
-				g.bossFight = false
-				if g.shell != nil {
-					g.shell.mode = shellEnding
-				}
-				g.play(music.Ending)
-			case outcome == combat.MonstersDead && len(f.Log) > 0 && f.Log[0] == rules.PriestEncounterMark:
-				// 山丘巨人挾持祭司(maze.TargetPriest = 204)打贏了 ——
-				// 同一條規則:作廢目標 204,否則可以無限次「救祭司」。
-				g.disableMazeEvent(maze.TargetPriest)
-				// 遭遇倒數重置。⚠ **重置值未解** —— 原版每次遭遇後填什麼
-				// 沒有讀到。這裡沿用出貨存檔的量級,是佔位。
-				g.party.Encounter = 54
-			default:
-				// 遭遇倒數重置。⚠ **重置值未解** —— 原版每次遭遇後填什麼
-				// 沒有讀到。這裡沿用出貨存檔的量級,是佔位。
-				g.party.Encounter = 54
-			}
-		}
-		return nil
-	}
-
-	// 另存新檔的文字輸入(蓋在世界地圖/迷宮之上,save_ui.go)。docs/spec/18
-	// §2:多存檔 = 多個檔,玩家要能替目前進度另外取一個檔名 —— 這裡要優先於
-	// N)ames 等其他按鍵,否則打名稱打到 n 之類的字母會被別的畫面搶走。
-	if g.saveAs != nil {
-		g.saveAsRunes(g.inputRunes())
-		for _, k := range g.pressedKeys() {
-			g.saveAsKey(k)
-			if g.saveAs == nil {
-				break
-			}
-		}
-		return nil
-	}
-
-	// 技能點分配(docs/spec/20):創角完成 / 升級成功之後蓋在原畫面上,
-	// 兩個入口共用(skill_alloc_scene.go)。放在 create / roster / 城鎮 / N 鍵
-	// 之前——不管背後是名冊還是城鎮,這個畫面開著時要吃光所有按鍵,
-	// 不能讓底下的畫面漏接。
-	if g.skillAlloc != nil {
-		for _, k := range g.pressedKeys() {
-			g.skillAllocKey(k)
-			if g.skillAlloc == nil {
-				break
-			}
-		}
-		return nil
-	}
-
-	if (g.shell == nil || g.shell.mode == shellPlaying) && g.pressed(ebiten.KeyN) {
-		g.openRoster() // N)ames —— 名冊(docs/spec/11 §5)
-		return nil
-	}
-
-	dirs := map[ebiten.Key]int{
-		ebiten.KeyUp: 1, ebiten.KeyRight: 2, ebiten.KeyDown: 3, ebiten.KeyLeft: 4,
-		ebiten.KeyDigit1: 1, ebiten.KeyDigit2: 2, ebiten.KeyDigit3: 3, ebiten.KeyDigit4: 4,
-	}
-
-	// 建立角色中(蓋在名冊之上)
-	if g.create != nil {
-		g.createRunes(ebiten.AppendInputChars(nil))
-		for _, k := range inpututil.AppendJustPressedKeys(nil) {
-			g.createKey(k)
-			if g.create == nil {
-				break
-			}
-		}
-		return nil
-	}
-
-	// 名冊中。docs/spec/15 §4:ESC 回哪裡由 g.shell.mode 決定,
-	// rosterKey 本身不記「是從哪裡打開的」——見 openMainMenu 的說明。
-	if g.roster != nil && g.roster.open {
-		for _, k := range g.pressedKeys() {
-			g.rosterKey(k)
-		}
-		return nil
-	}
-
-	// 外殼接管畫面:標題 / 主選單 / 隊伍選擇 / 全滅 / 結局(docs/spec/15)。
-	// ⚠ 放在 create/roster 之後 —— C)har Utilities 蓋在主選單上時,
-	// 上面兩個檢查已經先接手,不會落到這裡;roster 關閉後(ESC)
-	// g.shell.mode 沒被動過,下一輪 Update() 才會再落到這裡,
-	// 也就自然「回到主選單」。
-	if g.shell != nil && g.shell.mode != shellPlaying {
-		return g.shellUpdate()
-	}
-
-	// 城鎮中
-	if g.town != nil && g.town.mode != townClosed {
-		for _, k := range inpututil.AppendJustPressedKeys(nil) {
-			if k == ebiten.KeyEscape && g.town.mode == townBuildings {
-				g.town = nil
-				break
-			}
-			g.townKey(k)
-		}
-		return nil
-	}
-
-	// 迷宮機關問問題中(蓋在迷宮之上)
-	if g.prompt != nil {
-		g.promptRunes(ebiten.AppendInputChars(nil))
-		for _, k := range inpututil.AppendJustPressedKeys(nil) {
-			g.promptKey(k)
-			if g.prompt == nil {
-				break
-			}
-		}
-		return nil
-	}
-
-	// 迷宮中
-	if g.level != nil {
-		for key, d := range dirs {
-			if inpututil.IsKeyJustPressed(key) {
-				g.stepMaze(maze.Facing(d))
-			}
-		}
-		if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
-			// ⚠ 原版怎麼離開迷宮**未解**(docs/re/146 §2)。
-			// 實跑已經排除 `ESC` 與 `E`(兩者在原版的迷宮裡都沒有作用),
-			// `Q` 是離開遊戲。這裡沿用 ESC 是**本引擎的選擇**,不是原版行為。
-			g.level = nil
-		}
-		// docs/spec/18 §3.2 MazeFile + 驗收 4:原版在迷宮裡也存得了檔
-		// (GROUPS.DAT 位移 79/81 就是為此存在的)。現行引擎先前只有在世界
-		// 地圖上才接 S 鍵,是缺口不是原版限制 —— 補上之後 g.save() 會
-		// 記住現在在哪座迷宮的哪一格(見 save() 的說明)。
-		if g.pressed(ebiten.KeyS) {
-			g.party.Tick()
-			if err := g.save(); err != nil {
-				g.saveMsg = "存檔失敗:" + err.Error()
-			} else {
-				g.saveMsg = fmt.Sprintf("已存到第 %d 隊(%s)", g.slot, g.savePath)
-			}
-		}
-		if g.pressed(ebiten.KeyA) {
-			g.openSaveAs() // 另存新檔(docs/spec/18 §2 多存檔;save_ui.go)
-		}
-		return nil
-	}
-
-	for key, d := range dirs {
-		if inpututil.IsKeyJustPressed(key) {
-			if g.party.Step(world.Facing(d), g.world) == world.Moved {
-				// 踩到地城入口 → 進迷宮(docs/spec/08 §6)
-				if g.enterMaze(g.party.X, g.party.Y) {
-					return nil
-				}
-				// 踩到城鎮 → 進城(docs/spec/11 §2)
-				if v := g.world.At(g.party.X, g.party.Y); v >= 30 && v <= 32 {
-					if g.enterTown(g.party.X, g.party.Y) {
-						return nil
-					}
-				}
-				// docs/formats/02 位移 25:歸零時觸發遭遇檢查
-				if g.party.Encounter == 0 {
-					g.startCombat()
-				}
-			}
-		}
-	}
-	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
-		// ⚠ **存檔也推進時鐘一格**(docs/re/149:只按 S 不移動,位移 33 仍 +1)。
-		// 這不是直覺的行為 —— 但三次量測都吻合「每個動作一格」。
-		g.party.Tick()
-		if err := g.save(); err != nil {
-			g.saveMsg = "存檔失敗：" + err.Error()
-		} else {
-			g.saveMsg = fmt.Sprintf("已存到第 %d 隊(%s)", g.slot, g.savePath)
-		}
-	}
-	if g.pressed(ebiten.KeyA) {
-		g.openSaveAs() // 另存新檔(docs/spec/18 §2 多存檔;save_ui.go)
 	}
 	return nil
 }
@@ -717,71 +453,13 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		return
 	}
 
-	// 戰鬥與迷宮各自接管主視野。
-	inCombat := g.field != nil
-	inMaze := g.level != nil && !inCombat
-	inTown := g.town != nil && g.town.mode != townClosed && !inCombat && !inMaze
-	inRoster := (g.roster != nil && g.roster.open) || g.create != nil
-
-	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
-	const half = layout.ViewTiles / 2
-	for vy := 0; !inCombat && !inMaze && !inTown && !inRoster && vy < layout.ViewTiles; vy++ {
-		for vx := 0; vx < layout.ViewTiles; vx++ {
-			mx, my := g.party.X-half+vx, g.party.Y-half+vy
-			v := g.world.At(mx, my)
-			px := float32(layout.View.X + vx*layout.TileDst)
-			py := float32(layout.View.Y + vy*layout.TileDst)
-
-			// 值 11(海洋,全圖 55.63%)原版**一個像素都不畫**
-			// (docs/re/132 §1),顯示的就是底色。這裡同樣什麼都不做 ——
-			// 畫一張「海的圖」會讓畫面比原版多東西。
-			if src, _ := original.WorldTileOrigin(v); src == original.SrcBackdrop {
-				continue
-			}
-
-			if img, ok := g.tiles[v]; ok {
-				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Scale(layout.ArtScale, layout.ArtScale)
-				op.GeoM.Translate(float64(px), float64(py))
-				// 最近鄰 —— 整數倍放大不該有插值(docs/spec/04 §1)。
-				op.Filter = ebiten.FilterNearest
-				screen.DrawImage(img, op)
-			} else {
-				g.noSrc[v] = true
-				vector.DrawFilledRect(screen, px, py,
-					layout.TileDst, layout.TileDst, missing, false)
-			}
-		}
+	// 圖層順序是一張表(scene.go 的 drawOrder)。**每一格全部都畫** ——
+	// 各場景自己判斷該不該畫,這與重構前逐一呼叫 drawXxx() 的行為相同。
+	// ⚠ 與 inputChain 的順序不同,而且不該一致:戰鬥吃鍵最優先,
+	// 但畫在迷宮之上、覆蓋層之下。
+	for _, sc := range g.drawOrder() {
+		sc.Draw(screen)
 	}
-
-	if !inCombat && !inMaze && !inTown && !inRoster {
-		// 隊伍所在格的框
-		c := float32(layout.View.X + half*layout.TileDst)
-		r := float32(layout.View.Y + half*layout.TileDst)
-		vector.StrokeRect(screen, c, r, layout.TileDst, layout.TileDst, 3, cgaWhite, false)
-	}
-
-	frame := func(rc layout.Rect) {
-		vector.StrokeRect(screen, float32(rc.X), float32(rc.Y),
-			float32(rc.W), float32(rc.H), 2, cgaWhite, false)
-	}
-	frame(layout.View)
-	frame(layout.Party)
-	frame(layout.Message)
-	frame(layout.Prompt)
-
-	g.drawParty(screen)
-	g.drawMaze(screen)
-	g.drawTown(screen)
-	g.drawRoster(screen)
-	g.drawCreate(screen)
-	g.drawSkillAlloc(screen)
-	g.drawCombat(screen)
-	g.drawCastMenu(screen)
-	g.drawUseMenu(screen) // use_item.go
-	g.drawOverlay(screen)
-	g.drawPrompt(screen)
-	g.drawSaveAs(screen)
 
 	// M2 還沒有字型(docs/spec/04 §4 的 TTF 是 M3 之後),
 	// 所以狀態暫時走 Ebitengine 的除錯字。**這不是最終呈現。**

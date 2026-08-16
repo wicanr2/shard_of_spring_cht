@@ -45,6 +45,7 @@ run() {
     -e HOME=/tmp -e GOCACHE=/gocache/build -e GOMODCACHE=/gocache/mod \
     -e GOFLAGS=-buildvcs=false \
     -e SHARD_ASSETS=/assets \
+    -e SHOT_DIR -e SHOT_ASSETS -e SHARD_NOSOUND \
     --memory 4g --pids-limit 512 \
     ${NET_ARGS[@]+"${NET_ARGS[@]}"} \
     -v "$ROOT/engine":/src \

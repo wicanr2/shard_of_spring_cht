@@ -107,6 +107,12 @@ type Result struct {
 	Fail       Fail
 	Message    string
 	Unresolved bool // 效果未解 —— 訊息會標出來,而且不套用任何數值
+	// NoEffect = 這一次什麼都沒發生(威力 0、沒有狀態可解、沒有被束縛)。
+	//
+	// ⚠ 有這個旗標是因為**原版對同一件事有好幾句話**:戰鬥是
+	// CMBT:128/129、營地是 CAMP:106/108,措辭與標點都不同。
+	// 呼叫端照自己的情境挑句子,⛔ 不要在這裡把它們併成一句。
+	NoEffect bool
 }
 
 // 效果類別。docs/formats/04。
@@ -210,7 +216,7 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		if p == 0 {
 			// CMBT:128/129「notices no difference.」—— 威力算出來是 0,
 			// 屬性一點都沒動。⛔ 不要印「力量 +0」,那看起來像有效果。
-			return Result{Message: name + "：" + MsgNoDifference}
+			return Result{Message: name + "：" + MsgNoDifference, NoEffect: true}
 		}
 		attr := map[int]string{
 			EffStrength: "力量", EffHitPoints: "生命值", EffSpeed: "速度",
@@ -244,7 +250,7 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		}
 		if cured == 0 {
 			// CMBT:132/133 —— 本來就沒有狀態,治了等於沒治。
-			return Result{Message: name + "：" + MsgNoDifference}
+			return Result{Message: name + "：" + MsgNoDifference, NoEffect: true}
 		}
 		// CAMP:105「Is cured.」
 		return Result{Message: name + "：被治癒了。"}
@@ -261,7 +267,7 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		if freed == 0 {
 			// CMBT:134–138「is not bound in chains and still air and ice and
 			// notices no effect」
-			return Result{Message: name + "：" + MsgNotBound}
+			return Result{Message: name + "：" + MsgNotBound, NoEffect: true}
 		}
 		// CMBT:130「Breaks free!」
 		return Result{Message: name + "：掙脫了!"}

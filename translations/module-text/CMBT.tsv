@@ -40,8 +40,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 88	ds:989E	Which spell do	14	要施放	6	Y		engine/cast_scene.go
 89	ds:98B0	you wish to cast?	17	哪個法術?	9	Y		engine/cast_scene.go
 90	ds:98C6	 (ENTER exits)	14	(ENTER離開)	11	Y		engine/cast_scene.go
-91	ds:98DE	 There is no     	17	沒有這個 	9	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。引擎用字母選單,選不到不存在的法術。	
-92	ds:98F4	 such spell!     	17	法術!	5	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 91 列。	
+91	ds:98DE	 There is no     	17	沒有這個 	9	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。引擎用字母選單,選不到不存在的法術。	engine/cast_scene.go
+92	ds:98F4	 such spell!     	17	法術!	5	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 91 列。	engine/cast_scene.go
 93	ds:990C	 That is not a   	17	那不是	6	Y		engine/cast_scene.go
 94	ds:9922	 combat spell!   	17	戰鬥法術!	9	Y		engine/cast_scene.go
 95	ds:993A	 You don't know  	17	你不會	6	Y		engine/cast_scene.go

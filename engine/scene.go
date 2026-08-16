@@ -262,7 +262,10 @@ func (s castMenuScene) Update(in Input) Transition {
 		}
 		return TransitionStay
 	}
-	for i := 0; i < len(g.castPageSpells()) && i < 26; i++ {
+	// ⚠ 掃**全部 26 個字母**而不是只掃這一頁有幾個 —— 按到清單以外的字母
+	// 要走 pickSpell 的「沒有這個法術!」那一支(CMBT:91/92),
+	// 只掃有效範圍的話那句話永遠不會出現。
+	for i := 0; i < 26; i++ {
 		if in.Pressed(ebiten.KeyA + ebiten.Key(i)) {
 			g.pickSpell(i)
 			break

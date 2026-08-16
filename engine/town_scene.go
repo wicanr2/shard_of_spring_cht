@@ -811,6 +811,13 @@ func (g *Game) healMember(i int, k town.HealKind) {
 // trainMember 讓第 i 位成員在訓練所升級。
 func (g *Game) trainMember(i, guildExtra int) {
 	c := &g.members[i]
+	// TOWN:39「This character is incapacitated!」——⚠ 與營地那一句
+	// (CAMP:131,句號結尾)是**兩個地方**,原版分成兩份字串。
+	// 門檻沿用同一個(`> 1`,docs/re/166 §7)——那是**讀到的**。
+	if c.Status > town.MaxActiveStatus {
+		g.town.msg = c.Name + "：這位角色行動不能!"
+		return
+	}
 	exp := g.charExp(*c)
 	before := town.AttrSnapshot(*c)
 	hpBefore, spBefore := c.MaxHP, c.MaxSP

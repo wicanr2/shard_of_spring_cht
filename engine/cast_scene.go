@@ -30,6 +30,7 @@ import (
 // 那些檢查才有機會發生 —— 少了它們,玩家永遠不知道自己為什麼施不出某個法術。
 const (
 	castMenuHead   = "要施放哪個法術?(ENTER離開)" // 88+89+90
+	castNoSuchSpell = "沒有這個 法術!"            // 91+92
 	castNotCombat  = "那不是戰鬥法術!"           // 93+94
 	castNoSkill    = "你不會那個法術!"            // 95+96
 	castNotWizard  = " 不是巫師,無法施放法術。"    // 84+85+86+87
@@ -91,6 +92,9 @@ const castPageSize = 20
 func (g *Game) pickSpell(n int) {
 	page := g.castPageSpells()
 	if n < 0 || n >= len(page) {
+		// CMBT:91+92「 There is no such spell!」—— 原版問的是法術名稱,
+		// 打錯就回這一句;引擎的對應是**按到清單以外的字母**。
+		g.field.Log = append(g.field.Log, castNoSuchSpell)
 		return
 	}
 	s := page[n]

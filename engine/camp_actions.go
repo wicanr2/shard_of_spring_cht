@@ -218,8 +218,14 @@ func (g *Game) castInCamp(casterIdx, targetIdx int) {
 	if casterIdx == targetIdx {
 		verb = "對自己 "
 	}
+	msg := r.Message
+	if r.NoEffect {
+		// CAMP:108「 notices no change!」——⚠ 原版對「什麼都沒發生」
+		// 在**營地與戰鬥各有一句**(戰鬥是 CMBT:128/129),措辭與標點都不同。
+		msg = target.Name + " 沒有感到任何變化!"
+	}
 	ts.msg = fmt.Sprintf("%s %s施放「%s」(投入 %d)：%s",
-		caster.Name, verb, s.Name, invest, r.Message)
+		caster.Name, verb, s.Name, invest, msg)
 }
 
 // campUnit 把一個 Character 包成一個用完即丟的 combat.Unit,純粹是為了

@@ -120,7 +120,8 @@ func (g *Game) useItemOn(who, slot, target int) {
 		r := magic.Apply(s, invest, &cUnit, []*combat.Unit{&cUnit})
 		applyCampUnit(c, cUnit)
 		g.syncMember(*c)
-		ts.msg = fmt.Sprintf("%s 用了%s,發動了「%s」：%s", c.Name, name, s.Name, r.Message)
+		ts.msg = fmt.Sprintf("%s 用了%s,發動了「%s」：%s",
+			c.Name, name, s.Name, campNoChange(r))
 		return
 	}
 
@@ -131,7 +132,22 @@ func (g *Game) useItemOn(who, slot, target int) {
 	r := magic.Apply(s, invest, &casterUnit, []*combat.Unit{&targetUnit})
 	applyCampUnit(tgt, targetUnit)
 	g.syncMember(*tgt)
-	ts.msg = fmt.Sprintf("%s 把%s交給 %s,發動了「%s」：%s", c.Name, name, tgt.Name, s.Name, r.Message) // CAMP:92 的 G)ive
+	ts.msg = fmt.Sprintf("%s 把%s交給 %s,發動了「%s」：%s",
+		c.Name, name, tgt.Name, s.Name, campNoChange(r)) // CAMP:92 的 G)ive
+}
+
+// campNoChange 是營地**用道具**那一條路的「什麼都沒發生」措辭(CAMP:106)。
+//
+// ⚠ 原版對同一件事有好幾句話,而且**依情境分**:營地用道具是
+// `Notices no change`(CAMP:106)、營地施法是 ` notices no change!`
+// (CAMP:108,camp_actions.go)、戰鬥是 CMBT:128/129。
+// ⚠ **哪一句對哪一條路沒有讀到** —— 這個分派是引擎依「原版有兩句所以
+// 有兩個呼叫點」推的,⛔ 不要當成讀出來的結論。
+func campNoChange(r magic.Result) string {
+	if r.NoEffect {
+		return "沒有感到變化"
+	}
+	return r.Message
 }
 
 // campPotionKey 處理營地「自己/給別人」子流程的一次按鍵。

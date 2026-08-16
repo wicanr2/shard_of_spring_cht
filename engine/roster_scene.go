@@ -273,7 +273,7 @@ func (g *Game) rosterJoin() {
 		return
 	}
 	r.joinPick = true
-	r.msg = "編進第幾隊?按 1–5(ESC 取消)"
+	r.msg = "編進第幾隊(1–5)(ESC離開)?" // CHARUTIL:23
 }
 
 // rosterJoinPick 處理「編進第幾隊」的回答。

@@ -531,10 +531,16 @@ func main() {
 
 	g, err := loadStatic(*assets, *fontPath, *seed)
 	if err != nil {
-		// 原版遇到讀不到資料檔時就是這一句(CMBT:172 / CAMP:87 / TOWN:75)。
+		// 原版有**兩句**:資料檔壞掉(CMBT:172 / CAMP:87)與磁片有問題
+		// (TOWN:75)。引擎的對應是「檔案讀得到但解不開」與「整個資產目錄
+		// 根本不在」——後者對玩家而言就是「你的磁片有問題」那一類。
 		// ⚠ 底下兩行是**本引擎加的**:原版叫玩家「重新還原」磁片,
 		// 而這裡的對應動作是重跑轉換器,所以錯誤本身與怎麼修都要印出來。
-		fmt.Fprintln(os.Stderr, "啊咧!資料檔好像出了問題,請重新還原!")
+		if _, statErr := os.Stat(*assets); statErr != nil {
+			fmt.Fprintln(os.Stderr, "啊咧!你的磁片好像有問題!")
+		} else {
+			fmt.Fprintln(os.Stderr, "啊咧!資料檔好像出了問題,請重新還原!")
+		}
 		fmt.Fprintln(os.Stderr, "  ", err)
 		fmt.Fprintln(os.Stderr, "  請先跑:go run ./cmd/convert -in <原版> -out assets")
 		os.Exit(1)

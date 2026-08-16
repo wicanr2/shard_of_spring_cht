@@ -1,7 +1,7 @@
 row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 17	ds:8E98	DEAD	4	死亡	4	Y		engine/internal/original/chars.go
-29	ds:9062	One momement..	14	稍候……	6	Y	原文拼字錯誤 'momement',譯文取正確語意('moment')。	
-32	ds:9098	One momement..	14	稍候……	6	Y	原文拼字錯誤 'momement',譯文取正確語意('moment')。	
+29	ds:9062	One momement..	14	稍候……	6	Y	⛔ 不接:`One momement..` 是**換磁片/讀檔的等待**訊息,引擎讀檔是瞬間的 —— 印出來會是一句立刻消失的假話。START:0 同樣沒有讀取畫面,但那一句有 stderr 可以印,這一句沒有對應的時機。	
+32	ds:9098	One momement..	14	稍候……	6	Y	⛔ 同 29 列。	
 35	ds:9164	Enter gem to	12	輸入要碰觸的	12	Y		engine/maze_prompt.go
 36	ds:9174	touch (B,G,V,R)	15	寶石(B,G,V,R)	13	Y		engine/maze_prompt.go
 37	ds:9188	or ESC	6	或按ESC	7	7		engine/maze_prompt.go

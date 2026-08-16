@@ -75,9 +75,9 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 103	ds:7754	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
 104	ds:7786	Lives !	7	活過來了!	9	9		engine/internal/magic/magic.go
 105	ds:7796	Is cured.	9	被治癒了。	10	10		engine/internal/magic/magic.go
-106	ds:77A4	Notices no change	17	沒有感到變化	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。與 CMBT:128/129 同一句,標點不同 —— 引擎用 magic.MsgNoDifference(CMBT 那一份)。	
+106	ds:77A4	Notices no change	17	沒有感到變化	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。與 CMBT:128/129 同一句,標點不同 —— 引擎用 magic.MsgNoDifference(CMBT 那一份)。	engine/use_item.go
 107	ds:77BA	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
-108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。同 106 列。	
+108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。同 106 列。	engine/camp_actions.go
 109	ds:780A	A roaring blast of wind buffets the party and when the noise subsides...	72	一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……	41	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。營地放某個法術之後的敘述(狂風),**是哪一個法術沒讀到**。	
 127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 CMBT:22(道具損壞)。	
 128	ds:7A2A	Spell Fails !	13	法術失效!	9	Y		engine/use_item.go

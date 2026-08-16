@@ -166,8 +166,16 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 		y += lh
 	}
 
-	// TOWN:49/50「You have N points left.」(F3)。
-	line(fmt.Sprintf("%s　你還剩 %d 點可分配。", c.Name, c.SkillPts))
+	// 原版有**兩份**這句話,因為技能點畫面有兩個入口:
+	// 創角走 `CHARUTIL`(第 30/32 列 `Skills left:`)、升級走 `TOWN`
+	// (第 49/50 列 `You have N points left.`)。引擎的畫面是同一個,
+	// 所以照**進入點**挑措辭 —— memberIdx < 0 就是創角那一條路
+	// (finishCreate 傳 −1,trainMember 傳隊員索引)。
+	if a.memberIdx < 0 {
+		line(fmt.Sprintf("%s　剩餘技能點：%d", c.Name, c.SkillPts))
+	} else {
+		line(fmt.Sprintf("%s　你還剩 %d 點可分配。", c.Name, c.SkillPts))
+	}
 	y += lh * 0.5
 
 	class := rules.Class(c.Class)

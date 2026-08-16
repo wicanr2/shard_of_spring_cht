@@ -508,6 +508,9 @@ func keys(m map[int]bool) []int {
 
 func (g *Game) Layout(int, int) (int, int) { return layout.ScreenW, layout.ScreenH }
 
+// startupBanner 是原版開機那一行(START:0)。
+const startupBanner = "正在載入《春之石》,(c) 1986-1987 by Strategic Simulations Inc."
+
 func main() {
 	assets := flag.String("assets", "assets", "資產資料夾(由 cmd/convert 產生)")
 	// docs/spec/15 §1:預設走標題 → 主選單 → 隊伍選擇。-slot 只是除錯捷徑。
@@ -521,6 +524,10 @@ func main() {
 	saveDir := flag.String("save", "",
 		"存檔目錄(docs/spec/18 §2)。留空 = 資產目錄旁邊的 saves/")
 	flag.Parse()
+
+	// START:0 —— 原版開機時印的那一行。引擎**沒有讀取畫面**(標題只印
+	// `(c)` 那半句),所以這一句印到 stderr,同 WRLDMOVE:19 的道別做法。
+	fmt.Fprintln(os.Stderr, startupBanner)
 
 	g, err := loadStatic(*assets, *fontPath, *seed)
 	if err != nil {

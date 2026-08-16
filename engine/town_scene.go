@@ -277,8 +277,10 @@ func (g *Game) townKey(k ebiten.Key) {
 			for i := 0; i < town.CampSleepHours; i++ {
 				g.party.Clock.Tick()
 			}
-			// CAMP:54「You have slept !」+ CAMP:56「You sleep...」
-			ts.msg = fmt.Sprintf("你們睡了一覺!吃掉 %d 份食糧(剩 %d)",
+			// 原版是**先後兩句**:睡下去印 CAMP:56「You sleep...」,
+			// 醒來印 CAMP:54「You have slept !」。引擎沒有中間的等待,
+			// 兩句排在同一行。
+			ts.msg = fmt.Sprintf("你們睡下了……你們睡了一覺!吃掉 %d 份食糧(剩 %d)",
 				before-g.group.Provisions, g.group.Provisions)
 			// CAMP:137 / TOWN:81「dies in the night.」—— 中毒或沒得吃的人
 			// 可能撐不過去。⚠ 不講的話玩家隔天才會發現少了一個人。

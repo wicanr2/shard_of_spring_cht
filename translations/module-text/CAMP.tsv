@@ -32,7 +32,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 53	ds:71F2	Dropped ! 	10	已丟棄! 	8	Y		engine/town_scene.go
 54	ds:7200	You have slept !	16	你們睡了一覺!	13	Y		engine/town_scene.go
 55	ds:7216	You are not tired	17	你們還不累	10	Y		engine/town_scene.go
-56	ds:722C	You sleep...	12	你們睡了一覺……	14	14	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。`You sleep...` 與 CAMP:54 `You have slept !` 是同一件事的兩句,引擎用 54。	
+56	ds:722C	You sleep...	12	你們睡下了……	14	14	原版是**先後兩句**:睡下去印這一句、醒來印 CAMP:54 `You have slept !`。⚠ 先前兩句譯成同一個中文,分不出來 —— 這一句改成「睡下了」保住那個先後。	engine/town_scene.go
 58	ds:724A	Character # wishing to identify? (ESC exits)	44	哪位角色要鑑定?(ESC離開)	24	Y		engine/town_scene.go
 60	ds:7284	Item to ID ?	12	要鑑定哪件?	11	Y		engine/town_scene.go
 61	ds:729C	You are not trained in that lore!	33	你沒有受過這方面的知識訓練!	27	Y		engine/town_scene.go
@@ -45,9 +45,9 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 68	ds:735C	Enter new 	10	輸入新的	8	Y		engine/town_scene.go
 69	ds:736A	position for:	13	位置給：	8	Y		engine/town_scene.go
 70	ds:737C	 Letter?	8	 字母?	6	Y		engine/town_scene.go
-71	ds:7388	  A B C 	8	  A B C 	8	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。原版把背包畫成 3×3 的字母格,引擎直接列道具名稱。	
-72	ds:7394	  D E F 	8	  D E F 	8	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 71 列。	
-73	ds:73A0	  G H I 	8	  G H I 	8	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 71 列。	
+71	ds:7388	  A B C 	8	  A B C 	8	Y	⛔ **不接,而且不是版面偏好**:原版的格子圖只有 **9 個字母**(A–I),而背包是 **10 格**(docs/re/144 §3,手冊 p.39 也寫 10 件)—— 照畫會少掉第 10 格,而畫面上看起來完全正常。引擎改列道具名稱,10 格都列得到。	
+72	ds:7394	  D E F 	8	  D E F 	8	Y	⛔ **不接,而且不是版面偏好**:原版的格子圖只有 **9 個字母**(A–I),而背包是 **10 格**(docs/re/144 §3,手冊 p.39 也寫 10 件)—— 照畫會少掉第 10 格,而畫面上看起來完全正常。引擎改列道具名稱,10 格都列得到。	
+73	ds:73A0	  G H I 	8	  G H I 	8	Y	⛔ **不接,而且不是版面偏好**:原版的格子圖只有 **9 個字母**(A–I),而背包是 **10 格**(docs/re/144 §3,手冊 p.39 也寫 10 件)—— 照畫會少掉第 10 格,而畫面上看起來完全正常。引擎改列道具名稱,10 格都列得到。	
 75	ds:73BC	Character # to cast spell ? (ESC exits)	39	哪位角色要施法?(ESC離開)	24	Y		engine/town_scene.go
 76	ds:73EC	Cast what spell?	16	施放哪個法術?	13	Y		engine/camp_actions.go
 77	ds:7400	(ENTER exits)	13	(ENTER離開)	11	Y		engine/camp_actions.go

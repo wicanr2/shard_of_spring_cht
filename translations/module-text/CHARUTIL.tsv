@@ -3,8 +3,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 8	ds:6AEC	Please enter the new name (9 char max): 	40	請輸入新名字(最多9個字元)：	27	Y	⚠ 與 TITLES.DAT 第89列 'name (10 char)' 矛盾,見 docs/spec/19-module-text.md §4;裁決前不動引擎現行的 10。	
 22	ds:6BCC	You must remove a character before adding any more!	51	必須先移除一位角色才能再新增!	29	Y		engine/internal/town/create.go
 23	ds:6C06	(ESC exits) ?	13	(ESC離開)?	10	Y	原版另一個畫面的離開提示(結尾 `?` 貼著括號),引擎沒有那一步。	
-30	ds:6C58	Skills left:	12	剩餘技能點：	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。`Skills left:` 與 TOWN:49/50 是同一個技能點畫面的兩份措辭,引擎用 TOWN 那一份。	
-32	ds:6C7E	Skills left:	12	剩餘技能點：	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。同 30 列。	
+30	ds:6C58	Skills left:	12	剩餘技能點：	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。`Skills left:` 與 TOWN:49/50 是同一個技能點畫面的兩份措辭,引擎用 TOWN 那一份。	engine/skill_alloc_scene.go
+32	ds:6C7E	Skills left:	12	剩餘技能點：	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。同 30 列。	engine/skill_alloc_scene.go
 33	ds:6C96	Do you wish to keep this character (Y/N) ?	42	要保留這位角色嗎?(Y/N)	22	Y		engine/create_scene.go
 39	ds:6D18	Party #	7	隊伍 #	6	Y		engine/roster_scene.go
 40	ds:6D24	Gold:	5	金幣：	6	Y		engine/party_panel.go

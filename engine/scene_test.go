@@ -32,7 +32,7 @@ import (
 func TestInputChainOrder(t *testing.T) {
 	want := []string{
 		"overlay",
-		"cast-cursor", "combat-potion", "cast-menu", "use-menu", "combat",
+		"cast-cursor", "combat-potion", "cast-sp", "cast-menu", "use-menu", "combat",
 		"save-as", "skill-alloc",
 		"roster-hotkey",
 		"create", "roster", "shell",
@@ -139,6 +139,27 @@ func TestT3EveryScenePressReacts(t *testing.T) {
 				}
 				if g.cursor.x != 6 {
 					return "K 應該把游標往右移一格"
+				}
+				return ""
+			},
+		},
+		{
+			// CMBT:101「 # SP ? 」—— 投入幾點法力那一步。
+			// ⚠ 這一步先前不存在(固定投一級),而投入量會改變威力與狀態強度。
+			scene: "cast-sp",
+			setup: func(t *testing.T) *Game {
+				g := newFightingGame(t)
+				g.castUnit = combat.PartyBase
+				g.castSP = &castSPState{spell: original.Spell{Name: "FIREBALL", UnitCost: 2}}
+				return g
+			},
+			keys: []ebiten.Key{ebiten.KeyDigit4},
+			want: func(g *Game) string {
+				if g.castSP == nil {
+					return "投入點數那一步不該被關掉"
+				}
+				if g.castSP.input != "4" {
+					return "按 4 應該把 4 收進輸入緩衝"
 				}
 				return ""
 			},

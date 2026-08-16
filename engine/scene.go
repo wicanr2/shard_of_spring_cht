@@ -104,6 +104,7 @@ func (g *Game) inputChain() []Scene {
 		overlayScene{g},
 		castCursorScene{g},
 		combatPotionScene{g},
+		castSPScene{g},
 		castMenuScene{g},
 		useMenuScene{g},
 		combatScene{g},
@@ -134,6 +135,7 @@ func (g *Game) drawOrder() []Scene {
 		skillAllocScene{g},
 		combatScene{g},
 		castMenuScene{g},
+		castSPScene{g},
 		useMenuScene{g},
 		overlayScene{g},
 		mazePromptScene{g},
@@ -164,7 +166,8 @@ func (s overlayScene) Update(in Input) Transition {
 type castCursorScene struct{ g *Game }
 
 func (s castCursorScene) Prompt() string {
-	return "I／J／K／M：移動游標　　空白鍵：施放　　ESC：取消"
+	// CMBT:118+119「Where do you want to cast it?」+ 114「(ESC to Exit)」
+	return castWhere + castEscExit + "　方向鍵／I・J・K・M：移動游標　　空白鍵：施放"
 }
 func (s castCursorScene) Name() string       { return "cast-cursor" }
 func (s castCursorScene) Handles(Input) bool { return s.g.field != nil && s.g.cursor != nil }
@@ -194,22 +197,61 @@ func (s combatPotionScene) Update(in Input) Transition {
 	return TransitionStay
 }
 
-// castMenuScene:施法選單開著時只吃字母。
+// castSPScene 是施法的「投入幾點法力」那一步(CMBT:101)。
+//
+// ⚠ 排在 castMenuScene **前面**:兩者不會同時開著(進這一步時 castList 已清空),
+// 但派工表的順序是規格的一部分,把子步驟放在它的母步驟前面比較不會出錯。
+type castSPScene struct{ g *Game }
+
+func (s castSPScene) Prompt() string {
+	return "數字：投入點數　　Enter：確認　　Backspace：修改　　ESC：取消"
+}
+func (s castSPScene) Name() string         { return "cast-sp" }
+func (s castSPScene) Handles(Input) bool   { return s.g.field != nil && s.g.castSP != nil }
+func (s castSPScene) Draw(d *ebiten.Image) { s.g.drawCastSP(d) }
+func (s castSPScene) Update(in Input) Transition {
+	for _, k := range in.Keys {
+		if s.g.castSPKey(k) {
+			break
+		}
+	}
+	return TransitionStay
+}
+
+// castMenuScene:施法選單開著時只吃字母與翻頁鍵。
 type castMenuScene struct{ g *Game }
 
-func (s castMenuScene) Prompt() string       { return "字母：選法術　　ESC：取消" }
+func (s castMenuScene) Prompt() string {
+	return "字母：選法術　　PgDn／PgUp：翻頁　　ENTER／ESC：離開"
+}
 func (s castMenuScene) Name() string         { return "cast-menu" }
 func (s castMenuScene) Handles(Input) bool   { return s.g.field != nil && len(s.g.castList) > 0 }
 func (s castMenuScene) Draw(d *ebiten.Image) { s.g.drawCastMenu(d) }
 func (s castMenuScene) Update(in Input) Transition {
-	for i := 0; i < len(s.g.castList) && i < 26; i++ {
+	g := s.g
+	// CMBT:113「Hit PgDn key」—— 原版就是用 PgDn 翻法術清單。
+	if in.Pressed(ebiten.KeyPageDown) {
+		if g.castPage+1 < g.castPages() {
+			g.castPage++
+		}
+		return TransitionStay
+	}
+	if in.Pressed(ebiten.KeyPageUp) {
+		if g.castPage > 0 {
+			g.castPage--
+		}
+		return TransitionStay
+	}
+	for i := 0; i < len(g.castPageSpells()) && i < 26; i++ {
 		if in.Pressed(ebiten.KeyA + ebiten.Key(i)) {
-			s.g.pickSpell(i)
+			g.pickSpell(i)
 			break
 		}
 	}
-	if in.Pressed(ebiten.KeyEscape) {
-		s.g.castList = nil
+	// CMBT:90「 (ENTER exits)」—— 原版用 ENTER 離開,ESC 一併收下。
+	if in.Pressed(ebiten.KeyEscape) || in.Pressed(ebiten.KeyEnter) ||
+		in.Pressed(ebiten.KeyKPEnter) {
+		g.castList = nil
 	}
 	return TransitionStay
 }

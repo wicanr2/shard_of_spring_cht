@@ -35,7 +35,10 @@ func (g SkillGate) String() string {
 	case SkillSpent:
 		return "你今天已經用過那項技能了。"
 	case SkillDisabled:
-		return "這位角色行動不能!" // TOWN:39 / CAMP:131
+		// CAMP:131「That character is incapacitated.」
+		// ⚠ TOWN:39 是同一句但結尾是 `!` —— 那是**城鎮**(治療所/訓練所)的閘門,
+		// 引擎沒有那一道,所以這裡只照 CAMP 那一份。
+		return "這位角色行動不能。"
 	case SkillIndoors:
 		return "你在室內!"
 	}

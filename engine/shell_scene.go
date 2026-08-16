@@ -382,6 +382,10 @@ const shellKeyHelp = "按鍵表：" +
 // 標明「未盤到」不要假裝是原版的。
 const endingText = "希瑞雅妮（Siriadne）已經倒下,春之碎片重歸完整。"
 
+// credits 是原版 `P)rogram Notes` 那一頁的製作群謝辭(MENU:93)。
+const credits = "謹以此獻給 Lori Proudfoot。與 Applied Computing Services, Inc. " +
+	"共同開發完成。全部使用 Microsoft QuickBasic v3.0 撰寫。"
+
 // endingThanks 是原版跑完結局印的謝幕詞(MENU:148)——**這一句是原版的**,
 // 與上面那段佔位不同。⚠ 分成兩個常數不是排版偏好:ui.Wrap 不處理 `\n`,
 // 併成一個字串會把換行當成一個有寬度的字排進去。
@@ -437,11 +441,9 @@ func (g *Game) drawTitle(dst *ebiten.Image) {
 		drawCenter(g.panel, dst, "MS DOS 版由 Digital Illusions, Inc. 移植／繁體中文 remake", cx, y)
 		y += g.panel.LineHeight() * 1.6
 		// MENU:93 —— 原版的製作群謝辭,原本印在 P)rogram Notes 那一頁。
-		for _, ln := range []string{
-			"謹以此獻給 Lori Proudfoot。",
-			"與 Applied Computing Services, Inc. 共同開發完成。",
-			"全部使用 Microsoft QuickBasic v3.0 撰寫。",
-		} {
+		// ⚠ **整段是一個常數**:譯文的單一真相是 TSV 那一列,
+		// 拆成三個字串會讓 tools/check_module_text.py 對不上(而畫面看起來沒事)。
+		for _, ln := range ui.Wrap(credits, 46) {
 			drawCenter(g.panel, dst, ln, cx, y)
 			y += g.panel.LineHeight()
 		}

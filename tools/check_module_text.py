@@ -20,10 +20,21 @@
 """
 import csv
 import pathlib
+import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MODULE_TEXT_DIR = ROOT / "translations" / "module-text"
+
+
+# Go 的長字串常常寫成 `"前半" +\n\t"後半"`。逐字比對看到的是兩段,
+# 而畫面上是一段 —— 這裡先把跨行接起來,不然「譯文太長」本身就會變成
+# 一條假的「沒接」。⚠ 只動比對用的副本,不動檔案。
+_GO_JOIN = re.compile(r'"\s*\+\s*(?://[^\n]*\n\s*)?"')
+
+
+def join_go_strings(text: str) -> str:
+    return _GO_JOIN.sub("", text)
 
 
 def load_rows(path: pathlib.Path):
@@ -42,7 +53,13 @@ def main():
     def read(rel: str) -> str | None:
         if rel not in file_cache:
             p = ROOT / rel
-            file_cache[rel] = p.read_text(encoding="utf-8") if p.is_file() else None
+            if p.is_file():
+                text = p.read_text(encoding="utf-8")
+                if p.suffix == ".go":
+                    text = join_go_strings(text)
+                file_cache[rel] = text
+            else:
+                file_cache[rel] = None
         return file_cache[rel]
 
     wired_ok = 0

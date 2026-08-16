@@ -185,3 +185,79 @@ func TestEffectClassThreeChangesToHit(t *testing.T) {
 	// ⛔ 這條的依據是**讀到的類別 → 屬性欄對應**,不是從
 	// `Becomes clumsy` 這個名字推的 —— docs/spec/09 §3 當初明文禁止那樣做。
 }
+
+// ── F3:法術結果的措辭,以及它翻出來的一條規則 ─────────────────────────
+
+// TestUnbindCoversAllThreeBindingStatuses 釘住「解除束縛吃三種狀態」。
+//
+// ⚠ 這**不是**措辭調整,是規則:引擎原本只解 `Status == 2`。
+// 依據是 CMBT 自己的字串 `is not bound in chains and still air and ice`
+// (CMBT:134–137)—— 原版把三種並列,所以三種都在這個法術的範圍內。
+// 少解兩種在畫面上沒有症狀:凝滯/冰封的角色照樣顯示狀態,
+// 玩家只會以為「這個法術對他沒用」。
+func TestUnbindCoversAllThreeBindingStatuses(t *testing.T) {
+	s := original.Spell{Name: "UNBIND", Effect: EffUnbind}
+	for _, st := range []int{StatusBound, StatusStill, StatusFrozen} {
+		tgt := combat.Unit{Name: "隊員", HP: 10, Status: st, StatMag: 3}
+		r := Apply(s, 1, &combat.Unit{}, []*combat.Unit{&tgt})
+		if tgt.Status != 0 {
+			t.Errorf("狀態 %d 應該被解掉,得到 %d", st, tgt.Status)
+		}
+		if !strings.Contains(r.Message, "掙脫了!") {
+			t.Errorf("狀態 %d 解掉之後要說「掙脫了!」,得到 %q", st, r.Message)
+		}
+	}
+	// 中毒**不算**束縛 —— 那是解毒(類別 9)的事。
+	poisoned := combat.Unit{Name: "隊員", HP: 10, Status: 1}
+	r := Apply(s, 1, &combat.Unit{}, []*combat.Unit{&poisoned})
+	if poisoned.Status != 1 {
+		t.Error("中毒不該被解除束縛清掉")
+	}
+	if !strings.Contains(r.Message, MsgNotBound) {
+		t.Errorf("沒有被束縛時要說原版那一長串,得到 %q", r.Message)
+	}
+}
+
+// TestZeroPowerSaysNoDifference:威力算出來是 0 時不要印「力量 +0」。
+func TestZeroPowerSaysNoDifference(t *testing.T) {
+	s := original.Spell{Name: "STRENGTH", Effect: EffStrength, Power: 0}
+	tgt := combat.Unit{Name: "隊員", HP: 10, Str: 12}
+	r := Apply(s, 1, &combat.Unit{}, []*combat.Unit{&tgt})
+	if tgt.Str != 12 {
+		t.Errorf("威力 0 不該動屬性,力量變成 %d", tgt.Str)
+	}
+	if !strings.Contains(r.Message, MsgNoDifference) {
+		t.Errorf("威力 0 要說「%s」,得到 %q", MsgNoDifference, r.Message)
+	}
+}
+
+// TestCureWithNothingToCureSaysNoDifference:身上沒狀態時解毒等於沒解。
+func TestCureWithNothingToCureSaysNoDifference(t *testing.T) {
+	s := original.Spell{Name: "CURE", Effect: EffCure}
+	ok := combat.Unit{Name: "隊員", HP: 10, Status: 0}
+	if r := Apply(s, 1, &combat.Unit{}, []*combat.Unit{&ok}); !strings.Contains(r.Message, MsgNoDifference) {
+		t.Errorf("沒有狀態可解時要說「%s」,得到 %q", MsgNoDifference, r.Message)
+	}
+	sick := combat.Unit{Name: "隊員", HP: 10, Status: 1}
+	if r := Apply(s, 1, &combat.Unit{}, []*combat.Unit{&sick}); !strings.Contains(r.Message, "被治癒了。") {
+		t.Errorf("真的解掉時要說「被治癒了。」,得到 %q", r.Message)
+	}
+}
+
+// TestDamageSpellReportsDeath:法術打死人要說「並死亡!」(CMBT:122)。
+func TestDamageSpellReportsDeath(t *testing.T) {
+	s := original.Spell{Name: "FIREBALL", Effect: EffSingleDamage, Power: 50}
+	tgt := combat.Unit{Name: "地精", HP: 3, Facing: combat.South, IsMonster: true}
+	r := Apply(s, 1, &combat.Unit{}, []*combat.Unit{&tgt})
+	if tgt.Alive() {
+		t.Fatalf("fixture 失效:50 點傷害應該打死 3 點生命的怪物,剩 %d", tgt.HP)
+	}
+	if !strings.Contains(r.Message, MsgDies) {
+		t.Errorf("打死了要說「%s」,得到 %q", MsgDies, r.Message)
+	}
+	// 沒打死就不要說
+	alive := combat.Unit{Name: "巨龍", HP: 200, Facing: combat.South, IsMonster: true}
+	if r := Apply(s, 1, &combat.Unit{}, []*combat.Unit{&alive}); strings.Contains(r.Message, MsgDies) {
+		t.Errorf("沒打死不該說死了:%q", r.Message)
+	}
+}

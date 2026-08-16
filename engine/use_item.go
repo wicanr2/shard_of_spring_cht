@@ -216,8 +216,8 @@ func (g *Game) openUseItem() bool {
 		return false
 	}
 	if g.points[i] < rules.ActUse.Cost() {
-		g.field.Log = append(g.field.Log,
-			g.field.Units[i].Name+"：行動點數不足,用不了道具")
+		// CMBT:117「to use.」——「行動點數不足」那句的句尾(見 cast_scene.go)。
+		g.field.Log = append(g.field.Log, g.field.Units[i].Name+useNoPoints)
 		return false
 	}
 	idx := i - combat.PartyBase
@@ -378,9 +378,12 @@ func (g *Game) drawUseMenu(dst *ebiten.Image) {
 		name := g.itemDisplayName(g.members[idx], g.combatPotion.slot)
 		switch g.combatPotion.stage {
 		case 1:
-			p.Draw(dst, name+"　你要把藥劑用在 Y)自己身上,還是 T)丟給另一位角色?", x, y) // CMBT:165
+			// CMBT:165 + 167「 (ESC cancels)」
+			p.Draw(dst, name+"　你要把藥劑用在 Y)自己身上,還是 T)丟給另一位角色?(ESC取消)",
+				x, y)
 		case 2:
-			p.Draw(dst, "要丟給哪位角色?　角色 #：", x, y) // CMBT:168/169/170
+			// CMBT:168/169/170 + 115/116「Who do you want to use it on?」
+			p.Draw(dst, "你想對誰使用?　要丟給哪位角色?　角色 #：", x, y)
 			y += lh
 			for i, m := range g.members {
 				// ⚠ 不要把 "%d) %s" 這種格式化字串直接寫在 Draw() 呼叫裡 ——
@@ -394,7 +397,8 @@ func (g *Game) drawUseMenu(dst *ebiten.Image) {
 		return
 	}
 
-	p.Draw(dst, g.field.Units[g.useUnit].Name+" 的道具：", x, y) // CMBT:163「Use: (ESC exits)」
+	// CMBT:163「Use:  (ESC exits)」
+	p.Draw(dst, g.field.Units[g.useUnit].Name+"　使用：(ESC離開)", x, y)
 	y += lh
 	for i, e := range g.useList {
 		if y > float64(layout.Message.Y+layout.Message.H)-lh*2 {

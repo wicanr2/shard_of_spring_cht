@@ -115,6 +115,12 @@ type Game struct {
 	castList []original.Spell
 	// cursor 非 nil = 施法的**選格階段**(手冊 p.34 的 I/J/K/M + 空白鍵)
 	cursor *castCursor
+	// castSP 非 nil = 施法的**投入點數**那一步(CMBT:101「 # SP ? 」)。
+	// ⚠ 這一步先前被跳掉(固定投一級),而投入量會改變威力與狀態強度 ——
+	// 少了它,`SPELLS.DAT` 的單價欄在遊戲裡等於沒有作用。
+	castSP *castSPState
+	// castPage 是法術清單的分頁(CMBT:113 的 PgDn)。
+	castPage int
 
 	// 戰鬥中的 U)se an item + 藥劑「自己/丟給別人」(docs/spec/12-combat-board.md
 	// §5.3、docs/spec/19-coverage.md §2-1)。use_item.go。

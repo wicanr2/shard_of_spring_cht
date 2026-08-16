@@ -26,7 +26,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 36	ds:70A0	Wizard's Guild.	15	巫師公會。	10	Y		engine/town_scene.go
 37	ds:70B4	Which character # seeks advancement in his art (ESC exits) ?	60	哪位角色要精進技藝?(ESC離開)	28	Y		engine/town_scene.go
 38	ds:70FC	You are the wrong class!	24	你的職業不對!	13	Y		engine/internal/town/train.go
-39	ds:712A	This character is incapacitated!	32	這位角色行動不能!	17	Y		engine/internal/town/camp.go
+39	ds:712A	This character is incapacitated!	32	這位角色行動不能!	17	Y	同一句在 CAMP:131 結尾是句號。引擎的閘門只在營地(打獵/鑑定/施法),城鎮沒有這一道 —— 照 CAMP 那一份接線。	
 40	ds:7166	The Guild decides you need	26	公會判定你還需要	16	Y	spec/19 §1.1 範例句	engine/town_scene.go
 41	ds:7184	 experience before gaining a level.	35	 點經驗才能升級。	17	Y	spec/19 §1.1 範例句	engine/town_scene.go
 42	ds:71CA	You made a level!  You gain	27	你升級了!你獲得	15	Y		engine/town_scene.go
@@ -45,7 +45,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 58	ds:732E	One day's food for the party costs	34	隊伍一天的食糧花費	18	Y		engine/town_scene.go
 59	ds:7354	 gold.  How many rations (1-9, 0 exits) ?	41	 金幣。要買幾份口糧?(1–9,0離開)	31	Y		
 60	ds:738E	Done!	5	完成!	5	Y		engine/town_scene.go
-75	ds:7B80	Aack!, There is something wrong with your disks!	48	啊咧!你的磁片好像有問題!	24	Y		engine/main.go
+75	ds:7B80	Aack!, There is something wrong with your disks!	48	啊咧!你的磁片好像有問題!	24	Y	原版這一句說的是**磁片**(`your disks`),CMBT:172／CAMP:87 說的是**資料檔**。引擎只有一句(照資料檔那一份),磁片這一份沒有對應。	
 76	ds:7BC6	You don't have	14	你沒有	6	Y	與 CAMP #85 同義,合併對照 spec/19 §1.1	engine/internal/town/town.go
 77	ds:7BD8	enough gold!	12	足夠的金幣!	11	Y		engine/internal/town/town.go
 81	ds:7C20	dies in the night.	18	在夜裡死去。	12	Y		

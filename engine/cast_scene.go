@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 
@@ -22,25 +23,38 @@ import (
 // docs/spec/02 §1),而投入量會改變威力與狀態強度 —— 所以這裡不是「等價」,
 // 是「M6 只做到一級」。提示列會標出來。
 
-// castable 回傳這位角色目前施得出來的法術,以及各自要投入多少(一級)。
-func (g *Game) castable(c original.Character) []original.Spell {
-	var out []original.Spell
-	for _, s := range g.spells {
-		invest := s.UnitCost
-		if invest < 1 {
-			invest = 1
-		}
-		if magic.CanCast(c, s, invest) == magic.OK {
-			out = append(out, s)
-		}
-	}
-	return out
+// 施法流程的字面,照 `translations/module-text/CMBT.tsv`(F3)。
+//
+// ⚠ 原版問的是**法術名稱**,所以它需要「沒有這個法術」「你不會那個法術」
+// 這些錯誤訊息;引擎用字母選單,但**清單列的是全部法術**而不是只列施得出來的,
+// 那些檢查才有機會發生 —— 少了它們,玩家永遠不知道自己為什麼施不出某個法術。
+const (
+	castMenuHead   = "要施放哪個法術?(ENTER離開)" // 88+89+90
+	castNotCombat  = "那不是戰鬥法術!"           // 93+94
+	castNoSkill    = "你不會那個法術!"            // 95+96
+	castNotWizard  = " 不是巫師,無法施放法術。"    // 84+85+86+87
+	castSPPrompt   = " 花費幾點法力? "            // 101
+	castNotThatMuch = "你沒有 那麼多!"            // 102+103
+	castNoTarget   = "沒有選定目標!"             // 108+109
+	castPageHint   = "按 PgDn 鍵"                // 113
+	castWhere      = "你想施放到哪裡?"           // 118+119
+	castEscExit    = "(ESC離開)"                 // 114
+	// 117/120(`to use.` / `to cast.`)是行動點數不足那兩句的句尾。
+	// ⚠ 前半段沒有單獨的字串可對,**這個對應是推的**,不是讀到的。
+	castNoPoints  = "：行動點數不足,無法施放。"
+	useNoPoints   = "：行動點數不足,無法使用。"
+)
+
+// castRequires 是「那個法術至少需要 N 點法力。」(CMBT:104+105+106)。
+func castRequires(n int) string {
+	return fmt.Sprintf("那個法術至少需要 %d 點法力。", n)
 }
 
-// openCast 打開施法選單。回 false 表示沒有人施得出來。
 // openCast 開施法選單。**施法的是目前輪到的那個人**(docs/spec/12 §2)——
 // 先前是「掃過全隊,找第一個會法術的」,那在戰場上是錯的:
 // 施法要扣**那個人**的行動點數,而且做完結束**他的**回合。
+//
+// 回 false 表示這一次開不起來(訊息已經寫進 Log)。
 func (g *Game) openCast() bool {
 	if g.field == nil {
 		return false
@@ -51,38 +65,156 @@ func (g *Game) openCast() bool {
 		return false
 	}
 	if g.points[i] < rules.ActCast.Cost() {
-		g.field.Log = append(g.field.Log,
-			g.field.Units[i].Name+"：行動點數不足,施不了法")
+		g.field.Log = append(g.field.Log, g.field.Units[i].Name+castNoPoints)
 		return false
 	}
 	if i-combat.PartyBase >= len(g.members) {
 		return false
 	}
-	if list := g.castable(g.members[i-combat.PartyBase]); len(list) > 0 {
-		g.castUnit, g.castList = i, list
+	// 不是巫師就到此為止 —— 原版連法術清單都不會出現(CMBT:84–87)。
+	if c := g.members[i-combat.PartyBase]; c.Class != magic.WizardClass {
+		g.field.Log = append(g.field.Log, c.Name+castNotWizard)
+		return false
+	}
+	if len(g.spells) == 0 {
+		return false
+	}
+	g.castUnit, g.castList, g.castPage = i, g.spells, 0
+	return true
+}
+
+// castPageSize 是法術清單一頁幾個。原版用 `Hit PgDn key`(CMBT:113)翻頁,
+// 這裡沿用同一個鍵。
+const castPageSize = 20
+
+// pickSpell 用字母選**目前這一頁**的第 n 個法術,選完進「投入幾點法力」那一步。
+func (g *Game) pickSpell(n int) {
+	page := g.castPageSpells()
+	if n < 0 || n >= len(page) {
+		return
+	}
+	s := page[n]
+	c := g.members[g.castUnit-combat.PartyBase]
+	// 檢查的順序照原版字串在表裡的順序:先問是不是戰鬥法術,再問會不會。
+	if !combatOnlySpell(s) {
+		g.field.Log = append(g.field.Log, castNotCombat)
+		return
+	}
+	if magic.CanCast(c, s, s.UnitCost) == magic.FailNoSkill {
+		g.field.Log = append(g.field.Log, castNoSkill)
+		return
+	}
+	g.castSP = &castSPState{spell: s}
+	g.castList = nil
+}
+
+// castPageSpells 回傳目前這一頁要列出來的法術。
+func (g *Game) castPageSpells() []original.Spell {
+	lo := g.castPage * castPageSize
+	if lo >= len(g.castList) {
+		return nil
+	}
+	hi := lo + castPageSize
+	if hi > len(g.castList) {
+		hi = len(g.castList)
+	}
+	return g.castList[lo:hi]
+}
+
+// castPages 回傳法術清單共幾頁(至少 1)。
+func (g *Game) castPages() int {
+	n := (len(g.castList) + castPageSize - 1) / castPageSize
+	if n < 1 {
+		return 1
+	}
+	return n
+}
+
+// castSPState 是「投入幾點法力」那一步(CMBT:101)。
+type castSPState struct {
+	spell original.Spell
+	input string
+}
+
+// castSPKey 處理投入點數那一步的按鍵。回 true 表示這一格被吃掉了。
+func (g *Game) castSPKey(k ebiten.Key) bool {
+	st := g.castSP
+	if st == nil {
+		return false
+	}
+	switch {
+	case k == ebiten.KeyEscape:
+		g.castSP = nil
+		return true
+	case k == ebiten.KeyBackspace:
+		if st.input != "" {
+			st.input = st.input[:len(st.input)-1]
+		}
+		return true
+	case k == ebiten.KeyEnter || k == ebiten.KeyKPEnter:
+		g.confirmCastSP()
+		return true
+	case k >= ebiten.KeyDigit0 && k <= ebiten.KeyDigit9:
+		if len(st.input) < 3 {
+			st.input += string(rune('0' + (k - ebiten.KeyDigit0)))
+		}
+		return true
+	case k >= ebiten.KeyKP0 && k <= ebiten.KeyKP9:
+		if len(st.input) < 3 {
+			st.input += string(rune('0' + (k - ebiten.KeyKP0)))
+		}
 		return true
 	}
-	g.field.Log = append(g.field.Log, g.field.Units[i].Name+" 施不出法術")
 	return false
 }
 
-// pickSpell 用字母選一個法術。選完進**游標選格**那一步(手冊 p.34)。
-func (g *Game) pickSpell(n int) {
-	if n < 0 || n >= len(g.castList) {
+// confirmCastSP 收下投入點數,過關就進選格階段。
+func (g *Game) confirmCastSP() {
+	st := g.castSP
+	invest, err := strconv.Atoi(st.input)
+	if err != nil || invest < 1 {
+		return // 還沒輸入,不要當成取消
+	}
+	c := g.members[g.castUnit-combat.PartyBase]
+	switch magic.CanCast(c, st.spell, invest) {
+	case magic.FailNoPoints:
+		g.field.Log = append(g.field.Log, castNotThatMuch) // CMBT:102+103
+		st.input = ""
+		return
+	case magic.FailBelowOneLevel:
+		unit := st.spell.UnitCost
+		if unit < 1 {
+			unit = 1
+		}
+		g.field.Log = append(g.field.Log, castRequires(unit)) // CMBT:104–106
+		st.input = ""
 		return
 	}
-	// 原版:選完法術之後「螢幕會出現一個游標,用 I,J,K,M 移動游標到
-	// 你想施法的目標位置,再按下 SPACE BAR 施行」(手冊 p.34)。
+	// 原版:選完法術之後「螢幕會出現一個游標…再按下 SPACE BAR 施行」(手冊 p.34)。
 	u := g.field.Units[g.castUnit]
-	g.cursor = &castCursor{spell: g.castList[n], x: u.X, y: u.Y}
-	g.castList = nil
+	g.cursor = &castCursor{spell: st.spell, invest: invest, x: u.X, y: u.Y}
+	g.castSP = nil
+}
+
+// castSPLines 是投入點數那一步要顯示的兩行。
+func (g *Game) castSPLines() []string {
+	st := g.castSP
+	if st == nil {
+		return nil
+	}
+	c := g.field.Units[g.castUnit]
+	return []string{
+		fmt.Sprintf("%s／%s%s(目前法力 %d)", c.Name, st.spell.Name, castSPPrompt, c.SP),
+		"輸入數字,Enter 確認、Backspace 修改、ESC 取消：" + st.input + "_",
+	}
 }
 
 // castCursor 是選格子的游標。**存法術本身不存索引** ——
 // 索引要配上「當時那份清單」才有意義,而清單在游標階段已經關掉了。
 type castCursor struct {
-	spell original.Spell
-	x, y  int
+	spell  original.Spell
+	invest int // 這次投入幾點法力(CMBT:101 那一步收下來的)
+	x, y   int
 }
 
 // cursorKey 處理游標階段的按鍵。
@@ -106,8 +238,11 @@ func (g *Game) cursorKey(k ebiten.Key) bool {
 	case ebiten.KeyK, ebiten.KeyRight:
 		cu.x++
 	case ebiten.KeySpace:
-		g.castAt(cu.spell, cu.x, cu.y)
-		g.cursor, g.castList = nil, nil
+		// 沒打中任何東西時**游標留著**,讓玩家改選一格 ——
+		// 關掉游標等於白白吃掉一次施法。
+		if g.castAt(cu.spell, cu.invest, cu.x, cu.y) {
+			g.cursor, g.castList = nil, nil
+		}
 		return true
 	case ebiten.KeyEscape:
 		g.cursor, g.castList = nil, nil
@@ -136,24 +271,31 @@ func (g *Game) cursorKey(k ebiten.Key) bool {
 // (`FIRE STORM` 的圖檔是整片的),也有單體的。這裡把目標取成
 // **游標那一格上的單位**,而增益類仍然套全隊 ——
 // 範圍解出來之後只要改這個函式。
-func (g *Game) castAt(s original.Spell, cx, cy int) {
-	invest := s.UnitCost
+func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 	if invest < 1 {
 		invest = 1
 	}
 	caster := &g.field.Units[g.castUnit]
 
-	// 目標:游標那一格上的單位。查不到就落回「敵方全部」——
-	// ⚠ 那個落回是**實作決定**,不是原版行為(範圍未解)。
+	// 目標:游標那一格上的單位。
+	//
+	// ⚠ **類別 1(群體傷害)不選目標** —— `CMBT 0x14F26` 對類別 1 直接跳過
+	// 選目標那一段(docs/re/172 §3),所以它可以放在空地上,打的是敵方全部。
+	// ⚠ 其餘類別放在空地上就是**沒有選定目標**(CMBT:108+109),原版有這句話;
+	// 先前引擎在這裡落回「敵方全部」,那是**實作決定**,而且會讓玩家
+	// 以為自己打中了。
 	var targets []*combat.Unit
 	if j := g.field.Occupant(cx, cy); j >= 0 {
 		targets = append(targets, &g.field.Units[j])
-	} else {
+	} else if s.Effect == magic.EffGroupDamage {
 		for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
 			if g.field.Units[i].Alive() {
 				targets = append(targets, &g.field.Units[i])
 			}
 		}
+	} else {
+		g.field.Log = append(g.field.Log, castNoTarget)
+		return false
 	}
 	// 增益類對自己人。⚠ **原版怎麼選目標未解** —— 這裡是實作決定。
 	//
@@ -191,9 +333,12 @@ func (g *Game) castAt(s original.Spell, cx, cy int) {
 		fmt.Sprintf("%s 施放 %s(投入 %d)", caster.Name, s.Name, invest))
 	g.field.Log = append(g.field.Log, r.Message)
 	g.castList = nil
+	return true
 }
 
-// drawCastMenu 在訊息列上方畫可施法術的清單。
+// drawCastMenu 在訊息列上方畫法術清單。
+//
+// ⚠ 列的是**全部法術**不是只列施得出來的 —— 見上面 castMenuHead 那一段。
 func (g *Game) drawCastMenu(dst *ebiten.Image) {
 	if len(g.castList) == 0 || g.panel == nil {
 		return
@@ -205,18 +350,39 @@ func (g *Game) drawCastMenu(dst *ebiten.Image) {
 	lh := p.LineHeight()
 	x := float64(layout.Message.X + ui.PanelPad)
 	y := float64(layout.Message.Y + ui.PanelPad)
-	p.Draw(dst, g.field.Units[g.castUnit].Name+" 的法術：", x, y)
+	p.Draw(dst, g.field.Units[g.castUnit].Name+"　"+castMenuHead, x, y)
 	y += lh
-	for i, s := range g.castList {
+	page := g.castPageSpells()
+	for i, s := range page {
 		if y > float64(layout.Message.Y+layout.Message.H)-lh*2 {
-			p.Draw(dst, fmt.Sprintf("…還有 %d 個(未分頁)", len(g.castList)-i), x, y)
-			break
+			// ⛔ 不可以默默截斷:少列幾個法術在畫面上完全沒有症狀。
+			p.Draw(dst, fmt.Sprintf("…這一頁還有 %d 個放不下", len(page)-i), x, y)
+			return
 		}
 		invest := s.UnitCost
 		if invest < 1 {
 			invest = 1
 		}
-		p.Draw(dst, fmt.Sprintf("%c) %s  %d 點", 'A'+i, s.Name, invest), x, y)
+		p.Draw(dst, fmt.Sprintf("%c) %s  每級 %d 點", 'A'+i, s.Name, invest), x, y)
+		y += lh
+	}
+	if n := g.castPages(); n > 1 {
+		p.Draw(dst, fmt.Sprintf("第 %d／%d 頁　%s翻頁", g.castPage+1, n, castPageHint), x, y)
+	}
+}
+
+// drawCastSP 畫「投入幾點法力」那一步(CMBT:101)。
+func (g *Game) drawCastSP(dst *ebiten.Image) {
+	if g.castSP == nil || g.panel == nil {
+		return
+	}
+	clearMessage(dst)
+	p := g.panel
+	lh := p.LineHeight()
+	x := float64(layout.Message.X + ui.PanelPad)
+	y := float64(layout.Message.Y + ui.PanelPad)
+	for _, ln := range g.castSPLines() {
+		p.Draw(dst, ln, x, y)
 		y += lh
 	}
 }

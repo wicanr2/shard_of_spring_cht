@@ -126,6 +126,33 @@ const (
 	EffTransference = 13 // ⚠ 僅一例,**未解**
 )
 
+// 法術結果的字面,照 `translations/module-text/CMBT.tsv`(F3)。
+const (
+	MsgDies         = "，並死亡!"       // 122 `and Dies!`
+	MsgNoDifference = "沒有感到任何變化。" // 128+129 `notices no` + `difference.`
+	// 134–138 `is not bound in` + `chains and` + `still air and` + `ice and`
+	// + `notices no effect` —— 原版把三種束縛狀態逐一列出來。
+	MsgNotBound = "沒有被鐵鍊束縛,凝滯的空氣,冰霜,沒有感到效果"
+)
+
+// 束縛類的狀態值。`CHARS.DAT` 位移 1 的狀態碼:
+// 1 中毒、2 束縛、3 凝滯、4 冰封、5 陣亡(docs/formats/01)。
+//
+// ⚠ **解除束縛吃三種,不是只有「束縛」**:CMBT 的訊息把它們並列成
+// `is not bound in chains and still air and ice`(CMBT:134–137)——
+// `chains` = 束縛、`still air` = 凝滯、`ice` = 冰封。信心:**證據充分**
+// (模組自己的字串,不是從技能名推的)。
+const (
+	StatusBound  = 2 // chains
+	StatusStill  = 3 // still air
+	StatusFrozen = 4 // ice
+)
+
+// IsBound 回傳這個狀態算不算「被束縛」——解除束縛只對這三種有效。
+func IsBound(status int) bool {
+	return status == StatusBound || status == StatusStill || status == StatusFrozen
+}
+
 // Apply 把一個法術套到目標身上,回傳訊息。
 //
 // ⚠ **沒有 default 分支吞掉未知類別**(docs/spec/09 §7 驗收 8)——
@@ -137,16 +164,28 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 	name := s.Name
 	switch s.Effect {
 	case EffGroupDamage:
+		died := 0
 		for _, t := range targets {
 			combat.Apply(t, p)
+			if !t.Alive() {
+				died++
+			}
 		}
-		return Result{Message: fmt.Sprintf("%s 對全體造成 %d 點傷害", name, p)}
+		msg := fmt.Sprintf("%s 對全體造成 %d 點傷害", name, p)
+		if died > 0 {
+			msg += MsgDies // CMBT:122「and Dies!」
+		}
+		return Result{Message: msg}
 
 	case EffSingleDamage:
+		msg := fmt.Sprintf("%s 造成 %d 點傷害", name, p)
 		if len(targets) > 0 {
 			combat.Apply(targets[0], p)
+			if !targets[0].Alive() {
+				msg += MsgDies
+			}
 		}
-		return Result{Message: fmt.Sprintf("%s 造成 %d 點傷害", name, p)}
+		return Result{Message: msg}
 
 	case EffToHit, EffStrength, EffHitPoints, EffSpeed:
 		// 類別 → 屬性欄是**讀到的**(docs/re/171 §3):
@@ -167,6 +206,11 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 			case EffSpeed:
 				t.Speed += p
 			}
+		}
+		if p == 0 {
+			// CMBT:128/129「notices no difference.」—— 威力算出來是 0,
+			// 屬性一點都沒動。⛔ 不要印「力量 +0」,那看起來像有效果。
+			return Result{Message: name + "：" + MsgNoDifference}
 		}
 		attr := map[int]string{
 			EffStrength: "力量", EffHitPoints: "生命值", EffSpeed: "速度",
@@ -190,20 +234,37 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		return Result{Message: name + "：活過來了!"}
 
 	case EffCure:
+		cured := 0
 		for _, t := range targets {
+			if t.Status != 0 {
+				cured++
+			}
 			t.Status = 0
 			t.StatMag = 0
+		}
+		if cured == 0 {
+			// CMBT:132/133 —— 本來就沒有狀態,治了等於沒治。
+			return Result{Message: name + "：" + MsgNoDifference}
 		}
 		// CAMP:105「Is cured.」
 		return Result{Message: name + "：被治癒了。"}
 
 	case EffUnbind:
+		freed := 0
 		for _, t := range targets {
-			if t.Status == 2 { // Bound
+			if IsBound(t.Status) {
 				t.Status = 0
+				t.StatMag = 0
+				freed++
 			}
 		}
-		return Result{Message: name + " 解除了束縛"}
+		if freed == 0 {
+			// CMBT:134–138「is not bound in chains and still air and ice and
+			// notices no effect」
+			return Result{Message: name + "：" + MsgNotBound}
+		}
+		// CMBT:130「Breaks free!」
+		return Result{Message: name + "：掙脫了!"}
 
 	case EffBind:
 		for _, t := range targets {

@@ -33,55 +33,55 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 81	ds:9810	 He Dies!	9	 他死了!	8	Y		engine/internal/combat/field.go
 82	ds:981E	 It dies!	9	 牠死了!	8	Y		engine/internal/combat/field.go
 83	ds:9832	All Monsters Dead	17	怪物全滅	8	Y		engine/internal/combat/field.go
-84	ds:9868	is not a	8	不是	4	Y		
-85	ds:9874	wizard	6	巫師	4	Y		
-86	ds:987E	and cannot	10	無法	4	Y		
-87	ds:988C	cast spells.	12	施放法術。	10	Y		
-88	ds:989E	Which spell do	14	要施放	6	Y		
-89	ds:98B0	you wish to cast?	17	哪個法術?	9	Y		
-90	ds:98C6	 (ENTER exits)	14	(ENTER離開)	11	Y		
+84	ds:9868	is not a	8	不是	4	Y		engine/cast_scene.go
+85	ds:9874	wizard	6	巫師	4	Y		engine/cast_scene.go
+86	ds:987E	and cannot	10	無法	4	Y		engine/cast_scene.go
+87	ds:988C	cast spells.	12	施放法術。	10	Y		engine/cast_scene.go
+88	ds:989E	Which spell do	14	要施放	6	Y		engine/cast_scene.go
+89	ds:98B0	you wish to cast?	17	哪個法術?	9	Y		engine/cast_scene.go
+90	ds:98C6	 (ENTER exits)	14	(ENTER離開)	11	Y		engine/cast_scene.go
 91	ds:98DE	 There is no     	17	沒有這個 	9	Y		
 92	ds:98F4	 such spell!     	17	法術!	5	Y		
-93	ds:990C	 That is not a   	17	那不是	6	Y		
-94	ds:9922	 combat spell!   	17	戰鬥法術!	9	Y		
-95	ds:993A	 You don't know  	17	你不會	6	Y		engine/internal/magic/magic.go
-96	ds:9950	 that spell!     	17	那個法術!	9	Y		engine/internal/magic/magic.go
+93	ds:990C	 That is not a   	17	那不是	6	Y		engine/cast_scene.go
+94	ds:9922	 combat spell!   	17	戰鬥法術!	9	Y		engine/cast_scene.go
+95	ds:993A	 You don't know  	17	你不會	6	Y		engine/cast_scene.go
+96	ds:9950	 that spell!     	17	那個法術!	9	Y		engine/cast_scene.go
 97	ds:9968	You will not be  	17	你將	4	Y		
 98	ds:997E	prepared for that	17	還沒準備好	10	Y		
 99	ds:9994	spell until the  	17	那個法術,要到	13	Y		
 100	ds:99AA	next round.	11	下一回合才行。	14	14		
-101	ds:99BC	 # SP ? 	8	 花費幾點法力? 	15	15		
-102	ds:99C8	 You don't have	15	你沒有	6	Y		
-103	ds:99DC	 that many!	11	 那麼多!	8	Y		
-104	ds:99EE	That spell	10	那個法術	8	Y		
-105	ds:99FC	requires at least	17	至少需要	8	Y		
-106	ds:9A12	 S.P.	5	 點法力。	9	9		
-108	ds:9A2E	NO TARGET	9	沒有選定	8	Y		
-109	ds:9A3C	SELECTED!	9	目標!	5	Y		
+101	ds:99BC	 # SP ? 	8	 花費幾點法力? 	15	15		engine/cast_scene.go
+102	ds:99C8	 You don't have	15	你沒有	6	Y		engine/cast_scene.go
+103	ds:99DC	 that many!	11	 那麼多!	8	Y		engine/cast_scene.go
+104	ds:99EE	That spell	10	那個法術	8	Y		engine/cast_scene.go
+105	ds:99FC	requires at least	17	至少需要	8	Y		engine/cast_scene.go
+106	ds:9A12	 S.P.	5	 點法力。	9	9		engine/cast_scene.go
+108	ds:9A2E	NO TARGET	9	沒有選定	8	Y		engine/cast_scene.go
+109	ds:9A3C	SELECTED!	9	目標!	5	Y		engine/cast_scene.go
 110	ds:9A4E	Use arrow keys to	17	用方向鍵	8	Y		engine/cast_scene.go;engine/combat_scene.go
 111	ds:9A64	position cursor.	16	移動游標。	10	Y		engine/cast_scene.go;engine/combat_scene.go
-113	ds:9A82	Hit PgDn key	12	按 PgDn 鍵	10	Y		
-114	ds:9A92	(ESC to Exit)	13	(ESC離開)	9	Y		
-115	ds:9AA4	Who do you want	15	你想對誰	8	Y		
-116	ds:9AB8	to use it on?	13	使用?	5	Y		
-117	ds:9ACA	to use.	7	使用。	6	Y		
-118	ds:9AD6	Where do you want	17	你想施放到	10	Y		
-119	ds:9AEC	to cast it?	11	哪裡?	5	Y		
-120	ds:9AFC	to cast.	8	施放。	6	Y		
-122	ds:9B38	and Dies!	9	並死亡!	7	Y		
+113	ds:9A82	Hit PgDn key	12	按 PgDn 鍵	10	Y		engine/cast_scene.go
+114	ds:9A92	(ESC to Exit)	13	(ESC離開)	9	Y		engine/cast_scene.go
+115	ds:9AA4	Who do you want	15	你想對誰	8	Y		engine/use_item.go
+116	ds:9AB8	to use it on?	13	使用?	5	Y		engine/use_item.go
+117	ds:9ACA	to use.	7	使用。	6	Y		engine/cast_scene.go;engine/use_item.go
+118	ds:9AD6	Where do you want	17	你想施放到	10	Y		engine/cast_scene.go
+119	ds:9AEC	to cast it?	11	哪裡?	5	Y		engine/cast_scene.go
+120	ds:9AFC	to cast.	8	施放。	6	Y		engine/cast_scene.go
+122	ds:9B38	and Dies!	9	並死亡!	7	Y		engine/internal/magic/magic.go
 124	ds:9B56	NO ONE IN	9	目標區域內	10	10		
 125	ds:9B64	TARGET AREA	11	沒有人!	7	Y		
-126	ds:9B8C	and Dies	8	並死亡	6	Y		
-128	ds:9BAC	notices no	10	沒有感到	8	Y		
-129	ds:9BBA	difference.	11	任何變化。	10	Y		
-130	ds:9BD0	Breaks free!	12	掙脫了!	7	Y		
-132	ds:9BE8	notices no	10	沒有感到	8	Y		
-133	ds:9BF6	difference.	11	任何變化。	10	Y		
-134	ds:9C0C	is not bound in	15	沒有被	6	Y		
-135	ds:9C20	chains and	10	鐵鍊束縛,	9	Y		
-136	ds:9C2E	still air and	13	凝滯的空氣,	11	Y		
-137	ds:9C40	ice and	7	冰霜,	5	Y		
-138	ds:9C4C	notices no effect	17	沒有感到效果	12	Y		
+126	ds:9B8C	and Dies	8	並死亡	6	Y		engine/internal/magic/magic.go
+128	ds:9BAC	notices no	10	沒有感到	8	Y		engine/internal/magic/magic.go
+129	ds:9BBA	difference.	11	任何變化。	10	Y		engine/internal/magic/magic.go
+130	ds:9BD0	Breaks free!	12	掙脫了!	7	Y		engine/internal/magic/magic.go
+132	ds:9BE8	notices no	10	沒有感到	8	Y		engine/internal/magic/magic.go
+133	ds:9BF6	difference.	11	任何變化。	10	Y		engine/internal/magic/magic.go
+134	ds:9C0C	is not bound in	15	沒有被	6	Y		engine/internal/magic/magic.go
+135	ds:9C20	chains and	10	鐵鍊束縛,	9	Y		engine/internal/magic/magic.go
+136	ds:9C2E	still air and	13	凝滯的空氣,	11	Y		engine/internal/magic/magic.go
+137	ds:9C40	ice and	7	冰霜,	5	Y		engine/internal/magic/magic.go
+138	ds:9C4C	notices no effect	17	沒有感到效果	12	Y		engine/internal/magic/magic.go
 140	ds:9C6E	Item Fails	10	道具失效	8	Y		
 141	ds:9C7C	Spell Fails	11	法術失效	8	Y		engine/use_item.go
 142	ds:9C92	does not have	13	沒有	4	Y		
@@ -103,10 +103,10 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 158	ds:9D84	Ignores priest.	15	無視祭司。	10	Y		
 159	ds:9DA0	dies.	5	死去。	6	6		
 162	ds:9DF0	This character has no items to use!	35	這位角色沒有可用的道具!	23	Y		engine/use_item.go
-163	ds:9E20	Use:  (ESC exits)	17	使用：(ESC離開)	15	Y		
+163	ds:9E20	Use:  (ESC exits)	17	使用：(ESC離開)	15	Y		engine/use_item.go
 164	ds:9E38	Not a valid magical item!	25	不是有效的魔法道具!	19	Y		engine/use_item.go
 165	ds:9E60	Do you wish to use the potion on Y)ourself or T)oss it to another character?       	83	你要把藥劑用在 Y)自己身上,還是 T)丟給另一位角色?	48	Y	spec/19 §1.1 範例句(CMBT 版:T)oss;CAMP #92 是同一句的 G)ive 版)	engine/use_item.go
-167	ds:9ECE	 (ESC cancels)	14	(ESC取消)	9	Y		
+167	ds:9ECE	 (ESC cancels)	14	(ESC取消)	9	Y		engine/use_item.go
 168	ds:9EE8	Toss it to which	16	要丟給哪位	10	Y		engine/use_item.go
 169	ds:9EFC	character?	10	角色?	5	Y		engine/use_item.go
 170	ds:9F0A	char #: 	8	角色 #： 	8	Y		engine/use_item.go

@@ -1,5 +1,5 @@
 row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
-6	ds:6F2A	      Camp:	11	      營地:	11	Y		engine/town_scene.go
+6	ds:6F2A	      Camp:	11	      營地：	6	Y		engine/town_scene.go
 7	ds:6F3A	 P)rint char(s)	15	 P)列印角色卡	13	Y		
 8	ds:6F4E	 S)leep	7	 S)睡覺	7	Y		
 9	ds:6F5A	 #)inspect char 	16	 #)查看角色 	12	Y		
@@ -39,11 +39,11 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 62	ds:72DA	Failed	6	失敗	4	Y		
 63	ds:72E4	You're inside!	14	你在室內!	9	Y		engine/internal/town/camp.go
 64	ds:72F6	Character # to hunt ? (ESC exits)	33	哪位角色要打獵?(ESC離開)	24	Y	spec/19 §1.1 H)unt 打獵閘門相關句	engine/town_scene.go
-65	ds:7326	The hunt was	12	這次打獵	8	Y		
-66	ds:7336	not successful.	15	沒有收穫。	10	Y		
-67	ds:734A	successful!	11	有收穫!	7	Y		
+65	ds:7326	The hunt was	12	這次打獵	8	Y		engine/town_scene.go
+66	ds:7336	not successful.	15	沒有收穫。	10	Y		engine/town_scene.go
+67	ds:734A	successful!	11	有收穫!	7	Y		engine/town_scene.go
 68	ds:735C	Enter new 	10	輸入新的	8	Y		
-69	ds:736A	position for:	13	位置給:	7	Y		
+69	ds:736A	position for:	13	位置給：	8	Y		
 70	ds:737C	 Letter?	8	 字母?	6	Y		
 71	ds:7388	  A B C 	8	  A B C 	8	Y		
 72	ds:7394	  D E F 	8	  D E F 	8	Y		
@@ -61,15 +61,15 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 85	ds:74F8	You need more spell points than that!	37	你需要更多法力點數!	19	Y	spec/19 §1.1 範例句,一字不差	engine/internal/magic/magic.go
 87	ds:7532	Aack!  there is something wrong with the data files, please restore!	68	啊咧!資料檔好像出了問題,請重新還原!	35	Y		
 88	ds:7582	Character # to use item ?  (ESC exits)	38	哪位角色要使用道具?(ESC離開)	28	Y		engine/town_scene.go
-89	ds:75B0	Use Item:	9	使用道具:	9	Y		
+89	ds:75B0	Use Item:	9	使用道具：	10	Y		
 90	ds:75C2	This character has no items to use!	35	這位角色沒有可用的道具!	23	Y		engine/camp_actions.go
 91	ds:75F2	You really can't make use of this!	34	你真的沒辦法用這個!	19	Y		
 92	ds:7628	Do you wish to use the potion on Y)ourself or G)ive it to another character?       	83	你要把藥劑用在 Y)自己身上,還是 G)交給另一位角色?	48	Y	spec/19 §1.1 範例句(CAMP 版:G)ive;CMBT #165 是同一句的 T)oss 版)	
 93	ds:7680	                  (ESC cancels)	31	                  (ESC取消)	27	Y		
-95	ds:76B2	Give it to which	16	要交給哪位	10	Y		
+95	ds:76B2	Give it to which	16	要交給哪位	10	Y		engine/use_item.go
 96	ds:76C6	character?	10	角色?	5	Y		
-97	ds:76D4	char #: 	8	角色 #: 	8	Y		
-100	ds:76F0	That is a Combat Item!	22	那是戰鬥用道具!	15	Y	spec/19 §1.1 範例句,一字不差	
+97	ds:76D4	char #: 	8	角色 #： 	8	Y		
+100	ds:76F0	That is a Combat Item!	22	那是戰鬥用道具!	15	Y	spec/19 §1.1 範例句,一字不差	engine/camp_actions.go
 101	ds:7712	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		
 102	ds:774A	 pts!	5	 點!	4	Y		
 103	ds:7754	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		
@@ -88,15 +88,15 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 134	ds:7B02	You now have about	18	你現在大約還有	14	Y		
 135	ds:7B18	 turns of light.	16	 回合的照明。	13	Y		
 137	ds:7B5E	dies in the night.	18	在夜裡死去。	12	Y		
-138	ds:7B78	 LVL: 	6	 等級: 	7	7		
-139	ds:7B8C	H.P.   	7	生命 	5	Y		
-140	ds:7B98	S.P.   	7	法力 	5	Y		
-141	ds:7BA4	Exp.  	6	經驗 	5	Y		
-142	ds:7BAE	Stat.  	7	屬性 	5	Y		
-143	ds:7BBC	      Skills:	13	      技能:	11	Y		
-144	ds:7BD4	      Items:	12	      道具:	11	Y		
-145	ds:7BEC	Human	5	人類	4	Y		
-146	ds:7BFA	Troll	5	巨魔	4	Y		
-147	ds:7C04	Dwarf	5	矮人	4	Y		
-148	ds:7C0E	Elf	3	精靈	4	4		
-149	ds:7C16	Gnome	5	地精	4	Y		
+138	ds:7B78	 LVL: 	6	 等級： 	6	7		engine/camp_actions.go
+139	ds:7B8C	H.P.   	7	生命 	5	Y		engine/camp_actions.go
+140	ds:7B98	S.P.   	7	法力 	5	Y		engine/camp_actions.go
+141	ds:7BA4	Exp.  	6	經驗 	5	Y		engine/camp_actions.go
+142	ds:7BAE	Stat.  	7	狀態	4	Y	'Stat.' 是 Status 的縮寫,不是屬性(docs/re/150 §1.1 的實跑版面:`Stat.   OK`)	engine/camp_actions.go
+143	ds:7BBC	      Skills:	13	      技能：	6	Y		engine/camp_actions.go
+144	ds:7BD4	      Items:	12	      道具：	6	Y		engine/camp_actions.go
+145	ds:7BEC	Human	5	人類	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
+146	ds:7BFA	Troll	5	巨魔	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
+147	ds:7C04	Dwarf	5	矮人	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
+148	ds:7C0E	Elf	3	精靈	4	4		engine/internal/original/chars.go;engine/internal/rules/race.go
+149	ds:7C16	Gnome	5	地精	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go

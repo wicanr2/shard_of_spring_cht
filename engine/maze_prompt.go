@@ -59,7 +59,7 @@ func (g *Game) openPrompt(t maze.Trigger) bool {
 			return true
 		}
 		g.overlay = g.dungeonText(706, "準備好說出氏族的名字了嗎?")
-		g.prompt = &mazePrompt{kind: promptRiddle, head: "這幾位兄弟是:"} // MAZEMOVE:46
+		g.prompt = &mazePrompt{kind: promptRiddle, head: "這幾位兄弟是："} // MAZEMOVE:46
 	default:
 		return false
 	}

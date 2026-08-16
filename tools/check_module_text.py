@@ -82,8 +82,32 @@ def main():
     total = wired_ok + len(mismatches)
     print(f"\n已接 {wired_ok} 段、對不上 {len(mismatches)} 段"
           f"(wired 非空共 {total} 段)。")
+    wiring()
     rc = coverage()
     return 1 if (mismatches or rc) else 0
+
+
+def wiring() -> None:
+    """F3 的接線進度:哪幾個模組還有多少段沒接回引擎。
+
+    ⚠ **未接不等於沒做完翻譯**(那是 F1,已經 381/381),也不等於缺功能 ——
+    三種都混在這個數字裡:引擎真的還沒用原版措辭、原版把同一句拆成好幾段
+    而引擎併成一句、以及**引擎根本沒有那個畫面**(後者是 docs/spec/19-coverage.md
+    的工作)。⛔ 所以這個數字**不要當成完成度**,它只說「還有多少段沒有落點」。
+    """
+    done = todo = 0
+    per: dict[str, int] = {}
+    for path in sorted(MODULE_TEXT_DIR.glob("*.tsv")):
+        for row in load_rows(path):
+            if not (row.get("translation") or "").strip():
+                continue
+            if (row.get("wired") or "").strip():
+                done += 1
+            else:
+                todo += 1
+                per[path.stem] = per.get(path.stem, 0) + 1
+    detail = "、".join(f"{k} {v}" for k, v in sorted(per.items(), key=lambda kv: -kv[1]))
+    print(f"F3 接線進度:{done} / {done + todo} 段已接回引擎;未接 {todo} 段({detail})。")
 
 
 def coverage() -> int:

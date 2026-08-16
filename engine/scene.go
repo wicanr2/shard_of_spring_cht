@@ -435,9 +435,32 @@ func (s shellScene) Update(in Input) Transition { return s.g.shellUpdate(in) }
 
 type townScene struct{ g *Game }
 
+// townScene.Prompt 依所在畫面換句子。措辭照 TOWN.tsv(F3):
+// 第 5 列是城鎮地圖、第 10 列是商店(有分頁)、第 12 列是沒有分頁的那一版。
+//
+// ⚠ 原版的商店提示有兩個版本,差別只在**要不要翻頁** —— 這裡照做,
+// 一頁放得下就不提翻頁,免得畫面叫玩家按一個沒有作用的鍵。
 func (s townScene) Prompt() string {
-	return "字母：選項　　+／-：翻頁　　ESC：返回／離開城鎮"
+	g := s.g
+	if g.town == nil {
+		// 還沒進城鎮(或測試直接建構場景)—— 提示列**不能是空的**
+		// (scene_test.go 的 TestEveryScenePrompt),退回通用那一句。
+		return townGenericPrompt
+	}
+	switch g.town.mode {
+	case townBuildings:
+		return "選擇要進入的建築物,# 查看角色,(ESC離開)"
+	case townShop:
+		if g.town.pages(g.itemList) > 1 {
+			return "選購道具,ESC離開,任意鍵翻頁。"
+		}
+		return "選購道具,ESC離開。"
+	}
+	return townGenericPrompt
 }
+
+// townGenericPrompt 給沒有原版對應句子的子畫面(旅店/治療所/酒館/訓練所/營地)。
+const townGenericPrompt = "字母：選項　　+／-：翻頁　　ESC：返回／離開城鎮"
 func (s townScene) Name() string         { return "town" }
 func (s townScene) Handles(Input) bool   { return s.g.town != nil && s.g.town.mode != townClosed }
 func (s townScene) Draw(d *ebiten.Image) { s.g.drawTown(d) }

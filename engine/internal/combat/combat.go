@@ -72,6 +72,9 @@ func (u Unit) OnField() bool { return u.Facing > Absent }
 type Item struct {
 	Main  int // 欄4:武器 = 傷害、防具 = 防護
 	Bonus int // 欄5:加值
+	// Name 只給訊息用(原版的 `attacks X with <武器>`,F3)。
+	// ⚠ **不參與任何公式** —— 規則只看 Main/Bonus 與武器編號。
+	Name string
 }
 
 // BareHandMin 是「赤手空拳」的判斷門檻:武器編號 ≥ 60 視為沒有武器

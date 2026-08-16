@@ -89,28 +89,28 @@ func (g *Game) useItemOn(who, slot, target int) {
 	// 不是「查不到效果」,是原版這個機制本來就不管這些編號。
 	if idx <= magic.MagicItemMin {
 		if self {
-			ts.msg = fmt.Sprintf("%s 用了%s，但它不是魔法道具，什麼事也沒發生。", c.Name, name)
+			ts.msg = fmt.Sprintf("%s 用了%s,但它不是魔法道具,什麼事也沒發生。", c.Name, name)
 		} else {
-			ts.msg = fmt.Sprintf("%s 把%s交給 %s，但它不是魔法道具，什麼事也沒發生。", c.Name, name, tgt.Name)
+			ts.msg = fmt.Sprintf("%s 把%s交給 %s,但它不是魔法道具,什麼事也沒發生。", c.Name, name, tgt.Name)
 		}
 		return
 	}
 	it, ok := g.itemByIndex(idx)
 	if !ok {
-		ts.msg = fmt.Sprintf("%s：%s 的資料查不到，用不出效果。", c.Name, name)
+		ts.msg = fmt.Sprintf("%s：%s 的資料查不到,用不出效果。", c.Name, name)
 		return
 	}
 	if !magic.ItemTriggers(idx, it.Col6, g.rand) {
 		if self {
-			ts.msg = fmt.Sprintf("%s 用了%s，這次沒有發動。", c.Name, name)
+			ts.msg = fmt.Sprintf("%s 用了%s,這次沒有發動。", c.Name, name)
 		} else {
-			ts.msg = fmt.Sprintf("%s 把%s交給 %s，這次沒有發動。", c.Name, name, tgt.Name)
+			ts.msg = fmt.Sprintf("%s 把%s交給 %s,這次沒有發動。", c.Name, name, tgt.Name)
 		}
 		return
 	}
 	s, ok := g.spellByIndex(it.Col4)
 	if !ok {
-		ts.msg = fmt.Sprintf("%s 用了%s，發動了，但對應的法術（編號 %d）查不到。", c.Name, name, it.Col4)
+		ts.msg = fmt.Sprintf("%s 用了%s,發動了,但對應的法術（編號 %d）查不到。", c.Name, name, it.Col4)
 		return
 	}
 	invest := it.Col5
@@ -120,7 +120,7 @@ func (g *Game) useItemOn(who, slot, target int) {
 		r := magic.Apply(s, invest, &cUnit, []*combat.Unit{&cUnit})
 		applyCampUnit(c, cUnit)
 		g.syncMember(*c)
-		ts.msg = fmt.Sprintf("%s 用了%s，發動了「%s」：%s", c.Name, name, s.Name, r.Message)
+		ts.msg = fmt.Sprintf("%s 用了%s,發動了「%s」：%s", c.Name, name, s.Name, r.Message)
 		return
 	}
 
@@ -131,7 +131,7 @@ func (g *Game) useItemOn(who, slot, target int) {
 	r := magic.Apply(s, invest, &casterUnit, []*combat.Unit{&targetUnit})
 	applyCampUnit(tgt, targetUnit)
 	g.syncMember(*tgt)
-	ts.msg = fmt.Sprintf("%s 把%s交給 %s，發動了「%s」：%s", c.Name, name, tgt.Name, s.Name, r.Message) // CAMP:92 的 G)ive
+	ts.msg = fmt.Sprintf("%s 把%s交給 %s,發動了「%s」：%s", c.Name, name, tgt.Name, s.Name, r.Message) // CAMP:92 的 G)ive
 }
 
 // campPotionKey 處理營地「自己/給別人」子流程的一次按鍵。
@@ -174,7 +174,7 @@ func (g *Game) campPotionLines(ts *townState) []string {
 	name := g.itemDisplayName(c, p.slot)
 	switch p.stage {
 	case 1:
-		return []string{fmt.Sprintf("你要把%s用在 Y)自己身上，還是 G)交給另一位角色？", name)} // CAMP:92
+		return []string{fmt.Sprintf("你要把%s用在 Y)自己身上,還是 G)交給另一位角色?", name)} // CAMP:92
 	case 2:
 		out := []string{"要交給哪位"} // CAMP:95
 		for i, m := range g.members {
@@ -215,7 +215,7 @@ func (g *Game) openUseItem() bool {
 	}
 	if g.points[i] < rules.ActUse.Cost() {
 		g.field.Log = append(g.field.Log,
-			g.field.Units[i].Name+"：行動點數不足，用不了道具")
+			g.field.Units[i].Name+"：行動點數不足,用不了道具")
 		return false
 	}
 	idx := i - combat.PartyBase
@@ -225,7 +225,7 @@ func (g *Game) openUseItem() bool {
 	list := g.useItemsFor(g.members[idx])
 	if len(list) == 0 {
 		g.field.Log = append(g.field.Log,
-			g.field.Units[i].Name+"：這位角色沒有可用的道具！") // CMBT:162
+			g.field.Units[i].Name+"：這位角色沒有可用的道具!") // CMBT:162
 		return false
 	}
 	g.useUnit, g.useList = i, list
@@ -310,36 +310,36 @@ func (g *Game) finishUseItem(slot, target int) {
 	case itemIdx <= magic.MagicItemMin:
 		// docs/spec/09 §5:編號 ≤ 26 不走發動這條路。
 		if self {
-			f.Log = append(f.Log, fmt.Sprintf("%s 用了%s，不是有效的魔法道具！", caster.Name, name)) // CMBT:164
+			f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,不是有效的魔法道具!", caster.Name, name)) // CMBT:164
 		} else {
-			f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s，不是有效的魔法道具！",
+			f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s,不是有效的魔法道具!",
 				caster.Name, name, f.Units[target].Name))
 		}
 	default:
 		it, ok := g.itemByIndex(itemIdx)
 		switch {
 		case !ok:
-			f.Log = append(f.Log, fmt.Sprintf("%s：%s 的資料查不到，用不出效果。", caster.Name, name))
+			f.Log = append(f.Log, fmt.Sprintf("%s：%s 的資料查不到,用不出效果。", caster.Name, name))
 		case !magic.ItemTriggers(itemIdx, it.Col6, g.rand):
 			if self {
-				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s，這次沒有發動。", caster.Name, name))
+				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,這次沒有發動。", caster.Name, name))
 			} else {
-				f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s，這次沒有發動。",
+				f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s,這次沒有發動。",
 					caster.Name, name, f.Units[target].Name))
 			}
 		default:
 			s, ok := g.spellByIndex(it.Col4)
 			if !ok {
-				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s，發動了，但對應的法術（編號 %d）查不到。",
+				f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,發動了,但對應的法術（編號 %d）查不到。",
 					caster.Name, name, it.Col4))
 			} else {
 				// ⚠ 給別人用 vs 自己用有沒有效果差別**未解**——這裡是「目標
 				// 不同、效果相同」的假設,兩條路都走同一個 magic.Apply。
 				r := magic.Apply(s, it.Col5, caster, []*combat.Unit{&f.Units[target]})
 				if self {
-					f.Log = append(f.Log, fmt.Sprintf("%s 用了%s，發動了「%s」：%s", caster.Name, name, s.Name, r.Message))
+					f.Log = append(f.Log, fmt.Sprintf("%s 用了%s,發動了「%s」：%s", caster.Name, name, s.Name, r.Message))
 				} else {
-					f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s，發動了「%s」：%s", // CMBT:165 的 T)oss
+					f.Log = append(f.Log, fmt.Sprintf("%s 把%s丟給 %s,發動了「%s」：%s", // CMBT:165 的 T)oss
 						caster.Name, name, f.Units[target].Name, s.Name, r.Message))
 				}
 			}
@@ -376,7 +376,7 @@ func (g *Game) drawUseMenu(dst *ebiten.Image) {
 		name := g.itemDisplayName(g.members[idx], g.combatPotion.slot)
 		switch g.combatPotion.stage {
 		case 1:
-			p.Draw(dst, fmt.Sprintf("你要把%s用在 Y)自己身上，還是 T)丟給另一位角色？", name), x, y) // CMBT:165
+			p.Draw(dst, fmt.Sprintf("你要把%s用在 Y)自己身上,還是 T)丟給另一位角色?", name), x, y) // CMBT:165
 		case 2:
 			p.Draw(dst, "要丟給哪位", x, y) // CMBT:168
 			y += lh

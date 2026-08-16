@@ -47,7 +47,10 @@ func (g *Game) awardExp(units []combat.Unit) (int, string) {
 		g.members[i].Exp += float64(share)
 		g.syncMember(g.members[i])
 	}
-	return share, fmt.Sprintf("獲得經驗 %d,每人 %d(%d 人分)", total, share, len(idx))
+	// F3:照原版的結算措辭(CMBT:56/57 `Experience:` + ` (per character)`)。
+	// ⚠ 原版**只印每人所得**,不印總額與人數 —— 這裡跟著只印每人所得,
+	// 不多印玩家在原版看不到的數字。
+	return share, fmt.Sprintf("經驗：%d(每位角色)", share)
 }
 
 // awardSpoils 發經驗與金幣。原版的結算畫面兩者一起印
@@ -63,7 +66,8 @@ func (g *Game) awardSpoils(units []combat.Unit) string {
 		if msg != "" {
 			msg += "；"
 		}
-		msg += fmt.Sprintf("撿到 %d 金幣（%s）", gold, combat.GoldAssumption)
+		// F3:CMBT:58/59 `Gold:`。係數未解的警語留著(見上面的說明)。
+		msg += fmt.Sprintf("金幣：%d（%s）", gold, combat.GoldAssumption)
 	}
 	return msg
 }

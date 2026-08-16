@@ -1,5 +1,5 @@
 row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
-18	ds:CDF8	Before you is an archway set into a stone gate.  Beyond the archway can be seen a vast array of islands and the paths of land twisting to the horizon.  Large Gothic letters carved over the archway read, 'ISLANDA'	212	你面前是一座嵌在石門裡的拱門。透過拱門可以看見一大片島嶼,以及蜿蜒至地平線的陸地小徑。拱門上方以哥德體大寫字母刻著:「ISLANDA」	125	Y	拱門刻字 'ISLANDA' 照原文大寫拼法保留(glossary §6 硬規則4:加註採該處原文拼法)。	
+18	ds:CDF8	Before you is an archway set into a stone gate.  Beyond the archway can be seen a vast array of islands and the paths of land twisting to the horizon.  Large Gothic letters carved over the archway read, 'ISLANDA'	212	你面前是一座嵌在石門裡的拱門。透過拱門可以看見一大片島嶼,以及蜿蜒至地平線的陸地小徑。拱門上方以哥德體大寫字母刻著：「ISLANDA」	126	Y	拱門刻字 'ISLANDA' 照原文大寫拼法保留(glossary §6 硬規則4:加註採該處原文拼法)。	
 19	ds:CEDC	Thank you for visiting Islandia. Good Hunting.	46	感謝你造訪伊斯蘭迪亞(Islandia)。祝狩獵順利。	44	Y	⚠ 原版拼字不一致:此處寫 'Islandia',#18 刻字寫 'ISLANDA',glossary 譯名條目是 'Islanda'(伊斯蘭達)——三種拼法指同一地名,疑似原版筆誤。譯名沿用該處原文拼法音譯,未統一改字。	
 27	ds:CF82	DEAD	4	死亡	4	Y		engine/internal/original/chars.go
 40	ds:D026	Welcome to ...	14	歡迎來到……	10	Y		

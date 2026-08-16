@@ -42,4 +42,4 @@ const PriestBlessing = "祭司感謝你們把他從山丘巨人手中救出,並�
 // combat_scene.go 與 internal/rules 的新檔。於是借 Log 本身當狀態:
 // Log 是這場戰鬥自己的紀錄,天生就帶著「這一場是什麼」的答案,
 // 不需要另一個變數重複記一次。
-const PriestEncounterMark = "遭遇：山丘巨人挾持祭司！"
+const PriestEncounterMark = "遭遇：山丘巨人挾持祭司!"

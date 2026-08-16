@@ -49,7 +49,7 @@ func (g *Game) startCombat() bool {
 	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
 	g.actor = g.firstActor()
 	g.field.Log = append(g.field.Log,
-		fmt.Sprintf("遭遇 %s！", g.monsters[pick].Name))
+		fmt.Sprintf("遭遇 %s!", g.monsters[pick].Name))
 	return true
 }
 
@@ -102,7 +102,7 @@ func (g *Game) startScriptedCombat(target int) bool {
 		g.field.Log = append(g.field.Log, rules.PriestEncounterMark)
 	} else {
 		g.field.Log = append(g.field.Log,
-			fmt.Sprintf("遭遇 %s！", strings.Join(names, "、")))
+			fmt.Sprintf("遭遇 %s!", strings.Join(names, "、")))
 	}
 	if target == maze.TargetFinalBoss {
 		// docs/spec/15 §7:外殼已經接好 g.bossFight → 結局畫面的轉場,
@@ -432,7 +432,8 @@ func (g *Game) tacticsLine(u combat.Unit) string {
 	if f.Units[t].Name == "" {
 		return ""
 	}
-	return "　→ " + f.Units[t].Name
+	// F3:原版的字面是 `Seeks> `(CMBT:180)。
+	return "　目標> " + f.Units[t].Name
 }
 
 // pickMonster 依區域挑一隻怪物,照原版的「不合就重擲」。

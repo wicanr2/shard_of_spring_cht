@@ -143,7 +143,8 @@ func (g *Game) townKey(k ebiten.Key) {
 				g.group.Gold -= float64(cost)
 				g.members = town.InnSleep(g.members)
 				g.party.Clock.Tick()
-				ts.msg = fmt.Sprintf("住了一晚,花 %d 金幣,全隊回 %d 生命 %d 法力",
+				// TOWN:32「You sleep...」
+				ts.msg = fmt.Sprintf("你們睡了一覺……花 %d 金幣,全隊回 %d 生命 %d 法力",
 					cost, town.InnHealHP, town.InnHealSP)
 			}
 		case townTavern:
@@ -302,6 +303,16 @@ func (g *Game) buyItem(it original.Item, who int) {
 }
 
 // drawTown 畫城鎮畫面。清單在主視野(61 欄)。
+// pages 回傳這間店的商品要分成幾頁(至少 1)。提示列與畫面共用同一個算法,
+// 免得「畫面說第 1／1 頁、提示列卻叫你翻頁」。
+func (ts *townState) pages(items []original.Item) int {
+	n := (len(ts.shopStock(items)) + shopPageSize - 1) / shopPageSize
+	if n < 1 {
+		return 1
+	}
+	return n
+}
+
 func (g *Game) drawTown(dst *ebiten.Image) {
 	ts, p := g.town, g.panel
 	if ts == nil || ts.mode == townClosed || p == nil {
@@ -334,12 +345,8 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 				x+380, y)
 			y += lh
 		}
-		pages := (len(stock) + shopPageSize - 1) / shopPageSize
-		if pages < 1 {
-			pages = 1
-		}
 		p.Draw(dst, fmt.Sprintf("第 %d／%d 頁　+ 下一頁　- 上一頁",
-			ts.page+1, pages), x, y+lh*0.5)
+			ts.page+1, ts.pages(g.itemList)), x, y+lh*0.5)
 
 	case townInn, townHealer, townTavern, townTrainer:
 		p.Draw(dst, ts.shop.Name+"　"+ts.shop.Kind.String(), x, y)
@@ -352,9 +359,9 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		}
 
 	case townCamp:
-		p.Draw(dst, "營地:", x, y) // CAMP:6
+		p.Draw(dst, "營地：", x, y) // CAMP:6
 		y += lh * 1.5
-		p.Draw(dst, fmt.Sprintf("S) 睡覺（每人耗 %d 份食糧，回 %d 生命 %d 法力；目前 %d 份）",
+		p.Draw(dst, fmt.Sprintf("S) 睡覺（每人耗 %d 份食糧,回 %d 生命 %d 法力；目前 %d 份）",
 			town.CampSleepFood, town.CampSleepHP, town.CampSleepSP,
 			g.group.Provisions), x, y)
 		y += lh
@@ -615,6 +622,7 @@ func (g *Game) trainMember(i, guildExtra int) {
 	c := &g.members[i]
 	exp := g.charExp(*c)
 	before := town.AttrSnapshot(*c)
+	hpBefore, spBefore := c.MaxHP, c.MaxSP
 	r := town.Train(c, exp, guildExtra, g.rand)
 	if r == town.TrainNotEnoughExp {
 		// TOWN:40+41「The Guild decides you need N experience before
@@ -631,21 +639,31 @@ func (g *Game) trainMember(i, guildExtra int) {
 	if c.ID >= 1 && c.ID <= len(g.chars) {
 		g.chars[c.ID-1] = *c
 	}
-	// TOWN.tsv「Stats are up by:」——原版升級除了長生命/法力還會加屬性
-	// (docs/re/183)。長了哪幾項要印出來,否則玩家看不到這條規則存在。
+	// 措辭照 TOWN.tsv 第 42–50 列(F3):原版升級印的是
+	//
+	//	You made a level!  You gain N hit points.  You also gain M Spell Points!
+	//	Stats are up by: 1 pt of X * 1 pt of Y
+	//	You have K points left.
+	//
+	// ⚠ 屬性列**一點一筆**,不是「X+2」——原版擲三次、每次五選一 +1,
+	// 同一項可以被選中兩次(docs/re/183 §5),而它照樣印兩筆 `1 pt of X`。
+	// 併成「+2」會把「擲三次」這條規則從畫面上抹掉。
 	var ups []string
 	for k, d := range town.AttrGrowth(before, *c) {
-		if d > 0 {
-			ups = append(ups, fmt.Sprintf("%s+%d", town.AttrNames[k], d))
+		for j := 0; j < d; j++ {
+			ups = append(ups, "1 點"+town.AttrNames[k])
 		}
 	}
-	msg := fmt.Sprintf("%s 升到第 %d 級(生命 %d／法力 %d)",
-		c.Name, c.Level, c.MaxHP, c.MaxSP)
-	if len(ups) > 0 {
-		msg += "，屬性成長：" + strings.Join(ups, "、")
+	msg := fmt.Sprintf("%s 你升級了!你獲得 %d 點生命點數。",
+		c.Name, c.MaxHP-hpBefore)
+	if d := c.MaxSP - spBefore; d > 0 {
+		msg += fmt.Sprintf("你還獲得 %d 點法力點數!", d)
 	}
-	// TOWN.tsv「You have N points left.」——技能點會累積(docs/re/183 §6)。
-	msg += fmt.Sprintf("，技能點 %d", c.SkillPts)
+	if len(ups) > 0 {
+		msg += "屬性提升：" + strings.Join(ups, "* ")
+	}
+	// 技能點會累積(docs/re/183 §6),所以印的是總數不是這次發的。
+	msg += fmt.Sprintf("你還剩 %d 點可分配。", c.SkillPts)
 	g.town.msg = msg
 	// docs/spec/20-skill-allocation.md:升級發的點數要有地方花——接技能點
 	// 分配畫面(蓋掉主視野,上面這句訊息留在訊息列繼續顯示)。onDone 是
@@ -717,9 +735,9 @@ func (g *Game) campLines(ts *townState) []string {
 	}
 	if ts.campMode == 'E' {
 		return []string{c.Name + "：W) 當武器　A) 當防具",
-			"（`ITEMS.DAT` 沒有「武器還是防具」這個欄位，分類在呼叫端）"}
+			"（`ITEMS.DAT` 沒有「武器還是防具」這個欄位,分類在呼叫端）"}
 	}
-	out := []string{fmt.Sprintf("%s 的背包（%s，按字母選格）", c.Name, title)}
+	out := []string{fmt.Sprintf("%s 的背包（%s,按字母選格）", c.Name, title)}
 	return append(out, g.packLines(c)...)
 }
 
@@ -730,7 +748,7 @@ func (g *Game) packLines(c original.Character) []string {
 		if n == original.NotEquipped {
 			continue
 		}
-		name := "（編號 " + fmt.Sprint(n) + "，查不到）"
+		name := "（編號 " + fmt.Sprint(n) + ",查不到）"
 		if it, ok := g.itemByIndex(n); ok {
 			name = it.Name
 		}
@@ -759,7 +777,7 @@ func (g *Game) buildingLines(ts *townState) []string {
 			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
 			fmt.Sprintf("R) 住一晚　%d 金幣",
 				town.Price(town.TownInnPrice, ts.shop.PriceMult)),
-			fmt.Sprintf("睡一晚回 %d 生命、%d 法力，並供餐（手冊 p.37）。",
+			fmt.Sprintf("睡一晚回 %d 生命、%d 法力,並供餐（手冊 p.37）。",
 				town.InnHealHP, town.InnHealSP),
 		}
 	case original.ShopHealer:
@@ -773,7 +791,7 @@ func (g *Game) buildingLines(ts *townState) []string {
 				town.Price(town.UnbindPerLv, ts.shop.PriceMult),
 				town.Price(town.ResurrectPerLv, ts.shop.PriceMult)),
 			"",
-			"按編號選人，再按 W 醫療 / P 解毒 / B 解除束縛 / R 復活：",
+			"按編號選人,再按 W 醫療 / P 解毒 / B 解除束縛 / R 復活：",
 		}
 		for i, c := range g.members {
 			lines = append(lines, fmt.Sprintf("%d) %s　生命 %d／%d　%s　治療費 %d",
@@ -783,7 +801,11 @@ func (g *Game) buildingLines(ts *townState) []string {
 		return append(lines, "", town.ResurrectAssumption)
 	case original.ShopTavern:
 		lines := []string{
-			fmt.Sprintf("B) 買 1 份食糧　每份 %d 金幣　目前 %d 份",
+			// TOWN:55 的原句把兩個指令寫在一行(T)alk / B)uy food)。
+			// 引擎沒有 T)alk 那一步 —— 傳聞直接印在下面,所以只留 B)。
+			"你想要：T)與其他冒險者交談,B)購買食糧?(ESC離開)",
+			// TOWN:58「One day's food for the party costs N gold.」
+			fmt.Sprintf("隊伍一天的食糧花費 %d 金幣。目前 %d 份",
 				town.Price(town.TownFoodPrice, ts.shop.PriceMult), g.group.Provisions),
 			"",
 		}
@@ -795,13 +817,17 @@ func (g *Game) buildingLines(ts *townState) []string {
 		return append(lines, fmt.Sprintf(
 			"⚠ 第 %d 段傳聞的譯文載不進來,這裡不拿別段頂替。", ts.shop.Extra))
 	case original.ShopTrainer:
-		art, teaches := "武術", "戰士"
+		// 措辭照 TOWN.tsv 第 34–37 列(F3):原版的招呼語是
+		// 「Welcome to the Fighter's Guild.」/「… Wizard's Guild.」,
+		// 選人那句是「Which character # seeks advancement in his art (ESC exits) ?」。
+		guild, teaches := "戰士公會。", "戰士"
 		if ts.shop.Extra == 1 {
-			art, teaches = "魔法", "巫師"
+			guild, teaches = "巫師公會。", "巫師"
 		}
 		lines := []string{
-			"專精:" + art + "(位移 36 = " + fmt.Sprint(ts.shop.Extra) + ")，只收" + teaches,
-			"訓練免費，只看經驗夠不夠（手冊 p.37）。按編號選人：",
+			"歡迎來到" + guild + "(位移 36 = " + fmt.Sprint(ts.shop.Extra) + ",只收" + teaches + ")",
+			"哪位角色要精進技藝?(ESC離開)",
+			"訓練免費,只看經驗夠不夠（手冊 p.37）。",
 			"",
 		}
 		for i, c := range g.members {
@@ -843,7 +869,7 @@ func (g *Game) hunt(who int) {
 	// (CAMP:65「The hunt was」+ CAMP:66/67「not successful.」/「successful!」)。
 	if n := town.HuntYield(g.rand); n > 0 {
 		g.group.Provisions += n
-		ts.msg = fmt.Sprintf("%s：這次打獵有收穫！補給 +%d（共 %d）", c.Name, n, g.group.Provisions)
+		ts.msg = fmt.Sprintf("%s：這次打獵有收穫!補給 +%d（共 %d）", c.Name, n, g.group.Provisions)
 	} else {
 		ts.msg = c.Name + "：這次打獵沒有收穫。"
 	}

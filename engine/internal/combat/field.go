@@ -1,6 +1,9 @@
 package combat
 
-import "sort"
+import (
+	"sort"
+	"strconv"
+)
 
 // Field 是一場戰鬥。docs/spec/07-combat-scene.md。
 type Field struct {
@@ -19,8 +22,27 @@ type Field struct {
 	Log []string
 }
 
-// FullComma 是全形逗號。訊息一律用中文標點(docs/spec/06 §7)。
-const FullComma = "，"
+// 戰鬥訊息的字面。**逐字照 `translations/module-text/CMBT.tsv` 第 69–82 列**
+// (F3,docs/spec/19 §1)——畫面要說原版說的話,不是實作時自己寫的中文。
+//
+// 原版把一次攻擊拼成一句:
+//
+//	<攻擊者> attacks <目標> with <武器> and hits for <N> damage. It dies!
+//
+// 兩個岔路都是讀出來的:`and hacks for`／`and hits for` 由狂暴決定
+// (docs/re/153 §7),`for no damage.` 由 `傷害 < 1` 決定(docs/re/153 §8)。
+// 死亡那一句分「他」與「牠」兩種,原版用的就是兩段不同的字串。
+const (
+	msgAttacks  = " 攻擊 "         // 69 `attacks `
+	msgWith     = " 使用 "         // 70 `with`
+	msgMissed   = "但沒打中!"      // 71 `and missed!`
+	msgNoDamage = "沒有造成傷害。" // 72 `for no damage.`
+	msgHacksFor = "劈砍造成 "      // 74 `and hacks for `
+	msgHitsFor  = "命中造成 "      // 76 `and hits for `
+	msgDamage   = " 點傷害。"      // 77 ` damage.`
+	msgHeDies   = " 他死了!"       // 81 ` He Dies!`(隊員)
+	msgItDies   = " 牠死了!"       // 82 ` It dies!`(怪物)
+)
 
 // Outcome 是戰鬥的結束狀態。
 type Outcome int
@@ -75,28 +97,55 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 	a, d := f.Units[atk], f.Units[def]
 	aw, da := f.item(a.Weapon), f.item(d.Armor)
 	roll, hit = Hits(a, d, aw, da, f.Rand, ToHitFaces)
+	head := a.Name + msgAttacks + d.Name + f.weaponPhrase(a)
 	if !hit {
-		f.Log = append(f.Log, a.Name+" 攻擊 "+d.Name+"，落空")
+		f.Log = append(f.Log, head+msgMissed)
 		return roll, false, 0
 	}
 	dmg = Damage(a, d, aw, da, f.Rand)
 	// 狂暴:同一次攻擊的**第二次擲骰** > 75 且攻擊者有屬性 16(docs/re/153 §7)。
 	// 原版把兩次擲骰都算在同一次攻擊裡,所以這裡一定要再擲一次,
 	// 不能沿用命中那一次的值 —— 沿用會讓「命中很險」與「打得很重」綁在一起。
-	verb := " 擊中 "
+	//
+	// ⚠ 擲骰**無條件進行**,即使傷害是 0。挪到 `dmg > 0` 底下會改變亂數的
+	// 消耗順序,同一顆種子就跑出不同的戰鬥(docs/spec/07 §8 驗收 6)。
+	verb := msgHitsFor
 	// ⚠ round(RND×100+1),不是 Roll(100)——同一個成語,同一個修正
 	// (docs/re/185 §2 表列 #4)。
 	if second := rollRound(f.Rand, ToHitFaces); Berserk(a, second) {
 		dmg *= 2
-		verb = " 劈中 " // 原版:'and hacks for' ↔ 'and hits for'
+		verb = msgHacksFor
 	}
 	Apply(&f.Units[def], dmg)
-	msg := a.Name + verb + d.Name
+	msg := head
+	if dmg == 0 {
+		msg += msgNoDamage
+	} else {
+		msg += verb + strconv.Itoa(dmg) + msgDamage
+	}
 	if f.Units[def].HP == 0 {
-		msg += FullComma + d.Name + " 倒下"
+		if d.IsMonster {
+			msg += msgItDies
+		} else {
+			msg += msgHeDies
+		}
 	}
 	f.Log = append(f.Log, msg)
 	return roll, true, dmg
+}
+
+// weaponPhrase 回傳「 使用 <武器>」;赤手空拳回空字串。
+//
+// ⚠ 原版無條件印 `with`,但它的武器格用 60／99 當「沒有武器」的哨兵
+// (docs/spec/01 §5、docs/formats/03),而 `ITEMS.DAT` 只有 0–56 有名字 ——
+// 那兩個哨兵在原版會印出什麼**沒有查證**,所以這裡選擇整段不印,
+// 不拿空字串去頂替一個沒讀過的行為。
+func (f *Field) weaponPhrase(u Unit) string {
+	name := f.item(u.Weapon).Name
+	if name == "" {
+		return ""
+	}
+	return msgWith + name
 }
 
 // Outcome 判定戰鬥是否結束。docs/spec/07 §6。

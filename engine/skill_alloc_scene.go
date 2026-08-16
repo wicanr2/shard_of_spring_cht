@@ -166,7 +166,8 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 		y += lh
 	}
 
-	line(fmt.Sprintf("%s：技能點 %d", c.Name, c.SkillPts))
+	// TOWN:49/50「You have N points left.」(F3)。
+	line(fmt.Sprintf("%s　你還剩 %d 點可分配。", c.Name, c.SkillPts))
 	y += lh * 0.5
 
 	class := rules.Class(c.Class)
@@ -184,7 +185,8 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 	}
 	line(" 0) 結束")
 	y += lh * 0.5
-	line("輸入技能編號,Enter 確認,ESC 離開：" + a.input + "_")
+	// TOWN:51/52「Enter skill,」+「(0 exits) 」(F3)。
+	line("輸入技能,(0離開)：" + a.input + "_")
 	if a.msg != "" {
 		y += lh * 0.5
 		line(a.msg)

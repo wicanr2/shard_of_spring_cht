@@ -76,7 +76,7 @@ func campSpellAllowed(s original.Spell) string {
 		return "那是戰鬥法術!" // CAMP:81
 	}
 	if s.Effect == magic.EffProtect {
-		return "「" + s.Name + "」的防護效果沒辦法保存到下一場戰鬥，本引擎在營地不支援施放。"
+		return "「" + s.Name + "」的防護效果沒辦法保存到下一場戰鬥,本引擎在營地不支援施放。"
 	}
 	return ""
 }
@@ -260,10 +260,10 @@ func (g *Game) campCastLines(ts *townState) []string {
 	case 2:
 		return []string{
 			fmt.Sprintf("%s：花費幾點法力?（目前法力 %d／%d）", caster.Name, caster.SP, caster.MaxSP), // CAMP:83
-			"輸入數字，Enter 確認、Backspace 修改：" + ts.castInput + "_",
+			"輸入數字,Enter 確認、Backspace 修改：" + ts.castInput + "_",
 		}
 	case 3:
-		out := []string{fmt.Sprintf("%s 對哪一位角色施放「%s」？", caster.Name, ts.castSpell.Name)}
+		out := []string{fmt.Sprintf("%s 對哪一位角色施放「%s」?", caster.Name, ts.castSpell.Name)}
 		for i, c := range g.members {
 			out = append(out, fmt.Sprintf("%d) %s", i+1, c.Name))
 		}
@@ -310,7 +310,7 @@ func (g *Game) campUseKey(k ebiten.Key) {
 	// 「那是戰鬥用道具!」閘門(docs/spec/19-coverage.md §2-2,CAMP:100)。
 	// use_item.go 的 isCombatOnlyItem 是**猜的**,不是讀到的判斷式。
 	if it, ok := g.itemByIndex(c.Pack[slot]); ok && g.isCombatOnlyItem(it) {
-		ts.msg = c.Name + "：那是戰鬥用道具！"
+		ts.msg = c.Name + "：那是戰鬥用道具!"
 		ts.campMode, ts.campWho = 0, -1
 		return
 	}
@@ -339,7 +339,7 @@ func (g *Game) itemDisplayName(c original.Character, slot int) string {
 	if it, ok := g.itemByIndex(n); ok {
 		return it.Name
 	}
-	return fmt.Sprintf("（編號 %d，查不到）", n)
+	return fmt.Sprintf("（編號 %d,查不到）", n)
 }
 
 // spellByIndex 依 SPELLS.DAT 的編號查一個法術。魔法道具的欄4 存的就是這個
@@ -428,7 +428,7 @@ func (g *Game) campPrintLines(ts *townState) []string {
 	if ts.campWho == -1 {
 		return []string{
 			"輸入要列印的角色編號。",
-			"（ESC 離開，或按 9 印整隊）",
+			"（ESC 離開,或按 9 印整隊）",
 		}
 	}
 	var out []string
@@ -461,7 +461,7 @@ func (g *Game) printSheet(c original.Character) []string {
 	}
 	out := []string{
 		fmt.Sprintf("第 %d 隊　　位置：野外", g.slot),
-		fmt.Sprintf("%s　　等級 %d", c.Name, c.Level),
+		fmt.Sprintf("%s　　等級：%d", c.Name, c.Level),
 		fmt.Sprintf("生命 %d／%d　　法力 %s　　經驗 %d　　狀態 %s",
 			c.HP, c.MaxHP, sp, g.charExp(c), st),
 		"技能：" + strings.Join(charSkillNames(c), "、"),

@@ -663,14 +663,6 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 	if err := readJSON(filepath.Join(dir, "data", "monsters.json"), &monsters); err != nil {
 		return err
 	}
-	var items []struct {
-		Index int `json:"index"`
-		Col4  int `json:"col4"`
-		Col5  int `json:"col5"`
-	}
-	if err := readJSON(filepath.Join(dir, "data", "items.json"), &items); err != nil {
-		return err
-	}
 	if err := readJSON(filepath.Join(dir, "data", "spells.json"), &g.spells); err != nil {
 		return err
 	}
@@ -688,10 +680,11 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 		return err
 	}
 	g.items = map[int]combat.Item{}
-	for _, it := range items {
+	for _, it := range g.itemList {
 		// ⚠ 欄4/欄5 是型別相依的(docs/re/74)。這裡原樣搬,
 		// 由 combat 依「這是武器還是防具」去解讀 —— 不在載入時分類。
-		g.items[it.Index] = combat.Item{Main: it.Col4, Bonus: it.Col5}
+		// Name 只給戰鬥訊息用(F3 的「使用 <武器>」),不進公式。
+		g.items[it.Index] = combat.Item{Main: it.Col4, Bonus: it.Col5, Name: it.Name}
 	}
 	g.monsters = monsters
 	g.rand = combat.NewRand(seed)

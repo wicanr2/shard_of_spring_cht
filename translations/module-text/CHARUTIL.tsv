@@ -1,17 +1,17 @@
 row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 7	ds:6ACC	Which character to rename ?	27	要改名哪位角色?	15	Y		
-8	ds:6AEC	Please enter the new name (9 char max): 	40	請輸入新名字(最多9個字元):	26	Y	⚠ 與 TITLES.DAT 第89列 'name (10 char)' 矛盾,見 docs/spec/19-module-text.md §4;裁決前不動引擎現行的 10。	
+8	ds:6AEC	Please enter the new name (9 char max): 	40	請輸入新名字(最多9個字元)：	27	Y	⚠ 與 TITLES.DAT 第89列 'name (10 char)' 矛盾,見 docs/spec/19-module-text.md §4;裁決前不動引擎現行的 10。	
 22	ds:6BCC	You must remove a character before adding any more!	51	必須先移除一位角色才能再新增!	29	Y		engine/internal/town/create.go
 23	ds:6C06	(ESC exits) ?	13	(ESC離開)?	10	Y		
-30	ds:6C58	Skills left:	12	剩餘技能點:	11	Y		
-32	ds:6C7E	Skills left:	12	剩餘技能點:	11	Y		
+30	ds:6C58	Skills left:	12	剩餘技能點：	12	Y		
+32	ds:6C7E	Skills left:	12	剩餘技能點：	12	Y		
 33	ds:6C96	Do you wish to keep this character (Y/N) ?	42	要保留這位角色嗎?(Y/N)	22	Y		
 39	ds:6D18	Party #	7	隊伍 #	6	Y		
-40	ds:6D24	Gold:	5	金幣:	5	Y		
-41	ds:6D2E	 Provisions:	12	 食糧:	6	Y		
+40	ds:6D24	Gold:	5	金幣：	6	Y		
+41	ds:6D2E	 Provisions:	12	 食糧：	6	Y		
 42	ds:6D3E	Saved in the month of the 	26	存檔於月份 	11	Y		
-43	ds:6D5C	Wilderness	10	野外	4	Y		
-44	ds:6D6E	maze: 	6	地城: 	6	Y		
+43	ds:6D5C	Wilderness	10	野外	4	Y		engine/camp_actions.go
+44	ds:6D6E	maze: 	6	地城： 	6	Y		
 45	ds:6D78	Currently in the 	17	目前位於 	9	Y		
 46	ds:6D8E	#) Name        Race   Class   Level   Status	44	#) 名字         種族   職業    等級    狀態	43	Y		
 48	ds:6DD0	Hero	4	戰士	4	Y		engine/internal/original/chars.go
@@ -22,10 +22,10 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 54	ds:6E30	(0 exits) ?	11	(0離開)?	8	Y		
 58	ds:6E5A	No party #	10	沒有隊伍 #	10	Y		
 59	ds:6E68	to disband !	12	可解散!	7	Y		
-63	ds:6EA8	Human	5	人類	4	Y		
-64	ds:6EB6	Troll	5	巨魔	4	Y		
-65	ds:6EC0	Dwarf	5	矮人	4	Y		
-66	ds:6ECA	Elf	3	精靈	4	4		
-67	ds:6ED2	Gnome	5	地精	4	Y		
+63	ds:6EA8	Human	5	人類	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
+64	ds:6EB6	Troll	5	巨魔	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
+65	ds:6EC0	Dwarf	5	矮人	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
+66	ds:6ECA	Elf	3	精靈	4	4		engine/internal/original/chars.go;engine/internal/rules/race.go
+67	ds:6ED2	Gnome	5	地精	4	Y		engine/internal/original/chars.go;engine/internal/rules/race.go
 69	ds:6EE6	 #) Name       Party         #) Name       Party	48	 #) 名字        隊伍          #) 名字        隊伍	49	49		
 70	ds:6F2A	(0 exits) ? 	12	(0離開) ?	9	Y		

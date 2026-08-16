@@ -100,7 +100,8 @@ docs/spec/19-coverage.md                   覆蓋率稽核:哪幾句原版的話
 ```
 
 TSV 欄位沿用 [`translations/README.md`](../../translations/README.md) 的既有形狀
-(`row / field / original / orig_bytes / translation / trans_bytes / fits / note`)。
+(`row / addr / original / orig_bytes / translation / trans_bytes / fits / note`),
+再加一欄 `wired`(F3 的接線落點,見 §6.1)。
 
 ## 6. 翻譯規則
 
@@ -111,6 +112,30 @@ TSV 欄位沿用 [`translations/README.md`](../../translations/README.md) 的既
 - 按鍵提示裡的字母**保留原文字母**:`(ESC exits)` → 「(ESC 離開)」,
   `Y)ourself` → 「Y) 自己」—— **玩家要按的是那個字母**
 - 欄寬照 [`04`](04-display-layout.md) §5 的預算;不折行的固定欄要標 `fits`
+- **標點是中文的,不是原版的 ASCII**:冒號用全形 `：`
+  ([`06`](06-party-and-save.md) §7 驗收 7 訂的),逗號 `,`、驚嘆號 `!`、問號 `?`
+  用半形,句號 `。`、頓號 `、` 用全形。⚠ 原版的定寬補位空白同樣不重現 ——
+  移植後的版面用像素定位。`tools/check_module_text.py` 比對前會去頭尾空白,
+  但**標點必須逐字相同**,所以 TSV 與引擎兩邊要用同一套
+
+## 6.1 `wired` 欄:F3 的接線
+
+`wired` 記的是**這段譯文由哪個檔案組進畫面**(分號分隔可以多個)。
+填法見 `tools/set_wired.py`,驗證由 `tools/check_module_text.py` 做。
+
+⚠ **檢查工具只驗「這串字有出現在那個檔案裡」**,驗不了「出現的地方是不是那個
+呼叫點」——「是」「否」這種一兩個字的譯文在任何檔案裡都找得到,逐字比對永遠會過。
+**填之前要自己讀過呼叫端**,那是 code review 的工作,不是工具的範圍。
+
+原版把同一句話拆成好幾段字串(定寬視窗的排版殘留,例如
+`is not a` + `wizard` + `and cannot` + `cast spells.`),而引擎組成一句 ——
+這種情況下**那幾段共用同一個落點**。反過來,同一句話在 `TOWN`/`CAMP`/`CMBT`
+各有一份(三支獨立 EXE 各自帶字串),引擎只有一份實作,**三段都指向它**。
+
+⛔ **未接不等於沒做完。** 未接的 239 段混著三種:引擎還沒改用原版措辭、
+原版拆段而引擎併句、以及**引擎根本沒有那個畫面**。第三種是
+[`19-coverage.md`](19-coverage.md) 的工作,不是 F3 的 ——
+⛔ 不要為了讓數字好看而在這裡補功能。
 
 ## 7. 驗收
 

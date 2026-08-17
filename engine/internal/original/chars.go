@@ -100,6 +100,27 @@ type Character struct {
 // 都是空槽 —— 這條判定因此不依賴那個未解項。
 func (c Character) Occupied() bool { return strings.TrimSpace(c.Name) != "" }
 
+// IsIdentified 回傳第 slot 格的道具辨識過沒有(位移 74–83,docs/re/167 §2)。
+//
+// ⚠ 判定寫成「**等於 `'1'` 才算**」,不是「不等於 `'0'`」—— 出貨存檔有
+// 空白格,寫成後者會把整批未辨識的道具當成已辨識。
+func (c Character) IsIdentified(slot int) bool {
+	return slot >= 0 && slot < len(c.Identified) && c.Identified[slot] == '1'
+}
+
+// EquippedItem 把裝備欄(**背包格號**)換成物品編號,並回報它辨識過沒有。
+//
+// 原版是兩層讀取(docs/re/75 §1):位移 34/36 拿到格號 i,
+// 真正的物品編號在位移 `54 + 2i`(= 背包第 i 格)。
+// 哨兵 99 表示沒裝備 —— 這時填 `bare`(武器 60「赤手」、防具 59「無」,
+// docs/re/192 §2),而「沒有東西」永遠算辨識過。
+func (c Character) EquippedItem(slot, bare int) (item int, identified bool) {
+	if slot < 0 || slot >= PackSlots || c.Pack[slot] == NotEquipped {
+		return bare, true
+	}
+	return c.Pack[slot], c.IsIdentified(slot)
+}
+
 // InParty 回傳這個角色是否編在某一隊,以及隊號(1–5)。
 func (c Character) InParty() (int, bool) {
 	if !c.Occupied() || c.Party < '1' || c.Party > '5' {

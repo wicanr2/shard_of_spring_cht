@@ -131,7 +131,7 @@ func TestGroupsShippedRecords(t *testing.T) {
 		{"遭遇倒數", g.Encounter, 54},
 		{"月", g.Month, 1}, {"日", g.Day, 1}, {"時", g.Hour, 4}, {"時以下", g.Sub, 2},
 		{"有光能見度", g.VisLit, 3}, {"無光能見度", g.VisDark, 2},
-		{"光源選擇", g.LightPick, NoLight},
+		{"當前迷宮編號", g.MazeNum, NotInMaze},
 	} {
 		if c.got != c.want {
 			t.Errorf("第 5 隊的%s是 %d,docs/re/135 §2 記 %d", c.name, c.got, c.want)

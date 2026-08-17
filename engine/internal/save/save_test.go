@@ -37,7 +37,7 @@ func TestSaveRoundTrip(t *testing.T) {
 		Month: 1, Day: 1, Hour: 4, Sub: 2,
 		WorldX: 8, WorldY: 8, Facing: 3,
 		LightTurns: 0, VisLit: 3, VisDark: 2,
-		PoolUses: 2, MazeX: 46, MazeY: 37, LightPick: original.NoLight, Fled: 0,
+		PoolUses: 2, MazeX: 46, MazeY: 37, MazeNum: original.NotInMaze, Fled: 0,
 	}
 	s.Groups[0].Members[0] = 1
 	for i := 1; i < original.MemberSlots; i++ {

@@ -310,3 +310,67 @@ func TestStepIntoMountainCostsTwoTicks(t *testing.T) {
 		t.Errorf("時鐘 %+v,應為 %+v —— 時鐘與遭遇倒數要一起推進", s.Clock, want)
 	}
 }
+
+// ── 光源與能見度(docs/re/204)────────────────────────────────────────
+
+// 驗收:在迷宮裡每推進一格燒掉一回合火把,而**回合數走到 0 的那一次
+// 仍然算有光** —— 原版是先取能見度再遞減。
+func TestLightBurnsOneTurnPerAction(t *testing.T) {
+	s := State{
+		MazeNum: 5, LightTurns: 2, VisLit: 3, VisDark: 1,
+		Clock: Clock{Sub: 1, Hour: 10, Day: 1, Month: 1},
+	}
+	s.Tick()
+	if s.LightTurns != 1 || s.Visibility != 3 {
+		t.Errorf("第一格:回合 %d 能見度 %d,應為 1 / 3", s.LightTurns, s.Visibility)
+	}
+	s.Tick()
+	if s.LightTurns != 0 || s.Visibility != 3 {
+		t.Errorf("燒完的那一格仍算有光:回合 %d 能見度 %d,應為 0 / 3",
+			s.LightTurns, s.Visibility)
+	}
+	s.Tick()
+	if s.LightTurns != 0 || s.Visibility != 1 {
+		t.Errorf("火把熄了:回合 %d 能見度 %d,應為 0 / 1", s.LightTurns, s.Visibility)
+	}
+}
+
+// 驗收:回到地面火把就熄,能見度換成天色(WRLDMOVE 0x10F6B 把兩欄一起寫)。
+func TestLeavingMazeSnuffsTheTorch(t *testing.T) {
+	s := State{
+		MazeNum: NotInMaze, LightTurns: 40, VisLit: 3, VisDark: 1,
+		Clock: Clock{Sub: 1, Hour: 20, Day: 1, Month: 1},
+	}
+	s.Tick()
+	if s.LightTurns != 0 {
+		t.Errorf("地面上光源回合應該歸零,得到 %d", s.LightTurns)
+	}
+	if s.Visibility != Daylight(s.Clock.Hour) {
+		t.Errorf("地面上能見度應該是天色 %d,得到 %d",
+			Daylight(s.Clock.Hour), s.Visibility)
+	}
+}
+
+// 驗收:天色的四段。時的值域是 4–26(docs/formats/02)。
+func TestDaylightByHour(t *testing.T) {
+	for _, tc := range []struct{ hour, want int }{
+		{4, 3}, {5, 3}, {6, 4}, {13, 4}, {14, 3}, {16, 3},
+		{17, 2}, {18, 2}, {19, 1}, {26, 1},
+	} {
+		if got := Daylight(tc.hour); got != tc.want {
+			t.Errorf("時 %d 的天色是 %d,應為 %d", tc.hour, got, tc.want)
+		}
+	}
+}
+
+// 驗收:RefreshLight 不花動作 —— 進迷宮的那一刻不該燒掉一回合。
+func TestRefreshLightDoesNotBurn(t *testing.T) {
+	s := State{MazeNum: 5, LightTurns: 7, VisLit: 3, VisDark: 1}
+	s.RefreshLight()
+	if s.LightTurns != 7 {
+		t.Errorf("RefreshLight 燒掉了回合數:%d,應為 7", s.LightTurns)
+	}
+	if s.Visibility != 3 {
+		t.Errorf("能見度應該立刻是 3,得到 %d", s.Visibility)
+	}
+}

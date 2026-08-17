@@ -175,15 +175,21 @@ func (f *Field) WeaponName(i int) string {
 	if i < 0 || i >= len(f.Units) {
 		return msgBareHands
 	}
-	return f.weaponName(f.Units[i].Weapon)
+	return f.weaponName(f.Units[i].Weapon, f.Units[i].WeaponKnown)
 }
 
 // weaponName 把武器編號翻成名字:先查 `ITEMS.DAT`,查不到再查自然武器表。
 //
 // 原版兩張表是**同一個陣列**(編號 0–56 從檔案讀、59–62 手工補),
 // 所以這裡的兩段查表其實是一段(docs/re/192 §2)。
-func (f *Field) weaponName(w int) string {
-	if n := f.item(w).Name; n != "" {
+func (f *Field) weaponName(w int, known bool) string {
+	it := f.item(w)
+	// 未鑑定 → 小寫名(docs/re/192 §4:原版兩條分支只差查表的基底)。
+	// ⚠ 小寫名空白時退回正式名 —— 缺欄位不該讓武器變成「赤手空拳」。
+	if !known && it.Alias != "" {
+		return it.Alias
+	}
+	if n := it.Name; n != "" {
 		return n
 	}
 	if n, ok := naturalWeapons[w]; ok {
@@ -197,7 +203,7 @@ func (f *Field) weaponName(w int) string {
 // 武器格 59–62 是自然武器(docs/re/192),99 是「沒裝備」的哨兵 ——
 // 兩張表都查不到才退回 msgBareHands。
 func (f *Field) weaponPhrase(u Unit) string {
-	return msgWith + f.weaponName(u.Weapon)
+	return msgWith + f.weaponName(u.Weapon, u.WeaponKnown)
 }
 
 // Outcome 判定戰鬥是否結束。docs/spec/07 §6。

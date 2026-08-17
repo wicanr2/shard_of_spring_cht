@@ -191,9 +191,9 @@ func SetIdentified(c *original.Character, slot int, v bool) {
 }
 
 // IsIdentified 回傳第 slot 格的道具辨識過沒有。
-func IsIdentified(c original.Character, slot int) bool {
-	return slot >= 0 && slot < len(c.Identified) && c.Identified[slot] == '1'
-}
+// 規則本體在 original —— 戰鬥訊息也要問同一件事(docs/re/192 §4),
+// 而 combat 不能倒過來 import town。
+func IsIdentified(c original.Character, slot int) bool { return c.IsIdentified(slot) }
 
 // PickUp 把一件道具塞進隊伍的背包,回傳拿到的人與格號;拿不下回 (-1, -1)。
 //

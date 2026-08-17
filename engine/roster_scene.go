@@ -454,7 +454,9 @@ func applyNewPartyDefaults(grp *original.Group) {
 	// ⚠ **光源的「沒有」是 99 不是 0**(docs/formats/02 位移 83 的哨兵,
 	// docs/re/134 §2)。填 0 會變成「背包第 0 格那件道具」——
 	// 而那一格通常真的有東西,所以症狀是「新隊伍莫名其妙帶著一盞燈」。
-	grp.LightPick = original.NotEquipped
+	// 位移 83:新隊伍不在任何迷宮(docs/re/204 §1)。
+	// ⚠ 哨兵值與「未裝備」相同都是 99,但那是巧合不是同一件事。
+	grp.MazeNum = original.NotInMaze
 	grp.PoolUses = 0 // 治療池一次都還沒用(docs/re/155 §2.1)
 	grp.MazeX, grp.MazeY = 0, 0
 	grp.Fled = 0 // 上一場沒有逃跑

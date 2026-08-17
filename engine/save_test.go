@@ -67,7 +67,7 @@ func newSaveTestGame(t *testing.T) (*Game, string) {
 		WorldX: 1, WorldY: 1, Facing: 3,
 		Gold: 75, Provisions: 20, Encounter: 54,
 		Month: 1, Day: 1, Hour: 4, Sub: 2,
-		VisLit: 3, VisDark: 2, LightPick: original.NoLight,
+		VisLit: 3, VisDark: 2, MazeNum: original.NotInMaze,
 	}
 	occupied.Members[0] = 1
 	for i := 1; i < len(occupied.Members); i++ {

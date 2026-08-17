@@ -12,6 +12,7 @@ import (
 	"shardofspring/internal/original"
 	"shardofspring/internal/rules"
 	"shardofspring/internal/town"
+	"shardofspring/internal/world"
 )
 
 // 營地三個未實作指令(P)rint / C)ast / U)se)+ 施法投入點數。
@@ -253,8 +254,13 @@ func (g *Game) castInCamp(casterIdx, targetIdx int) {
 	// 位移 59 有光時的能見度。⚠ 兩個都在隊伍記錄上,不在角色身上 ——
 	// 照明是全隊的,選了誰當目標不影響結果。
 	if r.Light {
-		g.group.LightTurns = r.LightTurns
-		g.group.VisLit = r.Visibility
+		// ⚠ 寫**隊伍狀態**不是記錄:g.party 是遊玩中的唯一真相,
+		// 存檔時才寫回記錄(main.go)。寫記錄會被下一次存檔覆蓋掉。
+		g.party.LightTurns = r.LightTurns
+		g.party.VisLit = r.Visibility
+		// ⚠ **不在這裡重算生效能見度** —— 原版是下一個動作才跑那一段
+		// (`USERLIB` 的推進常式)。在地面點燈會在下一步被歸零,
+		// 那是原版行為,不是漏接:提早算會讓火把當場就熄,更不像原版。
 	}
 }
 
@@ -351,8 +357,9 @@ func (g *Game) mazeNumber() int {
 	return g.level.entry.MazeFile
 }
 
-// NotInMaze 是「不在地城」的哨兵(原版 `ds:3534 = 99`)。
-const NotInMaze = 99
+// NotInMaze 是「不在地城」的哨兵(原版 `ds:3534 = 99`,docs/re/169 §4)。
+// ⚠ 只有一份 —— 規則本體在 world,這裡是別名,不要各寫一個 99。
+const NotInMaze = world.NotInMaze
 
 // campUnit 把一個 Character 包成一個用完即丟的 combat.Unit,純粹是為了
 // 讓既有的 magic.Apply 能在營地(沒有 combat.Field)也能跑。

@@ -56,6 +56,10 @@ type Unit struct {
 	Karate    int
 	Name      string // 顯示用,不是原版屬性
 	IsMonster bool
+	// WeaponKnown = 這件武器辨識過了。**只影響訊息用哪個名字**
+	// (docs/re/192 §4),不進任何公式。怪物恆為 true:原版只有隊員
+	// 那一支會去讀「已辨識」旗標。
+	WeaponKnown bool
 }
 
 // StatusText 是檢視面板要顯示的狀態名。**正常時顯示「無」**,
@@ -86,11 +90,19 @@ type Item struct {
 	// Name 只給訊息用(原版的 `attacks X with <武器>`,F3)。
 	// ⚠ **不參與任何公式** —— 規則只看 Main/Bonus 與武器編號。
 	Name string
+	// Alias 是 `ITEMS.DAT` 欄2 的小寫名:**還沒鑑定時要說的話**
+	// (docs/re/192 §4)。兩欄不是「正式名 / 俗名」,是鑑定前後兩種說法。
+	Alias string
 }
 
 // BareHandMin 是「赤手空拳」的判斷門檻:武器編號 ≥ 60 視為沒有武器
-// (docs/spec/01 §5)。
+// (docs/spec/01 §5)。**同時是沒拿武器時填進屬性 4 的值**
+// (原版 `mov word ptr [di+6822h], 3Ch`,docs/re/75 §1)。
 const BareHandMin = 60
+
+// NoArmor 是沒穿防具時填進屬性 5 的值(原版 `3Bh` = 59,docs/re/75 §1)。
+// 名稱表上它是 `None` —— 那一格不是死格,是「沒穿」要說的話(docs/re/192 §2)。
+const NoArmor = 59
 
 // DamageK1 是力量加值的乘數(原版 ds:9460h)。
 //

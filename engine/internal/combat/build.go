@@ -33,7 +33,7 @@ func Build(party []original.Character, monsters []original.Monster,
 			Speed: r.Roll(max1(m.Speed)),
 			HP:    r.Roll(max1(m.HPDie)),
 			// 武器 0 → 60(赤手空拳的哨兵,docs/formats/03)
-			Weapon: bareIfZero(m.Weapon), Armor: m.Armor,
+			Weapon: bareIfZero(m.Weapon), Armor: m.Armor, WeaponKnown: true,
 			Str: m.Str, SP: m.SP, ToHit: m.ToHit,
 			Status: 0,     // 常數 0
 			Facing: South, // 常數 3 —— 出場時全部面南(docs/re/96)
@@ -52,10 +52,15 @@ func Build(party []original.Character, monsters []original.Monster,
 		if i >= PartyMax {
 			break
 		}
+		// ⚠ 記錄的位移 34/36 是**背包格號**不是物品編號(docs/re/75 §1)——
+		// 中間隔一層查表。直接把格號當編號用,拿到的會是背包第 n 件的
+		// 傷害值,而**畫面上一切正常**:編號 0–9 全都是合法的道具。
+		weapon, known := c.EquippedItem(c.Weapon, BareHandMin)
+		armor, _ := c.EquippedItem(c.Armor, NoArmor)
 		f.Units[PartyBase+i] = Unit{
 			Name:  c.Name,
 			Speed: c.Speed, HP: c.HP,
-			Weapon: c.Weapon, Armor: c.Armor,
+			Weapon: weapon, Armor: armor, WeaponKnown: known,
 			Str: c.Str, SP: c.SP, Status: c.Status, ToHit: c.ToHit,
 			Facing: North,
 			Tier:   99, // 角色固定 99(docs/spec/01 §1)

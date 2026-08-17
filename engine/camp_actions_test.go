@@ -544,16 +544,17 @@ func TestLightSpellSetsTurnsAndVisibility(t *testing.T) {
 	if !ok {
 		t.Fatalf("找不到索引 %d 的法術", magic.SpellMagicTorch)
 	}
-	g.group.LightTurns, g.group.VisLit = 0, 0
+	// ⚠ 寫的是**隊伍狀態**不是記錄(docs/re/204:g.party 是遊玩中的唯一真相)。
+	g.party.LightTurns, g.party.VisLit = 0, 0
 	g.town.castSpell, g.town.castInput = torch, "4"
 	g.castInCamp(0, 0)
 
 	wantTurns := torch.Power*4/torch.UnitCost*magic.LightTurnFactor + magic.LightTurnBase
-	if g.group.LightTurns != wantTurns {
-		t.Errorf("光源回合數應該是 %d,得到 %d", wantTurns, g.group.LightTurns)
+	if g.party.LightTurns != wantTurns {
+		t.Errorf("光源回合數應該是 %d,得到 %d", wantTurns, g.party.LightTurns)
 	}
-	if g.group.VisLit != torch.Power {
-		t.Errorf("能見度應該等於欄4(%d),得到 %d", torch.Power, g.group.VisLit)
+	if g.party.VisLit != torch.Power {
+		t.Errorf("能見度應該等於欄4(%d),得到 %d", torch.Power, g.party.VisLit)
 	}
 	if !strings.Contains(g.town.msg, "回合的照明") {
 		t.Errorf("要說 CAMP:134/135,得到 %q", g.town.msg)

@@ -38,9 +38,9 @@ func (g *Game) enterMaze(x, y int) bool {
 		g.level = lv
 		g.mazeState = maze.State{
 			Major: e.StartMajor, Minor: e.StartMinor,
-			Facing:     maze.Facing(e.Facing),
-			Visibility: g.group.VisLit,
+			Facing: maze.Facing(e.Facing),
 		}
+		g.syncMazeNum()
 		g.overlay = ""
 		return true
 	}
@@ -66,6 +66,10 @@ func (g *Game) loadLevel(e original.MazeEntry) (*mazeLevel, error) {
 	// lv.events 裡 —— 這裡把存檔記著的作廢清單重新套用一次,否則走出迷宮
 	// 再走回來,寶箱/劇情戰鬥就復活了。
 	g.applyDisabledEvents(lv)
+	// 拉利斯之門(docs/re/205):唸過 `DAZA REVELI` 之後那一格從擋路變成可通行。
+	// ⚠ 與作廢清單同一個理由放在這裡 —— 迷宮格線每次都是重讀的,
+	// 改在別處會在「走出去再走回來」之後失效,而門會**默默地關回去**。
+	maze.OpenGate(lv.grid, e.MazeFile, g.group.GateOpen)
 	return lv, nil
 }
 
@@ -146,8 +150,9 @@ func (g *Game) resumeMaze(slot int) {
 	g.level = lv
 	g.mazeState = maze.State{
 		Major: g.group.MazeX, Minor: g.group.MazeY,
-		Facing: maze.Facing(facing), Visibility: g.group.VisLit,
+		Facing: maze.Facing(facing),
 	}
+	g.syncMazeNum()
 	g.overlay = ""
 }
 
@@ -156,11 +161,16 @@ func (g *Game) stepMaze(dir maze.Facing) {
 	if g.level == nil {
 		return
 	}
+	// 迷宮裡走一步同樣是一個動作 —— 時鐘要走、光源要燒(docs/re/149、204)。
+	// ⚠ 先推進再判位移:原版轉身也算一格(world.Step 的說明),
+	// 而迷宮的 Step 把轉身與位移合在一個回傳值裡。
+	g.party.Tick()
 	switch g.mazeState.Step(dir, g.level.grid) {
 	case maze.Left:
 		// 走出邊界 → 回世界地圖。原版在這一刻印 `Leaving maze ..`
 		// (docs/re/147:實跑從入口那一格往外走一步就出去了)。
 		g.level = nil
+		g.syncMazeNum() // 走出地城:火把熄掉、能見度換回天色(docs/re/204 §2)
 		g.overlay = "離開地城……" // MAZEMOVE:88
 		return
 	case maze.Moved:
@@ -235,6 +245,7 @@ func (g *Game) crossLevel(target int) {
 			return
 		}
 		g.level = lv
+		g.syncMazeNum()
 		g.mazeState.Major, g.mazeState.Minor = e.StartMajor, e.StartMinor
 		// MAZEMOVE:29/32「One momement..」—— 原版在**載入另一層的迷宮檔**
 		// 之前印這一句(`0x123AC` / `0x12462`,兩處都緊接著組檔名再呼叫載入)。
@@ -271,6 +282,10 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	if lv == nil || p == nil || g.field != nil {
 		return
 	}
+	// 生效能見度由隊伍狀態現算(有光 → 位移 59、無光 → 位移 61,
+	// docs/re/204 §2)。**畫之前抓一次**,不要在 mazeState 裡另存一份 ——
+	// 兩份會漂,而漂掉的症狀是「火把燒完了視野卻沒變」。
+	g.mazeState.Visibility = g.party.Visibility
 	const half = layout.ViewTiles / 2
 	for vy := 0; vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {

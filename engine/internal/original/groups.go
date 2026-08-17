@@ -48,13 +48,17 @@ const (
 	offGateOpen  = 65
 	offMazeX     = 79
 	offMazeY     = 81
-	offLightPick = 83
+	offMazeNum   = 83
 	offFled      = 85
 )
 
-// NoLight 是位移 83 的哨兵值:沒有攜帶光源(docs/re/134 §2)。
-// 與 CHARS.DAT 的「未裝備」共用同一個約定。
-const NoLight = 99
+// NotInMaze 是位移 83 的哨兵值:**不在任何迷宮**(docs/re/169 §4、re/204 §1)。
+//
+// ⚠ 這一欄先前叫 `LightPick`(「沒有攜帶光源」)。名字錯了、機制沒錯:
+// 「在地面用天色、在迷宮用火把」的判斷條件就是它,而它同時決定
+// `MENU` 要 `CHAIN` 到 `WRLDMOVE` 還是 `MAZEMOVE`,也決定遭遇區域。
+// 99 與 CHARS.DAT 的「未裝備」共用同一個哨兵約定,但語意無關。
+const NotInMaze = 99
 
 // Group 是一筆隊伍記錄。
 type Group struct {
@@ -73,7 +77,7 @@ type Group struct {
 	PoolUses              int // 位移 63:治療池已使用次數(docs/re/155)
 	GateOpen              int // 位移 65:`DAZA REVELI` 大門已開啟(docs/re/197)
 	MazeX, MazeY          int // 1-based
-	LightPick             int // 99 = 沒帶光源
+	MazeNum               int // 位移 83:當前迷宮編號,99 = 不在迷宮
 	Fled                  int
 
 	// Raw 是原始 90 bytes。**未解的欄位(39、43、47–57、67–77、87–90)
@@ -125,7 +129,7 @@ func ParseGroups(d []byte) ([]Group, error) {
 			GateOpen:   u16(r, offGateOpen),
 			MazeX:      u16(r, offMazeX),
 			MazeY:      u16(r, offMazeY),
-			LightPick:  u16(r, offLightPick),
+			MazeNum:    u16(r, offMazeNum),
 			Fled:       u16(r, offFled),
 			Raw:        append([]byte(nil), r...),
 		}
@@ -180,7 +184,7 @@ func (g Group) Bytes() []byte {
 		{offLightTurns, g.LightTurns}, {offVisLit, g.VisLit}, {offVisDark, g.VisDark},
 		{offPoolUses, g.PoolUses}, {offGateOpen, g.GateOpen},
 		{offMazeX, g.MazeX}, {offMazeY, g.MazeY},
-		{offLightPick, g.LightPick}, {offFled, g.Fled},
+		{offMazeNum, g.MazeNum}, {offFled, g.Fled},
 	} {
 		binary.LittleEndian.PutUint16(r[f.pos-1:f.pos+1], uint16(int16(f.v)))
 	}

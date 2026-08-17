@@ -102,11 +102,59 @@ func (c *Clock) Tick() {
 }
 
 // State 是世界場景需要的隊伍狀態。欄位對應 GROUPS.DAT(docs/formats/02)。
+//
+// ⚠ 光源與能見度四欄也放在這裡,不是因為它們屬於世界地圖,而是因為
+// **原版把它們與時鐘寫在同一支常式裡**(`USERLIB` 0x1043A–0x10577,
+// docs/re/204)。拆開兩邊各推進一次,遲早會有一邊漏掉。
 type State struct {
 	X, Y      int    // 位移 35 / 37,世界座標
 	Facing    Facing // 位移 41
 	Clock     Clock
 	Encounter int // 位移 25,下次遭遇檢查前的剩餘回合
+
+	// MazeNum 是位移 83:**當前迷宮編號**,99 = 不在迷宮(docs/re/204 §1)。
+	// ⚠ 這一欄先前被讀成「光源選擇」——名字錯了,機制沒錯:
+	// 「在地面用天色、在迷宮用火把」的判斷條件就是它。
+	MazeNum         int
+	LightTurns      int // 位移 45,攜帶光源的剩餘回合
+	VisLit, VisDark int // 位移 59 / 61,有光 / 無光時的能見度
+	// Visibility 是**生效值**,每次推進重算(原版的 `ds:3050`)。
+	// ⚠ 不進存檔 —— 記錄裡沒有它,讀檔後第一次推進就會補上。
+	Visibility int
+}
+
+// NotInMaze 是位移 83 的哨兵:不在任何迷宮(docs/re/169 §4)。
+const NotInMaze = 99
+
+// 遭遇倒數的載入補值(`MENU` 0x119A2–0x119B2,docs/re/204 §3):
+// 載入隊伍時如果剩餘 ≤ 2 就補回 25。
+//
+// ⚠ 這**不是**「每次遭遇之後填什麼」—— 那一個仍然未解(worklist 的 E6)。
+// 兩者是不同的量:這一條只保證「讀檔後不會立刻踩到遭遇」。
+const (
+	EncounterFloor  = 2
+	EncounterReload = 25
+)
+
+// Daylight 是自然光的能見度,由**時**決定(USERLIB 0x104A2–0x104FC)。
+//
+//	預設 4;時 ≤ 5 或 ≥ 14 → 3;時 ≤ 2 或 ≥ 17 → 2;時 ≥ 19 → 1
+//
+// 四條由上而下覆蓋,不是互斥的分支。時的值域是 4–26,所以「≤ 2」那一條
+// 在遊戲裡到不了 —— **照原版寫著**,不要因為「用不到」就刪掉:
+// 刪掉之後就沒有人記得它存在過([`CLAUDE.md`](../../../CLAUDE.md) 的柵欄原則)。
+func Daylight(hour int) int {
+	v := 4
+	if hour <= 5 || hour >= 14 {
+		v = 3
+	}
+	if hour <= 2 || hour >= 17 {
+		v = 2
+	}
+	if hour >= 19 {
+		v = 1
+	}
+	return v
 }
 
 // Result 說明一次按鍵造成了什麼。呼叫端用它決定要不要推進時鐘。
@@ -243,4 +291,39 @@ func (s *State) tick() {
 	if s.Encounter > 0 {
 		s.Encounter--
 	}
+	s.light()
+}
+
+// light 是每次推進都要跑的光源與能見度(USERLIB 0x10494–0x10577,docs/re/204 §2)。
+//
+//	在地面(位移 83 == 99):能見度 = 自然光(時),**光源回合歸零**
+//	在迷宮且還有光:      能見度 = 位移 59,然後回合數 −1
+//	在迷宮且沒有光:      能見度 = 位移 61,回合數夾在 0
+//
+// ⚠ **先取能見度再遞減** —— 回合數從 1 走到 0 的那一次仍算「有光」。
+// ⚠ **走出迷宮火把就熄了**,不是留著下次用(`WRLDMOVE` 0x10F6B 把兩欄
+// 一起寫:光源回合 0、迷宮編號 99)。這是原版的行為,不是簡化。
+// RefreshLight 只重算生效能見度,**不遞減**回合數 —— 給「進出迷宮的那一刻」
+// 用:場景換了但沒有花掉一個動作。走出迷宮同樣把火把熄掉(與 light 一致)。
+func (s *State) RefreshLight() {
+	n := s.LightTurns
+	s.light()
+	if s.MazeNum != NotInMaze {
+		s.LightTurns = n
+	}
+}
+
+func (s *State) light() {
+	if s.MazeNum == NotInMaze {
+		s.Visibility = Daylight(s.Clock.Hour)
+		s.LightTurns = 0
+		return
+	}
+	if s.LightTurns > 0 {
+		s.Visibility = s.VisLit
+		s.LightTurns--
+		return
+	}
+	s.Visibility = s.VisDark
+	s.LightTurns = 0
 }

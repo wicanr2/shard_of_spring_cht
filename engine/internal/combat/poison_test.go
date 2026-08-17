@@ -130,7 +130,7 @@ func TestNaturalWeaponNames(t *testing.T) {
 		{62, "獠牙"},  // `Fangs`
 		{99, "拳頭"},  // 「沒裝備」的哨兵 → 退回赤手
 	} {
-		if got := f.weaponName(c.w); got != c.want {
+		if got := f.weaponName(c.w, true); got != c.want {
 			t.Errorf("武器 %d 的名字應該是 %q,得到 %q", c.w, c.want, got)
 		}
 	}
@@ -150,5 +150,58 @@ func TestSnakeAttackSaysFangs(t *testing.T) {
 	f.Attack(MonsterBase, PartyBase)
 	if last := f.Log[len(f.Log)-1]; !strings.Contains(last, "使用 獠牙") {
 		t.Errorf("毒蛇攻擊要說「使用 獠牙」,得到 %q", last)
+	}
+}
+
+// ── E10:未鑑定的武器印小寫名(docs/re/192 §4)────────────────────────
+
+// TestUnidentifiedWeaponUsesAlias:同一個編號,鑑定前後說兩種話。
+func TestUnidentifiedWeaponUsesAlias(t *testing.T) {
+	f := &Field{Items: map[int]Item{
+		2: {Main: 3, Name: "碎顱者", Alias: "一把重錘"},
+		3: {Main: 4, Name: "長劍"}, // 沒有小寫名的那一種
+	}}
+	if got := f.weaponName(2, true); got != "碎顱者" {
+		t.Errorf("鑑定過應該說正式名,得到 %q", got)
+	}
+	if got := f.weaponName(2, false); got != "一把重錘" {
+		t.Errorf("沒鑑定過應該說小寫名,得到 %q", got)
+	}
+	// ⚠ 缺小寫名時退回正式名 —— 不能變成「赤手空拳」,
+	// 那會讓一件真的武器在訊息裡消失。
+	if got := f.weaponName(3, false); got != "長劍" {
+		t.Errorf("沒有小寫名時應該退回正式名,得到 %q", got)
+	}
+}
+
+// TestBuildResolvesEquipmentSlot:裝備欄是**背包格號**,不是物品編號
+// (docs/re/75 §1)。這一條擋的是「拿格號去查物品表」——
+// 那種錯誤畫面上完全正常,只是傷害與名字都對應到別件東西。
+func TestBuildResolvesEquipmentSlot(t *testing.T) {
+	var c original.Character
+	c.Name = "測試者"
+	c.HP, c.Speed = 10, 5
+	c.Class = 'F'
+	c.Pack[3] = 17         // 第 3 格放著 17 號道具
+	c.Weapon = 3           // 裝備欄存的是**格號 3**
+	c.Armor = original.NotEquipped
+	c.Identified = "0000000000"
+
+	f := Build([]original.Character{c}, nil, map[int]Item{}, &scriptRand{})
+	u := f.Units[PartyBase]
+	if u.Weapon != 17 {
+		t.Errorf("屬性 4 應該是背包第 3 格的物品編號 17,得到 %d", u.Weapon)
+	}
+	if u.WeaponKnown {
+		t.Error("那一格的辨識旗標是 '0',不該當成已鑑定")
+	}
+	if u.Armor != NoArmor {
+		t.Errorf("沒穿防具時屬性 5 應該是 %d,得到 %d", NoArmor, u.Armor)
+	}
+
+	c.Weapon = original.NotEquipped
+	f = Build([]original.Character{c}, nil, map[int]Item{}, &scriptRand{})
+	if got := f.Units[PartyBase].Weapon; got != BareHandMin {
+		t.Errorf("沒拿武器時屬性 4 應該是 %d,得到 %d", BareHandMin, got)
 	}
 }

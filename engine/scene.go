@@ -630,6 +630,7 @@ func (s mazeScene) Update(in Input) Transition {
 		// `ESC` 與 `E`(兩者在原版的迷宮裡都沒有作用),`Q` 是離開遊戲。
 		// 這裡沿用 ESC 是**本引擎的選擇**,不是原版行為。
 		g.level = nil
+		g.syncMazeNum()
 	}
 	// docs/spec/18 §3.2 MazeFile + 驗收 4:原版在迷宮裡也存得了檔
 	// (GROUPS.DAT 位移 79/81 就是為此存在的)。

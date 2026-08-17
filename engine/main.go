@@ -330,6 +330,13 @@ func (g *Game) save() error {
 	grp.Month, grp.Day = g.party.Clock.Month, g.party.Clock.Day
 	grp.Hour, grp.Sub = g.party.Clock.Hour, g.party.Clock.Sub
 	grp.Encounter = g.party.Encounter
+	// 光源三欄(位移 45/59/61)。⚠ 生效能見度不寫回 —— 記錄裡沒有那一欄
+	// (docs/re/204 §2),寫回去會蓋掉 59 或 61 其中一個。
+	grp.LightTurns = g.party.LightTurns
+	grp.VisLit, grp.VisDark = g.party.VisLit, g.party.VisDark
+	// 位移 83:在不在迷宮、是哪一座(docs/re/204 §1)。原版靠它決定
+	// 讀檔後要 CHAIN 到 WRLDMOVE 還是 MAZEMOVE。
+	grp.MazeNum = g.party.MazeNum
 
 	// docs/spec/18 §3.2 MazeFile + 驗收 4:在迷宮裡存檔要記住是哪一座、
 	// 在哪一格,讀回才能回到迷宮裡而不是世界地圖。
@@ -702,6 +709,12 @@ func (g *Game) loadParty(slot int) error {
 		},
 		Encounter: grp.Encounter,
 	}
+	// 遭遇倒數的載入補值:原版在載入常式裡做 `≤ 2 → 25`
+	// (`MENU` 0x119A2,docs/re/204 §3)。存進去的小值不會被拿來用。
+	if g.party.Encounter <= world.EncounterFloor {
+		g.party.Encounter = world.EncounterReload
+	}
+	g.loadLight()
 	return nil
 }
 
@@ -732,7 +745,10 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 		// ⚠ 欄4/欄5 是型別相依的(docs/re/74)。這裡原樣搬,
 		// 由 combat 依「這是武器還是防具」去解讀 —— 不在載入時分類。
 		// Name 只給戰鬥訊息用(F3 的「使用 <武器>」),不進公式。
-		g.items[it.Index] = combat.Item{Main: it.Col4, Bonus: it.Col5, Name: it.Name}
+		// Alias 是未鑑定時的說法(docs/re/192 §4),同樣只給訊息用。
+		g.items[it.Index] = combat.Item{
+			Main: it.Col4, Bonus: it.Col5, Name: it.Name, Alias: it.Alias,
+		}
 	}
 	g.monsters = monsters
 	g.rand = combat.NewRand(seed)

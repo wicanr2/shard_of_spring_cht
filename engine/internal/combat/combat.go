@@ -56,6 +56,10 @@ type Unit struct {
 	Karate    int
 	Name      string // 顯示用,不是原版屬性
 	IsMonster bool
+	// Bias 是屬性 18:**每個單位一份的軸向偏好**(docs/re/158、215)。
+	// 0 = 還沒決定;第一次要用時擲 50% 硬幣定成 +1(先試東西)或 −1(先試南北),
+	// 之後**整場不再重擲** —— 只有「想走的那一格走不了」時會被取負。
+	Bias int
 	// WeaponKnown = 這件武器辨識過了。**只影響訊息用哪個名字**
 	// (docs/re/192 §4),不進任何公式。怪物恆為 true:原版只有隊員
 	// 那一支會去讀「已辨識」旗標。
@@ -99,6 +103,10 @@ type Item struct {
 // (docs/spec/01 §5)。**同時是沒拿武器時填進屬性 4 的值**
 // (原版 `mov word ptr [di+6822h], 3Ch`,docs/re/75 §1)。
 const BareHandMin = 60
+
+// BiasCoin 是決定屬性 18 用的門檻:`ds:9460` = 0.5(docs/re/153 §6.2)——
+// 同一個常數在傷害公式裡當乘數、在這裡當機率,兩種用法一起把它壓成 0.5。
+const BiasCoin = 0.5
 
 // NoArmor 是沒穿防具時填進屬性 5 的值(原版 `3Bh` = 59,docs/re/75 §1)。
 // 名稱表上它是 `None` —— 那一格不是死格,是「沒穿」要說的話(docs/re/192 §2)。

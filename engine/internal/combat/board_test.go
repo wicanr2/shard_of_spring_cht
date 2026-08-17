@@ -1,6 +1,10 @@
 package combat
 
-import "testing"
+import (
+	"testing"
+
+	"shardofspring/internal/rules"
+)
 
 // docs/spec/12 §7 的驗收,一條一個測試。
 
@@ -277,3 +281,75 @@ func TestPlaceFallsBackWithoutSlots(t *testing.T) {
 			f.Units[PartyBase].X, f.Units[PartyBase].Y)
 	}
 }
+
+// ── 逐步選格:軸向偏好(docs/re/215)────────────────────────────────────
+
+// biasField 擺一隻怪與一名隊員,兩軸都有差距 —— 只有這樣才分得出先走哪一軸。
+func biasField(bias int) *Field {
+	f := &Field{Rand: &halfRand{}}
+	f.Units[MonsterBase] = Unit{Name: "怪", HP: 10, Facing: South,
+		IsMonster: true, Speed: 9, X: 5, Y: 5, Bias: bias}
+	f.Units[PartyBase] = Unit{Name: "人", HP: 10, Facing: North, X: 9, Y: 9}
+	return f
+}
+
+// 偏好 +1 → 先走東西;−1 → 先走南北。**兩軸都有差距**才測得出來。
+func TestBiasPicksTheFirstAxis(t *testing.T) {
+	for _, tc := range []struct {
+		bias         int
+		wantX, wantY int
+	}{
+		{1, 6, 5},  // 先東
+		{-1, 5, 6}, // 先南
+	} {
+		f := biasField(tc.bias)
+		var p Points
+		f.ResetPoints(&p)
+		// 剛好夠轉一次 + 走一格 —— 多給的話牠會一路走到相鄰,就分不出第一步走哪一軸
+	p[MonsterBase] = rules.CostTurn + rules.CostMove
+		f.MonsterTurn(&p, MonsterBase)
+		u := f.Units[MonsterBase]
+		if u.X != tc.wantX || u.Y != tc.wantY {
+			t.Errorf("偏好 %+d 應該走到 (%d,%d),得到 (%d,%d)",
+				tc.bias, tc.wantX, tc.wantY, u.X, u.Y)
+		}
+	}
+}
+
+// 偏好只擲一次 —— 整場固定(`CMBT 0x13E96` 的 `cmp …, 0` 閘門)。
+func TestBiasIsRolledOnlyOnce(t *testing.T) {
+	f := biasField(0)
+	got := f.axisBias(MonsterBase)
+	if got != 1 && got != -1 {
+		t.Fatalf("擲出來應該是 ±1,得到 %d", got)
+	}
+	for i := 0; i < 5; i++ {
+		if again := f.axisBias(MonsterBase); again != got {
+			t.Fatalf("偏好被重擲了:%d → %d", got, again)
+		}
+	}
+}
+
+// 要走的那一格站不了 → 偏好取負(`CMBT 0x140DE` 的 neg)。
+func TestBlockedStepFlipsTheBias(t *testing.T) {
+	f := biasField(1)
+	// 東邊那一格擺一隻擋路的
+	f.Units[MonsterBase+1] = Unit{Name: "擋路", HP: 10, Facing: South,
+		IsMonster: true, X: 6, Y: 5}
+	var p Points
+	f.ResetPoints(&p)
+	f.MonsterTurn(&p, MonsterBase)
+	if f.Units[MonsterBase].Bias != -1 {
+		t.Errorf("撞到人之後偏好應該翻成 −1,得到 %+d", f.Units[MonsterBase].Bias)
+	}
+	if f.Units[MonsterBase].X != 5 || f.Units[MonsterBase].Y != 5 {
+		t.Errorf("擋住就不該動,得到 (%d,%d)",
+			f.Units[MonsterBase].X, f.Units[MonsterBase].Y)
+	}
+}
+
+// halfRand:Float01 恆為 0 → 偏好擲成 +1;Roll 回 1。
+type halfRand struct{}
+
+func (halfRand) Roll(faces int) int { return 1 }
+func (halfRand) Float01() float64   { return 0 }

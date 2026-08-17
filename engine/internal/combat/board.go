@@ -366,11 +366,50 @@ func (f *Field) Retarget(i int) int {
 	return t
 }
 
+// axisBias 回傳這個單位的軸向偏好(屬性 18),第一次用時擲硬幣決定。
+//
+// `CMBT 0x13E8E`:**只有還是 0 才擲**,所以同一個單位整場的偏好是穩定的
+// (docs/re/158 §1)。
+func (f *Field) axisBias(i int) int {
+	if f.Units[i].Bias == 0 {
+		f.Units[i].Bias = -1
+		if f.Rand.Float01() < BiasCoin {
+			f.Units[i].Bias = 1
+		}
+	}
+	return f.Units[i].Bias
+}
+
+// stepToward 回傳「在這一軸上朝目標走」該面哪個方向;同一格回 false。
+func stepToward(horizontal bool, u, t Unit) (Facing, bool) {
+	if horizontal {
+		switch {
+		case u.X < t.X:
+			return East, true
+		case u.X > t.X:
+			return West, true
+		}
+		return North, false
+	}
+	switch {
+	case u.Y < t.Y:
+		return South, true
+	case u.Y > t.Y:
+		return North, true
+	}
+	return North, false
+}
+
 // MonsterTurn 讓一隻怪物用完它的行動點數:朝**鎖定的目標**靠近,相鄰就攻擊。
 //
-// ⚠ 目標選擇是讀出來的(docs/re/186 §2);**逐步的選格不是** ——
-// 原版還帶一個每單位一份的 ±1 側向偏好(屬性 18,docs/re/158),
-// 那個偏好怎麼與「朝目標走」合成一步沒有讀完。這裡走直線,是可預測的佔位。
+// 逐步的選格照 docs/re/215:
+//
+//	先軸 = 屬性 18 為 +1 → 東西;−1 → 南北
+//	該軸上自己與目標的座標一比,決定往哪個方向;相等就換另一軸
+//	要走的那一格站不了 → **屬性 18 取負**(下一步改先試另一軸)
+//
+// ⚠ **偏好不是隨機抖動,是「這隻怪習慣先橫走還是先直走」** ——
+// 整場固定,只有撞牆才翻面。⛔ 不要改成每步重擲:那會讓怪物在牆邊原地抖。
 func (f *Field) MonsterTurn(p *Points, i int) {
 	for p[i] > 0 {
 		u := f.Units[i]
@@ -392,13 +431,29 @@ func (f *Field) MonsterTurn(p *Points, i int) {
 			}
 			continue
 		}
-		// 否則往差距大的那一軸靠近一格
-		dir := approach(u.X, u.Y, t.X, t.Y)
-		if f.Turn(p, i, dir) != ActOK {
+		// 否則照軸向偏好選一軸靠近一格(docs/re/215)
+		horizontal := f.axisBias(i) > 0
+		moved := false
+		for try := 0; try < 2; try++ {
+			dir, ok := stepToward(horizontal, u, t)
+			horizontal = !horizontal // 這一軸不成就換另一軸
+			if !ok {
+				continue
+			}
+			if f.Turn(p, i, dir) != ActOK {
+				return
+			}
+			if f.Step(p, i) == ActOK {
+				moved = true
+				break
+			}
+			// 站不了 → 偏好取負(`CMBT 0x140DE` 的 neg)。
+			// ⚠ 點數已經花在轉身上,這一步就結束了。
+			f.Units[i].Bias = -f.Units[i].Bias
 			return
 		}
-		if f.Step(p, i) != ActOK {
-			return
+		if !moved {
+			return // 兩軸都沒得走(已經在同一格)——不要空轉
 		}
 	}
 }
@@ -436,19 +491,6 @@ func dirTo(x, y, tx, ty int) Facing {
 }
 
 // approach 挑差距大的那一軸,平手時走橫的 —— 固定規則,不擲骰。
-func approach(x, y, tx, ty int) Facing {
-	if abs(tx-x) >= abs(ty-y) {
-		if tx > x {
-			return East
-		}
-		return West
-	}
-	if ty > y {
-		return South
-	}
-	return North
-}
-
 func abs(v int) int {
 	if v < 0 {
 		return -v

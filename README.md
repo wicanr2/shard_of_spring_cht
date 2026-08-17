@@ -37,7 +37,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | [`docs/PLAYING.md`](docs/PLAYING.md) | **要玩的人看這一份** —— 自備原版怎麼轉檔、存檔在哪、常見問題 |
 | [`docs/spec/14-remake-worklist.md`](docs/spec/14-remake-worklist.md) | **「還剩什麼沒做」的單一真相來源** |
 | [`CLAUDE.md`](CLAUDE.md) | 目標、RE 深度邊界、動工閘門、工具鏈、硬規則 |
-| [`docs/re/`](docs/re/) | 206 篇分析筆記,編號即閱讀順序 |
+| [`docs/re/`](docs/re/) | 215 篇分析筆記,編號即閱讀順序 |
 | [`docs/spec/`](docs/spec/) | 收攏後的實作規格,標 READY 才能動工 |
 
 新接手的人讀 `CONTEXT.md` 就能重建全局。

@@ -484,6 +484,13 @@ https://github.com/wicanr2/shard_of_spring_cht
 但 `translations/` 的雙語對照 TSV 有 `original` 欄，內容是原版英文文本
 （含 9 個地城的完整敘述）——**那是翻譯工作的必要形式，在 private repo 下沒有問題**。
 
+⚠ **「維持 private」是狀態,不是設定完就成立的事實 —— 它會漂移。**
+任何對外動作(發 release、給連結、加協作者)之前先問一次:
+
+```bash
+gh repo view --json visibility
+```
+
 ⛔ **不要把這個 repo 轉成 public。** 上一句就是原因：原版劇情文本已經在
 git 歷史裡，`gh repo edit --visibility public` 會連同它一起公開，
 違反 §1「不散布原版資料檔」。真要公開得先改寫歷史或另開一個只含引擎程式碼的 repo，

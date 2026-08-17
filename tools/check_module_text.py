@@ -26,6 +26,11 @@ import sys
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 MODULE_TEXT_DIR = ROOT / "translations" / "module-text"
 
+# STALE_WORDS 是「這一列裁定不接」的措辭。一旦 wired 欄填上去,這些字就變成
+# 假斷言 —— 見 wiring() 底下的說明。⛔ 不要用「不譯」當關鍵字:那是**譯不譯**
+# 的裁決(通關咒語要照原文打回去),與**接不接**無關,兩者可以同時成立。
+STALE_WORDS = ("不接", "還沒接", "沒有這個功能", "沒讀出來", "對不起來")
+
 
 # Go 的長字串常常寫成 `"前半" +\n\t"後半"`。逐字比對看到的是兩段,
 # 而畫面上是一段 —— 這裡先把跨行接起來,不然「譯文太長」本身就會變成
@@ -155,12 +160,16 @@ def wiring() -> int:
     done = todo = 0
     per: dict[str, int] = {}
     silent = []  # 未接**又沒有說明為什麼**的
+    stale = []  # 已經接了、note 卻還寫著「不接」的
     for path in sorted(MODULE_TEXT_DIR.glob("*.tsv")):
         for row in load_rows(path):
             if not (row.get("translation") or "").strip():
                 continue
             if (row.get("wired") or "").strip():
                 done += 1
+                note = row.get("note") or ""
+                if any(w in note for w in STALE_WORDS):
+                    stale.append(f"{path.stem}:{row.get('row') or row.get('id')}")
                 continue
             todo += 1
             per[path.stem] = per.get(path.stem, 0) + 1
@@ -172,6 +181,12 @@ def wiring() -> int:
         # ⚠ 「未接」本身不是錯,**沒說為什麼**才是:那樣的一列與「還沒輪到它」
         # 長得一模一樣,下一個人得重新查一遍才知道它是不是漏掉的。
         print(f"⚠ 有 {len(silent)} 段未接但 note 欄是空的:{'、'.join(silent[:20])}")
+        return 1
+    if stale:
+        # ⚠ 「接了、note 卻還寫著不接」比沒有 note 更糟:單獨讀到那一列的人
+        # 只會看到那一列,而它給的是**已經被推翻的答案**(CLAUDE.md §6 第 2 條)。
+        # 接線的那一輪要順手改掉裁決文字,不是加一句「後來接了」。
+        print(f"⚠ 有 {len(stale)} 段已接但 note 仍寫著裁定不接:{'、'.join(stale[:20])}")
         return 1
     return 0
 

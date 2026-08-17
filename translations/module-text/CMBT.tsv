@@ -4,7 +4,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 7	ds:92F0	Hands	5	拳頭	4	Y	同 5:小寫名表的第 60 格,原文一樣是 `Hands`。	engine/internal/combat/field.go
 9	ds:9338	None	4	無	2	Y	編號 59 的名稱 = **沒穿防具**(角色記錄位移 36 = 99 → 屬性 5 填 59,docs/re/75 §1、192 §3)。名稱表是武器與防具共用的。	engine/internal/combat/field.go
 10	ds:9340	Bite	4	咬擊	4	Y	編號 61 的名稱。⚠ **沒有任何資料產得出 61**(怪物欄5 是 0–13 與 62、角色走 0–56 與 59/60 兩個哨兵,docs/re/192 §3),但表上有,引擎照列。	engine/internal/combat/field.go
-22	ds:94DE	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。道具損壞:魔法道具發動失敗時原版有機率弄壞它。	engine/use_item.go
+22	ds:94DE	Item Breaks !	13	道具損壞了!	11	Y	道具損壞率 = `ITEMS.DAT` 欄6(docs/re/190 訂正 re/157),接在戰鬥那一支(`use_item.go:392`)。同 CAMP:127。	engine/use_item.go
 23	ds:9500	MONSTERS ALL DEAD	17	怪物全滅	8	Y		engine/internal/combat/field.go
 24	ds:951A	PARTY DIES!	11	隊伍全滅!	9	Y		engine/internal/combat/field.go
 26	ds:953A	DEAD	4	死亡	4	Y		engine/internal/original/chars.go
@@ -18,7 +18,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 57	ds:9698	 (per character)	16	(每位角色)	10	Y		engine/exp.go
 58	ds:96C2	Gold:	5	金幣：	6	Y		engine/exp.go
 59	ds:96CC	Gold:	5	金幣：	6	Y		engine/exp.go
-60	ds:96D8	 found 	7	 找到了 	8	8	⛔ 這是**路徑 A**(迷宮/腳本指定的道具)的句子,不是金幣句(docs/re/200 §1.1)。引擎的路徑 A 還沒接(需要迷宮六處的事件對應表)。	engine/exp.go
+60	ds:96D8	 found 	7	 找到了 	8	8	路徑 A(迷宮/腳本指定的道具)的句子,不是金幣句(docs/re/200 §1.1)。六處定點道具的事件對應表已解(docs/re/202 §3),這一段接在戰後拾取的提問 `exp.go:109`。	engine/exp.go
 61	ds:96F6	finds	5	找到了	6	6	戰後隨機掉落:編號 = INT(G×RND₁×0.5 + G×RND₂×0.5 + 2),G = round(總金幣 × 0.575),值域 2–46(docs/re/200 §3)。用**別名**顯示 —— 撿來的東西未鑑定。	engine/exp.go
 62	ds:9700	Do you take it?	15	要撿嗎?	7	Y		engine/exp.go
 63	ds:9714	(Y/N)	5	(Y/N)	5	Y		engine/exp.go
@@ -40,8 +40,8 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 88	ds:989E	Which spell do	14	要施放	6	Y		engine/cast_scene.go
 89	ds:98B0	you wish to cast?	17	哪個法術?	9	Y		engine/cast_scene.go
 90	ds:98C6	 (ENTER exits)	14	(ENTER離開)	11	Y		engine/cast_scene.go
-91	ds:98DE	 There is no     	17	沒有這個 	9	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。引擎用字母選單,選不到不存在的法術。	engine/cast_scene.go
-92	ds:98F4	 such spell!     	17	法術!	5	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。同 91 列。	engine/cast_scene.go
+91	ds:98DE	 There is no     	17	沒有這個 	9	Y	原版問的是**法術名稱**,所以需要「沒有這個法術」;引擎用字母選單,選不到不存在的法術。兩段合成 `castNoSuchSpell`(`cast_scene.go:33`)。	engine/cast_scene.go
+92	ds:98F4	 such spell!     	17	法術!	5	Y	同 91 列(後半段)。	engine/cast_scene.go
 93	ds:990C	 That is not a   	17	那不是	6	Y		engine/cast_scene.go
 94	ds:9922	 combat spell!   	17	戰鬥法術!	9	Y		engine/cast_scene.go
 95	ds:993A	 You don't know  	17	你不會	6	Y		engine/cast_scene.go

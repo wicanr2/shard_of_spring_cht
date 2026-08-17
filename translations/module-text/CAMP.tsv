@@ -45,13 +45,13 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 68	ds:735C	Enter new 	10	輸入新的	8	Y		engine/town_scene.go
 69	ds:736A	position for:	13	位置給：	8	Y		engine/town_scene.go
 70	ds:737C	 Letter?	8	 字母?	6	Y		engine/town_scene.go
-71	ds:7388	  A B C 	8	  A B C 	8	Y	⛔ **不接,而且不是版面偏好**:原版的格子圖只有 **9 個字母**(A–I),而背包是 **10 格**(docs/re/144 §3,手冊 p.39 也寫 10 件)—— 照畫會少掉第 10 格,而畫面上看起來完全正常。引擎改列道具名稱,10 格都列得到。	engine/town_scene.go
-72	ds:7394	  D E F 	8	  D E F 	8	Y	⛔ **不接,而且不是版面偏好**:原版的格子圖只有 **9 個字母**(A–I),而背包是 **10 格**(docs/re/144 §3,手冊 p.39 也寫 10 件)—— 照畫會少掉第 10 格,而畫面上看起來完全正常。引擎改列道具名稱,10 格都列得到。	engine/town_scene.go
-73	ds:73A0	  G H I 	8	  G H I 	8	Y	⛔ **不接,而且不是版面偏好**:原版的格子圖只有 **9 個字母**(A–I),而背包是 **10 格**(docs/re/144 §3,手冊 p.39 也寫 10 件)—— 照畫會少掉第 10 格,而畫面上看起來完全正常。引擎改列道具名稱,10 格都列得到。	engine/town_scene.go
+71	ds:7388	  A B C 	8	  A B C 	8	Y	營地 `R)eorder` 的 3×3 陣型格 —— `CAMP:68/69/70` 就在正上方問 `Enter new position for:`。九格 = `GROUPS.DAT` 位移 1–18 的九個成員槽,只收 A–I、目標槽有人就重問(docs/re/203 §1)。字母格照原文不譯。	engine/town_scene.go
+72	ds:7394	  D E F 	8	  D E F 	8	Y	同 71 列(第二行)。	engine/town_scene.go
+73	ds:73A0	  G H I 	8	  G H I 	8	Y	同 71 列(第三行)。	engine/town_scene.go
 75	ds:73BC	Character # to cast spell ? (ESC exits)	39	哪位角色要施法?(ESC離開)	24	Y		engine/town_scene.go
 76	ds:73EC	Cast what spell?	16	施放哪個法術?	13	Y		engine/camp_actions.go
 77	ds:7400	(ENTER exits)	13	(ENTER離開)	11	Y		engine/camp_actions.go
-78	ds:7412	DAZA REVELI	11	DAZA REVELI	11	Y	⛔ 不譯:玩家要一字不差打回去的通關咒語(glossary 硬規則5)。條件是**字串相符 且 人在第 5 座地城**(CAMP 0x116C6,docs/re/197 §2)。	engine/camp_actions.go
+78	ds:7412	DAZA REVELI	11	DAZA REVELI	11	Y	玩家要一字不差打回去的通關咒語,照原文不譯(glossary 硬規則5)。條件 = 字串相符 且 人在第 5 座地城(CAMP 0x116C6,docs/re/197 §2),接在 `utterKey` 的輸入緩衝。	engine/camp_actions.go
 79	ds:7422	The gate opens	14	大門開啟了	10	Y	唸對咒語 → `GROUPS.DAT` 位移 65 = 1(大門已開啟,docs/re/197 §3)。⚠ 引擎另開一個 ASCII 自由輸入(空白鍵),因為引擎的施法是字母選單而咒語不能列進選單。	engine/camp_actions.go
 80	ds:7436	Mumble, mumble, what spell did you say ?	40	喃喃自語,你剛剛說的是哪個法術?	30	Y	三個出口的第三個:唸的既不是咒語也不是法術名(CAMP 0x11750,docs/re/197 §4)。保留戲謔語氣。	engine/camp_actions.go
 81	ds:746A	That is a combat spell !	24	那是戰鬥法術!	13	Y		engine/camp_actions.go
@@ -71,17 +71,17 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 97	ds:76D4	char #: 	8	角色 #： 	8	Y		engine/use_item.go
 100	ds:76F0	That is a Combat Item!	22	那是戰鬥用道具!	15	Y	spec/19 §1.1 範例句,一字不差	engine/camp_actions.go
 101	ds:7712	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
-102	ds:774A	 pts!	5	 點!	4	Y	原句是側欄那一格被暫時蓋掉的 `<增量> pts!`(CAMP 0x1207B,docs/re/194 §2):效果類別 5 印在生命值欄、其餘印在法力欄。引擎把施法結果寫在訊息列,側欄永遠顯示數值本身,沒有這個位置。不接。	engine/internal/magic/magic.go
+102	ds:774A	 pts!	5	 點!	4	Y	側欄那一格被暫時蓋掉的 `<增量> pts!`(CAMP 0x1207B,docs/re/194 §2)。引擎把施法結果寫在訊息列,這一段接成 `magic.MsgPts` 的單位字。	engine/internal/magic/magic.go
 103	ds:7754	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
 104	ds:7786	Lives !	7	活過來了!	9	9		engine/internal/magic/magic.go
 105	ds:7796	Is cured.	9	被治癒了。	10	10		engine/internal/magic/magic.go
-106	ds:77A4	Notices no change	17	沒有感到變化	12	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。與 CMBT:128/129 同一句,標點不同 —— 引擎用 magic.MsgNoDifference(CMBT 那一份)。	engine/use_item.go
+106	ds:77A4	Notices no change	17	沒有感到變化	12	Y	原版同一句有兩份措辭/標點,引擎兩份各接一個呼叫端 —— 這一份在戰鬥用道具(`use_item.go:171`),CMBT:128/129 那一份是 `magic.MsgNoDifference`。	engine/use_item.go
 107	ds:77BA	Character # to cast on ?  (ESC exits)	37	要對哪位角色施法?(ESC離開)	26	Y		engine/camp_actions.go
-108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y	原版同一句有兩份(另一份措辭/標點不同),引擎只有一份實作 —— 已接到另一份那一列。同 106 列。	engine/camp_actions.go
+108	ds:77E8	 notices no change!	19	 沒有感到任何變化!	18	Y	營地施法版本(`camp_actions.go:241`),句尾是驚嘆號。與 106 列同義不同標點,見該列。	engine/camp_actions.go
 109	ds:780A	A roaring blast of wind buffets the party and when the noise subsides...	72	一陣怒吼般的狂風吹襲隊伍,當聲響平息之後……	41	Y	風行術(SPELLS.DAT 第 22 列)的敘述:全隊傳送到世界座標 (8,8) = 翠綠村西邊一格(docs/re/193)。原版在傳送前印。	engine/internal/magic/magic.go
-127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y	⛔ 引擎沒有這個功能,而且**規則沒讀出來** —— 照 CLAUDE.md §2 的閘門,補之前要先回 RE(缺口列在 docs/spec/19-coverage.md §2)。同 CMBT:22(道具損壞)。	engine/use_item.go
+127	ds:7A18	Item Breaks !	13	道具損壞了!	11	Y	道具損壞率 = `ITEMS.DAT` 欄6(docs/re/190 訂正 re/157),接在 `use_item.go:118` 城鎮/營地那一支。	engine/use_item.go
 128	ds:7A2A	Spell Fails !	13	法術失效!	9	Y		engine/use_item.go
-130	ds:7A58	You don't have that skill.	26	你沒有那項技能。	16	Y	檔名/模組名,不是句子,⛔ 不譯 — spells.dat	engine/internal/town/camp.go
+130	ds:7A58	You don't have that skill.	26	你沒有那項技能。	16	Y	武器技能閘門的拒絕句:裝備要「不是巫師 且 有對應技能」,查表 `0,1,0,2,2,0,1,0,2,0,1,0`(docs/re/196 §1)。接在 `internal/town/camp.go`。	engine/internal/town/camp.go
 131	ds:7A7E	That character is incapacitated.	32	這位角色行動不能。	18	Y		engine/internal/town/camp.go
 132	ds:7AAA	You have used that skill today.	31	你今天已經用過那項技能了。	26	Y		engine/internal/town/camp.go
 133	ds:7AD6	That character is not a wizard.	31	這位角色不是巫師。	18	Y		engine/internal/town/camp.go

@@ -1,3 +1,3 @@
 row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
-0	ds:4F1A	Loading the Shard of Spring, (c) 1986-1987 by Strategic Simulations Inc.	72	正在載入《春之石》,(c) 1986-1987 by Strategic Simulations Inc.	62	Y	引擎的版面與原版不同,這一段結構上對不起來(見 docs/spec/19 §6.1 的第二種成因)。引擎沒有讀取畫面,標題只印 `(c)` 那半句(START:1 已接);印「正在載入」會在一個不是在載入的畫面上說謊。	engine/main.go
+0	ds:4F1A	Loading the Shard of Spring, (c) 1986-1987 by Strategic Simulations Inc.	72	正在載入《春之石》,(c) 1986-1987 by Strategic Simulations Inc.	62	Y	原版開機那一行。引擎沒有讀取畫面,這一句印在 stderr(`main.go:533`),不佔畫面 —— 標題畫面另接 START:1 的 `(c)` 那半句。	engine/main.go
 1	ds:4F66	MS DOS version by Digital Illusions, Inc.	41	MS DOS 版由 Digital Illusions, Inc. 移植	40	Y		engine/shell_scene.go

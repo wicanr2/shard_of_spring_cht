@@ -235,7 +235,8 @@ CMBT 把它擺在 `90 90` 之後,不吃掉它整段就錯位 ——
 | [x] | G3 玩家的轉檔流程 | ✅ [`docs/PLAYING.md`](../PLAYING.md),G2 之後已訂正:執行檔名 `shard` / `shard-convert`(Windows 加 `.exe`)、macOS 的 quarantine、**存檔在 `saves/party.json` 而不是 `assets/save/`**、AppImage 的 `--convert` 流程與 `~/.local/share/shard-of-spring/`。轉換器的 `-translations` 預設改成自動找(執行檔旁 → 工作目錄 → `/translations`),找不到會印警告 —— 否則玩家拿到一份看起來正常的英文版 |
 | [x] | G4 場景配樂(**增補,非原版**)| ✅ 六首自己寫的譜 + 原版兩首,全部以 OGG 內嵌([`13`](13-sound.md) §7)。F5 循環切換原版/重製/關閉,**預設原版**。⛔ 不是拿通關曲循環 —— 那是 §5 擋掉的做法 |
 | [x] | G5 發行 | ✅ `v0.1.0`(三平台)、`v0.2.0`(配樂 + AppImage)。⛔ 發之前跑 `gh repo view --json visibility`(§0.1)|
-| [x] | G6 對外素材 | ✅ [`docs/column-shard-of-spring.md`](../column-shard-of-spring.md)(遊戲介紹 + 精訊 1987 中文說明書的一手證據)、[`docs/promo/`](../promo/) 的 **37 秒**推廣片(`tools/promo.sh`),末段是**原版 vs 重製版**並排比較。<br>⚠ **影格走真的按鍵**(`engine/promo_test.go`),不接受擺好狀態的定格 —— 推廣片要證明的是「玩得動」。<br>⚠ 比較段的原版畫面是 `tools/dosbox_run.sh` **實跑**抓的([`re/139`](../re/139-oracle-reaches-gameplay.md) 的路線),不是掃描圖。<br>⚠ 影片含原版美術,與 `docs/images/` 同地位:**對外散布要另行決定** |
+| [x] | G7 標題畫面的原版美術 | ✅ `STARTUP.BIN` 轉出來了([`15`](15-game-shell.md) §3)。**RE 早就做完**([`re/20`](../re/20-cga-layout.md) 就是拿它當樣本解出 CGA 佈局的),缺的只是轉檔與接線。⚠ 它是**整頁顯示緩衝**不是 `GET` 陣列,用 `DecodeTile` 解不會報錯、只會得到雜訊 |
+| [x] | G6 對外素材 | ✅ [`docs/column-shard-of-spring.md`](../column-shard-of-spring.md)(遊戲介紹 + 精訊 1987 中文說明書的一手證據)、[`docs/promo/`](../promo/) 的 **41 秒**推廣片(`tools/promo.sh`),末段是**原版 vs 重製版**三組並排比較(標題、主選單、世界地圖)。<br>⚠ **影格走真的按鍵**(`engine/promo_test.go`),不接受擺好狀態的定格 —— 推廣片要證明的是「玩得動」。<br>⚠ 比較段的原版畫面是 `tools/dosbox_run.sh` **實跑**抓的([`re/139`](../re/139-oracle-reaches-gameplay.md) 的路線),不是掃描圖。<br>⚠ 影片含原版美術,與 `docs/images/` 同地位:**對外散布要另行決定** |
 
 ## 7.1 F3 剩下的段:逐項計畫
 

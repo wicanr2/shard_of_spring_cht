@@ -452,11 +452,20 @@ func (g *Game) drawShell(dst *ebiten.Image) {
 	}
 }
 
+// TitleArtScale 是標題美術的放大倍率。
+//
+// ⚠ **整數倍**(同 docs/spec/04 的美術放大原則:不模糊)。這裡是 3 不是 4:
+// 原圖 158×200,4× 之後高 800 > 畫面的 768。
+const TitleArtScale = 3
+
 // drawTitle 畫 A1 標題畫面。docs/spec/15 §3。
 //
-// ⚠ STARTUP.BIN(疑似整頁顯示緩衝,16384+8 bytes)還沒有轉出來——
-// cmd/convert 目前只轉圖塊與 PICT。用純文字標題,不拿別的圖片冒充
-// (同 cmd/convert 對缺圖的處理:用佔位符,不要偷偷補圖)。
+// 版面照原版:**左邊美術、右邊文字**。原版整頁的右半是英文製作群,
+// remake 只取左半(main.go 的 TitleArtPanelW),右半自己用中文畫 ——
+// 兩份疊在一起會互相蓋掉。
+//
+// ⚠ `g.titleArt == nil`(STARTUP.BIN 沒轉出來)就退回**置中的純文字**,
+// ⛔ 不拿別的圖片冒充(docs/spec/15 §3)。
 //
 // ⚠ 音樂:規格說「music.Title 若存在;沒有就靜音」——internal/music
 // 只有 Ending 與 Userlib 兩份譜(docs/spec/13),沒有 Title,所以這裡
@@ -464,6 +473,22 @@ func (g *Game) drawShell(dst *ebiten.Image) {
 func (g *Game) drawTitle(dst *ebiten.Image) {
 	cx := float64(layout.ScreenW) / 2
 	y := float64(layout.ScreenH)/2 - 100
+	wrap := 46
+
+	if g.titleArt != nil {
+		b := g.titleArt.Bounds()
+		aw := float64(b.Dx() * TitleArtScale)
+		ah := float64(b.Dy() * TitleArtScale)
+		var op ebiten.DrawImageOptions
+		op.GeoM.Scale(TitleArtScale, TitleArtScale)
+		op.GeoM.Translate(48, (float64(layout.ScreenH)-ah)/2)
+		dst.DrawImage(g.titleArt, &op)
+		// 文字改成靠右半置中,並縮短換行寬度 —— 沿用 46 會overflow到畫面外,
+		// 而 drawCenter 不會裁切,只會把字畫到看不見的地方。
+		cx = (48 + aw + float64(layout.ScreenW)) / 2
+		y = 150
+		wrap = 24
+	}
 	if g.titleFont != nil {
 		drawCenter(g.titleFont, dst, "春之石", cx, y)
 		y += g.titleFont.LineHeight() * 1.3
@@ -474,14 +499,24 @@ func (g *Game) drawTitle(dst *ebiten.Image) {
 		// START:0「(c) 1986-1987 by Strategic Simulations Inc.」+
 		// START:1「MS DOS 版由 Digital Illusions, Inc. 移植」。
 		// ⚠ 沒有讀取畫面,START:0 原文開頭「Loading...」的字樣不套用。
-		drawCenter(g.panel, dst, "(c) 1986-1987 by Strategic Simulations Inc.", cx, y)
-		y += g.panel.LineHeight() * 1.3
-		drawCenter(g.panel, dst, "MS DOS 版由 Digital Illusions, Inc. 移植／繁體中文 remake", cx, y)
-		y += g.panel.LineHeight() * 1.6
+		//
+		// ⚠ **這兩句也要換行。** 左圖右文的版面只剩半個畫面寬,
+		// 而 drawCenter 不裁切 —— 太長的那一句會直接畫到畫面外,
+		// 看起來像被切掉,不像沒換行。
+		for _, ln := range ui.Wrap("(c) 1986-1987 by Strategic Simulations Inc.", wrap) {
+			drawCenter(g.panel, dst, ln, cx, y)
+			y += g.panel.LineHeight()
+		}
+		y += g.panel.LineHeight() * 0.3
+		for _, ln := range ui.Wrap("MS DOS 版由 Digital Illusions, Inc. 移植／繁體中文 remake", wrap) {
+			drawCenter(g.panel, dst, ln, cx, y)
+			y += g.panel.LineHeight()
+		}
+		y += g.panel.LineHeight() * 0.6
 		// MENU:93 —— 原版的製作群謝辭,原本印在 P)rogram Notes 那一頁。
 		// ⚠ **整段是一個常數**:譯文的單一真相是 TSV 那一列,
 		// 拆成三個字串會讓 tools/check_module_text.py 對不上(而畫面看起來沒事)。
-		for _, ln := range ui.Wrap(credits, 46) {
+		for _, ln := range ui.Wrap(credits, wrap) {
 			drawCenter(g.panel, dst, ln, cx, y)
 			y += g.panel.LineHeight()
 		}

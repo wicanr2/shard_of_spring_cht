@@ -31,11 +31,12 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 
 [`docs/promo/shard-of-spring-cht-promo.mp4`](docs/promo/shard-of-spring-cht-promo.mp4)
 —— 標題、主選單、世界地圖、城鎮、地城、最終戰,最後接一段**原版 vs 重製版**的並排比較,
-37 秒,配的是本專案自己寫的場景配樂。
+41 秒,配的是本專案自己寫的場景配樂。
 
 ⚠ 比較段左邊的原版畫面是 [`tools/dosbox_run.sh`](tools/dosbox_run.sh) **實跑抓的**
 (路線見 [`re/139`](docs/re/139-oracle-reaches-gameplay.md)),不是掃描或網路上的圖 ——
-兩邊都得是自己跑出來的,比較才成立。世界地圖那一組是**同一支隊伍、同一個位置**。
+兩邊都得是自己跑出來的,比較才成立。三組:標題、主選單、世界地圖。標題那一組是**同一張 CGA 美術**
+(`STARTUP.BIN` 轉出來的),世界地圖那一組是**同一支隊伍、同一個位置**。
 
 ⚠ **畫面是真的按鍵驅動錄出來的**(`engine/promo_test.go` 每格寫一張 PNG),
 不是擺好狀態的定格 —— 推廣片要證明的是「玩得動」,而定格不是那個證據。

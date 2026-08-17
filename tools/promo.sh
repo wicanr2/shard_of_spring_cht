@@ -47,6 +47,7 @@ REMAKE_SHOTS="$ROOT/docs/images"
 
 compare() {
   local pairs=(
+    "orig-01-title:01-title:標題畫面 —— 同一張 CGA 美術"
     "orig-02-menu:02-menu:主選單"
     "orig-03-world:03-world:世界地圖 —— 同一支隊伍、同一個位置"
   )

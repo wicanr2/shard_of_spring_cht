@@ -165,3 +165,51 @@ func DecodeWorldMap(d []byte) ([]uint16, error) {
 	}
 	return cells[:WorldW*WorldH], nil
 }
+
+// CGA 整頁的尺寸([`docs/re/20`](../../../docs/re/20-cga-layout.md) §1)。
+//
+// ⚠ 這是**整頁顯示緩衝**的佈局,與 `GET` 陣列(圖塊、PICT)**不一樣**:
+// 那些是連續存放並自帶尺寸,這裡是硬體的掃描線交錯、尺寸寫死。
+// re/20 §2 記過同一件事:「不要假設其他素材也是整頁佈局」。
+const (
+	CGAPageW     = 320
+	CGAPageH     = 200
+	cgaRowBytes  = CGAPageW / 4 // 4 像素/byte
+	cgaBankBytes = 0x2000       // 奇數列那一區的起點
+	// CGAPageBytes 是一整頁:兩區各 8 KB。
+	CGAPageBytes = cgaBankBytes * 2
+)
+
+// DecodeCGAPage 解一張 CGA 整頁畫面(`STARTUP.BIN`)。
+//
+// 佈局(docs/re/20 §1):
+//
+//	每列 80 bytes × 4 像素 = 320 像素,2 bit/像素,高位在左
+//	偶數列 offset 0x0000 + (列÷2) × 80
+//	奇數列 offset 0x2000 + (列÷2) × 80
+//
+// ⚠ **交錯區搞反或每列 bytes 數算錯不會報錯**,只會讓畫面碎成斜線 ——
+// 而斜線與「這個檔本來就沒有圖」在程式看來沒有差別。解完一定要 dump 出來看
+// (re/20 §1 的第 3 條證據就是靠肉眼確認框線是直的)。
+func DecodeCGAPage(d []byte) (*image.Paletted, error) {
+	b, err := ParseBSAVE(d)
+	if err != nil {
+		return nil, err
+	}
+	if len(b.Body) < CGAPageBytes {
+		return nil, fmt.Errorf("CGA 整頁需要 %d bytes,只有 %d", CGAPageBytes, len(b.Body))
+	}
+	img := image.NewPaletted(image.Rect(0, 0, CGAPageW, CGAPageH), Palette)
+	for y := 0; y < CGAPageH; y++ {
+		off := (y/2)*cgaRowBytes + (y%2)*cgaBankBytes
+		row := b.Body[off : off+cgaRowBytes]
+		x := 0
+		for _, by := range row {
+			for _, sh := range [4]uint{6, 4, 2, 0} {
+				img.SetColorIndex(x, y, (by>>sh)&3)
+				x++
+			}
+		}
+	}
+	return img, nil
+}

@@ -186,6 +186,25 @@ func run(in, out, transDir string) error {
 		return err
 	}
 
+	// STARTUP.BIN —— 標題與主選單的背景(docs/spec/15 §3)。
+	//
+	// ⚠ 這一張的佈局與上面那些**不一樣**:它是 CGA 的**整頁顯示緩衝**
+	// (掃描線分兩區交錯,docs/re/20),不是 `GET` 陣列。用 DecodeTile 解
+	// 不會報錯,只會得到一張雜訊 —— 而雜訊與「這個檔沒有圖」長得一樣。
+	//
+	// 調色盤跟 MENU 走(`0x3D8 = 0x0E` → PaletteMaze,gfx.go 的說明)。
+	startup, err := original.DecodeCGAPage(mustRead(in, "STARTUP.BIN"))
+	if err != nil {
+		return fmt.Errorf("STARTUP.BIN:%w", err)
+	}
+	if err := writePNG(filepath.Join(out, "gfx", "startup.png"),
+		original.WithPalette(startup, original.PaletteMaze)); err != nil {
+		return err
+	}
+	if err := step("startup", 1, nil); err != nil {
+		return err
+	}
+
 	// MONST*.BIN —— 每檔八張交錯的 17×17,輸出成一張橫向 sprite sheet。
 	nMonst := 0
 	for i := 1; i <= 22; i++ {

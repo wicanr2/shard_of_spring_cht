@@ -168,6 +168,9 @@ type Game struct {
 	// M12:遊戲外殼(docs/spec/15-game-shell.md)。標題/主選單/隊伍選擇/全滅/結局。
 	shell     *shellState
 	titleFont *render.Painter // 標題用 32px(docs/spec/04 §4)
+	// titleArt 是 STARTUP.BIN 左側那塊美術面板(docs/spec/15 §3)。
+	// **nil = 沒轉出來**,標題畫面退回純文字 —— ⛔ 不拿別的圖冒充。
+	titleArt *ebiten.Image
 
 	// bossFight:目前這場戰鬥是不是迷宮事件目標 533(maze.TargetFinalBoss,
 	// 最終首領 Siriadne)引發的劇情戰鬥。
@@ -684,6 +687,7 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	}
 	fmt.Fprintln(os.Stderr, "字型:", fontName)
 	g.panel, g.overlayFont, g.titleFont = panel, overlay, title
+	g.titleArt = loadTitleArt(dir)
 	g.initSound()  // docs/spec/13:失敗只記警告,不影響遊戲
 	g.loadConfig() // 配樂模式等偏好。讀不到就用預設(= 原版)
 	g.shell = &shellState{mode: shellTitle}
@@ -833,4 +837,43 @@ func (g *Game) writeChars() error {
 		copy(out[i*original.CharRecLen:], c.Bytes())
 	}
 	return os.WriteFile(path, out, 0o644)
+}
+
+// TitleArtPanelW 是 STARTUP.BIN 左側那塊美術面板的寬度。
+//
+// 原版的標題整頁是 320×200,**左邊是美術、右邊是英文製作群**
+// (docs/re/20 解出來的那張)。remake 只要美術那半邊 ——
+// 右半的製作群文字由引擎自己用中文畫,兩份疊在一起會互相蓋掉。
+//
+// ⚠ 158 不是目測的:掃過整頁之後,**只有第 0 欄與第 158–162 欄整欄全黑**,
+// 那五欄就是兩半之間的溝。改圖之後這個值要重量,不要沿用。
+const TitleArtPanelW = 158
+
+// loadTitleArt 讀 <assets>/gfx/startup.png 並裁出左側的美術面板。
+//
+// ⚠ **讀不到就回 nil**,呼叫端畫純文字標題(docs/spec/15 §3:
+// 「轉不出來就用純文字標題,不要拿一張全黑的圖冒充」)。
+func loadTitleArt(dir string) *ebiten.Image {
+	f, err := os.Open(filepath.Join(dir, "gfx", "startup.png"))
+	if err != nil {
+		return nil
+	}
+	defer f.Close()
+	img, _, err := image.Decode(f)
+	if err != nil {
+		return nil
+	}
+	b := img.Bounds()
+	w := TitleArtPanelW
+	if w > b.Dx() {
+		w = b.Dx()
+	}
+	sub, ok := img.(interface {
+		SubImage(image.Rectangle) image.Image
+	})
+	if !ok {
+		return ebiten.NewImageFromImage(img)
+	}
+	return ebiten.NewImageFromImage(
+		sub.SubImage(image.Rect(b.Min.X, b.Min.Y, b.Min.X+w, b.Max.Y)))
 }

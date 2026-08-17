@@ -196,7 +196,7 @@ until 那一格是空的
 
 **施法時機**(D3)—— `法力 > 1` 且 `(回合 == 2 或 擲骰 ≤ 0.3)`。
 法力是**硬門檻**,在 OR 外面;第二回合必定施法,第三回合又回到擲骰。
-這與 [`re/170`](../re/170-monster-spell-selection.md) 的「第二回合起固定放暴風系」接得上。
+這與 [`re/170`](../re/170-monster-ai-casts-by-spell-family.md) 的「第二回合起固定放暴風系」接得上。
 
 ⚠ **逐步的選格仍未解**:原版還帶一個每單位一份的 ±1 側向偏好
 (屬性 18,[`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md)),

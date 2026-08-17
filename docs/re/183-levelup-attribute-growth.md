@@ -1,7 +1,7 @@
 # 183 — 升級會加屬性:跑 3 次「五選一 +1,夾 20」
 
 日期:2026-08-16
-接續:[`140-manual-cross-check.md`](140-manual-cross-check.md) §6(訓練所)、[`152-experience-settlement-formula.md`](152-experience-settlement-formula.md) §3(擲骰成語)
+接續:[`140-manual-stat-tables.md`](140-manual-stat-tables.md) §6(訓練所)、[`152-experience-settlement-formula.md`](152-experience-settlement-formula.md) §3(擲骰成語)
 子系統:**D. 角色/隊伍資料**
 輸入:`TOWN.EXE`(SHA-256 見 [`00-inputs.md`](00-inputs.md))
 
@@ -170,14 +170,14 @@
 ```
 
 內容仍是執行期填的(靜態讀不到),但**結構確定**,而且那 20 個技能名
-早就在 `TITLES.DAT` 裡([`178`](178-skill-costs-in-titles-dat.md))。
+早就在 `TITLES.DAT` 裡([`178`](178-settings-from-three-sources.md))。
 
 ## 7. 明列剩餘的不確定
 
 | 項目 | 狀態 |
 |---|---|
 | `ds:6D28` 陣列的內容從哪個檔案填進去 | **未查**(結構已確定,名字在 `TITLES.DAT`)|
-| 技能點的**花法**(`sub_11D09` 的輸入迴圈、每項技能的花費)| **未讀** —— 花費表本身已解([`178`](178-skill-costs-in-titles-dat.md))|
+| 技能點的**花法**(`sub_11D09` 的輸入迴圈、每項技能的花費)| **未讀** —— 花費表本身已解([`178`](178-settings-from-three-sources.md))|
 | HP / SP 的成長算式 | **另一輪處理**(`0x11150`–`0x112EF`)—— 不在本篇 |
 | 手冊 p.48/49 的 `MAX … GAIN PER LEVEL` 表在程式裡存不存在 | **未查** |
 | 屬性名稱查表的內容 | **未知**;不影響數值 |

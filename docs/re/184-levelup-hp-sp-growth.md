@@ -1,7 +1,7 @@
 # 184 — 升級的生命/法力成長算式;手冊 p.48/49 那兩張表在程式裡不存在
 
 日期:2026-08-16
-接續:[`183-levelup-attribute-growth.md`](183-levelup-attribute-growth.md)、[`140-manual-cross-check.md`](140-manual-cross-check.md) §6
+接續:[`183-levelup-attribute-growth.md`](183-levelup-attribute-growth.md)、[`140-manual-stat-tables.md`](140-manual-stat-tables.md) §6
 子系統:**D. 角色/隊伍資料**
 輸入:`TOWN.EXE`、`BRUN30.EXE`(SHA-256 見 [`00-inputs.md`](00-inputs.md))
 

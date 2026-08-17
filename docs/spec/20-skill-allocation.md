@@ -9,9 +9,9 @@
 | 東西 | 在哪 | 狀態 |
 |---|---|---|
 | 有幾點可以花 | `original.Character.SkillPts`(CHARS.DAT 位移 89)| 已解 |
-| 創角時發多少 | `town.SkillPoints(智能)` = 智能 | 已解([`re/143`](../re/143-create-character-flow.md) §3)|
+| 創角時發多少 | `town.SkillPoints(智能)` = 智能 | 已解([`re/143`](../re/143-character-creation.md) §3)|
 | 升級時發多少 | `Train()` 已經在發:`智能成長 + 1` | 已解([`re/183`](../re/183-levelup-attribute-growth.md) §6)|
-| 每項技能的成本 | `town.SkillCost(職業, 編號)` | 已解([`re/178`](178-skill-costs-in-titles-dat.md) §1)|
+| 每項技能的成本 | `town.SkillCost(職業, 編號)` | 已解([`re/178`](../re/178-settings-from-three-sources.md) §1)|
 | 技能名 | `town.SkillName(職業, 編號)` | 已解 |
 | 學會的旗標 | `Character.Skills` 10 格 `'0'`/`'1'` | 已解 |
 

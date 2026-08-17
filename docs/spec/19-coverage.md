@@ -72,69 +72,40 @@
 E1/E2/E3 記錄了接線過程,晚於 `11`)。`11` 那一段的敘述已經過期,建議專案負責人
 排一輪把它改成指向 `16`,**本輪不動 `docs/` 其他檔**,先在此標記。
 
-## 2. 缺口:功能不存在,不是措辭問題
+## 2. 當初列出的缺口 —— **全部補完了**(2026-08-17)
 
-> 這一節列的是**引擎沒有那個畫面或那一步**的原版訊息 —— 不是措辭不同。
-> 措辭的接線是 [`19-module-text.md`](19-module-text.md) §6.1 的 `wired` 欄,
-> 進度由 `tools/check_module_text.py` 印出來。
->
-> ⛔ **列出來不等於要補。** 補不補是另一個決定;其中幾項還卡在
-> [`CLAUDE.md`](../../CLAUDE.md) §2 的閘門 —— 規則沒讀出來之前不能實作。
+稽核當下(2026-08-16)逐句對過原版字串,列出 **17 項「引擎沒有那個畫面或那一步」**。
+到 2026-08-17 為止,**每一項都有落點**了。下表保留原始清單,右欄寫現在在哪 ——
+清單本身仍然有用:它是一份**原版自己提供的檢查表**,下一輪要驗收什麼照著它走。
 
-### 2.1 規則層寫好了、按鍵沒接:**改名**
+> ⛔ **「還剩什麼沒做」不看這一節**,看
+> [`14-remake-worklist.md`](14-remake-worklist.md) §8.1 —— 那是狀態的單一真相來源。
 
-`town.Rename()`(`engine/internal/town/roster.go:67`)已經實作並有測試,
-但 `engine/` 底下**沒有任何呼叫端** —— 名冊畫面收不到改名這個指令。
-對應原文 `Which character to rename ?` / `Please enter the new name (9 char max): `
-(CHARUTIL:7/8)。
-
-⚠ 這是 `H)unt` / `I)dentify` 那一類的第三例:**規則做完了、接線斷了,
-而畫面上看不出來**(選單根本沒列出這個指令,所以「按不到」不像壞掉)。
-原版的字串表是現成的檢查表,這一項就是對字串時掉出來的。
-
-⚠ 名字長度上限**兩份原版資料自己打架**(10 vs 9),
-見 [`19-module-text.md`](19-module-text.md) §4 —— 接改名之前要先裁決。
-
-### 2.2 戰鬥缺三塊
-
-| 缺什麼 | 原文(模組:索引)| 說明 |
-|---|---|---|
-| **單位檢視面板** | `Status: ` / `Speed:` / `Skill:` / `Strength:` / `Magical:` / `Armor rating:` / `Attacks with:` / `YES` / `no` / `(ESC, ` / ` scrolls)`(CMBT:179–192)| 原版可以在戰場上翻看每個單位的屬性。引擎的單位列只有名字/生命/速度 |
-| **攻擊附帶中毒** | `and is poisoned!`(CMBT:79)| 引擎的 `Attack()` 只算傷害,不會讓目標中毒 —— 而中毒狀態本身是有的(睡覺扣血、治療所解毒都吃它)|
-
-### 2.3 戰後與道具
-
-| 缺什麼 | 原文 | 說明 |
-|---|---|---|
-| 拾取確認 | `Gold: N found` / `Do you take it?` / `(Y/N)`(CMBT:58–63)| 引擎的金幣直接進隊伍,沒有問要不要撿 |
-| 道具損壞 | `Item Breaks !`(CMBT:22 / CAMP:127)| 魔法道具發動失敗時原版有機率弄壞它;引擎只回「法術失效!」 |
-| 迷宮撿道具 | `found an item.` / `Your party is full of items, please discard some from Camp.`(MAZEMOVE:84/85)| 引擎的迷宮不會掉道具,也就沒有背包滿的分支 |
-| 照明剩餘回合 | `You now have about N turns of light.`(CAMP:134/135)| 引擎有能見度,但沒有「照明會燒完」這件事 |
-
-### 2.4 城鎮與營地的小分支
-
-| 缺什麼 | 原文 |
+| 原版訊息(模組:索引)| 現在在哪 |
 |---|---|
-| 旅店住**幾晚** | `Your rooms will cost N gold each night.  How many nights…(1-9, 0 exits) ?`(TOWN:30/31)—— 引擎一次只住一晚 |
-| 一次買**幾份**口糧 | `…How many rations (1-9, 0 exits) ?`(TOWN:59)—— 引擎一次買一份 |
-| 付款確認 | `That will cost N gold, Pay (Y/N)?`(TOWN:27/28)—— 引擎直接扣 |
-| 智能不足 | `Not enough IQ !`(TOWN:54) |
-| 睡覺時死亡 | `dies in the night.`(TOWN:81 / CAMP:137)—— 引擎會扣到 0,但不報這件事 |
-| 不累就不睡 | `You are not tired`(CAMP:55) |
-| 裝備的武器技能閘門 | `NO SKILL !`(CAMP:43)—— 引擎不檢查會不會用這件武器 |
-| `DAZA REVELI` 大門 | CAMP:78–80(`The gate opens` / `Mumble, mumble, what spell did you say ?`)—— 對著大門唸咒語的機關 |
+| `Which character to rename ?` / `Please enter the new name (9 char max): `(CHARUTIL:7/8)| 名冊的改名指令,上限裁定為 **9**([`re/199`](../re/199-name-limit-is-nine.md))`engine/roster_scene.go` |
+| 單位檢視面板:`Status:` / `Speed:` / `Attacks with:` …(CMBT:179–192)| `engine/inspect_scene.go`,`Attacks with:` 走 `Field.WeaponName` |
+| `and is poisoned!`(CMBT:79)| 武器 62 + 亂數 < 0.15 + 目標狀態 0([`re/191`](../re/191-poison-on-hit.md))`internal/combat/poison.go` |
+| `Gold: N found` / `Do you take it?` / `(Y/N)`(CMBT:58–63)| 戰後金幣與掉落各問一次([`re/200`](../re/200-loot-drops-mechanism.md))`engine/exp.go` |
+| `Item Breaks !`(CMBT:22 / CAMP:127)| 損壞率 = `ITEMS.DAT` 欄6([`re/190`](../re/190-items-col6-is-break-chance.md))`engine/use_item.go` |
+| `found an item.` / `…full of items…`(MAZEMOVE:84/85)| 六個定點事件([`re/202`](../re/202-maze-event-dispatch-and-loot-events.md))`engine/maze_loot.go` |
+| `You now have about N turns of light.`(CAMP:134/135)| 火把每個動作燒一回合([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md))`internal/world` |
+| `Your rooms will cost N gold each night.  How many nights…`(TOWN:30/31)| `engine/town_scene.go:365` |
+| `…How many rations (1-9, 0 exits) ?`(TOWN:59)| 同上,一次買多份 |
+| `That will cost N gold, Pay (Y/N)?`(TOWN:27/28)| 付款確認 |
+| `Not enough IQ !`(TOWN:54)| 「IQ」= **剩餘技能點數**([`re/196`](../re/196-weapon-skill-gate-train-cost-light-spells.md) §2)`internal/town/skill_alloc.go` |
+| `dies in the night.`(TOWN:81 / CAMP:137)| `engine/town_scene.go:292` |
+| `You are not tired`(CAMP:55)| `partyRested()`。⚠ 「累不累」的判準**沒有讀到**,那是引擎的定義 |
+| `NO SKILL !`(CAMP:43)| 裝備要「不是巫師 且 有對應技能」([`re/196`](../re/196-weapon-skill-gate-train-cost-light-spells.md) §1)|
+| `The gate opens` / `Mumble, mumble…`(CAMP:78–80)| 咒語在營地施法欄輸入([`re/197`](../re/197-daza-reveli-gate.md)),門那一格改成可通行([`re/205`](../re/205-gate-consumer-is-one-maze-cell.md))|
 
-### 2.5 外殼與世界地圖
+> **判準:原版的字串表是一份現成的驗收清單。**
+> 這 17 項裡有好幾項(改名、打獵、鑑定、大門)是**規則早就寫好、接線斷了** ——
+> 而斷掉的接線在畫面上不像壞掉:選單根本沒列出那個指令,所以「按不到」看起來很正常。
+> 逐句對字串是目前唯一抓得到這一類缺口的方法。
 
-| 缺什麼 | 原文 |
-|---|---|
-| 全滅的隊伍不能選 | `Parties of dead characters are not allowed !!!`(MENU:99)—— `selectParty()` 只擋空隊伍 |
-| 解散隊伍 | `No party # to disband !`(CHARUTIL:58/59) |
-| 隊伍資訊頁 | `Saved in the month of the ` / `Currently in the ` / `maze: `(CHARUTIL:42/44/45)—— 存檔時間與所在地城 |
-| 音效開關 | `Sound is now on.` / `Sound is now off.`(CMBT:52/53) |
-| 拱門敘述與離場謝詞 | WRLDMOVE:18/19 —— 世界地圖邊界的兩段文字 |
 
-## 3. 已補起來的(先前列在這裡,現在有了)
+## 3. 稽核**之前**就補起來的(當初這一節是「缺口」)
 
 | 原本的缺口 | 現況 |
 |---|---|
@@ -155,5 +126,6 @@ E1/E2/E3 記錄了接線過程,晚於 `11`)。`11` 那一段的敘述已經過�
 - **`(0 exits)` 與 `(ESC exits)` 的收單鍵不一致**:原版有些地方用數字 `0`、
   有些用 `ESC`,譯文如實分別記錄。引擎目前多半兩個都收,但**沒有逐畫面核對**。
 - **原版把一句話拆成多段**的那些(例如 `is not a` + `wizard` + `and cannot` +
-  `cast spells.`),引擎併成一句時用的是**另一個模組的同義句**(CAMP 版),
-  所以 CMBT 那幾段留著沒接。這不是缺功能,是同一句話在原版有兩份。
+  `cast spells.`):同一句話在原版有兩份措辭,引擎兩份**各接一個呼叫端**
+  (F3 已 381/381),但**哪一份對應哪個畫面沒有逐一核對** ——
+  接得上不等於接對地方。

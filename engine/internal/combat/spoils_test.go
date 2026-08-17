@@ -1,6 +1,9 @@
 package combat
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 // 戰後分經驗的資格(docs/re/150 §2.1):朝向 > 0 **且** 狀態 < 5。
 //
@@ -60,36 +63,54 @@ func TestExpShareTruncates(t *testing.T) {
 	}
 }
 
-// 金幣:每隻怪物一次擲骰,面數是難度階級;隊員不算(docs/re/152 §2.3 的佔位)。
-//
-// ⚠ 這條測的是**形狀**不是數值 —— 四個係數未解,數值本身沒有出處。
-func TestTotalGoldRollsPerMonster(t *testing.T) {
+// 金幣:每隻怪物擲一次 `INT(1.7^階級 + RND × 2.1^階級 + 1)`,隊員不算
+// (docs/re/207 §3)。
+func TestTotalGoldPerMonster(t *testing.T) {
 	units := make([]Unit, PartyBase+PartyMax)
 	units[0] = Unit{IsMonster: true, Tier: 5}
-	units[1] = Unit{IsMonster: true, Tier: 9}
-	units[2] = Unit{IsMonster: true, Tier: 0} // 階級 0 → 夾成 1,不能擲 0 面
+	units[1] = Unit{IsMonster: true, Tier: 3}
+	units[2] = Unit{IsMonster: true, Tier: 0} // 階級 0 → 夾成 1
 	units[PartyBase] = Unit{Tier: 99}         // 隊員的階級固定 99,不該被算進去
 
-	r := &ScriptRand{Values: []int{3}}
-	if got := TotalGold(units, r); got != 9 {
-		t.Errorf("三隻怪物各擲 3 應為 9,得 %d(隊員的 99 不該算)", got)
+	// 亂數固定 0 → 只剩保底項:INT(1.7^T + 1)
+	r := &fixedFloat{v: 0}
+	want := int(math.Pow(1.7, 5)+1) + int(math.Pow(1.7, 3)+1) + int(math.Pow(1.7, 1)+1)
+	if got := TotalGold(units, r); got != want {
+		t.Errorf("亂數 0 時應為 %d,得 %d(隊員的 99 不該算)", want, got)
 	}
-	if want := []int{5, 9, 1}; len(r.Faces) != 3 ||
-		r.Faces[0] != want[0] || r.Faces[1] != want[1] || r.Faces[2] != want[2] {
-		t.Errorf("擲骰面數 %v,應為 %v(階級,0 夾成 1)", r.Faces, want)
-	}
-	// 沒有怪物就沒有金幣
-	if got := TotalGold(make([]Unit, PartyBase+PartyMax), &ScriptRand{Values: []int{3}}); got != 0 {
+	if got := TotalGold(make([]Unit, PartyBase+PartyMax), &fixedFloat{}); got != 0 {
 		t.Errorf("沒有怪物應為 0,得 %d", got)
 	}
 }
 
-// 未解項要出現在執行時的清單裡 —— 佔位的規則不能只寫在文件。
-func TestGoldAssumptionIsVisible(t *testing.T) {
-	for _, u := range Unresolved {
-		if u == GoldAssumption {
-			return
-		}
+// ⚠ 這一條擋的是「把底數與指數寫反」——`階級^1.7` 在低階幾乎看不出差別,
+// 到高階差好幾個量級,而畫面上只會顯示一個看起來很大的數字。
+func TestGoldBaseAndExponentAreNotSwapped(t *testing.T) {
+	const tier = 13 // 最終首領那一級
+	got := MonsterGold(tier, &fixedFloat{v: 0})
+	if want := int(math.Pow(1.7, tier) + 1); got != want {
+		t.Fatalf("階級 %d 的保底金幣是 %d,應為 %d", tier, got, want)
 	}
-	t.Error("金幣的佔位說明不在 Unresolved 裡 —— 玩家看不到它是佔位")
+	if swapped := int(math.Pow(float64(tier), 1.7) + 1); got == swapped {
+		t.Errorf("底數與指數寫反了也會得到 %d —— 這條測試分不出來", got)
+	}
 }
+
+// 浮動項乘的是 2.1^階級(另一個底數),不是同一個。
+func TestGoldRollUsesTheOtherBase(t *testing.T) {
+	const tier = 5
+	lo := MonsterGold(tier, &fixedFloat{v: 0})
+	hi := MonsterGold(tier, &fixedFloat{v: 1})
+	if want := int(math.Pow(1.7, tier) + math.Pow(2.1, tier) + 1); hi != want {
+		t.Errorf("亂數 1 時應為 %d,得 %d", want, hi)
+	}
+	if hi <= lo {
+		t.Error("浮動項沒有作用")
+	}
+}
+
+// fixedFloat 讓 Float01 永遠回同一個值;Roll 回面數(用不到,但要滿足介面)。
+type fixedFloat struct{ v float64 }
+
+func (f *fixedFloat) Roll(faces int) int { return faces }
+func (f *fixedFloat) Float01() float64   { return f.v }

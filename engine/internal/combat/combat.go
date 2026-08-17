@@ -182,7 +182,11 @@ func PartyAction(class byte) int {
 }
 
 // Unresolved 是要顯示在訊息列的未解項,讓它們在**執行時**也看得見。
-var Unresolved = []string{GoldAssumption}
+//
+// ⚠ 空的時候不要把機制拆掉 —— 下一個未解項出現時要有地方放,
+// 而重新長出這一條(含測試與提示列的欄寬預算)比留著它貴。
+// 上一個住戶是戰後金幣的係數,docs/re/207 解掉了。
+var Unresolved []string
 
 // ReorderEachRound:先攻**每回合重排**(docs/re/159)。
 //

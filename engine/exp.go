@@ -57,8 +57,7 @@ func (g *Game) awardExp(units []combat.Unit) (int, string) {
 // awardSpoils 發經驗與金幣。原版的結算畫面兩者一起印
 // (`Experience:` 與 `Gold:`,docs/re/95 §3)。
 //
-// ⚠ 金幣走的是**具名佔位**(combat.GoldAssumption)——
-// 係數未解,但**不發金幣也是錯的**:玩家永遠買不起東西。
+// 金幣照 docs/re/207:每隻怪物 `INT(1.7^階級 + RND × 2.1^階級 + 1)`,加起來。
 func (g *Game) awardSpoils(units []combat.Unit) string {
 	_, msg := g.awardExp(units)
 	gold := combat.TotalGold(units, combat.NewRand(g.spoilSeed()))
@@ -72,8 +71,7 @@ func (g *Game) awardSpoils(units []combat.Unit) string {
 		// CMBT:58「Gold:」+ 62/63「Do you take it?」「(Y/N)」。
 		// ⚠ CMBT:60「 found 」**不在這一句** —— 那是道具那一條路的字
 		// (docs/re/200 §1.1),先前接錯了。
-		msg += fmt.Sprintf("金幣：%d　要撿嗎?(Y/N)（%s）",
-			gold, combat.GoldAssumption)
+		msg += fmt.Sprintf("金幣：%d　要撿嗎?(Y/N)", gold)
 	}
 	// 戰後掉落:編號跟著這場的金幣走(docs/re/200 §3.2)。
 	// ⚠ 用**另一顆種子**,否則掉落會與金幣的擲骰互相糾纏。

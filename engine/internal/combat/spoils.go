@@ -62,47 +62,51 @@ const StatusDead = 5
 // 中毒(1)還算數,被縛(2)以上不算。
 const StatusIncapacitated = 2
 
-// TotalGold 回傳這一場戰鬥的金幣。
+// 戰後金幣。規則出自 docs/re/207(在那之前是具名佔位)。
+const (
+	// GoldBaseFloor 是保底項的底數:`ds:96B8` 的 DGROUP 初值 = MBF **1.7**。
+	GoldBaseFloor = 1.7
+	// GoldBaseRoll 是浮動項的底數:`ds:93C0` = MBF **2.1**。
+	GoldBaseRoll = 2.1
+	// GoldPlusOne 是最後加的常數:`ds:9464` = MBF 1。
+	GoldPlusOne = 1
+)
+
+// MonsterGold 是一隻怪物的金幣(docs/re/207 §3):
 //
-// ⚠ **這是具名的佔位,不是原版的公式。**
+//	INT( 1.7^階級 + RND × 2.1^階級 + 1 )
 //
-// 原版每隻怪物的形狀是(docs/re/152 §2.3、200 §3.2):
+// ⚠ **1.7 與 2.1 是底數,階級是指數** —— 反過來寫(`階級^1.7`)在低階
+// 幾乎看不出差別,到高階差好幾個量級。原版把階級存進 `ds:96B4` 再交給
+// `INT 3F:23`,而那支常式的 `di` 邊(= 階級那一邊)才是指數:
+// `[di] 為 0 → 回 1.0`(`x^0 = 1`),整數快速路徑取的也是它。
 //
-//	FAC ← 難度階級 → ^ ds:96B8(1.7) → 存 → ^ ds:93C0(2.1) → 存
-//	→ RND × 後者 → + 前者 → + 1 → INT()
+// ⚠ **兩個底數不同是有意義的**:1.7 那一項是保底、2.1 那一項乘上亂數 ——
+// 所以階級越高,「這一場能拿多少」的變異越大。⛔ 不要為了簡化寫成同一個底數。
 //
-// **運算子的約定已經定案**(`3F:71` 存、`3F:95` 乘、`3F:85` 加,
-// docs/re/77 §1 + 184 §7),擋住的只剩一件事:`3F:23`(次方)遇到
-// **非整數指數**(1.7 / 2.1)走的是哪一條路徑 —— 那一支有整數指數的
-// 特例處理,而 1.7 不是整數。⛔ 在讀完 `BRUN30 0x1B8A9` 的一般路徑之前
-// 不要把 `^1.7` 寫進來。
+// ⚠ `INT()` 是**截尾**(`INT 3D:03`),不是四捨五入 ——
+// 這裡沒有配 `3F:77`(docs/re/185)。
+func MonsterGold(tier int, r FloatRand) int {
+	if tier < 1 {
+		tier = 1
+	}
+	t := float64(tier)
+	return int(math.Pow(GoldBaseFloor, t) +
+		r.Float01()*math.Pow(GoldBaseRoll, t) + GoldPlusOne)
+}
+
+// TotalGold 回傳這一場戰鬥的金幣:每一隻在場的怪物各擲一次,加起來。
 //
-// ⚠ **「總額 × 0.575,再走一次 × RND × 0.5」那一段不是金幣的一部分** ——
-// 它是**戰後掉落道具**的擲骰(docs/re/200 §3.2),吃的是金幣總額當上限。
-// 先前這裡把它算進金幣的管線裡。
-//
-// ⚠ 先前這裡寫「四個常數是執行期變數,不在檔案映像裡」——**那是錯的**。
-// BASIC 把運算式裡的數字字面值放成 DGROUP 常數,而那些常數有初值、
-// 就寫在檔案裡(docs/re/177 §1)。
-//
-// 這裡用「每隻怪物擲 1…難度階級」:量綱對(來源是難度階級)、
-// 形狀對(`INT(RND × N) + 1`),但**係數與兩次次方都不在裡面**。
-//
-// ⛔ 不要因為「玩起來手感不錯」就調這個數。要改就是去實測。
-//
-// ⚠ 為什麼不乾脆給 0:給 0 也是一個選擇,而且**確定是錯的** ——
-// 玩家永遠買不起東西,整個經濟停擺。有標示的近似值比確定錯誤的零好。
-func TotalGold(units []Unit, r Rand) int {
+// ⚠ **只算怪物。** 隊員的屬性 13 固定 99(docs/spec/01 §1),
+// 代進 `2.1^99` 會直接溢位成 +Inf —— 而那不會 panic,只會讓金幣變成一個
+// 天文數字然後在轉 int 時變成未定義。
+func TotalGold(units []Unit, r FloatRand) int {
 	total := 0
 	for i, u := range units {
 		if i >= PartyBase || !u.IsMonster {
 			continue
 		}
-		tier := u.Tier
-		if tier < 1 {
-			tier = 1
-		}
-		total += r.Roll(tier)
+		total += MonsterGold(u.Tier, r)
 	}
 	return total
 }
@@ -142,11 +146,3 @@ func LootIndex(gold int, r FloatRand) int {
 	return LootMin
 }
 
-// GoldAssumption 是給畫面顯示用的說明。
-//
-// ⚠ **長度要放得下提示列**(976 px ≈ 48 個全形字,docs/spec/04 §2)——
-// 太長會被右邊界切掉,而那在測試裡沒有症狀,只有截圖看得出來。
-// ⚠ 這句話會畫在**提示列**上,所以長度有上限(layout.PromptCols:
-// 開源字型 96 欄、倚天點陣 80 欄)。寫太長會折成第三行,而提示列只放得下兩行 ——
-// 掉出去的那一行照樣畫得出來,只是壓在畫布邊緣。
-const GoldAssumption = "⚠ 戰後金幣的係數未解(re/177 §7):每隻怪物擲 1…難度階級,形狀對"

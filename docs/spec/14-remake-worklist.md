@@ -41,8 +41,10 @@ go run . -slot 5      →  直接出現在世界地圖,隊伍是原版存檔的 
 
 | 順序 | 做什麼 | 為什麼是它 |
 |---:|---|---|
-| **1** | **G2 跨平台 build**(§7)| docker 出 Windows / macOS / Linux。⛔ **一律用預設 build tag** —— 帶 `-tags eten` 打包等於散布倚天字型([`21`](21-fonts.md))。macOS 沒有機器 → skill `osxcross-macos-cross-build`。⚠ 做完要回頭訂正 [`docs/PLAYING.md`](../PLAYING.md) 裡的執行檔名 |
+| **1** | **⛔ repo 的可見性**(不是工程項)| **實測 2026-08-17:repo 是 PUBLIC**,而 [`CLAUDE.md`](../../CLAUDE.md) §10 寫「維持 private」、§8 收錄 `assets/` 與 `docs/images/` 的前提就是 private。**在裁決之前不要發 release** —— 公開發行的產物只能是引擎程式碼與翻譯文本(§1)|
 | 2 | C2 重構 | §8.1 D,**有重啟判準** —— 沒出現那個訊號就不要做。**判準已用 `tools/field_owners.py` 量過(§4.1):未達成** —— 場景自己的狀態一個都沒散出去。⚠ 這是**唯一還開著的工程項**,而它現在不該做 |
+
+~~G2 跨平台 build~~ ✅ 完成(§7):`tools/release.sh`,三平台四架構,產物在 `build/release/`。
 
 ### 動手前一定要知道的三條
 
@@ -213,8 +215,8 @@ CMBT 把它擺在 `90 90` 之後,不吃掉它整段就錯位 ——
 | [x] | F4 改名接回名冊畫面 | **規則層早就寫好了、按鍵沒接**:`town.Rename()`(`engine/internal/town/roster.go`)有實作也有測試,但 `engine/` 底下沒有任何呼叫端 —— 名冊畫面收不到這個指令,而**選單上沒列出來,所以「按不到」不像壞掉**。原文 CHARUTIL:7/8。這是 `H)unt`/`I)dentify` 那一類的第三例,由 F3 對字串時掉出來([`19-coverage`](19-coverage.md) §2.1)。<br>✅ **已接**(`rosterRename*`),長度上限也已裁決為 **9**([`re/199`](../re/199-name-limit-is-nine.md)):`CHARUTIL` 兩個輸入點都設 `ds:6808 = 9`,讀完才補到 10 個字元存進記錄 |
 | [x] | F2 譯名衝突裁決 | **已裁定(2026-08-14 以精訊為主 + 2026-08-16 收尾)**:符文系別、`MELT`、`SWORD`、`WARRIOR`、`WIZARD` 全照精訊;專有名詞採**中文(英文)對照**(glossary 硬規則 4)。⚠ 收尾時發現 `assets/` 停在舊詞(18 處「法師」),TSV 改了但沒重跑 `cmd/convert` —— **兩邊各自自洽,沒有任何測試會紅**([`translations/README.md`](../../translations/README.md) 判準二)|
 | [x] | G1 字型選定 | **兩個版本**(規格 [`21`](21-fonts.md)):發行版用開源向量字、本機版 `-tags eten` 用倚天中文系統 3.53 的 24×24 明體點陣字。⛔ 倚天版不能發行(1993 年的商業軟體),字型資產 gitignore、缺檔就編不起來。⚠ 欄寬預算跟著字型走,兩套分開放在 `internal/layout/cols_*.go` |
-| [ ] | G2 跨平台 build | docker 出 Windows / macOS / Linux。macOS 沒有機器 → skill `osxcross-macos-cross-build` |
-| [x] | G3 玩家的轉檔流程 | [`docs/PLAYING.md`](../PLAYING.md)。⚠ 執行檔名要等 G2 打包定案再回頭訂正 |
+| [x] | G2 跨平台 build | ✅ `tools/release.sh <版本> [平台]`,三平台四架構。**分岔的唯一理由是 cgo**:linux 要 X11/OpenGL → 容器裡原生編;**windows 走純 Go 的 syscall → `CGO_ENABLED=0` 就能交叉編**;macOS 要 Cocoa/Metal → osxcross(現成 image `wolong-osxcross-go`,SDK 15.5 / `darwin24.5`),兩弧各編一次再 `lipo` 成 universal。macOS 收工前跑靜態驗收(arm64 的 `LC_CODE_SIGNATURE`、無系統外相依)。⛔ 不附帶 `assets/`、⛔ 不帶 `-tags eten` |
+| [x] | G3 玩家的轉檔流程 | ✅ [`docs/PLAYING.md`](../PLAYING.md),G2 之後已訂正:執行檔名 `shard` / `shard-convert`(Windows 加 `.exe`)、macOS 的 quarantine、**存檔在 `saves/party.json` 而不是 `assets/save/`**。轉換器的 `-translations` 預設改成自動找(執行檔旁 → 工作目錄 → `/translations`),找不到會印警告 —— 否則玩家拿到一份看起來正常的英文版 |
 
 ## 7.1 F3 剩下的段:逐項計畫
 

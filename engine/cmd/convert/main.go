@@ -20,11 +20,49 @@ import (
 	"shardofspring/internal/original"
 )
 
+// version 由 `tools/release.sh` 用 -ldflags -X 填。原始碼跑是 dev。
+var version = "dev"
+
+// findTranslations 找譯文資料夾。**發行版與開發環境的路徑不一樣**,
+// 所以預設是自動找,而不是寫死其中一邊:
+//
+//	1. 執行檔旁邊的 translations/  ← 玩家解壓縮就是這個形狀
+//	2. 工作目錄的 translations/    ← 在 repo 根目錄跑
+//	3. /translations               ← tools/go.sh 的掛載點
+//
+// ⚠ 一個都找不到就回空字串,`loadLang` 讀不到會回空表 —— 那是**英文版**,
+// 不是錯誤(見 loadLang 的註解)。所以這裡要印一行警告,
+// 否則玩家會拿到一份看起來正常的英文遊戲而不知道少了什麼。
+func findTranslations() string {
+	var cands []string
+	if exe, err := os.Executable(); err == nil {
+		cands = append(cands, filepath.Join(filepath.Dir(exe), "translations"))
+	}
+	cands = append(cands, "translations", "/translations")
+	for _, c := range cands {
+		if st, err := os.Stat(filepath.Join(c, "names")); err == nil && st.IsDir() {
+			return c
+		}
+	}
+	fmt.Fprintln(os.Stderr,
+		"⚠ 找不到 translations/ —— 轉出來的會是英文版。用 -translations 指定位置。")
+	return ""
+}
+
 func main() {
 	in := flag.String("in", "game/sharspri", "原版資料夾(唯讀)")
 	out := flag.String("out", "assets", "輸出資料夾")
-	trans := flag.String("translations", "/translations", "譯文資料夾(docs/spec/10)")
+	trans := flag.String("translations", "", "譯文資料夾(docs/spec/10)。留空 = 自動找")
+	ver := flag.Bool("version", false, "印版本後結束")
 	flag.Parse()
+
+	if *ver {
+		fmt.Println("shard-convert", version)
+		return
+	}
+	if *trans == "" {
+		*trans = findTranslations()
+	}
 
 	if err := run(*in, *out, *trans); err != nil {
 		fmt.Fprintln(os.Stderr, "轉換失敗:", err)

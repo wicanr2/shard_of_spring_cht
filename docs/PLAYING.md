@@ -4,6 +4,19 @@
 地圖與美術 —— 所以第一次執行之前要先跑一次轉換器,把原版的檔案轉成
 引擎讀得懂的格式。整個流程大約一分鐘,只需要做一次。
 
+## 下載的那一包裡有什麼
+
+```
+shard-of-spring-cht-<版本>-<平台>/
+├── shard             引擎(Windows 是 shard.exe)
+├── shard-convert     轉換器(Windows 是 shard-convert.exe)
+├── translations/     譯文,轉換器會自己找,不用管它
+├── PLAYING.md        這一份
+└── README.md
+```
+
+macOS 那一包是 **universal**,Intel 與 Apple Silicon 共用同一支。
+
 ## 你需要準備的
 
 **一份合法的 MS-DOS 版《Shard of Spring》。** 解開之後會看到一個
@@ -25,11 +38,19 @@ sharspri/
 
 ## 1. 轉檔
 
+在解壓縮出來的那個資料夾裡:
+
 ```
-shard-convert -in /路徑/sharspri -out assets
+./shard-convert -in /路徑/sharspri -out assets
 ```
 
-還沒有打包好的執行檔時,從原始碼跑同一支程式(需要 docker):
+Windows 開 PowerShell 或命令提示字元,`cd` 到那個資料夾:
+
+```
+.\shard-convert.exe -in C:\路徑\sharspri -out assets
+```
+
+從原始碼跑同一支程式(需要 docker):
 
 ```
 tools/go.sh run ./cmd/convert -in /路徑/sharspri -out assets
@@ -54,20 +75,45 @@ mazes       6
 |---|---|
 | `assets/data/` | 怪物、法術、道具、地圖、迷宮、房間文字(JSON)|
 | `assets/gfx/` | 圖塊、大圖、怪物(PNG)|
-| `assets/save/` | **你的存檔**(第一次轉檔時從原版複製一份當起點)|
+| `assets/save/` | 原版磁片附的那五支隊伍,**當作起點用**(不是你的存檔,見下)|
 
 ## 2. 存檔放在哪裡
 
-`assets/save/` 底下的 `CHARS.DAT` 與 `GROUPS.DAT` 就是存檔。
-第一次轉檔時它們是從原版複製過去的,**之後重跑轉換器不會覆蓋它們** ——
-所以更新引擎版本、重轉一次資產,進度不會消失。
+**你的進度存在 `saves/party.json`**,位置是**資產資料夾的旁邊** ——
+照上面的做法轉檔的話,就在你解壓縮出來的那個資料夾裡:
 
-要備份進度,複製整個 `assets/save/` 就夠了。
+```
+shard-of-spring-cht-…/
+├── assets/            轉出來的資產
+│   └── save/          原版那五支隊伍(起點)
+└── saves/
+    └── party.json     ★ 你的進度
+```
+
+存檔是 JSON,看得懂也改得動。要備份,複製 `saves/` 就夠了。
+`-save /別的/路徑` 可以改到別的地方。
+
+⚠ **`assets/save/` 不是你的存檔。** 那是轉檔時從原版複製過去的起點資料,
+重跑轉換器**會**覆蓋它 —— 但那不影響 `saves/` 底下的進度。
 
 ## 3. 開始玩
 
 ```
-shard -assets assets
+./shard -assets assets
+```
+
+Windows:
+
+```
+.\shard.exe -assets assets
+```
+
+⚠ **macOS 第一次要右鍵 →「打開」**,直接雙擊會被擋下來。這一包**沒有簽章**
+(它是在 Linux 上交叉編出來的,簽章要 Apple 的機器),
+所以 Gatekeeper 會說「無法驗證開發者」。指令列的等價做法:
+
+```
+xattr -dr com.apple.quarantine shard shard-convert
 ```
 
 從原始碼跑:
@@ -91,7 +137,7 @@ tools/go.sh build && ./build/shard -assets assets
 預設會依序尋找系統上的中文字型。指定其他字型:
 
 ```
-shard -assets assets -font /路徑/某個字型.ttf
+./shard -assets assets -font /路徑/某個字型.ttf
 ```
 
 找不到任何中文字型時畫面會是一堆方框 —— 那不是壞掉,是缺字型。
@@ -113,8 +159,16 @@ shard -assets assets -font /路徑/某個字型.ttf
 畫面是固定的 1024 × 768,由視窗管理員縮放。
 
 **我想從頭玩。**
-刪掉 `assets/save/`,再跑一次轉換器 —— 它會重新從原版複製一份乾淨的存檔。
+刪掉 `saves/`(不是 `assets/save/`)。下次進去就會從原版那五支隊伍重新開始。
 ⚠ 這會刪掉你的進度,先備份。
+
+**macOS 說「無法驗證開發者」/ 打不開。**
+第 3 節。右鍵 →「打開」,或跑一次 `xattr -dr com.apple.quarantine`。
+
+**轉出來的字都是英文。**
+轉換器沒找到 `translations/`。它會在執行檔旁邊、目前目錄、`/translations`
+依序找 —— 三個都沒有的話它會印一行警告然後轉出英文版。
+把 `translations/` 放回執行檔旁邊,或用 `-translations` 指位置,重跑一次。
 
 **地城裡什麼都看不見。**
 那是正常的:地城要光源。到營地用照明法術(魔法火炬 / 水晶光),

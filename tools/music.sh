@@ -43,7 +43,7 @@ docker run --rm \
   -u "$(id -u):$(id -g)" \
   --memory 1g --pids-limit 128 --network none \
   -v "$WAVDIR":/wav -v "$DEST":/ogg \
-  "${GO_IMAGE:-shard-go-build:5}" \
+  "${GO_IMAGE:-shard-go-build:6}" \
   sh -c 'set -e
          for f in /wav/*.wav; do
            n=$(basename "$f" .wav)

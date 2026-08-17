@@ -31,9 +31,11 @@ result.txt
 !docs/images/*.png
 !docs/images/**/*.png
 !assets/**/*.png
-# ⚠ 上面三行是 CLAUDE.md §8 的例外(專案負責人裁定 2026-08-15):
-#    引擎畫面的截圖、以及 cmd/convert 轉出的資產,都可以進版控 ——
+!docs/promo/*.mp4
+# ⚠ 上面四行是 CLAUDE.md §8 的例外(專案負責人裁定 2026-08-15):
+#    引擎畫面的截圖、cmd/convert 轉出的資產、以及推廣片,都可以進版控 ——
 #    **即使那是原版美術**。理由與 translations/ 收錄原版英文文本相同。
+#    ⚠ 推廣片是**動態的截圖**,同一個地位;**對外散布仍要另行決定**。
 # ⛔ 例外**不涵蓋原版檔案本身**:game/ 與 original/ 仍然一律 gitignore。
 #    判準:轉換後的產物可以,原版磁片的內容不行。
 # ⚠ 這讓 §10「repo 維持 private」變成整個專案最吃重的一條。

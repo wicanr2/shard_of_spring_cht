@@ -32,7 +32,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="$ROOT/build/release"
 STAGE="$ROOT/build/stage"
 CACHE="$ROOT/workplace/gocache"
-GO_IMAGE="${GO_IMAGE:-shard-go-build:5}"
+GO_IMAGE="${GO_IMAGE:-shard-go-build:6}"
 MAC_IMAGE="${MAC_IMAGE:-wolong-osxcross-go:20260811-event10-r4}"
 
 # 版本字串編進執行檔。ldflags 的 -s -w 去掉除錯符號,binary 小一半。

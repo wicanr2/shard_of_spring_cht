@@ -20,7 +20,7 @@
 # 測試結果進 build cache,之後 `go test` 會回 `ok (cached)` ——
 # **綠燈是快取在說話,不是測試真的跑過**。用 `-count=1` 才看得到真相。
 #
-# ⚠ **`oggenc`(vorbis-tools)** 給 `tools/music.sh` 用:
+# ⚠ **`oggenc`(vorbis-tools)** 給 `tools/music.sh` 用,**`ffmpeg`** 給 `tools/promo.sh` 用:
 # 場景配樂是自己寫的譜,渲染成 PCM 之後要壓成 OGG 進版控(docs/spec/13 §7)。
 # Go 沒有成熟的純 Go Vorbis **編碼器**(`ebiten/audio/vorbis` 只解不編)。
 #
@@ -30,7 +30,7 @@
 #   也避開容器裡沒有 FUSE 的問題 —— appimagetool 預設會去掛載自己。
 #
 # 建置:tools/go.sh 會在 image 不存在時自動建
-#   docker build -f tools/Dockerfile.go-build -t shard-go-build:5 tools/
+#   docker build -f tools/Dockerfile.go-build -t shard-go-build:6 tools/
 #
 # ⚠ 這是本專案自己建的 image,清理時只能動它;
 #   禁止對共用資源做 prune / rmi(CLAUDE.md §8)。
@@ -49,6 +49,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         xvfb \
         xauth \
         vorbis-tools \
+        ffmpeg \
         squashfs-tools \
         desktop-file-utils \
         file \

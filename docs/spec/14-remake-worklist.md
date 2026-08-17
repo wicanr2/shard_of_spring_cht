@@ -32,19 +32,35 @@ go run . -slot 5      →  直接出現在世界地圖,隊伍是原版存檔的 
 | T1/T2/T3 | 端到端一輪、同種子快照、18 個場景的按鍵接線 + 派工表順序 |
 
 **擋在 RE 的工作全部結案了**(2026-08-17):「寫了沒人讀」四項 +
-「擋在 RE」十一項,E7 也結了(原版只有兩首曲子,沒有場景 BGM)。
-**剩下的只有 G2 跨平台打包** —— 以及 C2 重構,而它有重啟判準、現在不該做。
+「擋在 RE」十一項,E7 也結了(原版只有兩首曲子,沒有場景 BGM ——
+後來另做成可切換的增補,§7 G4)。
+
+**G2 打包完成,而且發過兩次**:
+
+| 版本 | 內容 |
+|---|---|
+| `v0.1.0` | 三平台四架構(Linux tar.gz / Windows zip / macOS universal)|
+| `v0.2.0` | **+ 六首場景配樂(F5 切換)**、曲子改走內嵌 OGG、**Linux 改成 AppImage** |
+
+**工程項全部結案。** 只剩 C2 重構,而它的重啟判準量過了、未達成(§4.1)。
 
 ## 0.1 ⭐ 下一步(新 session 從這裡開始)
 
-按順序,不要跳:
+**沒有排隊中的工程項。** 要動手之前先確認你要做的不是下面這兩類:
 
-| 順序 | 做什麼 | 為什麼是它 |
-|---:|---|---|
-| **1** | **⛔ repo 的可見性**(不是工程項)| **實測 2026-08-17:repo 是 PUBLIC**,而 [`CLAUDE.md`](../../CLAUDE.md) §10 寫「維持 private」、§8 收錄 `assets/` 與 `docs/images/` 的前提就是 private。**在裁決之前不要發 release** —— 公開發行的產物只能是引擎程式碼與翻譯文本(§1)|
-| 2 | C2 重構 | §8.1 D,**有重啟判準** —— 沒出現那個訊號就不要做。**判準已用 `tools/field_owners.py` 量過(§4.1):未達成** —— 場景自己的狀態一個都沒散出去。⚠ 這是**唯一還開著的工程項**,而它現在不該做 |
+| 類別 | 現況 |
+|---|---|
+| C2 重構 | §8.1 D,**有重啟判準** —— 沒出現那個訊號就不要做。判準已用 `tools/field_owners.py` 量過(§4.1):**未達成**,場景自己的狀態一個都沒散出去 |
+| 新增功能 | 原版沒有的東西(如場景配樂)是**增補**,要能關掉、要標示得出來 —— 判準見 [`13`](13-sound.md) §7.1 的三條約束 |
 
-~~G2 跨平台 build~~ ✅ 完成(§7):`tools/release.sh`,三平台四架構,產物在 `build/release/`。
+⛔ **發 release 之前先確認 repo 可見性**([`CLAUDE.md`](../../CLAUDE.md) §10):
+
+```bash
+gh repo view --json visibility
+```
+
+「維持 private」是狀態不是設定,**它會漂移** —— 2026-08-17 實測到一次
+變成 PUBLIC(已改回)。§8 收錄 `assets/` 與 `docs/images/` 的前提就是 private。
 
 ### 動手前一定要知道的三條
 
@@ -216,7 +232,10 @@ CMBT 把它擺在 `90 90` 之後,不吃掉它整段就錯位 ——
 | [x] | F2 譯名衝突裁決 | **已裁定(2026-08-14 以精訊為主 + 2026-08-16 收尾)**:符文系別、`MELT`、`SWORD`、`WARRIOR`、`WIZARD` 全照精訊;專有名詞採**中文(英文)對照**(glossary 硬規則 4)。⚠ 收尾時發現 `assets/` 停在舊詞(18 處「法師」),TSV 改了但沒重跑 `cmd/convert` —— **兩邊各自自洽,沒有任何測試會紅**([`translations/README.md`](../../translations/README.md) 判準二)|
 | [x] | G1 字型選定 | **兩個版本**(規格 [`21`](21-fonts.md)):發行版用開源向量字、本機版 `-tags eten` 用倚天中文系統 3.53 的 24×24 明體點陣字。⛔ 倚天版不能發行(1993 年的商業軟體),字型資產 gitignore、缺檔就編不起來。⚠ 欄寬預算跟著字型走,兩套分開放在 `internal/layout/cols_*.go` |
 | [x] | G2 跨平台 build | ✅ `tools/release.sh <版本> [平台]`,三平台四架構。**分岔的唯一理由是 cgo**:linux 要 X11/OpenGL → 容器裡原生編;**windows 走純 Go 的 syscall → `CGO_ENABLED=0` 就能交叉編**;macOS 要 Cocoa/Metal → osxcross(現成 image `wolong-osxcross-go`,SDK 15.5 / `darwin24.5`),兩弧各編一次再 `lipo` 成 universal。macOS 收工前跑靜態驗收(arm64 的 `LC_CODE_SIGNATURE`、無系統外相依)。<br>**Linux 出 AppImage**:cgo 的動態相依在別的發行版會缺,而缺的那一刻只噴 loader 的錯誤,玩家看不出缺什麼。帶非 glibc 的直接相依(X11/ALSA 七個),**glibc 留給系統**。資產與存檔走 `~/.local/share/shard-of-spring/`(AppImage 掛起來是唯讀的)。⚠ 提示訊息裡的路徑要用 `$APPIMAGE` 不是 `$0` —— 後者是每次都不同的掛載點。⛔ 打包前有守門:AppDir 裡出現 `*.DAT`/`*.BIN`/`*.SQZ`/`*.EXE`/倚天字型就拒絕(錯了包還是跑得動,不會有人發現)。⛔ 不附帶 `assets/`、⛔ 不帶 `-tags eten` |
-| [x] | G3 玩家的轉檔流程 | ✅ [`docs/PLAYING.md`](../PLAYING.md),G2 之後已訂正:執行檔名 `shard` / `shard-convert`(Windows 加 `.exe`)、macOS 的 quarantine、**存檔在 `saves/party.json` 而不是 `assets/save/`**。轉換器的 `-translations` 預設改成自動找(執行檔旁 → 工作目錄 → `/translations`),找不到會印警告 —— 否則玩家拿到一份看起來正常的英文版 |
+| [x] | G3 玩家的轉檔流程 | ✅ [`docs/PLAYING.md`](../PLAYING.md),G2 之後已訂正:執行檔名 `shard` / `shard-convert`(Windows 加 `.exe`)、macOS 的 quarantine、**存檔在 `saves/party.json` 而不是 `assets/save/`**、AppImage 的 `--convert` 流程與 `~/.local/share/shard-of-spring/`。轉換器的 `-translations` 預設改成自動找(執行檔旁 → 工作目錄 → `/translations`),找不到會印警告 —— 否則玩家拿到一份看起來正常的英文版 |
+| [x] | G4 場景配樂(**增補,非原版**)| ✅ 六首自己寫的譜 + 原版兩首,全部以 OGG 內嵌([`13`](13-sound.md) §7)。F5 循環切換原版/重製/關閉,**預設原版**。⛔ 不是拿通關曲循環 —— 那是 §5 擋掉的做法 |
+| [x] | G5 發行 | ✅ `v0.1.0`(三平台)、`v0.2.0`(配樂 + AppImage)。⛔ 發之前跑 `gh repo view --json visibility`(§0.1)|
+| [x] | G6 對外素材 | ✅ [`docs/column-shard-of-spring.md`](../column-shard-of-spring.md)(遊戲介紹 + 精訊 1987 中文說明書的一手證據)、[`docs/promo/`](../promo/) 的 29 秒推廣片(`tools/promo.sh`)。<br>⚠ **影格走真的按鍵**(`engine/promo_test.go`),不接受擺好狀態的定格 —— 推廣片要證明的是「玩得動」。<br>⚠ 影片含原版美術,與 `docs/images/` 同地位:**對外散布要另行決定** |
 
 ## 7.1 F3 剩下的段:逐項計畫
 

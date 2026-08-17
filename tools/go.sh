@@ -22,7 +22,7 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-IMAGE="${GO_IMAGE:-shard-go-build:5}"
+IMAGE="${GO_IMAGE:-shard-go-build:6}"
 CACHE="$ROOT/workplace/gocache"
 
 mkdir -p "$CACHE/build" "$CACHE/mod" "$ROOT/build"
@@ -45,7 +45,7 @@ run() {
     -e HOME=/tmp -e GOCACHE=/gocache/build -e GOMODCACHE=/gocache/mod \
     -e GOFLAGS=-buildvcs=false \
     -e SHARD_ASSETS=/assets \
-    -e SHOT_DIR -e SHOT_ASSETS -e SHARD_NOSOUND \
+    -e SHOT_DIR -e SHOT_ASSETS -e PROMO_DIR -e SHARD_NOSOUND \
     --memory 4g --pids-limit 512 \
     ${NET_ARGS[@]+"${NET_ARGS[@]}"} \
     -v "$ROOT/engine":/src \

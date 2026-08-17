@@ -25,7 +25,9 @@ const (
 	GateFlagOffset = 65
 	// GateMaze 是拉利斯之塔的迷宮編號。
 	GateMaze = 5
-	// GateIndex 是原版陣列的線性索引:`欄 × 81 + 列`(docs/formats/06 §1)。
+	// GateIndex 是原版陣列的線性索引。原版解碼器寫入的算式是
+	// **`一列裡的第幾格 × 81 + 第幾列`**(`MAZEMOVE` 0x13FC6,docs/re/55 §1),
+	// 所以 `1070 = 13 × 81 + 17` = **第 17 列的第 13 格**。
 	GateIndex = 1070
 	// GateTile 是開門之後填進去的圖塊值。阻擋區間是 5–10,所以
 	// **9 → 16 就是「從擋路變成可通行」**(docs/formats/06 §2)。
@@ -36,17 +38,17 @@ const (
 
 // gateCell 把原版的線性索引換算成**引擎的** (Major, Minor)。
 //
-// ⚠ 兩邊的軸不是同一個:原版乘 81 的那一軸有 51 個值(= 一列裡的第幾格),
-// 引擎的 `Major` 是解碼出來的第幾段(= 第幾列)。所以要**交換**:
+// 兩邊的線性排法不同,但**指到的格子相同**:
 //
-//	原版:index = 欄 × 81 + 列       → 欄 = 1070 ÷ 81 = 13、列 = 1070 mod 81 = 17
-//	引擎:At(Major=列=17, Minor=欄=13)
+//	原版:index = 一列裡的第幾格 × 81 + 第幾列   (MAZEMOVE 0x13FC6)
+//	引擎:Cells[第幾列 × 81 + 一列裡的第幾格]     (DecodeSQZ)
 //
-// 這個差異列在 docs/re/205 §4,**還沒有結論**;在解決之前,換算集中在這裡
-// 一個地方,而 `TestGateCellIsTheClosedGate` 會在任何一邊改動時失敗。
+// 引擎的 `Major` = 第幾列(0–80)、`Minor` = 一列裡的第幾格(0–50)——
+// 與 `MAZEDATA` 的值域一致(major 到 67、minor 到 49,docs/re/205 §4)。
+// 所以只要把原版的索引拆開再**對調**就好。
 func gateCell() (major, minor int) {
-	col, row := GateIndex/original.MazeRows, GateIndex%original.MazeRows
-	return row, col
+	pos, line := GateIndex/original.MazeRows, GateIndex%original.MazeRows
+	return line, pos
 }
 
 // GateCell 回傳門那一格在引擎座標下的位置。

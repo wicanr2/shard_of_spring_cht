@@ -281,3 +281,36 @@ func TestMazeEntrancesLandOnEntranceTiles(t *testing.T) {
 		t.Errorf("%d/%d 個入口落在入口圖塊上 —— 兩欄可能又接反了", hit, total)
 	}
 }
+
+// 驗收:`MAZEDATA` 的兩個座標欄各自落在對得起來的值域(docs/re/205 §4)。
+//
+// Major 是「第幾列」(0–80)、Minor 是「一列裡的第幾格」(0–50)。
+// 這一條擋的是**把兩軸接反** —— 接反之後迷宮仍然畫得出來(只是轉了 90 度),
+// 而且起點多半仍然落在可通行格,所以 TestMazeDataStartsArePassable 抓不到。
+// 值域抓得到:67 放不進 0–50。
+func TestMazeDataAxesAreWithinRange(t *testing.T) {
+	entries, err := ParseMazeData(read(t, "MAZEDATA.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	const maxMinor = 50 // 每列最多 51 格
+	sawBigMajor := false
+	for _, e := range entries {
+		if e.StartMajor >= MazeRows {
+			t.Errorf("DG%d 的 StartMajor = %d,超出 0–%d(第幾列)",
+				e.MazeFile, e.StartMajor, MazeRows-1)
+		}
+		if e.StartMinor > maxMinor {
+			t.Errorf("DG%d 的 StartMinor = %d,超出 0–%d(一列裡的第幾格)"+
+				" —— 兩軸可能接反了", e.MazeFile, e.StartMinor, maxMinor)
+		}
+		if e.StartMajor > maxMinor {
+			sawBigMajor = true
+		}
+	}
+	// 正對照:至少要有一筆 Major > 50,否則這條測試什麼都沒擋到
+	// (兩軸都落在 0–50 的話,值域分不出誰是誰)。
+	if !sawBigMajor {
+		t.Error("沒有任何一筆 StartMajor > 50 —— 值域分不出兩軸,這條測試失效了")
+	}
+}

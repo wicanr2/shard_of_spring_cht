@@ -83,7 +83,7 @@ MS     發聲 3/4
 ## 6. 建置環境
 
 `ebiten/v2/audio` 底下的 `oto/v3` 走 cgo 連 **ALSA**,
-所以 `tools/Dockerfile.go-build` 要有 `libasound2-dev`(image 已升到 `:3`)。
+所以 `tools/Dockerfile.go-build` 要有 `libasound2-dev`(image 已升到 `:5` —— 另含 `vorbis-tools` 與 AppImage 工具,見 §7.4 與 `tools/release.sh`)。
 
 ⚠ 少了它 `go vet` 會停在
 `Package 'alsa', required by 'virtual:world', not found` ——
@@ -138,7 +138,33 @@ MS     發聲 3/4
 ⚠ **順序就是優先序**,與 [`scene.go`](../../engine/scene.go) 的 `inputChain` 同一個道理:
 戰鬥蓋在城鎮與迷宮之上 —— 在城鎮裡被襲擊時要聽到戰鬥曲。
 
-### 7.4 播放層
+### 7.4 曲子是資產,譜是真相
+
+八首(六首場景配樂 + 原版兩首)都以 **OGG** 收在
+[`internal/music/assets/`](../../engine/internal/music/assets/),
+由 `//go:embed` 編進執行檔 —— 玩家不必另外下載,發行包也不必多一個資料夾。
+
+```
+譜(cue.go / score.go) --tools/music.sh--> WAV --oggenc--> assets/*.ogg --go:embed--> 執行檔
+```
+
+| 決定 | 理由 |
+|---|---|
+| 定稿之後落成檔案,不每次開機現算 | 循環播放要把整首 PCM 攤在記憶體(20 秒 ≈ 1.8 MB);OGG 壓完是十分之一以下,而且解碼是串流的 |
+| 用 `oggenc`(vorbis-tools,在 build image 裡) | Go 沒有成熟的純 Go Vorbis **編碼器**;`ebiten/audio/vorbis` 只解不編 |
+| `-q3`(≈112 kbps) | 音源是方波,壓太狠會在音頭產生前迴響(pre-echo)。⚠ 那是壓縮的假影,不是譜寫壞了 |
+| 解碼用 `DecodeWithSampleRate` 不是 `DecodeF32` | 前者輸出 16-bit LE 立體聲,與 `RenderPCM16` 和 `ctx.NewPlayer` 對得上。⚠ 混用 float32 與 16-bit **不會編譯失敗,會放出噪音** |
+| OGG 讀不到就退回現算 | 退路不是「以防萬一」,是**故障時的可觀察性**:安靜看起來跟「玩家把音樂關掉了」一模一樣 |
+
+⚠ **改了譜要重跑 `tools/music.sh` 並把 `assets/*.ogg` 一起 commit。**
+少了這一步的症狀是「改了譜但遊戲裡沒變」,而且**不會有任何錯誤訊息** ——
+`TestEmbeddedOGGDecodes` 就是為了擋這個:它比對解碼長度與譜算出來的時值,
+差超過 5% 就紅。
+
+⚠ 原版那兩首的譜是**原版檔案裡的字串**([`148`](../re/148-the-game-has-music.md))。
+轉成 OGG 只是換容器,**它仍然是原版內容** —— 與 `score.go` 同一個地位。
+
+### 7.5 播放層
 
 - 循環交給 `audio.NewInfiniteLoop`。⛔ 不要自己在 `Update` 裡看播完沒有 ——
   那會在每一圈之間留下一格的靜音,而那個縫在慢的曲子上聽得出來
@@ -146,15 +172,17 @@ MS     發聲 3/4
   兩者疊起來仍然聽得出旋律,所以不會有人當成壞掉,只會覺得音樂很奇怪
 - 音效總開關(`S`)關掉時場景配樂也要**真的停** —— 循環曲不會自己結束
 
-### 7.5 怎麼試聽
+### 7.6 怎麼試聽
 
 譜好不好聽沒有測試驗得出來,只能聽:
 
 ```
-tools/go.sh run ./cmd/musicdump -out /workplace/music
+tools/music.sh --wav-only          # 只倒 WAV 到 workplace/music/
+tools/music.sh                     # 順便重新產生 assets/*.ogg
 ```
 
-倒出八個 WAV(六首場景配樂 + 原版那兩首)。**這支工具不進發行包。**
+倒出八個 WAV(六首場景配樂 + 原版那兩首)。**`cmd/musicdump` 不進發行包**
+(`tools/release.sh` 只建引擎與轉換器)。
 
 單元測試驗的是**結構**不是聽感:每一首都解得出音、有發聲的音、
 全長落在 5–60 秒(太短的循環讓人抓狂,太長的就不是循環而是一首曲子)。

@@ -2,10 +2,13 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/hajimehoshi/ebiten/v2/audio"
+	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 
 	"shardofspring/internal/music"
 )
@@ -78,24 +81,64 @@ func (g *Game) initSound() {
 	g.sound = &sound{ctx: audio.NewContext(music.SampleRate)}
 }
 
-// play 放一段樂譜。**不阻塞**,也不保證放得出來。
+// play 放一首曲子,`name` 是內嵌的 OGG 名、`score` 是同一首的譜。
+// **不阻塞**,也不保證放得出來。
 //
 // ⚠ 一次性的曲子(通關、全滅)要**壓過**循環的場景配樂 ——
 // 兩者同時響會疊成噪音,而且疊起來還是聽得出旋律,
 // 所以不會有人把它當成壞掉,只會覺得音樂很奇怪(bgm.go)。
-func (g *Game) play(score []string) {
+func (g *Game) play(name string, score []string) {
 	g.stopBGM()
 	if g.sound == nil || g.sound.ctx == nil || g.sound.off {
 		return
 	}
-	pcm := music.RenderPCM16(music.ParseAll(score), music.SampleRate)
-	p, err := g.sound.ctx.NewPlayer(bytes.NewReader(pcm))
+	src, _, err := g.source(name, score)
 	if err != nil {
-		if !g.sound.warned {
-			g.warnings = append(g.warnings, "音訊播放失敗:"+err.Error())
-			g.sound.warned = true
-		}
+		g.warnOnce("音訊播放失敗:" + err.Error())
+		return
+	}
+	p, err := g.sound.ctx.NewPlayer(src)
+	if err != nil {
+		g.warnOnce("音訊播放失敗:" + err.Error())
 		return
 	}
 	p.Play()
+}
+
+// source 回傳一首曲子的取樣來源與長度(位元組)。
+//
+// **先試內嵌的 OGG,失敗才現算。** 兩條路的輸出格式相同
+// (16-bit LE 立體聲 @ music.SampleRate),所以呼叫端不必分辨用了哪一條。
+//
+// ⚠ 退路存在的理由不是「以防萬一」,是**故障時的可觀察性**:
+// 資產掉了或解碼壞了還聽得到聲音,比「安靜而且沒人知道為什麼」好 ——
+// 而安靜看起來跟「玩家把音樂關掉了」一模一樣。
+func (g *Game) source(name string, score []string) (io.ReadSeeker, int64, error) {
+	if data := music.OGG(name); data != nil {
+		// ⚠ 用 `DecodeWithSampleRate` 不是 `DecodeF32`:前者輸出
+		// **16-bit LE 立體聲**,與 `RenderPCM16` 和 `ctx.NewPlayer` 對得上。
+		// `DecodeF32` 出來的是 float32,要配 `NewPlayerF32` ——
+		// 混用不會編譯失敗,會**放出噪音**。
+		s, err := vorbis.DecodeWithSampleRate(music.SampleRate, bytes.NewReader(data))
+		if err == nil {
+			return s, s.Length(), nil
+		}
+		g.warnOnce("配樂解碼失敗,改用現算:" + err.Error())
+	}
+	if score == nil {
+		return nil, 0, errNoSource
+	}
+	pcm := music.RenderPCM16(music.ParseAll(score), music.SampleRate)
+	return bytes.NewReader(pcm), int64(len(pcm)), nil
+}
+
+var errNoSource = errors.New("這首曲子既沒有 OGG 也沒有譜")
+
+// warnOnce 讓同一類警告只出現一次 —— 每一格都噴一行會把提示列洗掉。
+func (g *Game) warnOnce(msg string) {
+	if g.sound == nil || g.sound.warned {
+		return
+	}
+	g.warnings = append(g.warnings, msg)
+	g.sound.warned = true
 }

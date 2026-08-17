@@ -6,6 +6,14 @@
 
 ## 下載的那一包裡有什麼
 
+**Linux 是一個 AppImage**,下載、加執行權限就能跑,不用解壓縮:
+
+```
+chmod +x shard-of-spring-cht-<版本>-linux-x86_64.AppImage
+```
+
+Windows 與 macOS 是壓縮檔,裡面長這樣:
+
 ```
 shard-of-spring-cht-<版本>-<平台>/
 ├── shard             引擎(Windows 是 shard.exe)
@@ -38,7 +46,17 @@ sharspri/
 
 ## 1. 轉檔
 
-在解壓縮出來的那個資料夾裡:
+**Linux(AppImage)** —— 資產與存檔會放進 `~/.local/share/shard-of-spring/`,
+你不用選位置:
+
+```
+./shard-of-spring-cht-<版本>-linux-x86_64.AppImage --convert /路徑/sharspri
+```
+
+轉完直接雙擊或再跑一次就進遊戲。**下面第 2、3 節講的路徑對 AppImage 不適用** ——
+它的存檔在 `~/.local/share/shard-of-spring/saves/`。
+
+**macOS** —— 在解壓縮出來的那個資料夾裡:
 
 ```
 ./shard-convert -in /路徑/sharspri -out assets
@@ -140,6 +158,8 @@ tools/go.sh build && ./build/shard -assets assets
 中文版另外寫了六首場景配樂(標題、城鎮、世界地圖、地城、戰鬥、最終戰),
 用的是原版同一套方波音源,所以聽起來同源。**預設不開** ——
 第一次玩聽到的是原版的樣子。
+
+八首曲子(六首場景配樂 + 原版兩首)都以 OGG 收在執行檔裡,不用另外下載。
 
 **按 F5** 循環切換:
 

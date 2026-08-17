@@ -130,3 +130,51 @@ func TestLoadConfigTolerateGarbage(t *testing.T) {
 		t.Errorf("壞掉的設定檔改動了模式:%s", g.musicMode)
 	}
 }
+
+// 內嵌的 OGG 要真的解得開,而且解出來的長度對得上譜的時值。
+//
+// ⚠ 這一條驗的是**兩條路的一致性**:OGG 是從譜產生的,
+// 所以解出來的位元組數應該與現算的差不多。差很多就表示
+// `tools/music.sh` 跑的時候譜已經改過了 —— 而那不會有任何錯誤訊息。
+func TestEmbeddedOGGDecodes(t *testing.T) {
+	g := &Game{}
+	for cue, score := range music.Remake {
+		name := music.CueFile(music.ModeRemake, cue)
+		src, length, err := g.source(name, score)
+		if err != nil {
+			t.Errorf("%s 解不開:%v", name, err)
+			continue
+		}
+		if src == nil || length <= 0 {
+			t.Errorf("%s 解出 0 長度", name)
+			continue
+		}
+		want := int64(len(music.RenderPCM16(music.ParseAll(score), music.SampleRate)))
+		// Vorbis 是有損的,而且會補到 block 邊界 —— 容許 5% 的差距。
+		// 這裡要抓的是「差一個數量級」,不是取樣級的誤差。
+		if d := float64(length-want) / float64(want); d < -0.05 || d > 0.05 {
+			t.Errorf("%s 長度 %d,譜算出來是 %d(差 %.1f%%)—— 譜改過但沒重跑 tools/music.sh?",
+				name, length, want, d*100)
+		}
+	}
+}
+
+// 沒有 OGG 也沒有譜就該回錯,不要安靜地回一個空來源。
+func TestSourceWithoutAnything(t *testing.T) {
+	g := &Game{}
+	if _, _, err := g.source("這首不存在", nil); err == nil {
+		t.Error("既沒有 OGG 也沒有譜,卻沒有回錯")
+	}
+}
+
+// 資產掉了要退回現算,而不是安靜 —— 安靜看起來跟「玩家關掉音樂」一樣。
+func TestSourceFallsBackToScore(t *testing.T) {
+	g := &Game{}
+	_, length, err := g.source("這首不存在", music.Remake[music.CueTitle])
+	if err != nil {
+		t.Fatalf("退路沒有生效:%v", err)
+	}
+	if length <= 0 {
+		t.Error("退路回了 0 長度")
+	}
+}

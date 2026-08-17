@@ -82,3 +82,54 @@ func TestModeCountCoversAll(t *testing.T) {
 		}
 	}
 }
+
+// 每一個場景配樂點都要有內嵌的 OGG。
+//
+// ⚠ 少一個的症狀是**那個場景安靜** —— 而安靜與「玩家選了原版模式」
+// 在畫面上、在聽感上都一模一樣,不會有任何人回報。
+func TestEveryCueHasOGG(t *testing.T) {
+	for cue := range Remake {
+		name := CueFile(ModeRemake, cue)
+		if name == "" {
+			t.Errorf("cue %d 沒有對應的檔名", cue)
+			continue
+		}
+		if OGG(name) == nil {
+			t.Errorf("cue %d(%s)缺 OGG —— 改了譜之後要跑 tools/music.sh", cue, name)
+		}
+	}
+	for _, n := range []string{FileEnding, FileDeath} {
+		if OGG(n) == nil {
+			t.Errorf("原版曲 %s 缺 OGG", n)
+		}
+	}
+	// 內嵌的檔數 = 六首場景 + 原版兩首。多出來的多半是改名之後的孤兒。
+	if got, want := len(Names()), len(Remake)+2; got != want {
+		t.Errorf("內嵌了 %d 個檔,預期 %d 個:%v", got, want, Names())
+	}
+}
+
+// 非重製模式沒有場景配樂的檔名 —— 與 Loop 的條件一致。
+func TestCueFileOnlyInRemakeMode(t *testing.T) {
+	for _, m := range []Mode{ModeOriginal, ModeOff} {
+		for cue := range Remake {
+			if got := CueFile(m, cue); got != "" {
+				t.Errorf("%s 模式的 cue %d 不該有檔名,拿到 %q", m, cue, got)
+			}
+		}
+	}
+	if got := CueFile(ModeRemake, CueNone); got != "" {
+		t.Errorf("CueNone 不該有檔名,拿到 %q", got)
+	}
+}
+
+// OGG 的資料本身要是 Ogg 容器(魔數 "OggS")——
+// 檔案存在但內容不是 OGG 的話,錯誤會延到播放那一刻才出現。
+func TestOGGMagic(t *testing.T) {
+	for _, n := range Names() {
+		b := OGG(n)
+		if len(b) < 4 || string(b[:4]) != "OggS" {
+			t.Errorf("%s 不是 Ogg 容器", n)
+		}
+	}
+}

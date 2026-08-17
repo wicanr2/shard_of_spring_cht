@@ -400,7 +400,7 @@ func (g *Game) leaveCombat() {
 		if g.shell != nil {
 			g.shell.mode = shellEnding
 		}
-		g.play(music.Ending)
+		g.play(music.FileEnding, music.Ending)
 	case outcome == combat.MonstersDead && len(f.Log) > 0 && f.Log[0] == rules.PriestEncounterMark:
 		// 山丘巨人挾持祭司(maze.TargetPriest = 204)打贏了 ——
 		// 同一條規則:作廢目標 204,否則可以無限次「救祭司」。

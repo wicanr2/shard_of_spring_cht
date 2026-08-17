@@ -254,7 +254,7 @@ func (g *Game) settle() {
 		// ⚠ `USERLIB` 那五段的**用途是推測**(docs/re/148 §2):
 		// 它慢一半、而 USERLIB 有死亡與結局兩個匯出槽。
 		// 全滅時放它是本引擎的選擇,不是讀到呼叫端。
-		g.play(music.Userlib)
+		g.play(music.FileDeath, music.Userlib)
 	}
 	// docs/spec/17 §3:打贏 204(祭司事件)之後顯示祭司的後續文字。
 	// ⚠ 祝福的效果未解(docs/re/161 §4 只讀到這句字串)——

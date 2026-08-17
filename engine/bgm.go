@@ -1,8 +1,6 @@
 package main
 
 import (
-	"bytes"
-
 	"github.com/hajimehoshi/ebiten/v2/audio"
 
 	"shardofspring/internal/music"
@@ -68,18 +66,15 @@ func (g *Game) updateBGM() {
 	if score == nil || g.sound == nil || g.sound.ctx == nil || g.sound.off {
 		return
 	}
-	pcm := music.RenderPCM16(music.ParseAll(score), music.SampleRate)
-	if len(pcm) == 0 {
+	src, length, err := g.source(music.CueFile(g.musicMode, c), score)
+	if err != nil || length == 0 {
 		return
 	}
 	// ⚠ 循環要交給 audio.NewInfiniteLoop,不要自己在 Update 裡看播完沒有 ——
 	// 後者會在每一圈之間留下一格的靜音,而那個縫在慢的曲子上聽得出來。
-	p, err := g.sound.ctx.NewPlayer(audio.NewInfiniteLoop(bytes.NewReader(pcm), int64(len(pcm))))
+	p, err := g.sound.ctx.NewPlayer(audio.NewInfiniteLoop(src, length))
 	if err != nil {
-		if !g.sound.warned {
-			g.warnings = append(g.warnings, "配樂播放失敗:"+err.Error())
-			g.sound.warned = true
-		}
+		g.warnOnce("配樂播放失敗:" + err.Error())
 		return
 	}
 	p.Play()

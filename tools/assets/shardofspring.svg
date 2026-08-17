@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <!-- 桌面圖示:春之石。一枚綠色的碎片 —— 遊戲要找的就是那塊石頭。 -->
+  <defs>
+    <linearGradient id="shard" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#8ff0a4"/>
+      <stop offset="0.5" stop-color="#33d17a"/>
+      <stop offset="1" stop-color="#1a7f43"/>
+    </linearGradient>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#1c2b33"/>
+      <stop offset="1" stop-color="#0d1418"/>
+    </linearGradient>
+  </defs>
+  <rect width="256" height="256" rx="42" fill="url(#bg)"/>
+  <g transform="translate(128 130)">
+    <polygon points="0,-92 46,-18 26,80 -26,80 -46,-18" fill="url(#shard)"/>
+    <polygon points="0,-92 46,-18 0,-4" fill="#b8f7c8" opacity="0.55"/>
+    <polygon points="0,-92 -46,-18 0,-4" fill="#0f5c30" opacity="0.45"/>
+    <polygon points="0,-4 26,80 -26,80" fill="#0f5c30" opacity="0.3"/>
+  </g>
+</svg>

@@ -32,7 +32,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="$ROOT/build/release"
 STAGE="$ROOT/build/stage"
 CACHE="$ROOT/workplace/gocache"
-GO_IMAGE="${GO_IMAGE:-shard-go-build:4}"
+GO_IMAGE="${GO_IMAGE:-shard-go-build:5}"
 MAC_IMAGE="${MAC_IMAGE:-wolong-osxcross-go:20260811-event10-r4}"
 
 # 版本字串編進執行檔。ldflags 的 -s -w 去掉除錯符號,binary 小一半。
@@ -75,19 +75,120 @@ common_files() {
 
 say() { printf '\n\033[1m→ %s\033[0m\n' "$*" >&2; }
 
-# ── Linux ────────────────────────────────────────────────────────────────
+# ── Linux(AppImage)──────────────────────────────────────────────────────
+#
+# 為什麼是 AppImage 而不是 tar.gz:Ebitengine 走 cgo 連 X11/OpenGL/ALSA,
+# 一個裸執行檔在別的發行版上會缺動態庫,而**缺的那一刻只會噴 loader 的錯誤**,
+# 玩家看不出是缺什麼。AppImage 把非 glibc 的相依帶著走,雙擊就開。
+#
+# ⚠ glibc 本身**不打包**:它與 loader 綁在一起,帶著走反而會在新系統上壞掉。
+#    代價是不能在比建置環境更舊的 glibc 上跑(這裡是 bookworm / glibc 2.36)。
 build_linux() {
-  say "linux/amd64(cgo,原生編)"
+  say "linux/amd64(cgo,原生編 → AppImage)"
   docker_go "$GO_IMAGE" go build -ldflags "$LDFLAGS" -o /out/shard-linux .
   docker_go "$GO_IMAGE" go build -ldflags "$LDFLAGS" -o /out/shard-convert-linux ./cmd/convert
 
-  local d="$STAGE/shard-of-spring-cht-$VER-linux-amd64"
-  mkdir -p "$d"
-  mv "$STAGE/shard-linux" "$d/shard"
-  mv "$STAGE/shard-convert-linux" "$d/shard-convert"
-  chmod +x "$d/shard" "$d/shard-convert"
-  common_files "$d"
-  tar -C "$STAGE" -czf "$OUT/$(basename "$d").tar.gz" "$(basename "$d")"
+  local name="shard-of-spring-cht-$VER-linux-x86_64"
+  local app="$STAGE/ShardOfSpring.AppDir"
+  local payload="$app/usr/share/shardofspring"
+  mkdir -p "$app/usr/bin" "$app/usr/lib" "$payload"
+
+  mv "$STAGE/shard-linux" "$app/usr/bin/shard"
+  mv "$STAGE/shard-convert-linux" "$app/usr/bin/shard-convert"
+  chmod +x "$app/usr/bin/shard" "$app/usr/bin/shard-convert"
+  common_files "$payload"
+
+  cp "$ROOT/tools/assets/shardofspring.svg" "$app/shardofspring.svg"
+  ln -sf shardofspring.svg "$app/.DirIcon"
+
+  cat >"$app/shardofspring.desktop" <<'DESKTOP'
+[Desktop Entry]
+Type=Application
+Name=Shard of Spring 春之石
+Comment=SSI 1986 年的角色扮演遊戲,繁體中文重製版
+Exec=shard
+Icon=shardofspring
+Categories=Game;RolePlaying;
+Terminal=false
+DESKTOP
+
+  # AppRun:資產與存檔放在**使用者的目錄**,不是 AppImage 內部
+  # (AppImage 是唯讀的 squashfs,寫進去會失敗)。
+  cat >"$app/AppRun" <<'APPRUN'
+#!/bin/sh
+# 春之石繁體中文版的啟動器。
+#
+# AppImage 掛起來是**唯讀**的,所以資產與存檔一律放在使用者目錄:
+#   ~/.local/share/shard-of-spring/{assets,saves}
+# 第一次執行要先轉檔(玩家自備合法原版):
+#   ./ShardOfSpring.AppImage --convert /路徑/sharspri
+set -eu
+root="${APPDIR:-$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)}"
+payload="$root/usr/share/shardofspring"
+data="${XDG_DATA_HOME:-$HOME/.local/share}/shard-of-spring"
+export LD_LIBRARY_PATH="$root/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+if [ "${1:-}" = "--convert" ]; then
+  [ -n "${2:-}" ] || { echo "用法:--convert /路徑/sharspri" >&2; exit 2; }
+  mkdir -p "$data"
+  exec "$root/usr/bin/shard-convert" \
+    -in "$2" -out "$data/assets" -translations "$payload/translations"
+fi
+if [ "${1:-}" = "--help" ] || [ "${1:-}" = "-h" ]; then
+  sed -n '3,10p' "$0"
+  echo "說明文件:$payload/PLAYING.md"
+  exit 0
+fi
+
+if [ ! -d "$data/assets/data" ]; then
+  # ⚠ 用 $APPIMAGE 不是 $0 —— $0 是掛載點(/tmp/.mount_xxxx/AppRun),
+  # 每次執行都不一樣,玩家照著打會失敗。
+  echo "還沒有轉檔。先跑一次(需要你自己那份合法的 MS-DOS 版原版):" >&2
+  echo "  ${APPIMAGE:-$0} --convert /路徑/sharspri" >&2
+  echo "" >&2
+  echo "完整說明:$payload/PLAYING.md" >&2
+  exit 1
+fi
+exec "$root/usr/bin/shard" -assets "$data/assets" -save "$data/saves" "$@"
+APPRUN
+  chmod +x "$app/AppRun"
+
+  # 只帶非 glibc 的直接動態相依;glibc 與 loader 留給系統。
+  # ⚠ 這一步在容器裡做 —— 要抓的是**建置環境**的那幾份庫,不是主機的。
+  docker run --rm \
+    --log-opt max-size=10m --log-opt max-file=3 \
+    -u "$(id -u):$(id -g)" \
+    --memory 2g --pids-limit 256 --network none \
+    -v "$STAGE":/stage -w /stage "$GO_IMAGE" sh -c '
+      set -e
+      ldd ShardOfSpring.AppDir/usr/bin/shard |
+        awk "{for (i=1;i<=NF;i++) if (\$i ~ /^\//) print \$i}" |
+        while read -r lib; do
+          case "$(basename "$lib")" in
+            libc.so.*|libm.so.*|libpthread.so.*|libdl.so.*|librt.so.*|ld-linux*) continue ;;
+          esac
+          cp -L "$lib" ShardOfSpring.AppDir/usr/lib/
+        done'
+
+  # ⛔ 守門:AppDir 裡不准出現原版資料或倚天字型(CLAUDE.md §1、docs/spec/21)。
+  # 這一條擋的是「打包腳本改壞了」——⚠ 錯了不會有人發現,因為包還是跑得動。
+  if find "$app" -type f \( -iname '*.DAT' -o -iname '*.BIN' -o -iname '*.SQZ' \
+      -o -iname '*.PIC' -o -iname '*.EXE' -o -iname '*eten*' \) -print -quit | grep -q .; then
+    echo "⛔ 拒絕打包:AppDir 含原版資料或倚天字型" >&2
+    return 1
+  fi
+
+  # `--runtime-file` 避開兩件事:打包時上網抓 runtime,以及容器裡沒有 FUSE。
+  docker run --rm \
+    --log-opt max-size=10m --log-opt max-file=3 \
+    -u "$(id -u):$(id -g)" \
+    -e ARCH=x86_64 -e HOME=/tmp \
+    --memory 2g --pids-limit 256 --network none \
+    -v "$STAGE":/stage -v "$OUT":/out -w /stage "$GO_IMAGE" \
+    appimagetool --runtime-file /opt/appimage-runtime-x86_64 \
+      ShardOfSpring.AppDir "/out/$name.AppImage" >/dev/null
+  chmod +x "$OUT/$name.AppImage"
+  rm -rf "$app"
 }
 
 # ── Windows ──────────────────────────────────────────────────────────────

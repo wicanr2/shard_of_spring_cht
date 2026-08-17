@@ -43,6 +43,10 @@ func (g *Game) toggleSound() string {
 		g.sound = &sound{} // 只保存開關狀態,沒有 ctx 就不會播
 	}
 	g.sound.off = !g.sound.off
+	// 場景配樂跟著總開關走。⚠ 關的時候要**真的停掉**(循環曲不會自己結束),
+	// 開的時候把 `set` 清掉讓下一格重算 —— 場景沒換,但答案換了。
+	g.stopBGM()
+	g.bgm.set = false
 	if g.sound.off {
 		return soundOffMsg
 	}
@@ -75,7 +79,12 @@ func (g *Game) initSound() {
 }
 
 // play 放一段樂譜。**不阻塞**,也不保證放得出來。
+//
+// ⚠ 一次性的曲子(通關、全滅)要**壓過**循環的場景配樂 ——
+// 兩者同時響會疊成噪音,而且疊起來還是聽得出旋律,
+// 所以不會有人把它當成壞掉,只會覺得音樂很奇怪(bgm.go)。
 func (g *Game) play(score []string) {
+	g.stopBGM()
 	if g.sound == nil || g.sound.ctx == nil || g.sound.off {
 		return
 	}

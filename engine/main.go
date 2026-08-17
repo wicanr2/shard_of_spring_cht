@@ -23,6 +23,7 @@ import (
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
 	"shardofspring/internal/maze"
+	"shardofspring/internal/music"
 	"shardofspring/internal/original"
 	"shardofspring/internal/render"
 	"shardofspring/internal/save"
@@ -111,6 +112,10 @@ type Game struct {
 
 	// M11:聲音(docs/spec/13)。nil = 音訊關閉,遊戲照常跑。
 	sound *sound
+	// 場景配樂(docs/spec/13 §7)。**原版沒有這一層**,預設關著 ——
+	// musicMode 的零值是 ModeOriginal,也就是只有原版那兩首。
+	musicMode music.Mode
+	bgm       bgmState
 
 	// M6:法術(docs/spec/09)
 	spells   []original.Spell
@@ -266,6 +271,22 @@ func (g *Game) Update() error {
 	// 輸入**整格只收一次**,再往下傳(scene.go 的 Input)——
 	// 先前每個分支各自呼叫 inpututil,其中一半繞過了 g.testKeys 接縫。
 	in := Input{Keys: g.pressedKeys(), Runes: g.inputRunes()}
+
+	// 配樂跟著場景走,每一格對一次(場景沒換就只是一個比較)。
+	// ⚠ 放在派工鏈**之前** —— 鏈裡任何一個場景吃掉這一格都會 `return`。
+	g.updateBGM()
+
+	// F5 切換配樂模式。**原版沒有這個鍵** —— 挑功能鍵是因為原版的指令鏈
+	// 全是字母(docs/re/71),功能鍵不會撞到任何畫面的按鍵語意,
+	// 也不會被自由輸入(存檔命名、Daza Reveli)當成文字吃掉。
+	if in.Pressed(ebiten.KeyF5) {
+		msg := g.cycleMusicMode()
+		g.saveMsg = msg
+		if g.field != nil {
+			g.field.Log = append(g.field.Log, msg)
+		}
+		return nil
+	}
 
 	// 派工是一張表,順序就是優先序(scene.go 的 inputChain)。
 	// 第一個 Handles 為真的場景吃掉這一格 —— 唯一會「不吃就往下傳」的是
@@ -663,7 +684,8 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	}
 	fmt.Fprintln(os.Stderr, "字型:", fontName)
 	g.panel, g.overlayFont, g.titleFont = panel, overlay, title
-	g.initSound() // docs/spec/13:失敗只記警告,不影響遊戲
+	g.initSound()  // docs/spec/13:失敗只記警告,不影響遊戲
+	g.loadConfig() // 配樂模式等偏好。讀不到就用預設(= 原版)
 	g.shell = &shellState{mode: shellTitle}
 	return g, nil
 }

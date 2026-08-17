@@ -668,6 +668,14 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 	const half = layout.ViewTiles / 2
 	for vy := 0; !inCombat && !inMaze && !inTown && !inRoster && vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
+			// 天色會縮視野(docs/re/213):繪製半徑 = 生效能見度,
+			// 白天 4 → 9×9 全開,入夜 2 → 5×5,深夜 1 → 3×3。
+			// ⚠ 原版把起點往內推 `(4 − 能見度) × 17` 像素,
+			// 縮小之後仍然置中 —— 那個算式反過來證明半徑就是能見度。
+			if vx < half-g.party.Visibility || vx > half+g.party.Visibility ||
+				vy < half-g.party.Visibility || vy > half+g.party.Visibility {
+				continue
+			}
 			mx, my := g.party.X-half+vx, g.party.Y-half+vy
 			v := g.world.At(mx, my)
 			px := float32(layout.View.X + vx*layout.TileDst)

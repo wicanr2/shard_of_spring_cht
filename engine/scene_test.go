@@ -578,3 +578,28 @@ func TestArchwayNeedsPositionAndFacing(t *testing.T) {
 		}
 	}
 }
+
+// 天色會縮世界地圖的視野(docs/re/213):半徑 = 生效能見度。
+//
+// ⚠ 這一條測的是**規則存在**,不是像素:深夜(能見度 1)只該畫 3×3,
+// 而 9×9 的四角必定落在半徑外。
+func TestWorldViewShrinksAtNight(t *testing.T) {
+	const half = layout.ViewTiles / 2
+	for _, tc := range []struct{ hour, want int }{
+		{10, 4}, // 白天 → 9×9 全開
+		{17, 2}, // 傍晚 → 5×5
+		{20, 1}, // 深夜 → 3×3
+	} {
+		if got := world.Daylight(tc.hour); got != tc.want {
+			t.Fatalf("時 %d 的天色是 %d,想要 %d", tc.hour, got, tc.want)
+		}
+		// 視野邊長 = 2×半徑 + 1,而畫布是 9×9 —— 半徑 4 才畫得滿
+		if side := 2*tc.want + 1; side > layout.ViewTiles {
+			t.Errorf("時 %d 的視野 %d 超過畫布 %d", tc.hour, side, layout.ViewTiles)
+		}
+	}
+	// 半徑 1 時,9×9 的角落(0,0)一定在範圍外 —— 迴圈裡的裁切條件用的就是這個
+	if !(0 < half-1) {
+		t.Error("半徑 1 時左上角應該被裁掉,裁切條件寫錯了")
+	}
+}

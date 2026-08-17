@@ -145,6 +145,20 @@ func ParseGroups(d []byte) ([]Group, error) {
 // 空槽在出貨資料裡是 `0x2020`(兩個空白)或 99 這類哨兵。
 func ValidMemberID(v int) bool { return v >= memberMin && v <= memberMax }
 
+// MemberSlotNumbers 回傳實際在隊的成員各佔**第幾個槽**(1–9,與 MemberIDs 同序)。
+//
+// ⚠ 槽號不是「隊伍裡的第幾個人」:搬到有間隔的槽時兩者不同,
+// 而**戰場站位看的是槽號**(docs/re/210)。
+func (g Group) MemberSlotNumbers() []int {
+	var out []int
+	for i, v := range g.Members {
+		if ValidMemberID(v) {
+			out = append(out, i+1)
+		}
+	}
+	return out
+}
+
 // MemberIDs 回傳實際在隊的角色編號,依槽序。
 // 值不在 1–32 的槽(出貨檔用 99)略過 —— 與原版 0x114CA 的判斷相同。
 func (g Group) MemberIDs() []int {

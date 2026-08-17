@@ -339,7 +339,7 @@ Xvfb(image `:4`),`tools/go.sh` 的 test 分支自己起 X server。
 | 1 | [x] | 戰後金幣的算式 | ✅ **定案並實作**:`INT(1.7^階級 + RND × 2.1^階級 + 1)`,逐隻累加([`re/207`](../re/207-gold-formula-closed.md))。⚠ **1.7/2.1 是底數不是指數** —— 先前反了。三個常數都在 DGROUP 初值裡,不必實測 |
 | 3 | [x] | 群體法術打不打得到隊員 | ✅ **會**([`re/208`](../re/208-group-spell-hits-everyone.md)):掃描迴圈跑滿 14 個單位槽(`cmp ax, 0Dh`),沒有敵我判斷。引擎的 `IsMonster` 過濾已拿掉 |
 | 4 | [x] | 營地的 `Spell Fails` 是不是同一條 | ✅ **是**([`re/209`](../re/209-camp-spell-fails-same-rule.md)):效力 = 欄4×投入÷欄5,唯一的差別是 `CAMP` 不取整。`castInCamp` 已補上判定 |
-| 6 | [ ] | 陣型:槽號還是壓縮順序決定站位 | 搬到有間隔的槽時兩者不同([`re/203`](../re/203-formation-grid-and-roster-screens.md) §6)。引擎用壓縮順序 |
+| 6 | [x] | 陣型:槽號還是壓縮順序決定站位 | ✅ **槽號**([`re/210`](../re/210-formation-uses-slot-number.md)):查偏移表用迴圈變數 `i`(1…9),寫入用單位編號(9…13)—— 兩個索引不同。已接 `Field.PartySlots` |
 | 7 | [ ] | 睡覺公式的兩個參數 `[bp+6]`/`[bp+8]` | [`re/206`](../re/206-poison-only-drains-while-resting.md) §1 讀出整段算式,但那兩個參數沒解 → 沒照抄進引擎 |
 | 5 | [x] | 戰鬥回合中毒扣不扣血 | ✅ **不扣**([`re/206`](../re/206-poison-only-drains-while-resting.md) §2.1):屬性 8 只在十處與常數比,唯一比 1 的那一處是「這個單位能不能行動」的閘門(狀態 > 1 才跳過),沒有一處接到生命值。⚠ 順帶抓到命中 `+30` 的敘述把中毒算進去了,實際上 `> 1` 從被縛起算 |
 | 2 | [x] | `MENU` 與 `USERLIB` 對位移 59/61 的方向相反 | ✅ **`MENU` 那一邊寫反了**([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §2.1):營地的照明法術把能見度**同時**寫進 `ds:35B2` 與記錄位移 59 —— 點燈設的就是「有光」那一欄。引擎本來就照 `USERLIB`,不必改 |

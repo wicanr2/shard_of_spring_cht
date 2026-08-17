@@ -51,7 +51,8 @@ func (g *Game) startCombat() bool {
 	}
 	g.field = combat.Build(g.members, []original.Monster{g.monsters[pick]},
 		g.items, g.rand)
-	g.field.Place() // docs/spec/12 §5:初始佈陣(原版陣型未解,這裡是佔位)
+	g.field.PartySlots = g.group.MemberSlotNumbers() // 站位看槽號(docs/re/210)
+	g.field.Place()
 	g.field.ResetPoints(&g.points)
 	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
 	g.dispelled = nil // D)ispell 是「這一場一次」(docs/re/188 §2.2)
@@ -100,7 +101,9 @@ func (g *Game) startScriptedCombat(target int) bool {
 		return false
 	}
 	g.field = combat.Build(g.members, monsters, g.items, g.rand)
-	g.field.Place() // docs/spec/12 §5:近似值,原版擲座標找空格的兩個範圍未解(docs/re/164 §3)
+	g.field.PartySlots = g.group.MemberSlotNumbers() // 站位看槽號(docs/re/210)
+	// ⚠ 怪物那一半仍是近似:原版擲座標找空格的兩個範圍未解(docs/re/164 §3)
+	g.field.Place()
 	g.field.ResetPoints(&g.points)
 	g.settled = false // 新戰場 → 還沒結算過(settle 的冪等旗標)
 	g.dispelled = nil // D)ispell 是「這一場一次」(docs/re/188 §2.2)

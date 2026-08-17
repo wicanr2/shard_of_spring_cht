@@ -256,15 +256,23 @@ const (
 // 這裡用可預測的排列填,**不假裝那是原版的分佈**。
 func (f *Field) Place() {
 	const baseX, baseY = PartyBaseX, PartyBaseY
-	slot := 1
+	n := 0
 	for i := PartyBase; i < PartyBase+PartyMax; i++ {
 		if !f.Units[i].Alive() {
 			continue
 		}
+		// ⚠ **站位看的是 `GROUPS.DAT` 的槽號,不是「隊伍裡的第幾個人」**
+		// (docs/re/210):原版的迴圈跑槽 1…9,用槽號去查偏移表。
+		// 兩者只有在「搬到有間隔的槽」時才不同 —— 例如只有 A 與 G 有人,
+		// 照槽號站是一個在上排、一個在下排,照人數順序站則兩個並排在上排。
+		slot := n + 1
+		if n < len(f.PartySlots) {
+			slot = f.PartySlots[n]
+		}
 		dx, dy := PartyOffset(slot)
 		f.Units[i].X, f.Units[i].Y = baseX+dx, baseY+dy
 		f.Units[i].Facing = North
-		slot++
+		n++
 	}
 	for i := MonsterBase; i < MonsterBase+MonsterMax; i++ {
 		if !f.Units[i].Alive() {

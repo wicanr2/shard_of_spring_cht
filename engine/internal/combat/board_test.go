@@ -237,3 +237,43 @@ func TestViewOriginClamps(t *testing.T) {
 		}
 	}
 }
+
+// 站位看的是 `GROUPS.DAT` 的**槽號**,不是「隊伍裡的第幾個人」(docs/re/210)。
+//
+// ⚠ 只有「搬到有間隔的槽」才分得出兩者。這裡刻意用槽 1 與槽 7(A 與 G):
+// 照槽號一個在上排、一個在下排;照人數順序兩個並排在上排。
+func TestPlaceUsesSlotNumberNotOrder(t *testing.T) {
+	f := &Field{PartySlots: []int{1, 7}}
+	f.Units[PartyBase] = Unit{Name: "甲", HP: 10}
+	f.Units[PartyBase+1] = Unit{Name: "乙", HP: 10}
+	f.Place()
+
+	dx1, dy1 := PartyOffset(1)
+	dx7, dy7 := PartyOffset(7)
+	if got := [2]int{f.Units[PartyBase].X, f.Units[PartyBase].Y}; got !=
+		[2]int{PartyBaseX + dx1, PartyBaseY + dy1} {
+		t.Errorf("槽 1 站在 %v,想要 %v", got,
+			[2]int{PartyBaseX + dx1, PartyBaseY + dy1})
+	}
+	if got := [2]int{f.Units[PartyBase+1].X, f.Units[PartyBase+1].Y}; got !=
+		[2]int{PartyBaseX + dx7, PartyBaseY + dy7} {
+		t.Errorf("槽 7 站在 %v,想要 %v", got,
+			[2]int{PartyBaseX + dx7, PartyBaseY + dy7})
+	}
+	// 正對照:兩者真的不同,否則這條測試分不出來
+	if dy1 == dy7 {
+		t.Fatal("槽 1 與槽 7 落在同一列 —— 這組值分不出「槽號」與「順序」")
+	}
+}
+
+// 沒有槽號資訊時退回「隊伍裡的第幾個人」——舊行為,不要變成 (0,0)。
+func TestPlaceFallsBackWithoutSlots(t *testing.T) {
+	f := &Field{}
+	f.Units[PartyBase] = Unit{Name: "甲", HP: 10}
+	f.Place()
+	dx, dy := PartyOffset(1)
+	if f.Units[PartyBase].X != PartyBaseX+dx || f.Units[PartyBase].Y != PartyBaseY+dy {
+		t.Errorf("沒有槽號時應該照順序站第一格,得到 (%d,%d)",
+			f.Units[PartyBase].X, f.Units[PartyBase].Y)
+	}
+}

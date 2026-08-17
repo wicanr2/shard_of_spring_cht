@@ -20,6 +20,10 @@ type Field struct {
 	Items map[int]Item
 	// Log 是這一場的訊息,給訊息列顯示、也給測試檢查。
 	Log []string
+	// PartySlots 是每位隊員佔 `GROUPS.DAT` 的第幾個成員槽(1–9),
+	// 與 `Units[PartyBase…]` 同序。**站位看的是它**(docs/re/210)。
+	// 空的時候退回「隊伍裡的第幾個人」—— 只有搬到有間隔的槽時兩者才不同。
+	PartySlots []int
 }
 
 // 戰鬥訊息的字面。**逐字照 `translations/module-text/CMBT.tsv` 第 69–82 列**

@@ -338,7 +338,7 @@ Xvfb(image `:4`),`tools/go.sh` 的 test 分支自己起 X server。
 | 10 | ~ | E6 遭遇倒數重置值 | **載入補值已解**:`≤ 2 → 25`([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §3,已接)。**每次遭遇之後填什麼仍未讀**,`scene.go` 兩處還是 54 |
 | 1 | [x] | 戰後金幣的算式 | ✅ **定案並實作**:`INT(1.7^階級 + RND × 2.1^階級 + 1)`,逐隻累加([`re/207`](../re/207-gold-formula-closed.md))。⚠ **1.7/2.1 是底數不是指數** —— 先前反了。三個常數都在 DGROUP 初值裡,不必實測 |
 | 3 | [x] | 群體法術打不打得到隊員 | ✅ **會**([`re/208`](../re/208-group-spell-hits-everyone.md)):掃描迴圈跑滿 14 個單位槽(`cmp ax, 0Dh`),沒有敵我判斷。引擎的 `IsMonster` 過濾已拿掉 |
-| 4 | [ ] | 營地的 `Spell Fails` 是不是同一條 | `CAMP` 的路徑另有一份程式碼([`re/201`](../re/201-item-and-spell-fails.md) §4)|
+| 4 | [x] | 營地的 `Spell Fails` 是不是同一條 | ✅ **是**([`re/209`](../re/209-camp-spell-fails-same-rule.md)):效力 = 欄4×投入÷欄5,唯一的差別是 `CAMP` 不取整。`castInCamp` 已補上判定 |
 | 6 | [ ] | 陣型:槽號還是壓縮順序決定站位 | 搬到有間隔的槽時兩者不同([`re/203`](../re/203-formation-grid-and-roster-screens.md) §6)。引擎用壓縮順序 |
 | 7 | [ ] | 睡覺公式的兩個參數 `[bp+6]`/`[bp+8]` | [`re/206`](../re/206-poison-only-drains-while-resting.md) §1 讀出整段算式,但那兩個參數沒解 → 沒照抄進引擎 |
 | 5 | [ ] | 戰鬥回合中毒扣不扣血 | 沒查。`CMBT` 用屬性陣列不是記錄,[`re/206`](../re/206-poison-only-drains-while-resting.md) §2 的三條否證對它不成立 |

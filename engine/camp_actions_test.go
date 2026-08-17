@@ -147,7 +147,9 @@ func TestCampCastKey_FullFlow_PowerUsesInvestNotLevel(t *testing.T) {
 	g := &Game{
 		members: []original.Character{caster, target},
 		spells:  []original.Spell{buff},
-		rand:    combat.NewRand(1),
+		// ⚠ 營地施法有發動判定(docs/re/209:效力 = 欄4×投入÷欄5,擲 d100)——
+		// **測發動之後的行為,就要先把發動判定拿掉**(docs/re/201 §3 的同一個坑)。
+		rand:    alwaysLowRand{},
 		chars:   make([]original.Character, 25),
 	}
 	for i, c := range g.members {
@@ -386,6 +388,9 @@ func TestCastInputDigitsAndBackspace(t *testing.T) {
 // 只把座標改掉而留在地城裡,玩家會站在原地看著一段狂風敘述什麼都沒發生。
 func TestWindWalkTeleportsAndLeaves(t *testing.T) {
 	g := newPlayingGame(t)
+	// ⚠ 營地施法有發動判定(docs/re/209),而測試法術的效力多半擲不過 ——
+	// **測發動之後的行為,就要先把發動判定拿掉**(docs/re/201 §3 的同一個坑)。
+	g.rand = alwaysLowRand{}
 	g.level = &mazeLevel{}
 	g.town = &townState{mode: townCamp}
 	g.party.X, g.party.Y = 40, 40
@@ -445,6 +450,7 @@ func TestOtherUtilitySpellsDoNotTeleport(t *testing.T) {
 func groupSpellGame(t *testing.T, round, mx, my int) (*Game, original.Spell) {
 	t.Helper()
 	g := newPlayingGame(t)
+	g.rand = alwaysLowRand{} // 發動判定固定成功,見 castInCamp 的說明
 	var group original.Spell
 	for _, s := range g.spells {
 		if s.Effect == magic.EffGroupDamage {
@@ -539,6 +545,9 @@ func TestGroupSpellIgnoresOccupantOrder(t *testing.T) {
 // 能見度 = 欄4。
 func TestLightSpellSetsTurnsAndVisibility(t *testing.T) {
 	g := newPlayingGame(t)
+	// ⚠ 營地施法有發動判定(docs/re/209),而測試法術的效力多半擲不過 ——
+	// **測發動之後的行為,就要先把發動判定拿掉**(docs/re/201 §3 的同一個坑)。
+	g.rand = alwaysLowRand{}
 	g.town = &townState{mode: townCamp}
 	torch, ok := g.spellByIndex(magic.SpellMagicTorch)
 	if !ok {
@@ -853,5 +862,46 @@ func TestGroupSpellAreaCountsPartyAsPresent(t *testing.T) {
 	}
 	if logHas(g.field.Log, "目標區域內沒有人") {
 		t.Errorf("不該說沒有人:%v", g.field.Log)
+	}
+}
+
+// ── 營地施法的發動判定(docs/re/209)────────────────────────────────────
+
+// TestCampCastCanFizzle:效力低就放不出來,而且**法力照樣扣**。
+//
+// ⚠ 這一條與戰鬥那一支是**同一條規則**(原版在營地另有一份程式碼,
+// 算式一字不差)。擋的是「營地不判發動」——那會讓低投入的法術在營地
+// 百發百中,而畫面上只是看起來比較好用。
+func TestCampCastFizzlesAndStillCostsPoints(t *testing.T) {
+	buff := original.Spell{Index: 0, Name: "強壯術", School: 1, Effect: magic.EffStrength,
+		Power: 1, UnitCost: 10} // 效力 = 1×2÷10 → 四捨五入 0,必定失敗
+	caster := testWizard("施法者", "1000000000")
+	target := testWizard("目標", "0000000000")
+	target.Str = 10
+
+	g := &Game{
+		members: []original.Character{caster, target},
+		spells:  []original.Spell{buff},
+		rand:    combat.NewRand(1), // 真亂數:效力 0 時擲什麼都失敗
+		chars:   make([]original.Character, 25),
+	}
+	for i, c := range g.members {
+		c.ID = i + 1
+		g.chars[i] = c
+	}
+	g.town = &townState{campMode: 'C', campWho: 0, campWho2: -1, castStage: 3,
+		castSpell: buff, castInput: "10"}
+	sp0 := g.members[0].SP
+
+	g.castInCamp(0, 1)
+
+	if g.members[1].Str != 10 {
+		t.Errorf("發動失敗不該有效果,目標力量 = %d", g.members[1].Str)
+	}
+	if !strings.Contains(g.town.msg, magic.MsgSpellFails) {
+		t.Errorf("要說 CAMP:128「%s」,得到 %q", magic.MsgSpellFails, g.town.msg)
+	}
+	if g.members[0].SP != sp0-10 {
+		t.Errorf("失敗照樣扣法力:%d → %d,想要 %d", sp0, g.members[0].SP, sp0-10)
 	}
 }

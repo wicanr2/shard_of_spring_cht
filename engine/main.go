@@ -63,7 +63,10 @@ type Game struct {
 	// M4:戰鬥(docs/spec/07)
 	monsters []original.Monster
 	items    map[int]combat.Item
-	rand     *combat.SeededRand
+	// rand 是遊戲全域的擲骰來源。⚠ 型別是**介面**不是 `*combat.SeededRand` ——
+	// 測試要能換成固定值的擲骰(發動判定會擋掉大多數低效力的法術,
+	// 而「測發動之後的行為」就得先把發動判定拿掉,docs/re/201 §3)。
+	rand     combat.FloatRand
 	field    *combat.Field // nil = 不在戰鬥中
 	// M10:戰場(docs/spec/12)
 	points combat.Points

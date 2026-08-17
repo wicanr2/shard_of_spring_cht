@@ -219,6 +219,21 @@ func (g *Game) castInCamp(casterIdx, targetIdx int) {
 	caster := &g.members[casterIdx]
 	target := &g.members[targetIdx]
 
+	// 發動判定:效力 = 欄4 × 投入 ÷ 欄5,擲不過就 `Spell Fails !`
+	// (CAMP:128)。⚠ **與戰鬥是同一條規則**(docs/re/209)——
+	// 原版在營地另有一份程式碼,但算式一字不差。
+	// ⚠ 失敗**照樣扣法力**:與戰鬥那一支沿用同一個具名決定(docs/re/201 §3)。
+	if magic.Fizzles(magic.EffectLevel(s, invest), g.rand) {
+		caster.SP -= invest
+		if caster.SP < 0 {
+			caster.SP = 0
+		}
+		g.syncMember(*caster)
+		ts.msg = fmt.Sprintf("%s 施放「%s」(投入 %d)：%s",
+			caster.Name, s.Name, invest, magic.MsgSpellFails)
+		return
+	}
+
 	casterUnit := campUnit(*caster)
 	targetUnit := campUnit(*target)
 	r := magic.Apply(s, invest, &casterUnit, []*combat.Unit{&targetUnit})

@@ -463,3 +463,22 @@ func TestDispellDirectionOfThreshold(t *testing.T) {
 		t.Error("門檻是負的時候不該驅散成功")
 	}
 }
+
+// 命中的 +30 從**被縛**起算 —— 中毒(狀態 1)吃不到(docs/re/206 §2.1)。
+//
+// ⚠ 這一條擋的是把條件寫成 `>= 1`:兩種寫法只有「中毒」這一格分得開,
+// 而中毒是戰鬥裡最常見的異常狀態。
+func TestStatusToHitBonusStartsAtBound(t *testing.T) {
+	base := ToHit(Unit{ToHit: 10, Facing: North}, Unit{Status: 0, Facing: South},
+		Item{}, Item{})
+	poisoned := ToHit(Unit{ToHit: 10, Facing: North}, Unit{Status: 1, Facing: South},
+		Item{}, Item{})
+	bound := ToHit(Unit{ToHit: 10, Facing: North}, Unit{Status: 2, Facing: South},
+		Item{}, Item{})
+	if poisoned != base {
+		t.Errorf("中毒不該有 +30:正常 %d、中毒 %d", base, poisoned)
+	}
+	if bound != base+30 {
+		t.Errorf("被縛應該 +30:正常 %d、被縛 %d", base, bound)
+	}
+}

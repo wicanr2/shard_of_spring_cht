@@ -341,7 +341,7 @@ Xvfb(image `:4`),`tools/go.sh` 的 test 分支自己起 X server。
 | 4 | [x] | 營地的 `Spell Fails` 是不是同一條 | ✅ **是**([`re/209`](../re/209-camp-spell-fails-same-rule.md)):效力 = 欄4×投入÷欄5,唯一的差別是 `CAMP` 不取整。`castInCamp` 已補上判定 |
 | 6 | [ ] | 陣型:槽號還是壓縮順序決定站位 | 搬到有間隔的槽時兩者不同([`re/203`](../re/203-formation-grid-and-roster-screens.md) §6)。引擎用壓縮順序 |
 | 7 | [ ] | 睡覺公式的兩個參數 `[bp+6]`/`[bp+8]` | [`re/206`](../re/206-poison-only-drains-while-resting.md) §1 讀出整段算式,但那兩個參數沒解 → 沒照抄進引擎 |
-| 5 | [ ] | 戰鬥回合中毒扣不扣血 | 沒查。`CMBT` 用屬性陣列不是記錄,[`re/206`](../re/206-poison-only-drains-while-resting.md) §2 的三條否證對它不成立 |
+| 5 | [x] | 戰鬥回合中毒扣不扣血 | ✅ **不扣**([`re/206`](../re/206-poison-only-drains-while-resting.md) §2.1):屬性 8 只在十處與常數比,唯一比 1 的那一處是「這個單位能不能行動」的閘門(狀態 > 1 才跳過),沒有一處接到生命值。⚠ 順帶抓到命中 `+30` 的敘述把中毒算進去了,實際上 `> 1` 從被縛起算 |
 | 2 | [x] | `MENU` 與 `USERLIB` 對位移 59/61 的方向相反 | ✅ **`MENU` 那一邊寫反了**([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §2.1):營地的照明法術把能見度**同時**寫進 `ds:35B2` 與記錄位移 59 —— 點燈設的就是「有光」那一欄。引擎本來就照 `USERLIB`,不必改 |
 | 9 | [ ] | 地面上的天色有沒有真的縮小視野 | 原版算了 `ds:35B4` 與 `(4 − 能見度) × 17`,但世界地圖的繪製端沒追。引擎的世界地圖不限視野 |
 | 8 | [ ] | `WRLDMOVE 0x10D15` 之後還有幾個定點事件 | 拱門是其中一個,那一串沒掃完([`re/198`](../re/198-islanda-archway-trigger.md) §5)|

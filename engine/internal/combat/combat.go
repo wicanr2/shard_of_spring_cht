@@ -242,6 +242,10 @@ func rollRound(r FloatRand, faces int) int {
 //
 // ⚠ `+30` 的條件是 `> 1` **不是 ≤ 1** —— docs/re/98 抓到過一次反號,
 // 而反號之後的規則仍然「看起來合理」(狀態好的更容易被打中),沒有任何訊號。
+//
+// ⚠ **中毒(狀態 1)吃不到這個 +30。** 狀態表是
+// `OK(0) / Poisoned(1) / Bound(2) / Still Air(3) / Frozen(4) / D E A D(5)`,
+// `> 1` 從被縛起算 —— 動不了的目標更容易被打中,中毒的人照樣會閃。
 func ToHit(atk, def Unit, atkWeapon, defArmor Item) int {
 	v := (atk.ToHit - defArmor.Bonus + atkWeapon.Bonus) * 4
 	if def.Status > 1 {

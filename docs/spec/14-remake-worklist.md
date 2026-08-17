@@ -43,7 +43,8 @@ go run . -slot 5      →  直接出現在世界地圖,隊伍是原版存檔的 
 | 順序 | 做什麼 | 為什麼是它 |
 |---:|---|---|
 | **1** | **G2 跨平台 build**(§7)| docker 出 Windows / macOS / Linux。⛔ **一律用預設 build tag** —— 帶 `-tags eten` 打包等於散布倚天字型([`21`](21-fonts.md))。macOS 沒有機器 → skill `osxcross-macos-cross-build`。⚠ 做完要回頭訂正 [`docs/PLAYING.md`](../PLAYING.md) 裡的執行檔名 |
-| 2 | **D5 戰鬥 AI 逐步選格** | §8.1 C 只剩它。⛔ **先解 [`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md) 再寫碼** —— 屬性 18 的 ±1 側向偏好怎麼與「朝目標走」合成一步沒讀完 |
+| 2 | **D5 戰鬥 AI 逐步選格**(進行中)| §8.1 C 只剩它。⛔ **先解 [`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md) §1 第 3 項再寫碼** —— 兩條對稱分支的**內容**沒有逐條讀完 |
+| 3 | C2 重構 / E7 BGM | §8.1 D,兩項都有重啟判準 |
 
 ⛔ **不要動 D5(逐步選格)** —— [`12`](12-combat-board.md) §5.1 明寫選格邏輯未解,
 **半解的 AI 比明講的佔位更糟**。要動就先解 `re/158`,那是 RE 不是 coding。
@@ -347,7 +348,7 @@ Xvfb(image `:4`),`tools/go.sh` 的 test 分支自己起 X server。
 | 9 | [x] | 地面上的天色有沒有真的縮小視野 | ✅ **會**([`re/213`](../re/213-visibility-is-the-draw-radius.md)):繪製常式的半徑參數就是 `ds:35B4`(天色),白天 9×9、深夜 3×3。已接。⚠ 順帶把 `VisibilityIsRadius` 從「實作決定」升成**已確認** |
 | 10 | [x] | E6 遭遇倒數重置值 | ✅ `INT(RND × 10) + 25` → 25…34([`re/214`](../re/214-encounter-reset-roll.md))。⚠ 出貨存檔的 **54 不在這個範圍內**,所以 `NewPartyEncounter = 54` 仍然是具名假設 |
 
-**唯一剩下的:**
+**唯一剩下的 —— 進行中(2026-08-17)**:
 
 | # | 狀態 | 項目 | 卡在哪一步 |
 |---:|---|---|---|

@@ -820,3 +820,38 @@ func TestLootEventTable(t *testing.T) {
 		t.Errorf("謎題獎賞應該是風暴戒(29),得到 %d", maze.RiddleReward)
 	}
 }
+
+// TestGroupSpellHitsPartyToo:範圍內的**隊員**也會吃到(docs/re/208)。
+//
+// ⚠ 這一條擋的是「順手加一個 IsMonster 過濾」—— 加了之後群體法術變成安全的,
+// 而畫面上完全看不出規則被改過:玩家只會覺得這個法術很好用。
+// 原版的掃描迴圈跑滿 14 個單位槽(`cmp ax, 0Dh`),沒有敵我判斷。
+func TestGroupSpellHitsPartyToo(t *testing.T) {
+	g, s := groupSpellGame(t, 2, 14, 12)
+	// 再擺一位隊員在範圍內(施法者本人留在遠處的 (13,13),不受影響)。
+	g.field.Units[combat.PartyBase+1] = combat.Unit{Name: "灰燼", HP: 20,
+		Facing: combat.North, X: 12, Y: 12}
+	if !g.castAt(s, 10, 13, 12) {
+		t.Fatalf("應該施放成功:%v", g.field.Log)
+	}
+	if g.field.Units[combat.MonsterBase].HP >= 20 {
+		t.Error("範圍內的怪應該吃到傷害")
+	}
+	if g.field.Units[combat.PartyBase+1].HP >= 20 {
+		t.Error("範圍內的**隊員**也應該吃到傷害(docs/re/208 §2:迴圈上界 13)")
+	}
+}
+
+// TestGroupSpellAreaCountsPartyAsPresent:區域裡只有隊員時,法術照樣放得出去。
+// 「目標區域內沒有人」是**掃不到任何單位**,不是「掃不到怪」。
+func TestGroupSpellAreaCountsPartyAsPresent(t *testing.T) {
+	g, s := groupSpellGame(t, 2, 30, 30) // 怪擺得很遠
+	g.field.Units[combat.PartyBase+1] = combat.Unit{Name: "灰燼", HP: 20,
+		Facing: combat.North, X: 12, Y: 12}
+	if !g.castAt(s, 10, 13, 12) {
+		t.Fatalf("區域裡有隊員就不算「沒有人」:%v", g.field.Log)
+	}
+	if logHas(g.field.Log, "目標區域內沒有人") {
+		t.Errorf("不該說沒有人:%v", g.field.Log)
+	}
+}

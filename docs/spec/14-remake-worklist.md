@@ -337,12 +337,12 @@ Xvfb(image `:4`),`tools/go.sh` 的 test 分支自己起 X server。
 | 11 | [ ] | D5 戰鬥 AI 逐步選格 | 屬性 18 的 ±1 側向偏好怎麼與「朝目標走」合成一步([`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md))。引擎走直線 |
 | 10 | ~ | E6 遭遇倒數重置值 | **載入補值已解**:`≤ 2 → 25`([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §3,已接)。**每次遭遇之後填什麼仍未讀**,`scene.go` 兩處還是 54 |
 | 1 | [x] | 戰後金幣的算式 | ✅ **定案並實作**:`INT(1.7^階級 + RND × 2.1^階級 + 1)`,逐隻累加([`re/207`](../re/207-gold-formula-closed.md))。⚠ **1.7/2.1 是底數不是指數** —— 先前反了。三個常數都在 DGROUP 初值裡,不必實測 |
-| 3 | [ ] | 群體法術打不打得到隊員 | 5×5 掃描的受害者清單怎麼展開沒讀([`re/195`](../re/195-group-spell-round-gate-and-area.md) §3)。引擎只打怪物 |
+| 3 | [x] | 群體法術打不打得到隊員 | ✅ **會**([`re/208`](../re/208-group-spell-hits-everyone.md)):掃描迴圈跑滿 14 個單位槽(`cmp ax, 0Dh`),沒有敵我判斷。引擎的 `IsMonster` 過濾已拿掉 |
 | 4 | [ ] | 營地的 `Spell Fails` 是不是同一條 | `CAMP` 的路徑另有一份程式碼([`re/201`](../re/201-item-and-spell-fails.md) §4)|
 | 6 | [ ] | 陣型:槽號還是壓縮順序決定站位 | 搬到有間隔的槽時兩者不同([`re/203`](../re/203-formation-grid-and-roster-screens.md) §6)。引擎用壓縮順序 |
 | 7 | [ ] | 睡覺公式的兩個參數 `[bp+6]`/`[bp+8]` | [`re/206`](../re/206-poison-only-drains-while-resting.md) §1 讀出整段算式,但那兩個參數沒解 → 沒照抄進引擎 |
 | 5 | [ ] | 戰鬥回合中毒扣不扣血 | 沒查。`CMBT` 用屬性陣列不是記錄,[`re/206`](../re/206-poison-only-drains-while-resting.md) §2 的三條否證對它不成立 |
-| 2 | [ ] | `MENU` 與 `USERLIB` 對位移 59/61 的二選一方向相反 | 兩段都逐位元組讀過([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §5)|
+| 2 | [x] | `MENU` 與 `USERLIB` 對位移 59/61 的方向相反 | ✅ **`MENU` 那一邊寫反了**([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §2.1):營地的照明法術把能見度**同時**寫進 `ds:35B2` 與記錄位移 59 —— 點燈設的就是「有光」那一欄。引擎本來就照 `USERLIB`,不必改 |
 | 9 | [ ] | 地面上的天色有沒有真的縮小視野 | 原版算了 `ds:35B4` 與 `(4 − 能見度) × 17`,但世界地圖的繪製端沒追。引擎的世界地圖不限視野 |
 | 8 | [ ] | `WRLDMOVE 0x10D15` 之後還有幾個定點事件 | 拱門是其中一個,那一串沒掃完([`re/198`](../re/198-islanda-archway-trigger.md) §5)|
 

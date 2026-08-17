@@ -307,12 +307,12 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 		// 排在後面的話,游標剛好壓在某個單位身上時就只打那一個,
 		// 而畫面上看起來完全正常 —— 群體法術變成單體。
 		//
-		// ⚠ 範圍內的**隊員**會不會一起吃到**沒有讀出來**(docs/re/195 §3),
-		// 引擎只打怪物 —— 這是實作決定,不是原版行為。
+		// ⚠ **隊員也會吃到**(docs/re/208):原版的掃描迴圈跑滿
+		// 14 個單位槽(0–13),沒有敵我判斷 —— 站進自己的火裡是玩家的事。
+		// ⛔ 不要「順手」加一個 IsMonster 過濾:那會讓群體法術變成安全的,
+		// 而畫面上完全看不出規則被改過。
 		for _, i := range g.field.UnitsInArea(cx, cy) {
-			if g.field.Units[i].IsMonster {
-				targets = append(targets, &g.field.Units[i])
-			}
+			targets = append(targets, &g.field.Units[i])
 		}
 		if len(targets) == 0 {
 			g.field.Log = append(g.field.Log, castNoOneInArea)

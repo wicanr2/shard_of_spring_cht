@@ -151,14 +151,24 @@ const (
 	InnHealSP = 10
 )
 
-// 營地睡覺的恢復量與代價(手冊 p.38)。
+// 營地睡覺的恢復量與代價。**算式讀出來的**(docs/re/211)——
+// 先前這一組是照手冊 p.38 湊的,四個數字裡有兩個不對。
 const (
-	CampSleepHP       = 1 // 回 1 HP
-	CampSleepSP       = 5 // 回 5 SP
-	CampSleepFood     = 1 // 每人耗 1 份食糧
-	CampStarveDamage  = 1 // 沒食糧吃的人扣 1 HP
-	CampPoisonPerHour = 1 // 中毒的人每小時扣 1 HP
-	CampSleepHours    = 8 // 睡滿八小時
+	// CampSleepHP / CampSleepSP:一次睡覺回 1 HP、5 SP。
+	// 原版由參數挑「1/5」或「2/10」兩檔,而營地的呼叫端固定走前者
+	// (`CAMP 0x10ED7` 傳 1)—— 後者八成是旅店那一支在用。
+	CampSleepHP = 1
+	CampSleepSP = 5
+	// CampSleepFood 是**整晚**耗掉的食糧,不是每人一份
+	// (`CAMP 0x10F00`:位移 23 減一次,在逐人迴圈**外面**)。
+	CampSleepFood = 1
+	// CampPoisonLoss 是中毒的人一晚扣的血:`缺糧 + 2`。
+	// ⚠ **中毒那一支不回血** —— 原版是 if/else,不是「先回再扣」。
+	CampPoisonLoss = 2
+	// CampSleepHours 是睡覺推進的時鐘格數。原版直接把「時」設成 27
+	// (`CAMP 0x10F46`),讓四級進位把它捲成隔天的 4 點 —— 也就是
+	// **睡到天亮**,不是睡固定的小時數。
+	CampSleepToHour = 27
 )
 
 // 城鎮服務的**基準價**。docs/re/142:在倍率恰好 1.0 的 Green Hamlet 讀到,
@@ -193,29 +203,43 @@ func InnSleep(party []original.Character) []original.Character {
 	return heal(party, InnHealHP, InnHealSP)
 }
 
-// CampSleep 是營地睡覺。手冊 p.38。
+// CampSleep 是營地睡覺。算式出自 docs/re/211(`CAMP 0x12F6C` 的逐人迴圈)。
 //
-// 回傳更新後的隊伍與剩下的食糧。每個人耗 1 份;輪到誰沒得吃,誰就**扣 1 HP** ——
-// ⚠ 是「吃不到的那個人扣血」,不是「食糧不夠時全隊都扣」。
+//	缺糧 = (睡前的食糧 ≤ 0)          ← **整隊共用一個旗標**,不是逐人扣
+//	法力 += 5                        ← 中毒與否都回
+//	中毒   → 生命 −= 缺糧 + 2        ← ⚠ **不回血**,是 if/else 不是「先回再扣」
+//	沒中毒 → 生命 += 1 − 缺糧
+//	生命 < 1 → 生命 = 0、**法力也歸零**
+//	否則各自夾在最大值
 //
-// ⚠ 中毒的人睡覺期間每小時扣 1 HP(手冊 p.38 明講「睡了八個小時後將會發生意外」),
-// 所以中毒的人睡覺是**淨損失**,不要在介面上把睡覺說成一律有益。
+// 回傳更新後的隊伍與剩下的食糧(整晚 1 份)。
+//
+// ⚠ 先前這裡照手冊 p.38 寫成「每人耗 1 份、吃不到的人扣 1 血、中毒的人
+// 每小時扣 1 血 × 8 小時」——**三項都不對**:食糧是整晚一份、缺糧只是
+// 抵銷回復、中毒一晚固定扣 2。手冊那一頁講的是感覺,不是算式。
 func CampSleep(party []original.Character, provisions int) ([]original.Character, int) {
+	starving := 0
+	if provisions <= 0 {
+		starving = 1
+	}
 	for i := range party {
 		if !party[i].Occupied() {
 			continue
 		}
-		if provisions >= CampSleepFood {
-			provisions -= CampSleepFood
-			party[i].HP += CampSleepHP
-			party[i].SP += CampSleepSP
-		} else {
-			party[i].HP -= CampStarveDamage
-		}
+		party[i].SP += CampSleepSP
 		if party[i].StatusName() == "中毒" {
-			party[i].HP -= CampPoisonPerHour * CampSleepHours
+			party[i].HP -= starving + CampPoisonLoss
+		} else {
+			party[i].HP += CampSleepHP - starving
+		}
+		if party[i].HP < 1 {
+			party[i].HP, party[i].SP = 0, 0
+			continue
 		}
 		clampVitals(&party[i])
+	}
+	if provisions >= CampSleepFood {
+		provisions -= CampSleepFood
 	}
 	return party, provisions
 }

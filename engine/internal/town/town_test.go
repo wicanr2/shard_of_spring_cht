@@ -209,11 +209,12 @@ func TestInnSleepHealsTwoAndTen(t *testing.T) {
 	}
 }
 
-func TestCampSleepEatsOnePerPerson(t *testing.T) {
+// 食糧是**整晚一份**,不是每人一份(docs/re/211:位移 23 的減法在逐人迴圈外面)。
+func TestCampSleepEatsOnePerNight(t *testing.T) {
 	p := []original.Character{sleeper(1, 20, 0, 30), sleeper(1, 20, 0, 30)}
 	p, left := CampSleep(p, 5)
-	if left != 3 {
-		t.Errorf("兩個人應吃掉 2 份,剩 3,得 %d", left)
+	if left != 4 {
+		t.Errorf("一晚只吃 1 份,剩 4,得 %d", left)
 	}
 	for i := range p {
 		if p[i].HP != 2 || p[i].SP != 5 {
@@ -222,27 +223,49 @@ func TestCampSleepEatsOnePerPerson(t *testing.T) {
 	}
 }
 
-// 食糧不夠時,扣血的是**吃不到的那個人**,不是全隊。
-func TestCampSleepStarvesOnlyTheOnesWithoutFood(t *testing.T) {
+// 缺糧是**整隊共用一個旗標**,而且只是抵銷回復 —— 不是「吃不到的那個人扣血」。
+//
+// ⚠ 這一條先前寫成「第一個人回血、第二個人扣血」,那是照手冊 p.38 想像的,
+// 而原版的 `ds:7B50` 是一個 party-wide 的 0/1(`補給品 ≤ 0`)。
+func TestCampSleepStarvingCancelsTheRecovery(t *testing.T) {
 	p := []original.Character{sleeper(5, 20, 0, 30), sleeper(5, 20, 0, 30)}
-	p, left := CampSleep(p, 1)
+	p, left := CampSleep(p, 0) // 一份都沒有
 	if left != 0 {
-		t.Errorf("只有 1 份,應該用光,得 %d", left)
+		t.Errorf("沒有食糧就不用扣,得 %d", left)
 	}
-	if p[0].HP != 6 {
-		t.Errorf("吃到的人應回 1 HP → 6,得 %d", p[0].HP)
-	}
-	if p[1].HP != 4 {
-		t.Errorf("沒吃到的人應扣 1 HP → 4,得 %d", p[1].HP)
+	for i := range p {
+		if p[i].HP != 5 {
+			t.Errorf("第 %d 人應該不增不減(1 − 1 = 0),得 %d", i+1, p[i].HP)
+		}
+		if p[i].SP != 5 {
+			t.Errorf("缺糧不影響法力,第 %d 人得 %d", i+1, p[i].SP)
+		}
 	}
 }
 
-// 中毒的人睡覺是淨損失(手冊 p.38:每小時扣 1,睡八小時)。
+// 中毒的人睡覺是淨損失:扣 `缺糧 + 2`,而且**不回血**(docs/re/211)。
 func TestCampSleepIsNetLossWhenPoisoned(t *testing.T) {
 	c := sleeper(20, 20, 0, 30)
 	c.Status = 1 // 中毒
 	p, _ := CampSleep([]original.Character{c}, 9)
-	if p[0].HP != 20+CampSleepHP-CampSleepHours {
-		t.Errorf("中毒者應為 20+1−8=13,得 %d", p[0].HP)
+	if p[0].HP != 20-CampPoisonLoss {
+		t.Errorf("中毒者應為 20−2=18,得 %d", p[0].HP)
+	}
+	// 缺糧再多扣 1
+	c2 := sleeper(20, 20, 0, 30)
+	c2.Status = 1
+	p2, _ := CampSleep([]original.Character{c2}, 0)
+	if p2[0].HP != 20-CampPoisonLoss-1 {
+		t.Errorf("中毒又缺糧應為 20−3=17,得 %d", p2[0].HP)
+	}
+}
+
+// 睡到 0 血時**法力也歸零**(`CAMP 0x130CD`:兩個一起清)。
+func TestCampSleepZeroesSPWhenDown(t *testing.T) {
+	c := sleeper(1, 20, 0, 30)
+	c.Status = 1 // 中毒 → 扣 2 → 掉到 −1
+	p, _ := CampSleep([]original.Character{c}, 9)
+	if p[0].HP != 0 || p[0].SP != 0 {
+		t.Errorf("倒下時生命與法力都該歸零,得 %d/%d", p[0].HP, p[0].SP)
 	}
 }

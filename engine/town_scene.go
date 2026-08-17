@@ -278,9 +278,10 @@ func (g *Game) townKey(k ebiten.Key) {
 			before := g.group.Provisions
 			alive := aliveNames(g.members)
 			g.members, g.group.Provisions = town.CampSleep(g.members, before)
-			for i := 0; i < town.CampSleepHours; i++ {
-				g.party.Clock.Tick()
-			}
+			// 原版把「時」直接設成 27 讓四級進位捲成隔天的 4 點
+			// (`CAMP 0x10F46`,docs/re/211)—— **睡到天亮**,不是睡固定小時數。
+			g.party.Clock.Hour = town.CampSleepToHour
+			g.party.Tick() // 進位 + 遭遇倒數 + 光源(docs/re/204 §2)
 			// 原版是**先後兩句**:睡下去印 CAMP:56「You sleep...」,
 			// 醒來印 CAMP:54「You have slept !」。引擎沒有中間的等待,
 			// 兩句排在同一行。

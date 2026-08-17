@@ -129,12 +129,39 @@ const NotInMaze = 99
 // 遭遇倒數的載入補值(`MENU` 0x119A2–0x119B2,docs/re/204 §3):
 // 載入隊伍時如果剩餘 ≤ 2 就補回 25。
 //
-// ⚠ 這**不是**「每次遭遇之後填什麼」—— 那一個仍然未解(worklist 的 E6)。
+// ⚠ 這**不是**「每次遭遇之後填什麼」—— 那一個是 RollEncounter(docs/re/214)。
 // 兩者是不同的量:這一條只保證「讀檔後不會立刻踩到遭遇」。
+// ⚠ 而**兩邊的 25 是同一個數字**:`MENU` 用立即數、`CMBT` 走 DGROUP 常數。
 const (
 	EncounterFloor  = 2
 	EncounterReload = 25
 )
+
+// 每打完一場之後重填的遭遇倒數(`CMBT 0x13295`–`0x132BA`,docs/re/214):
+//
+//	INT(RND × 10) + 25      → 值域 25…34
+//
+// ⚠ 下界 25 與 EncounterReload 是**同一個數字出現在兩支模組**
+// (`MENU` 用立即數、`CMBT` 走 DGROUP 常數 `ds:9736`)—— 互相印證。
+const (
+	EncounterRollFaces = 10
+	EncounterRollBase  = 25
+)
+
+// RollEncounter 擲下一次遭遇前的回合數。
+//
+// ⚠ 成語是 `INT(RND × N) + C`(配了 `INT 3D:03` 截尾,docs/re/185)——
+// **不是** `Roll(N)`,那是 1…N;這裡是 0…N−1 再加 C。
+func RollEncounter(r FloatRand) int {
+	return int(float64(EncounterRollFaces)*r.Float01()) + EncounterRollBase
+}
+
+// FloatRand 是 RollEncounter 需要的擲骰來源。形狀與 combat.FloatRand 相同 ——
+// ⛔ 這裡不 import combat:world 是下層,反過來會成環。
+type FloatRand interface {
+	Roll(faces int) int
+	Float01() float64
+}
 
 // Daylight 是自然光的能見度,由**時**決定(USERLIB 0x104A2–0x104FC)。
 //

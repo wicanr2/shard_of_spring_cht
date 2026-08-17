@@ -374,3 +374,26 @@ func TestRefreshLightDoesNotBurn(t *testing.T) {
 		t.Errorf("能見度應該立刻是 3,得到 %d", s.Visibility)
 	}
 }
+
+// 遭遇倒數的重置:`INT(RND × 10) + 25` → 25…34(docs/re/214)。
+//
+// ⚠ 成語是 `INT(RND × N) + C` 不是 `Roll(N)` —— 後者是 1…N。
+// 兩者的值域都是 10 個數,只有**端點**分得開:RND = 0 要給 25。
+func TestRollEncounterRange(t *testing.T) {
+	if got := RollEncounter(&fixedFloat{0}); got != EncounterRollBase {
+		t.Errorf("RND = 0 應給下界 %d,得到 %d", EncounterRollBase, got)
+	}
+	if got := RollEncounter(&fixedFloat{0.999}); got != EncounterRollBase+EncounterRollFaces-1 {
+		t.Errorf("RND → 1 應給上界 %d,得到 %d",
+			EncounterRollBase+EncounterRollFaces-1, got)
+	}
+	// 下界與載入補值是**同一個 25**(MENU 用立即數、CMBT 走 DGROUP 常數)
+	if EncounterRollBase != EncounterReload {
+		t.Errorf("兩處的 25 應該一致:%d vs %d", EncounterRollBase, EncounterReload)
+	}
+}
+
+type fixedFloat struct{ v float64 }
+
+func (f *fixedFloat) Roll(faces int) int { return faces }
+func (f *fixedFloat) Float01() float64   { return f.v }

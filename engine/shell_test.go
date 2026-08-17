@@ -399,14 +399,17 @@ func TestCombatOrdinaryVictoryDoesNotEndGame(t *testing.T) {
 
 	g.field = &combat.Field{}
 	g.field.Units[combat.PartyBase] = combat.Unit{HP: 10, Facing: combat.South}
+	g.rand = combat.NewRand(1) // 戰後要擲下一次遭遇的倒數(docs/re/214)
 
 	g.testKeys = []ebiten.Key{ebiten.KeyEscape}
 	mustUpdate(t, g)
 	if g.shell.mode != shellPlaying {
 		t.Errorf("普通戰鬥勝利不該觸發結局,shell.mode=%v", g.shell.mode)
 	}
-	if g.party.Encounter != 54 {
-		t.Errorf("普通戰鬥勝利後應該重置遭遇倒數(佔位值 54),得到 %d", g.party.Encounter)
+	// 重置值 = INT(RND × 10) + 25 → 值域 25…34(docs/re/214)。
+	if e := g.party.Encounter; e < world.EncounterRollBase ||
+		e >= world.EncounterRollBase+world.EncounterRollFaces {
+		t.Errorf("普通戰鬥勝利後遭遇倒數應落在 25…34,得到 %d", e)
 	}
 }
 

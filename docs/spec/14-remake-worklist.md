@@ -170,7 +170,7 @@ CMBT 把它擺在 `90 90` 之後,不吃掉它整段就錯位 ——
 | [x] | E3 `P)rint char(s)` | 原版驅動印表機;remake 改成**顯示在畫面上**([`11`](11-town-camp-roster.md))|
 | [x] | E4 商店「買給誰」 | ✅ **已解並實作**([`re/187`](../re/187-shop-purchase-recipient.md),第 1 級證據):原版選好道具後問 **`Give to char #`**,輸入編號才扣錢、東西進那個人的背包。實跑逐項對上(金幣 75→73、Grod 的 `Items:` 出現 Dagger)。⚠ 先前判成「沒有選人步驟」是**搜尋詞錯了**——找的是 `Which character`,原版寫的是 `Give to char #`,而那句一直在譯文清冊裡 |
 | [x] | E5 施法投入點數 | 現在固定投一級,原版讓玩家輸入([`09`](09-magic-items.md))|
-| 10 | 10 | ~ | E6 遭遇倒數重置值 | **載入補值已解並接線**:`≤ 2 → 25`([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §3)。**每次遭遇之後填什麼仍未讀**,那兩處還是 54 |
+| 10 | 10 | [x] | E6 遭遇倒數重置值 | ✅ `INT(RND × 10) + 25`([`re/214`](../re/214-encounter-reset-roll.md));載入補值 `≤ 2 → 25` 是同一個 25 |
 | [ ] | E7 音訊播放層 | 合成已完成;沒有音訊裝置時只記警告(`SHARD_NOSOUND` 可關掉)。**BGM 的觸發點**沒有規劃 |
 | [x] | E9 光源會燒完 | [`re/204`](../re/204-light-burns-per-turn-and-offset-83.md):迷宮裡每個動作 −1、回地面歸零,生效能見度每步重算。⚠ 順帶補上「迷宮移動會推進時鐘」—— 先前完全不動 |
 | [x] | E11 拉利斯之門 | [`re/205`](../re/205-gate-consumer-is-one-maze-cell.md):唸過咒語之後迷宮 5 的那一格從圖塊 9 改成 16,走得過去 |
@@ -335,7 +335,7 @@ Xvfb(image `:4`),`tools/go.sh` 的 test 分支自己起 X server。
 | # | 狀態 | 項目 | 卡在哪一步 |
 |---:|---|---|---|
 | 11 | [ ] | D5 戰鬥 AI 逐步選格 | 屬性 18 的 ±1 側向偏好怎麼與「朝目標走」合成一步([`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md))。引擎走直線 |
-| 10 | ~ | E6 遭遇倒數重置值 | **載入補值已解**:`≤ 2 → 25`([`re/204`](../re/204-light-burns-per-turn-and-offset-83.md) §3,已接)。**每次遭遇之後填什麼仍未讀**,`scene.go` 兩處還是 54 |
+| 10 | [x] | E6 遭遇倒數重置值 | ✅ `INT(RND × 10) + 25` → 25…34([`re/214`](../re/214-encounter-reset-roll.md))。⚠ 出貨存檔的 **54 不在這個範圍內**,所以 `NewPartyEncounter = 54` 仍然是具名假設 |
 | 1 | [x] | 戰後金幣的算式 | ✅ **定案並實作**:`INT(1.7^階級 + RND × 2.1^階級 + 1)`,逐隻累加([`re/207`](../re/207-gold-formula-closed.md))。⚠ **1.7/2.1 是底數不是指數** —— 先前反了。三個常數都在 DGROUP 初值裡,不必實測 |
 | 3 | [x] | 群體法術打不打得到隊員 | ✅ **會**([`re/208`](../re/208-group-spell-hits-everyone.md)):掃描迴圈跑滿 14 個單位槽(`cmp ax, 0Dh`),沒有敵我判斷。引擎的 `IsMonster` 過濾已拿掉 |
 | 4 | [x] | 營地的 `Spell Fails` 是不是同一條 | ✅ **是**([`re/209`](../re/209-camp-spell-fails-same-rule.md)):效力 = 欄4×投入÷欄5,唯一的差別是 `CAMP` 不取整。`castInCamp` 已補上判定 |

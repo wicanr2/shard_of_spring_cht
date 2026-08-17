@@ -405,11 +405,10 @@ func (g *Game) leaveCombat() {
 		// 山丘巨人挾持祭司(maze.TargetPriest = 204)打贏了 ——
 		// 同一條規則:作廢目標 204,否則可以無限次「救祭司」。
 		g.disableMazeEvent(maze.TargetPriest)
-		// 遭遇倒數重置。⚠ **重置值未解**(docs/spec/14 §6 的 E6)——
-		// 原版每次遭遇後填什麼沒有讀到,這裡沿用出貨存檔的量級。
-		g.party.Encounter = 54
+		g.party.Encounter = world.RollEncounter(g.rand)
 	default:
-		g.party.Encounter = 54 // 同上,未解的佔位
+		// 每打完一場重填:INT(RND × 10) + 25(docs/re/214)。
+		g.party.Encounter = world.RollEncounter(g.rand)
 	}
 }
 

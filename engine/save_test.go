@@ -14,6 +14,7 @@ import (
 	"shardofspring/internal/maze"
 	"shardofspring/internal/original"
 	"shardofspring/internal/save"
+	"shardofspring/internal/world"
 )
 
 // 存檔格式(docs/spec/18-save-format.md)的測試。§7 九條驗收:
@@ -329,5 +330,129 @@ func TestGameDirNeverWritten(t *testing.T) {
 		if got := after[name]; got != want {
 			t.Errorf("game/sharspri/%s 的內容變了 —— CLAUDE.md §8 規定唯讀", name)
 		}
+	}
+}
+
+// ── 光源(docs/re/204)的端到端:進迷宮 → 走路 → 燒完 → 走出去 ──────────
+
+// TestTorchBurnsWhileWalkingTheMaze 把三個接線一次驗完:
+// 迷宮移動會推進時鐘、時鐘會燒火把、火把燒完能見度換成無光那一欄。
+//
+// ⚠ 這三件事任何一件沒接,症狀都是「什麼都沒發生」——
+// 而「什麼都沒發生」在單元測試裡看起來與「規則不適用」一模一樣。
+func TestTorchBurnsWhileWalkingTheMaze(t *testing.T) {
+	g, _ := newSaveTestGame(t)
+	if err := g.loadParty(1); err != nil {
+		t.Fatal(err)
+	}
+	g.shell.mode = shellPlaying
+	if !g.enterMaze(1, 1) {
+		t.Fatalf("前提不成立:(1,1) 應該是 DG2 的入口")
+	}
+	g.overlay, g.field = "", nil // 入口那一格的腳本戰鬥不在這條測試的範圍
+
+	g.party.VisLit, g.party.VisDark = 3, 1
+	g.party.LightTurns = 2
+	g.party.RefreshLight()
+	if g.party.Visibility != 3 {
+		t.Fatalf("前提不成立:有光時能見度應該是 3,得到 %d", g.party.Visibility)
+	}
+
+	clock0 := g.party.Clock
+	// 走(或轉)三步。⚠ 方向刻意用同一個 —— 第一次是轉身,之後才是位移,
+	// 而**兩者都要推進時鐘**(docs/re/149)。
+	for i := 0; i < 3; i++ {
+		g.stepMaze(maze.North)
+	}
+	if g.party.Clock == clock0 {
+		t.Error("在迷宮裡走了三步,時鐘卻沒動 —— docs/re/149:每個動作一格")
+	}
+	if g.party.LightTurns != 0 {
+		t.Errorf("走三步之後光源回合應該燒完(2 → 0),得到 %d", g.party.LightTurns)
+	}
+	if g.party.Visibility != 1 {
+		t.Errorf("火把熄了能見度應該換成無光那一欄(1),得到 %d", g.party.Visibility)
+	}
+
+	// 走出地城:火把不留著(WRLDMOVE 0x10F6B 兩欄一起寫)。
+	g.party.LightTurns = 40
+	g.level = nil
+	g.syncMazeNum()
+	if g.party.LightTurns != 0 {
+		t.Errorf("回到地面光源回合應該歸零,得到 %d", g.party.LightTurns)
+	}
+	if g.party.MazeNum != world.NotInMaze {
+		t.Errorf("回到地面迷宮編號應該是哨兵 %d,得到 %d",
+			world.NotInMaze, g.party.MazeNum)
+	}
+}
+
+// TestLightSurvivesSaveRoundTrip:在地城裡存檔,火把不能因為讀檔而熄掉。
+//
+// ⚠ 這一條擋的是一個**只在地城裡才會發作**的順序問題:讀檔時迷宮還沒
+// 重新載入,若拿「現在在哪一層」去判斷在不在迷宮,會得到「不在」,
+// 於是火把當場被歸零(地面的規則)。迷宮編號要取自記錄的位移 83 ——
+// 原版的載入常式也是先讀那一欄,再決定要 CHAIN 到哪一支模組。
+func TestLightSurvivesSaveRoundTrip(t *testing.T) {
+	g, _ := newSaveTestGame(t)
+	if err := g.loadParty(1); err != nil {
+		t.Fatal(err)
+	}
+	g.shell.mode = shellPlaying
+	if !g.enterMaze(1, 1) {
+		t.Fatalf("前提不成立:(1,1) 應該是 DG2 的入口")
+	}
+	g.overlay, g.field = "", nil
+	g.party.LightTurns, g.party.VisLit, g.party.VisDark = 37, 4, 2
+	if err := g.save(); err != nil {
+		t.Fatal(err)
+	}
+
+	g2, _ := newSaveTestGame(t) // 全新的 Game,模擬重開程式
+	g2.assets = g.assets
+	g2.savePath = g.savePath
+	g2.hydrateFromSave()
+	if err := g2.loadParty(1); err != nil {
+		t.Fatal(err)
+	}
+	if g2.party.LightTurns != 37 {
+		t.Errorf("讀回來的光源回合是 %d,應為 37 —— 在地城裡讀檔不該把火把吹熄",
+			g2.party.LightTurns)
+	}
+	if g2.party.VisLit != 4 || g2.party.VisDark != 2 {
+		t.Errorf("讀回來的能見度是 %d / %d,應為 4 / 2",
+			g2.party.VisLit, g2.party.VisDark)
+	}
+	if g2.party.Visibility != 4 {
+		t.Errorf("還有光,生效能見度應該是 4,得到 %d", g2.party.Visibility)
+	}
+}
+
+// TestTorchIsSnuffedOnTheSurface:同一個往返在**地面**上結果相反 ——
+// 火把歸零是規則(WRLDMOVE 0x10F6B),不是上面那條測試的反例。
+func TestTorchIsSnuffedOnTheSurface(t *testing.T) {
+	g, _ := newSaveTestGame(t)
+	if err := g.loadParty(1); err != nil {
+		t.Fatal(err)
+	}
+	g.shell.mode = shellPlaying
+	g.party.LightTurns = 37
+	if err := g.save(); err != nil {
+		t.Fatal(err)
+	}
+
+	g2, _ := newSaveTestGame(t)
+	g2.assets = g.assets
+	g2.savePath = g.savePath
+	g2.hydrateFromSave()
+	if err := g2.loadParty(1); err != nil {
+		t.Fatal(err)
+	}
+	if g2.party.LightTurns != 0 {
+		t.Errorf("在地面上光源回合應該是 0,得到 %d", g2.party.LightTurns)
+	}
+	if g2.party.Visibility != world.Daylight(g2.party.Clock.Hour) {
+		t.Errorf("地面上能見度應該是天色 %d,得到 %d",
+			world.Daylight(g2.party.Clock.Hour), g2.party.Visibility)
 	}
 }

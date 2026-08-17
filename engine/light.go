@@ -16,10 +16,17 @@ func (g *Game) syncMazeNum() {
 	g.party.RefreshLight()
 }
 
-// loadLight 把 `GROUPS.DAT` 的三個光源欄位讀進隊伍狀態(位移 45/59/61)。
+// loadLight 把 `GROUPS.DAT` 的四個欄位讀進隊伍狀態(位移 45/59/61/83)。
 // 生效能見度不在記錄裡,由 RefreshLight 現算(docs/re/204 §2)。
+//
+// ⚠ **迷宮編號取自記錄(位移 83),不是取自 `g.level`。** 讀檔的當下
+// 迷宮還沒重新載入(`resumeMaze` 在後面),用 `g.mazeNumber()` 會拿到
+// 「不在迷宮」→ 火把當場被歸零 —— 在地城裡存檔再讀回來,燈就滅了。
+// 原版做的是同一件事:`MENU` 的載入常式先讀位移 83,**再**決定要
+// `CHAIN` 到 `WRLDMOVE` 還是 `MAZEMOVE`(docs/re/204 §1)。
 func (g *Game) loadLight() {
 	g.party.LightTurns = g.group.LightTurns
 	g.party.VisLit, g.party.VisDark = g.group.VisLit, g.group.VisDark
-	g.syncMazeNum()
+	g.party.MazeNum = g.group.MazeNum
+	g.party.RefreshLight()
 }

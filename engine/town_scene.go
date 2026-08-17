@@ -1103,7 +1103,8 @@ func (g *Game) hunt(who int) {
 	// ⚠ 收穫 0 是**失敗**,不是「成功但拿 0 份」——原版分成兩句話
 	// (CAMP:65「The hunt was」+ CAMP:66/67「not successful.」/「successful!」)。
 	if n := town.HuntYield(g.rand); n > 0 {
-		g.group.Provisions += n
+		// ⚠ 夾 255 —— 而且**只夾這一條路徑**(docs/re/218 §1)。
+		g.group.Provisions = town.CapProvisions(g.group.Provisions + n)
 		ts.msg = fmt.Sprintf("%s：這次打獵有收穫!食糧 +%d（共 %d）", c.Name, n, g.group.Provisions)
 	} else {
 		ts.msg = c.Name + "：這次打獵沒有收穫。"

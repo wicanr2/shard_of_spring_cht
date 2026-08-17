@@ -116,10 +116,27 @@ func HuntYield(r combat.Rand) int {
 	return n
 }
 
-// ⚠ **補給品沒有上限**。原版夾在 `ds:6F10`,而那個變數沒有編譯期初值
-// (docs/re/177 §6),靜態讀不到。⛔ 不要自己編一個上限 ——
-// 編一個就等於發明了一條原版沒有的規則,而玩家會撞到它。
-// 要解就是在原版裡把補給品堆到上限看它停在哪。
+// ProvisionCap 是打獵之後補給品的上限(docs/re/218 §1)。
+//
+// `CAMP 0x10306` 執行期寫 `ds:6F10 = 0FFh`,`0x1134D` 用它夾住打獵的結算:
+//
+//	補給品 ← min(補給品 + 收穫, 255)
+//
+// ⚠ **只夾打獵這一條路徑。** `TOWN` 一次都沒有碰 `ds:6F10`
+// (掃描分母 4,419 條指令),所以在酒館買補給品沒有經過這個夾子 ——
+// 照讀到的做,不要推廣到買賣。
+//
+// ⚠ 255 **不是**欄位寬度的自然上限:`GROUPS.DAT` 位移 23 是 2-byte
+// (docs/formats/02),放得下 32767。這是遊戲自己訂的數字。
+const ProvisionCap = 255
+
+// CapProvisions 夾住打獵之後的補給品。
+func CapProvisions(n int) int {
+	if n > ProvisionCap {
+		return ProvisionCap
+	}
+	return n
+}
 
 // LoreFor 回傳辨識這個道具要哪一個 lore 技能;0 = 空格(原版直接回選單)。
 //

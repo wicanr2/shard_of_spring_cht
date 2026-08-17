@@ -210,3 +210,21 @@ func TestIdentifyThreshold(t *testing.T) {
 type fixedRoll int
 
 func (r fixedRoll) Roll(int) int { return int(r) }
+
+// 打獵之後的補給品夾在 255(docs/re/218 §1)。
+//
+// ⚠ 這個夾子**只在打獵那一條路徑上** —— 原版的 TOWN 一次都沒碰 ds:6F10,
+// 所以買補給品不經過它。測試只驗夾子本身,不要推廣到買賣。
+func TestCapProvisions(t *testing.T) {
+	for _, tc := range []struct{ in, want int }{
+		{0, 0},
+		{254, 254},
+		{ProvisionCap, ProvisionCap},
+		{ProvisionCap + 1, ProvisionCap},
+		{9999, ProvisionCap},
+	} {
+		if got := CapProvisions(tc.in); got != tc.want {
+			t.Errorf("CapProvisions(%d) = %d,要 %d", tc.in, got, tc.want)
+		}
+	}
+}

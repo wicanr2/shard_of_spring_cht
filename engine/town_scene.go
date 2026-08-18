@@ -267,7 +267,9 @@ func (g *Game) townKey(k ebiten.Key) {
 				ts.campMode, ts.campWho, ts.msg = '#', i, ""
 			}
 		case ebiten.KeyS:
-			// 手冊 p.38:每人耗 1 份食糧,回 1 HP、5 SP;沒得吃的人扣 1 HP。
+			// 睡一晚耗 **1 份**食糧(整隊,不是每人 —— docs/re/211:
+			// 位移 23 的減法在逐人迴圈**外面**),回 1 HP、5 SP;
+			// 沒得吃的人扣 1 HP。⚠ 手冊 p.38 寫「每人一份」,被 re/211 推翻。
 			// CAMP:55「You are not tired」—— 全隊生命與法力都滿就不用睡。
 			// ⚠ 「累不累」的判準**沒有讀到**,這是引擎的定義;
 			// 擋下來的理由是睡覺要吃食糧,滿血滿魔時睡是純損失。
@@ -512,7 +514,9 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		}
 		// 睡覺的代價與收益原版沒有印,但那幾個數字是規則的一部分
 		// (手冊 p.38),放在指令列下面當註腳。
-		p.Draw(dst, fmt.Sprintf("（睡覺每人耗 %d 份食糧,回 %d 生命 %d 法力；目前 %d 份）",
+		// ⚠ 「整晚」不是「每人」—— 五人隊看到「每人」會以為 20 份只夠睡 4 晚,
+		// 實際上能睡 20 晚(docs/re/211)。
+		p.Draw(dst, fmt.Sprintf("（睡覺整晚耗 %d 份食糧,每人回 %d 生命 %d 法力；目前 %d 份）",
 			town.CampSleepFood, town.CampSleepHP, town.CampSleepSP,
 			g.group.Provisions), x, y)
 		y += lh

@@ -30,6 +30,8 @@ type mazePrompt struct {
 	input string    // 目前累積的輸入
 	names [4]string // 氏族謎題:已經收下的名字
 	idx   int       // 氏族謎題:正在問第幾個(0–3)
+	// msg 是**問句還開著**時要一起顯示的回饋(治療池治好一個人之後的那一句)。
+	msg string
 }
 
 // openPrompt 依事件種類開一個問題;回 false 表示這個種類不問問題。
@@ -155,10 +157,13 @@ func (g *Game) poolKey(k ebiten.Key) {
 	m.HP += got
 	g.group.PoolUses++
 	g.syncMember(*m)
-	g.prompt = nil
+	// ⚠ **問句留著繼續問** —— 原版治好一個人之後再問一次
+	// `Which party member do you wish to heal? (0 exits)`,要按 0 才離開
+	// (2026-08-18 實跑 `workplace/dosbox/shots/q3b-s5.png`)。
+	// 先前治完就關掉,治第二個人得重走一次整段路。
 	// MAZEMOVE:80+81+82「healed」+「 pts.」+「 is」。
 	// ⚠ 英文的繫詞在中文這一句是**體貌標記**不是「是」:`is healed` = 「已治療」。
-	g.overlay = fmt.Sprintf("%s 已治療 %d 點。", m.Name, got)
+	g.prompt.msg = fmt.Sprintf("%s 已治療 %d 點。", m.Name, got)
 }
 
 // riddleKey:Enter 收下目前這一個名字,四個收滿才判(docs/re/162 §3)。
@@ -239,6 +244,10 @@ func (p *mazePrompt) lines() []string {
 		}
 	case promptGem:
 		out = append(out, p.input+strings.Repeat(".", len(maze.GemAnswer)-len(p.input)))
+	}
+	// 治療池治好一個人之後,回饋與問句**同時在畫面上** —— 問句沒有關掉。
+	if p.msg != "" {
+		out = append(out, "", p.msg)
 	}
 	return out
 }

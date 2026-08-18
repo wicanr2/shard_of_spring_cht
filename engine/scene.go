@@ -203,7 +203,7 @@ func (s combatPotionScene) Update(in Input) Transition {
 type inspectScene struct{ g *Game }
 
 func (s inspectScene) Prompt() string {
-	return "↑／↓：換單位　　ESC：關閉　" + inspectScroll
+	return "←／→：換單位　　ESC：關閉　" + inspectScroll
 }
 func (s inspectScene) Name() string         { return "inspect" }
 func (s inspectScene) Handles(Input) bool   { return s.g.field != nil && s.g.inspect != nil }

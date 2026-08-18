@@ -12,7 +12,7 @@ import (
 // 戰場上的單位檢視面板。字面照 `translations/module-text/CMBT.tsv` 第 179–192 列:
 //
 //	Status:   Speed:    Skill:    Strength:   Magical:   Armor rating:
-//	Attacks with:    Seeks>    YES / no    (ESC, ↑↓ scrolls)
+//	Attacks with:    Seeks>    YES / no    (ESC, ←→ scrolls)
 //
 // ⚠ **只顯示,不改任何狀態** —— 這一整支是唯讀的。
 //
@@ -74,9 +74,12 @@ func (g *Game) inspectKey(k ebiten.Key) bool {
 	switch k {
 	case ebiten.KeyEscape:
 		g.inspect = nil
-	case ebiten.KeyUp, ebiten.KeyI:
+	// ⚠ 原版底行寫的是 `(ESC, ←→ scrolls)` —— **左右**不是上下
+	// (2026-08-18 實跑 `workplace/dosbox/shots/i1-inspect.png`)。
+	// 上下鍵一併留著:重製版的小鍵盤配置與原版不同,擋不到任何東西。
+	case ebiten.KeyLeft, ebiten.KeyUp, ebiten.KeyI:
 		g.inspectStep(-1)
-	case ebiten.KeyDown, ebiten.KeyM:
+	case ebiten.KeyRight, ebiten.KeyDown, ebiten.KeyM:
 		g.inspectStep(1)
 	default:
 		return false

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -348,5 +349,36 @@ func TestRandomVictoryDoesNotShowPriestTextEvenWithHillGiant(t *testing.T) {
 		if line == rules.PriestBlessing {
 			t.Errorf("隨機遇到的 Hill Giant 不該被誤判成祭司事件,得到 %v", g.field.Log)
 		}
+	}
+}
+
+// TestEncounterShowsRosterBeforeBoard —— 開戰前先列出這一場的怪。
+//
+// 原版逐行列出每一隻 + `[Press a key]`,才畫戰場(實跑 `q3b-c0.png`)。
+// ⚠ 少了這一步,玩家不知道自己遇上了什麼就直接進戰場。
+func TestEncounterShowsRosterBeforeBoard(t *testing.T) {
+	g := newPlayingGame(t)
+	g.party.Encounter = 0
+	if !g.startCombat() {
+		t.Skip("這個位置挑不到怪(區域候選為空)")
+	}
+	if g.overlay == "" {
+		t.Fatal("開戰前應該先列出怪物清單")
+	}
+	name := ""
+	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
+		if u := g.field.Units[i]; u.Name != "" {
+			name = u.Name
+			break
+		}
+	}
+	if name == "" {
+		t.Fatal("戰場上沒有怪")
+	}
+	if !strings.Contains(g.overlay, name) {
+		t.Errorf("清單裡沒有 %q:%q", name, g.overlay)
+	}
+	if !strings.Contains(g.overlay, "按任意鍵") {
+		t.Errorf("清單要等玩家按鍵:%q", g.overlay)
 	}
 }

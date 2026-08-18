@@ -61,6 +61,10 @@ func (g *Game) startCombat() bool {
 	// WRLDMOVE:44 / MAZEMOVE:90「    C O M B A T !」—— 原版遭遇時的橫幅。
 	g.field.Log = append(g.field.Log, CombatBanner,
 		fmt.Sprintf("遭遇 %s!", g.monsters[pick].Name))
+	// ⚠ 原版**先把這一場的怪逐行列出來**、等玩家按一個鍵,才畫戰場
+	// (2026-08-18 實跑 `q3b-c0.png`:七行 `Kobold` + `[Press a key]`)。
+	// 少了這一步,玩家不知道自己遇上了什麼就直接進戰場。
+	g.overlay = g.encounterRoster()
 	return true
 }
 
@@ -428,9 +432,12 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 		p.Draw(dst, s, x, y)
 		y += lh
 	}
+	// ⚠ **怪物那一側不印數值** —— 原版的戰鬥畫面只有隊伍五行
+	// (`# CHARACTER HP SP`),怪物要按 `?` 一個一個看
+	// (2026-08-18 實跑 `q3b-c1.png`)。印出血量等於白送情報。
 	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
 		if u := f.Units[i]; u.Name != "" {
-			line(unitLine(u) + g.tacticsLine(u))
+			line(monsterLine(u) + g.tacticsLine(u))
 		}
 	}
 	y += lh * 0.5
@@ -517,6 +524,15 @@ func facingName(f combat.Facing) string {
 	return "—" // 朝向 0 = 已離場(docs/re/103)
 }
 
+// monsterLine 是怪物那一側的一行:**只有名字與死活**,沒有數值。
+// 要看數值按 `?`(inspect_scene.go),那是原版唯一的管道。
+func monsterLine(u combat.Unit) string {
+	if !u.Alive() {
+		return ui.PadTo(u.Name, ui.CombatNameCols) + "  倒下"
+	}
+	return ui.PadTo(u.Name, ui.CombatNameCols)
+}
+
 func unitLine(u combat.Unit) string {
 	if !u.Alive() {
 		return ui.PadTo(u.Name, ui.CombatNameCols) + "  倒下"
@@ -573,3 +589,21 @@ func (g *Game) pickMonster(zone int) (int, bool) {
 
 // monsterPickTries 是重擲的上限。原版沒有這個數字(見 pickMonster)。
 const monsterPickTries = 200
+
+// encounterRoster 是開戰前那一頁:這一場有哪些怪。
+//
+// 原版逐行列出每一隻(重複的也逐行印),最後一行是 `[Press a key]`。
+// ⚠ 這裡只會有一行 —— 隻數的算式未解(docs/re/225),一場只放一隻。
+func (g *Game) encounterRoster() string {
+	f := g.field
+	if f == nil {
+		return ""
+	}
+	lines := []string{CombatBanner, ""}
+	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
+		if u := f.Units[i]; u.Name != "" {
+			lines = append(lines, u.Name)
+		}
+	}
+	return strings.Join(append(lines, "", "（按任意鍵）"), "\n") // USERLIB「[Press a key]」
+}

@@ -49,6 +49,12 @@ func (g *Game) monsterCast(i int) bool {
 		return false
 	}
 	t := f.Units[j]
+	// 扣法力:原版在**選目標之前**就扣掉(`CMBT 0x15791`,docs/re/226 §2),
+	// 玩家那一支也是(confirmCastSP)。castAt 兩個呼叫端都先扣好。
+	f.Units[i].SP -= invest
+	if f.Units[i].SP < 0 {
+		f.Units[i].SP = 0
+	}
 	// castAt 用 g.castUnit 當施法者 —— 換成這隻怪,而且**不會**碰
 	// g.actor 那一段(castUnit != actor),所以不影響玩家的回合。
 	g.castUnit = i

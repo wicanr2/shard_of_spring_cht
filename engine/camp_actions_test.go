@@ -472,17 +472,47 @@ func groupSpellGame(t *testing.T, round, mx, my int) (*Game, original.Spell) {
 }
 
 // TestGroupSpellBlockedOnRoundOne:第 1 回合放不出來,而且**不扣法力**。
+//
+// ⚠ 走的是**投入點數那一步**(confirmCastSP)不是 castAt —— 原版的順序是
+// 「擋 → 扣 → 選格」,而扣點發生在游標出現之前(2026-08-18 實跑),
+// 所以閘門必須擋在 confirmCastSP 裡。從 castAt 測會測不到它。
 func TestGroupSpellBlockedOnRoundOne(t *testing.T) {
 	g, s := groupSpellGame(t, 1, 13, 11)
 	sp0 := g.field.Units[combat.PartyBase].SP
-	if g.castAt(s, 10, 13, 11) {
-		t.Error("第 1 回合不該施放成功")
+	g.castSP = &castSPState{spell: s, input: "10"}
+	g.confirmCastSP()
+	if g.cursor != nil {
+		t.Error("第 1 回合不該進到選格階段")
 	}
 	if g.field.Units[combat.PartyBase].SP != sp0 {
 		t.Errorf("被擋下來不該扣法力:%d → %d", sp0, g.field.Units[combat.PartyBase].SP)
 	}
 	if !logHas(g.field.Log, "下一回合") {
 		t.Errorf("要說 CMBT:97–100 那一句,得到 %v", g.field.Log)
+	}
+}
+
+// TestCursorEscRefundsTheInvestment:投完點數就先扣,游標階段按 ESC 退回來。
+//
+// 2026-08-18 實跑量到的(`workplace/dosbox/shots/k1-cursor.png` → `k2-afteresc.png`:
+// 側欄的 SP 13 → 11 → 13),而且**回合沒有被消耗**。
+func TestCursorEscRefundsTheInvestment(t *testing.T) {
+	g, s := groupSpellGame(t, 2, 13, 13) // 第 2 回合,群體傷害的閘門不擋
+	sp0 := g.field.Units[combat.PartyBase].SP
+	g.castSP = &castSPState{spell: s, input: "10"}
+	g.confirmCastSP()
+	if g.cursor == nil {
+		t.Fatal("應該進到選格階段")
+	}
+	if got := g.field.Units[combat.PartyBase].SP; got != sp0-10 {
+		t.Errorf("游標階段的法力 %d,應為先扣掉 10 的 %d", got, sp0-10)
+	}
+	g.cursorKey(ebiten.KeyEscape)
+	if got := g.field.Units[combat.PartyBase].SP; got != sp0 {
+		t.Errorf("ESC 之後的法力 %d,應該退回 %d", got, sp0)
+	}
+	if g.cursor != nil {
+		t.Error("ESC 之後游標該關掉")
 	}
 }
 
@@ -735,12 +765,17 @@ type fixedRoll int
 
 func (f fixedRoll) Roll(int) int { return int(f) }
 
-// TestCombatSpellCanFizzle:戰鬥施法失敗時說 CMBT:141,而且**法力照樣扣**。
+// TestCombatSpellCanFizzle:戰鬥施法失敗時說 CMBT:141,而且**法力不退**。
+//
+// ⚠ 扣點在投入那一步(confirmCastSP),所以這裡先走完那一步再施放 ——
+// 失敗只是不生效,已經扣掉的點數不會回來(只有游標階段的 ESC 會退)。
 func TestCombatSpellCanFizzle(t *testing.T) {
 	g, s := groupSpellGame(t, 2, 14, 12)
 	g.field.Rand = alwaysHighRand{}
 	sp0 := g.field.Units[combat.PartyBase].SP
-	if !g.castAt(s, 1, 13, 12) { // 投入 1 → 效力很低 → 必定失敗
+	g.castSP = &castSPState{spell: s, input: "1"} // 投入 1 → 效力很低 → 必定失敗
+	g.confirmCastSP()
+	if !g.castAt(s, 1, 13, 12) {
 		t.Fatal("失敗也算「這一次施過了」,castAt 應該回 true")
 	}
 	if !logHas(g.field.Log, magic.MsgSpellFails) {

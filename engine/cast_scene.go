@@ -200,10 +200,34 @@ func (g *Game) confirmCastSP() {
 		st.input = ""
 		return
 	}
+	// 群體傷害在第 1 回合施放不出來(docs/re/195 §1)。
+	// ⚠ 擋在**扣法力之前** —— 原版那一段也是先擋再扣。
+	if st.spell.Effect == magic.EffGroupDamage && g.field.Round == 1 {
+		g.field.Log = append(g.field.Log, castNotPrepared)
+		g.castSP = nil
+		return
+	}
+	// ⚠ **投完點數就先扣**(2026-08-18 實跑 `k1-cursor.png`:游標階段側欄
+	// 已經從 13 掉到 11),原版怪物那一支也是先扣再選目標(docs/re/226 §2)。
+	// 游標階段按 ESC 會**退回**(`k2-afteresc.png`:又是 13),而且不消耗回合。
+	caster := &g.field.Units[g.castUnit]
+	caster.SP -= invest
+	if caster.SP < 0 {
+		caster.SP = 0
+	}
 	// 原版:選完法術之後「螢幕會出現一個游標…再按下 SPACE BAR 施行」(手冊 p.34)。
 	u := g.field.Units[g.castUnit]
 	g.cursor = &castCursor{spell: st.spell, invest: invest, x: u.X, y: u.Y}
 	g.castSP = nil
+}
+
+// refundCursorCast 把游標階段取消掉的法力退回去(原版行為,見 confirmCastSP)。
+func (g *Game) refundCursorCast() {
+	cu := g.cursor
+	if cu == nil || g.castUnit < 0 || g.castUnit >= len(g.field.Units) {
+		return
+	}
+	g.field.Units[g.castUnit].SP += cu.invest
 }
 
 // castSPLines 是投入點數那一步要顯示的兩行。
@@ -260,6 +284,7 @@ func (g *Game) cursorKey(k ebiten.Key) bool {
 		}
 		return true
 	case ebiten.KeyEscape:
+		g.refundCursorCast() // 原版會退回(2026-08-18 實跑)
 		g.cursor, g.castList = nil, nil
 		return true
 	default:
@@ -290,12 +315,9 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 	if invest < 1 {
 		invest = 1
 	}
-	// 群體傷害在第 1 回合施放不出來(docs/re/195 §1)。
-	// ⚠ 擋在**扣法力之前** —— 原版那一段也是先擋再扣。
-	if s.Effect == magic.EffGroupDamage && g.field.Round == 1 {
-		g.field.Log = append(g.field.Log, castNotPrepared)
-		return false
-	}
+	// ⚠ 群體傷害的第 1 回合閘門與**扣法力**都在這之前做完了
+	// (玩家走 confirmCastSP、怪物走 monsterCast)—— 原版的順序是
+	// 「擋 → 扣 → 選格」,選格失敗不會把點數退回來,ESC 才會。
 	caster := &g.field.Units[g.castUnit]
 
 	// 目標:游標那一格上的單位。
@@ -359,10 +381,6 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 		}
 	}
 
-	caster.SP -= invest
-	if caster.SP < 0 {
-		caster.SP = 0
-	}
 	// 發動判定:效力 = round(欄4 × 投入 ÷ 欄5),要 ≥ d100 才成功
 	// (docs/re/201)。⚠ **法力照樣扣掉** —— 原版扣點的位置沒讀到,
 	// 這裡沿用引擎既有的順序,是具名的實作決定。

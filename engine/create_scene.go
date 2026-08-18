@@ -133,8 +133,9 @@ func (g *Game) createKey(k ebiten.Key) {
 	}
 }
 
-// createRunes 收玩家打的字。名稱上限 10(docs/re/143 §4:創造的提示是 10,
-// 改名的提示才是 9 —— 記錄的欄位是 10 bytes,以 10 為準)。
+// createRunes 收玩家打的字。名稱上限是 `town.NameMaxRunes` = **9**
+// (roster.go:欄位 10、輸入 9,兩個數字講的不是同一件事;出貨資料裡最長的
+// 兩個名字正好 9 個字元,第 10 個 byte 一律空白)。
 func (g *Game) createRunes(rs []rune) {
 	c := g.create
 	if c == nil || c.step != stepName {

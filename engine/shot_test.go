@@ -129,6 +129,7 @@ func TestShots(t *testing.T) {
 			// Update(掉格時就會),而 startScriptedCombat 每次都重建 *Field
 			// 並重擲怪物生命 —— 拍到的數字因此會隨機器忙碌程度變動,
 			// 兩次跑出來的 PNG 不一樣。這不是遊戲的不確定性,是拍照工具的。
+			g.town = nil // ⚠ 前一張是營地 —— 狀態要收乾淨再開戰
 			if g.field == nil && !g.startScriptedCombat(533) {
 				t.Log("⚠ 腳本戰鬥開不起來")
 			}

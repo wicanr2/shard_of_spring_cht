@@ -470,6 +470,12 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	if ts == nil || ts.mode == townClosed || p == nil {
 		return
 	}
+	// ⚠ 戰鬥開著時讓開 —— 同 drawMaze。營地把訊息框借走(drawCampInPlace),
+	// 而戰場也在那個框裡印日誌:兩邊都畫就是兩層字疊在一起。
+	// 腳本戰鬥可以在紮營的狀態下開始,所以這不是假想的情況。
+	if g.field != nil {
+		return
+	}
 	lh := p.LineHeight()
 	x := float64(layout.View.X + ui.PanelPad)
 	y := float64(layout.View.Y + ui.PanelPad)

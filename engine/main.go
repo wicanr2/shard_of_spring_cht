@@ -81,6 +81,8 @@ type Game struct {
 	// M5:迷宮(docs/spec/08)
 	assets      string
 	mazeData    []original.MazeEntry
+	// quitAsk:世界地圖按了 `Q`,正在問「你確定要離開嗎」(scene.go)。
+	quitAsk bool
 	// dungeonNames:入口編號 → 地城名(docs/re/222)。
 	dungeonNames []string
 	mazeTiles   map[int]*ebiten.Image

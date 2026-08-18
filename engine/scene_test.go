@@ -676,3 +676,39 @@ func TestMazeStepTriggersEncounter(t *testing.T) {
 	}
 	t.Error("在地城裡走了四步,遭遇倒數是 0 卻沒有開戰")
 }
+
+// TestWorldQuitAsksThenReturnsToMenu —— 世界地圖的 `Q)uit`。
+//
+// 原版的小鍵盤模板右下角印著 `[Q]`,按下去問一句確認。
+// ⚠ 先前完全沒有這條路 —— 玩到一半要換一支隊伍只能關掉程式重開。
+// ⚠ 問句掛著的時候方向鍵不該讓隊伍走動(這一條先前寫在方向鍵**後面**)。
+func TestWorldQuitAsksThenReturnsToMenu(t *testing.T) {
+	g := newPlayingGame(t)
+	x, y := g.party.X, g.party.Y
+
+	press(t, g, ebiten.KeyQ)
+	if !g.quitAsk {
+		t.Fatal("按 Q 應該問一句確認")
+	}
+	// 確認期間按方向鍵不該走動。
+	for i := 0; i < 4; i++ {
+		press(t, g, ebiten.KeyUp)
+	}
+	if g.party.X != x || g.party.Y != y {
+		t.Errorf("確認期間隊伍走動了:(%d,%d) → (%d,%d)", x, y, g.party.X, g.party.Y)
+	}
+	// N = 取消。
+	press(t, g, ebiten.KeyN)
+	if g.quitAsk {
+		t.Error("按 N 應該取消")
+	}
+	// Y = 回主選單。
+	press(t, g, ebiten.KeyQ)
+	press(t, g, ebiten.KeyY)
+	if g.quitAsk {
+		t.Error("按 Y 之後不該還掛著問句")
+	}
+	if g.shell == nil || g.shell.mode != shellMainMenu {
+		t.Errorf("按 Y 應該回主選單,得 %v", g.shell)
+	}
+}

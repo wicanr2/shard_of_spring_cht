@@ -118,6 +118,13 @@ func (g *Game) townKey(k ebiten.Key) {
 	ts := g.town
 	switch ts.mode {
 	case townBuildings:
+		// `#) inspect character` —— 提示列上一直寫著,而先前**沒有分支收它**:
+		// `KeyDigit1 − KeyA = 44`,永遠落在建築字母的範圍外。
+		// ⚠ 提示列承諾了一個不存在的功能,而畫面上看不出是缺的。
+		if n := countKey(k); n >= 1 && n <= len(g.members) {
+			ts.campMode, ts.campWho, ts.msg = '#', n-1, ""
+			return
+		}
 		if i := int(k - ebiten.KeyA); i >= 0 && i < len(ts.shops) {
 			// ⚠ `talked` 要跟著重置 —— 走出酒館再進來,傳聞要重新問一次,
 			// 不然那句「T)與其他冒險者交談」在第二次進門時又變成擺設。
@@ -494,6 +501,14 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		}
 		y += lh * 0.5
 		p.Draw(dst, "Z) 營地", x, y)
+		// `#` 查看角色:借營地那一套角色卡(campLines),ESC 收起來。
+		if ts.campMode == '#' {
+			y += lh
+			for _, ln := range g.campLines(ts) {
+				y += lh
+				p.Draw(dst, ln, x, y)
+			}
+		}
 
 	case townShop:
 		// WRLDMOVE:42「Entering ...」—— 原版走進一間店時印的那一句。

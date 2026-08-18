@@ -476,6 +476,11 @@ func (s rosterHotkey) Handles(in Input) bool {
 	if s.g.roster != nil && s.g.roster.open {
 		return false
 	}
+	// ⚠ `Q)uit` 的確認句掛著時也要讓開 —— 那句問的是 (Y/N),
+	// 而這個熱鍵會把 `N` 吃掉,於是「取消」變成「開名冊」。
+	if s.g.quitAsk {
+		return false
+	}
 	playing := s.g.shell == nil || s.g.shell.mode == shellPlaying
 	return playing && in.Pressed(ebiten.KeyN)
 }
@@ -588,6 +593,13 @@ func (s townScene) Update(in Input) Transition {
 	// 咒語輸入要先收字元 —— 按鍵那一圈會把 Enter 當成送出。
 	s.g.utterRunes(in.Runes)
 	for _, k := range in.Keys {
+		// ⚠ 建築清單上開著角色卡時,ESC 先收卡片 —— 這一層要先問,
+		// 因為離開城鎮是在這裡做的,`townKey` 根本輪不到。
+		if k == ebiten.KeyEscape && s.g.town.mode == townBuildings &&
+			s.g.town.campMode == '#' {
+			s.g.town.campMode, s.g.town.campWho = 0, -1
+			continue
+		}
 		if k == ebiten.KeyEscape && s.g.town.mode == townBuildings {
 			s.g.town = nil
 			s.g.saveMsg = "隊伍離開了……" // TOWN:7「The party leaves..」
@@ -659,8 +671,14 @@ func (s mazeScene) Update(in Input) Transition {
 type worldScene struct{ g *Game }
 
 func (s worldScene) Prompt() string {
-	return "方向鍵／1234：移動　　C：紮營　　P：資訊　　N：名冊　　S：存檔　　A：另存新檔"
+	if s.g.quitAsk {
+		return quitPrompt
+	}
+	return "方向鍵／1234：移動　　C：紮營　　P：資訊　　N：名冊　　S：存檔　　A：另存新檔　　Q：離開"
 }
+
+// quitPrompt 是原版 `Q)uit` 的確認句(實跑 `r3r3-Q.png`)。
+const quitPrompt = "你確定要離開嗎?(Y/N)"
 func (s worldScene) Name() string       { return "world" }
 func (s worldScene) Handles(Input) bool { return true }
 
@@ -743,6 +761,24 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 }
 func (s worldScene) Update(in Input) Transition {
 	g := s.g
+	// Q)uit —— 原版的小鍵盤模板右下角就印著 `[Q]`,按下去問一句確認
+	// (`Are you really sure you wish to Quit (Y/N) ?`),`Y` 回主選單。
+	// ⚠ 先前**完全沒有這條路** —— 玩到一半想換一支隊伍只能關掉程式重開。
+	// ⚠ **要擺在方向鍵前面**:問句掛著的時候按方向鍵不該讓隊伍走動。
+	if g.quitAsk {
+		switch {
+		case in.Pressed(ebiten.KeyY):
+			g.quitAsk = false
+			g.openMainMenu()
+		case in.Pressed(ebiten.KeyN), in.Pressed(ebiten.KeyEscape):
+			g.quitAsk = false
+		}
+		return TransitionStay
+	}
+	if in.Pressed(ebiten.KeyQ) {
+		g.quitAsk = true
+		return TransitionStay
+	}
 	for key, d := range dirs {
 		if !in.Pressed(key) {
 			continue

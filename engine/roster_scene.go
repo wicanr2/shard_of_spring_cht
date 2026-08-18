@@ -261,12 +261,15 @@ func (g *Game) rosterInfo() {
 			out = append(out, fmt.Sprintf("隊伍 #%d　（空）", n))
 			continue
 		}
-		where := fmt.Sprintf("目前位於 (%d,%d)", grp.WorldX, grp.WorldY)
-		if grp.MazeX > 0 || grp.MazeY > 0 {
-			where += fmt.Sprintf("　地城： (%d,%d)", grp.MazeX, grp.MazeY)
+		// ⚠ 原版印的是**月份名**與**地點名**,不是編號與座標
+		// (`Saved in the month of the Spirit` / `Currently in the Wilderness`)。
+		// 座標是內部狀態,原版從不對玩家顯示;「日」原版也沒有這一欄。
+		month := monthName(grp.Month)
+		if month == "" {
+			month = fmt.Sprintf("第 %d 月", grp.Month) // 13 月以上沒有名字
 		}
 		out = append(out, fmt.Sprintf("隊伍 #%d　金幣：%.0f　食糧：%d", n, grp.Gold, grp.Provisions))
-		out = append(out, fmt.Sprintf("　　存檔於月份 %d 日 %d　%s", grp.Month, grp.Day, where))
+		out = append(out, fmt.Sprintf("　　存檔於%s　目前位於%s", month, g.groupPlace(grp)))
 	}
 	// 原版的資訊頁還有一段「誰在哪一隊」的兩欄表(CHARUTIL:69)。
 	out = append(out, "", rosterPartyHeader)
@@ -604,4 +607,23 @@ func rosterColumns(head string) []float64 {
 		prevSpace = false
 	}
 	return out
+}
+
+// groupPlace 回傳一支隊伍存檔時人在哪裡,照原版的說法:
+// 在地城裡印**地城名**,否則印 `Wilderness`(野外)。
+//
+// ⚠ 存檔只記迷宮**檔號**(GROUPS.DAT 位移 83),而入口 0/1/4/6 共用 DG1、
+// 7–11 共用 DG6 —— 檔號還原不出入口編號,所以共用檔號的地城只能取第一個
+// 相符的名字(同 maze_scene.go 的 resumeMaze,docs/re/222 §4)。
+func (g *Game) groupPlace(grp original.Group) string {
+	const notInMaze = 99 // GROUPS.DAT 位移 83:99 = 不在迷宮(docs/re/169)
+	if grp.MazeNum != notInMaze && grp.MazeNum != 0 {
+		for i, e := range g.mazeData {
+			if e.MazeFile == grp.MazeNum && i < len(g.dungeonNames) {
+				return g.dungeonNames[i]
+			}
+		}
+		return fmt.Sprintf("地城 DG%d", grp.MazeNum)
+	}
+	return "野外" // CHARUTIL:`Wilderness`
 }

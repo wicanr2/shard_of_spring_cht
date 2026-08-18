@@ -395,3 +395,34 @@ func TestTavernRumorNeedsTalking(t *testing.T) {
 		t.Error("重新進店之後 talked 應該重置")
 	}
 }
+
+// TestTownBuildingsInspectByNumber —— 建築清單按數字要真的開角色卡。
+//
+// 提示列一直寫著「# 查看角色」,而**沒有分支收數字鍵**
+// (`KeyDigit1 − KeyA = 44`,永遠落在建築字母的範圍外)。
+// ⚠ 提示列承諾了一個不存在的功能 —— 這一類「說了做不到」比「沒說」更糟。
+func TestTownBuildingsInspectByNumber(t *testing.T) {
+	g := newPlayingGame(t)
+	if len(g.townSites) == 0 || len(g.members) == 0 {
+		t.Skip("沒有城鎮或隊員")
+	}
+	s := g.townSites[0]
+	if !g.enterTown(s.X, s.Y) {
+		t.Fatal("進不了城鎮")
+	}
+	press(t, g, ebiten.KeyDigit1)
+	if g.town.campMode != '#' || g.town.campWho != 0 {
+		t.Fatalf("按 1 應該開第一位的角色卡,得 mode=%q who=%d",
+			g.town.campMode, g.town.campWho)
+	}
+	if lines := g.campLines(g.town); len(lines) == 0 {
+		t.Error("角色卡沒有內容")
+	}
+	press(t, g, ebiten.KeyEscape)
+	if g.town.campMode == '#' {
+		t.Error("ESC 應該把角色卡收起來")
+	}
+	if g.town == nil || g.town.mode != townBuildings {
+		t.Error("ESC 收角色卡不該順便離開城鎮")
+	}
+}

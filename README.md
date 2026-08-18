@@ -21,7 +21,9 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | ![世界地圖](docs/images/03-world.png) | ![城鎮](docs/images/04-town.png) |
 | **世界地圖** —— 121 × 103 格,9×9 視野,圖塊 4× 整數放大 | **城鎮**(翠綠村)—— 建築清單、商店、旅店、酒館、訓練所、治療所 |
 | ![地城](docs/images/05-maze.png) | ![戰鬥](docs/images/06-combat.png) |
-| **地城** —— 六座迷宮、能見度裁視野、事件表 | **最終戰** —— 巨龍 ×2 + 希瑞雅妮。這個組成是[反組譯](docs/re/180-scripted-fight-monster-list.md)與[通關紀錄](docs/re/179-final-battle-composition-from-playthrough.md)**兩條獨立證據鏈**得到的同一個答案 |
+| **地城** —— 六座迷宮、能見度裁視野、事件表。左上角的地城名對照[入口表](docs/re/222-dungeon-names-by-entry.md) | **最終戰** —— 巨龍 ×2 + 希瑞雅妮。這個組成是[反組譯](docs/re/180-scripted-fight-monster-list.md)與[通關紀錄](docs/re/179-final-battle-composition-from-playthrough.md)**兩條獨立證據鏈**得到的同一個答案 |
+| ![營地](docs/images/07-camp.png) | |
+| **野外營地** —— 地圖留著、隊伍那一格換成帳篷、十一個指令開在右下角那個框,照原版的版面 | |
 
 > ⚠ **截圖與 `assets/` 都含原版美術。** 這讓「repo 維持 private」
 > ([`CLAUDE.md`](CLAUDE.md) §10)變成整個專案**最吃重的一條** ——
@@ -67,7 +69,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 
 | 階段 | 狀態 |
 |---|---|
-| **逆向工程** | ✅ 結束。[`CLAUDE.md`](CLAUDE.md) §2.2 看板的**十二個子系統全部 RE-DONE**,規格標 READY。`docs/re/` 217 篇筆記 |
+| **逆向工程** | ✅ 結束。[`CLAUDE.md`](CLAUDE.md) §2.2 看板的**十二個子系統全部 RE-DONE**,規格標 READY。`docs/re/` 222 篇筆記 |
 | **引擎** | ✅ 規則全部實作:世界地圖、地城、戰鬥、戰場、法術、道具、城鎮、商店、營地、名冊、創角、訓練、治療、經驗、技能點、音樂。16,116 行 Go + 11,441 行測試 |
 | **繁體中文化** | ✅ 資料檔 439 段(怪物 74 / 法術 33 / 道具 57 / 地城 87)＋ 模組內字串 **381 / 381 全部譯完並接回引擎** |
 | **打包發行** | ✅ `v0.2.0`:Linux **AppImage** / Windows zip / macOS universal,見 [Releases](../../releases)。`tools/release.sh` 一鍵三平台 |
@@ -94,9 +96,12 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | 印表機輸出 | `P)rint` 走印表機 | 改成畫面顯示 |
 | 遊戲資料 | 隨磁片附帶 | **不附帶**。玩家自備合法原版,跑一次轉換器 |
 
-還有一類差異是**誠實標記**而非模仿:少數規則的細節沒有讀到(戰場高度、
-法術等級的取整方式等),引擎用**具名假設**頂著,並且**在遊戲畫面上標出來** ——
+還有一類差異是**誠實標記**而非模仿:少數細節沒有讀到的地方,引擎用**具名假設**
+頂著,並且**在遊戲畫面上標出來**(例如商店的「原版沒有賣出功能」)——
 逐項見 [worklist](docs/spec/14-remake-worklist.md) §10。
+那張表現在只剩一項真的關不掉,其餘四項在 [`re/218`](docs/re/218-four-named-assumptions-audited.md)
+逐條查證後升級成量到的值,**其中一項的問題本身不成立** ——
+原版根本沒有「法術等級」這個量,是規格多寫了一個中間量。
 
 ### 怎麼跑
 

@@ -81,10 +81,21 @@ case "${1:-}" in
     # ⚠ 順手建一個空的 .Xauthority:少了它 ebiten 的 XGB 每次都會噴兩行
     # 「Could not get authority info」——無害,但它出現在每一次 test 輸出裡,
     # 會蓋掉真正的訊息,也讓人以為 X 沒接上。
+    # ⚠ **使用者自己指定了套件就不要再補 `./...`。** 兩個都給的話 go 會把
+    # 主套件跑**兩次**,而旗標只套到第一組 —— 第二次沒有 `-run`,
+    # 於是 `-run TestShots` 看起來像失效:整份測試照跑,而 `TestShots` 的
+    # `RunGame` 結束之後,後面每一支測試的 `NewImage` 都 panic
+    # (`ebiten: NewImage cannot be called after RunGame finishes`)。
+    # 症狀是**一支毫不相干的測試紅了**,看不出跟參數有關。
+    PKGS=./...
+    for a in "$@"; do
+      case "$a" in .|./*|/*) PKGS=""; break;; esac
+    done
     run sh -c ': > "$HOME/.Xauthority"
                Xvfb :99 -screen 0 640x480x24 -nolisten tcp >/dev/null 2>&1 &
                for i in $(seq 1 50); do [ -e /tmp/.X11-unix/X99 ] && break; sleep 0.1; done
-               DISPLAY=:99 go test ./... "$@"' -- "$@"
+               PKGS="$1"; shift
+               DISPLAY=:99 go test $PKGS "$@"' -- "$PKGS" "$@"
     ;;
   tidy)
     shift

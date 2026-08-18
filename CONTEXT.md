@@ -31,7 +31,7 @@
 > ### ⭐ 新 session 的前三步
 >
 > 1. 讀 [`docs/spec/14-remake-worklist.md`](docs/spec/14-remake-worklist.md) **§0.1 下一步** —— 那裡寫著現在該做哪一項、為什麼是它
-> 2. 跑一次 `tools/go.sh test -count=1 ./...`,**再跑一次 `-tags eten`**
+> 2. 跑一次 `tools/go.sh test -count=1`,**再跑一次 `-tags eten`**
 >    (⚠ **一定要帶 `-count=1`**,沒帶會拿到 `ok (cached)` 的假綠燈;
 >    ⚠ 兩個 build tag 的字型欄寬不同,只跑一個會讓另一個版本的提示列被切掉而測試全綠)
 > 3. **動手前**回 [`CLAUDE.md`](CLAUDE.md) §6「下手前的三十秒檢查」查一遍 `docs/` 與 `tools/`

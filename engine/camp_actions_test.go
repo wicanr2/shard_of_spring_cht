@@ -949,3 +949,42 @@ func TestCampInTownIsIndoors(t *testing.T) {
 		t.Error("城鎮裡紮營要算室內(打不到獵)")
 	}
 }
+
+// TestCampInPlaceKeepsTheMapAndDrawsTheTent —— 野外／地城紮營時地圖留著,
+// 隊伍那一格換成帳篷(原版 `workplace/qa/k0-camp.png`)。
+//
+// ⚠ 擋兩件事:
+//  1. 帳篷那一段(WALKDRAW 段 0)一度**沒有任何呼叫端** —— 圖轉出來了、
+//     `tent()` 也寫好了,只是沒有人畫。「有實作」不等於「接上了」。
+//  2. 城鎮裡的營地**不能**走這條路(沒有地圖可留),否則選單會畫到
+//     訊息框而視野一片空白。
+func TestCampInPlaceKeepsTheMapAndDrawsTheTent(t *testing.T) {
+	g := newPlayingGame(t)
+	g.makeCamp(true)
+	if !g.campInPlace() {
+		t.Fatal("野外紮營應該算「紮在地圖上」")
+	}
+	if g.walk != nil && g.walkArt(g.walk) != g.walk.tent() {
+		t.Error("野外紮營時世界地圖那一格應該畫帳篷(段 0)")
+	}
+	if g.walkMaze != nil && g.walkArtMaze() != g.walkMaze.tent() {
+		t.Error("紮營時地城那一格也應該畫帳篷")
+	}
+	g.town = nil
+	if g.walk != nil && g.walkArt(g.walk) == g.walk.tent() {
+		t.Error("沒紮營的時候不該畫帳篷")
+	}
+
+	// 城鎮裡的營地走另一條路。
+	if len(g.townSites) == 0 {
+		t.Skip("沒有城鎮座標表")
+	}
+	s := g.townSites[0]
+	if !g.enterTown(s.X, s.Y) {
+		t.Fatal("進不了城鎮")
+	}
+	press(t, g, ebiten.KeyZ)
+	if g.campInPlace() {
+		t.Error("城鎮裡的營地沒有地圖可留,不該走 in-place 那條路")
+	}
+}

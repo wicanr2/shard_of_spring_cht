@@ -566,6 +566,15 @@ func (s townScene) Prompt() string {
 			return "選購道具,ESC離開,任意鍵翻頁。"
 		}
 		return "選購道具,ESC離開。"
+	case townCamp:
+		// ⚠ 營地開在三個地方(城鎮、野外、地城),而 ESC 只有在城鎮
+		// 才是「回建築清單」—— 另外兩處回的是地圖(town_scene.go 的
+		// KeyEscape 分支)。提示列一律寫「離開城鎮」的話,在野外紮營的玩家
+		// 會以為按下去會被傳回城裡。
+		if g.town.name == "" {
+			return "字母：指令　#：查看角色　ESC：拔營" // CAMP:19「Breaking Camp..」
+		}
+		return "字母：指令　#：查看角色　ESC：回建築清單"
 	}
 	return townGenericPrompt
 }
@@ -663,7 +672,10 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 	g := s.g
 	inCombat := g.field != nil
 	inMaze := g.level != nil && !inCombat
-	inTown := g.town != nil && g.town.mode != townClosed && !inCombat && !inMaze
+	// ⚠ **野外紮營不算「進了城」** —— 原版紮營時地圖照畫,隊伍那一格
+	// 換成帳篷(camp_entry.go 的 campInPlace)。
+	inTown := g.town != nil && g.town.mode != townClosed && !inCombat && !inMaze &&
+		!g.campInPlace()
 	inRoster := (g.roster != nil && g.roster.open) || g.create != nil
 
 	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
@@ -711,7 +723,7 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 		// 沒有它玩家按一次方向鍵不會動、卻不知道為什麼(docs/spec/14 §12-C)。
 		c := float64(layout.View.X + half*layout.TileDst)
 		r := float64(layout.View.Y + half*layout.TileDst)
-		if !drawWalk(dst, g.walk.seg(int(g.party.Facing), g.walkGait), c, r) {
+		if !drawWalk(dst, g.walkArt(g.walk), c, r) {
 			// 圖沒轉出來就退回白框 —— ⛔ 不拿別的圖冒充。
 			vector.StrokeRect(dst, float32(c), float32(r),
 				layout.TileDst, layout.TileDst, 3, cgaWhite, false)

@@ -68,3 +68,24 @@ func TestWrapLosesNothing(t *testing.T) {
 		}
 	}
 }
+
+// TestWrapKeepsHardBreaks —— `\n` 是硬斷行。
+//
+// 擋的是 `P)` 隊伍資訊那一頁的壞法:呼叫端用 `\n` 接好五行交給覆蓋層,
+// 而覆蓋層只會折行不會斷行 —— 五行全部畫在同一條基線上。
+func TestWrapKeepsHardBreaks(t *testing.T) {
+	got := Wrap("第 4 時　第 1 日\n靈月(Spirit)\n能見度 = 3\n\n（按任意鍵）", 30)
+	want := []string{"第 4 時　第 1 日", "靈月(Spirit)", "能見度 = 3", "", "（按任意鍵）"}
+	if len(got) != len(want) {
+		t.Fatalf("折出 %d 行 %q,應為 %d 行", len(got), got, len(want))
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Errorf("第 %d 行 %q,應為 %q", i, got[i], want[i])
+		}
+	}
+	// 硬斷行之後,每一段仍然照欄寬折 —— 兩件事要同時成立。
+	if n := len(Wrap("一二三四五六七八九十\n甲乙", 10)); n != 3 {
+		t.Errorf("折出 %d 行,應為 3(第一段佔兩行 + 第二段一行)", n)
+	}
+}

@@ -319,9 +319,15 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	// 只是顏色不對。
 	c := float64(layout.View.X + half*layout.TileDst)
 	r := float64(layout.View.Y + half*layout.TileDst)
-	if !drawWalk(dst, g.walkMaze.seg(int(g.mazeState.Facing), g.walkGait), c, r) {
+	if !drawWalk(dst, g.walkArtMaze(), c, r) {
 		vector.StrokeRect(dst, float32(c), float32(r),
 			layout.TileDst, layout.TileDst, 3, cgaWhite, false)
+	}
+
+	// ⚠ 紮營時那個框借給營地選單(town_scene.go 的 drawCampInPlace)——
+	// 兩邊都畫的話,兩層字直接疊在一起(QA 2026-08-18)。
+	if g.campInPlace() {
+		return
 	}
 
 	// ⚠ 自己斷成兩行,不要靠折行 —— 這段固定超過訊息面板的 30 欄,

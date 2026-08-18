@@ -114,9 +114,20 @@ const noLineEnd = "「『（〔【《〈$#([{"
 // 斷點若讓標點落到行首、或讓開括號落到行尾,就把前一個字一起推到下一行。
 //
 // ⚠ **英文與數字視為不可分割**,不在字母中間斷行(§4 中英混排第 1 點)。
+//
+// ⚠ **`\n` 是硬斷行**。少了這一段,呼叫端用 `\n` 接起來的多行內容
+// (`P)` 隊伍資訊那一頁)會被當成一長串,全部疊在同一條基線上 ——
+// 畫面上是一團糊掉的字,而不是「少了幾行」那種一眼看得出來的壞法。
 func Wrap(s string, cols int) []string {
 	if cols <= 0 {
 		return []string{s}
+	}
+	if strings.Contains(s, "\n") {
+		var out []string
+		for _, para := range strings.Split(s, "\n") {
+			out = append(out, Wrap(para, cols)...)
+		}
+		return out
 	}
 	rs := []rune(s)
 	var out []string

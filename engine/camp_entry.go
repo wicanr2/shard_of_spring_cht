@@ -23,3 +23,13 @@ func (g *Game) makeCamp(wild bool) {
 		msg:  "紮營中……", // WRLDMOVE:43 / MAZEMOVE:89
 	}
 }
+
+// campInPlace 回傳「這個營地紮在地圖上」——野外或地城,不是城鎮裡。
+//
+// 原版紮營時**地圖仍然畫著**,隊伍那一格換成帳篷,選單開在右下角那個框
+// (2026-08-18 對照原版截圖 `workplace/qa/k0-camp.png`)。城鎮裡的營地
+// 沒有地圖可留,走的是原本那條「整個視野換成選單」的路。
+func (g *Game) campInPlace() bool {
+	return g.town != nil && g.town.mode == townCamp && g.town.name == ""
+}
+

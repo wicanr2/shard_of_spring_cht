@@ -467,6 +467,12 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 	x := float64(layout.View.X + ui.PanelPad)
 	y := float64(layout.View.Y + ui.PanelPad)
 
+	// 野外／地城的營地把選單畫在右下角那個框,視野留給地圖(campInPlace)。
+	if g.campInPlace() {
+		g.drawCampInPlace(dst)
+		return
+	}
+
 	switch ts.mode {
 	case townBuildings:
 		p.Draw(dst, "歡迎來到……"+ts.name, x, y) // WRLDMOVE:40
@@ -498,6 +504,13 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			pageLine += "　【更多】" // TOWN:11「[MORE]」
 		}
 		p.Draw(dst, pageLine, x, y+lh*0.5)
+		y += lh * 2
+		for _, u := range town.ShopUnresolved {
+			for _, w := range ui.Wrap("⚠ "+u, 58) {
+				p.Draw(dst, w, x, y)
+				y += lh
+			}
+		}
 
 	case townInn, townHealer, townTavern, townTrainer:
 		p.Draw(dst, ts.shop.Name+"　"+ts.shop.Kind.String(), x, y)
@@ -540,9 +553,11 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			}
 		}
 		y += lh
-		for _, u := range town.Unresolved {
-			p.Draw(dst, "⚠ "+u, x, y)
-			y += lh
+		for _, u := range town.CampUnresolved {
+			for _, w := range ui.Wrap("⚠ "+u, 58) {
+				p.Draw(dst, w, x, y)
+				y += lh
+			}
 		}
 	}
 
@@ -1181,4 +1196,64 @@ func (g *Game) rebuildMembers() {
 		}
 	}
 	g.members = out
+}
+
+// campMenu 是營地的十一個指令 + ESC,排成兩欄。
+//
+// 原版是**一行一個指令**的十二行(`workplace/qa/k0-camp.png`),而那個框
+// 在重製版只有九行 —— 十二行放不下,所以併成兩欄六行。
+// ⚠ 字面與順序照 `CAMP.tsv` 第 7–18 列,括號後面不留空格:
+// 括號前那個字母就是要按的鍵。
+var campMenu = [][2]string{
+	{"S)睡覺", "#)查看角色"},
+	{"P)列印角色卡", "C)施放法術"},
+	{"R)調整隊形", "T)交易"},
+	{"D)丟棄", "E)裝備"},
+	{"H)打獵", "I)鑑定"},
+	{"U)使用道具", "ESC離開"},
+}
+
+// campCol2 是第二欄的起點(距框內左緣的像素)。
+// ⚠ 用**固定座標**分欄,不要靠補空白 —— 向量字是比例字,
+// 補出來的欄位會參差(internal/render/painter.go 的 Advance)。
+const campCol2 = 150
+
+// drawCampInPlace 畫野外／地城的營地:地圖留著,選單進右下角那個框。
+//
+// ⚠ 這個框平常是訊息面板。營地把它借走,訊息接在選單底下 ——
+// 先前地圖與營地畫面**同時畫**,兩層字疊在一起(QA 2026-08-18)。
+func (g *Game) drawCampInPlace(dst *ebiten.Image) {
+	ts, p := g.town, g.panel
+	lh := p.LineHeight()
+	x := float64(layout.Message.X + ui.PanelPad)
+	y := float64(layout.Message.Y + ui.PanelPad)
+	bottom := float64(layout.Message.Bottom()) - ui.PanelPad
+
+	// CAMP:6「Camp:」。睡覺的單價併在標題那一行 —— 框只有九行,
+	// 單獨一行放不下,而那個數字是按 S 之前唯一要看的。
+	p.Draw(dst, fmt.Sprintf("營地：　（睡一晚 %d 份食糧）", town.CampSleepFood), x, y)
+	y += lh
+	for _, row := range campMenu {
+		p.Draw(dst, row[0], x, y)
+		p.Draw(dst, row[1], x+campCol2, y)
+		y += lh
+	}
+
+	var rest []string
+	if ts.campMode != 0 {
+		rest = append(rest, g.campLines(ts)...)
+	}
+	if ts.msg != "" {
+		rest = append(rest, ui.Wrap(ts.msg, layout.MsgCols)...)
+	}
+	if len(rest) > 0 {
+		y += lh * 0.5
+	}
+	for _, ln := range rest {
+		if y+lh > bottom {
+			return
+		}
+		p.Draw(dst, ln, x, y)
+		y += lh
+	}
 }

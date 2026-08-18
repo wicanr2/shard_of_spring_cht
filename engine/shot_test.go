@@ -117,6 +117,13 @@ func TestShots(t *testing.T) {
 			g.enterMaze(e.WorldX, e.WorldY)
 			g.overlay = ""
 		}},
+		{"07-camp", func(g *Game) {
+			// 野外紮營:地圖留著、隊伍那一格是帳篷、選單在右下角
+			// (原版 workplace/qa/k0-camp.png 的樣子)。
+			g.level, g.town = nil, nil
+			g.party.X, g.party.Y = 52, 60
+			g.makeCamp(true)
+		}},
 		{"06-combat", func(g *Game) {
 			// ⚠ **setup 必須冪等。** ebiten 可能在一次 Draw 之前跑好幾次
 			// Update(掉格時就會),而 startScriptedCombat 每次都重建 *Field

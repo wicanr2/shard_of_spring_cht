@@ -95,3 +95,23 @@ func drawWalk(dst *ebiten.Image, img *ebiten.Image, px, py float64) bool {
 	dst.DrawImage(img, op)
 	return true
 }
+
+// walkArt 回傳世界地圖那一格要畫的圖:紮營中是帳篷,否則是朝向對應的人形。
+//
+// ⚠ 帳篷那一段(段 0)在此之前**沒有任何呼叫端** —— 圖轉出來了、
+// 函式寫好了,只是沒有人畫它。「有實作」不等於「接上了」。
+func (g *Game) walkArt(w walkArt) *ebiten.Image {
+	if g.campInPlace() {
+		return w.tent()
+	}
+	return w.seg(int(g.party.Facing), g.walkGait)
+}
+
+// walkArtMaze 是地城那一份(另一組色盤,docs/re/219 §3)。
+// 朝向讀的是 `mazeState.Facing`,與世界地圖分開存。
+func (g *Game) walkArtMaze() *ebiten.Image {
+	if g.campInPlace() {
+		return g.walkMaze.tent()
+	}
+	return g.walkMaze.seg(int(g.mazeState.Facing), g.walkGait)
+}

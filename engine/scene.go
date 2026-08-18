@@ -674,7 +674,9 @@ func (s worldScene) Prompt() string {
 	if s.g.quitAsk {
 		return quitPrompt
 	}
-	return "方向鍵／1234：移動　　C：紮營　　P：資訊　　N：名冊　　S：存檔　　A：另存新檔　　Q：離開"
+	// ⚠ 欄寬有上限(倚天字型下 80 欄),加一項就要縮別的 ——
+	// `TestEveryScenePrompt` 擋的就是「畫到框外壓住別的面板」。
+	return "方向鍵／1234：移動　C：紮營　P：資訊　N：名冊　S：存檔　A：另存　Q：離開"
 }
 
 // quitPrompt 是原版 `Q)uit` 的確認句(實跑 `r3r3-Q.png`)。

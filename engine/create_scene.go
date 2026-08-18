@@ -24,9 +24,12 @@ type createStep int
 const (
 	stepRace createStep = iota
 	stepAdjust
-	stepKeep // CHARUTIL:33「Do you wish to keep this character (Y/N) ?」
 	stepClass
 	stepName
+	// stepKeep 是**最後一步**:CHARUTIL:33「Do you wish to keep this
+	// character (Y/N) ?」。原版問在命名之後,印在整個畫面最下方 ——
+	// 看得到成品才決定留不留(2026-08-18 實跑 `r3e4-name.png`)。
+	stepKeep
 )
 
 type createState struct {
@@ -74,44 +77,44 @@ func (g *Game) createKey(k ebiten.Key) {
 		if k != ebiten.KeyEscape {
 			return
 		}
-		if len(c.picked) > 0 {
-			for n, on := range c.picked {
-				if on {
-					c.rolled = town.Reroll(c.rolled, n, g.rand)
-				}
+		for n, on := range c.picked {
+			if on {
+				c.rolled = town.Reroll(c.rolled, n, g.rand)
 			}
-			c.picked = map[int]bool{}
-			c.round++
-			return
 		}
-		// 沒選任何一項的 ESC = 這一步做完了。原版在這裡先問要不要留下
-		// 這一組擲骰(CHARUTIL:33)—— 不問的話,骰壞了只能建完再刪。
-		c.step = stepKeep
-
-	case stepKeep:
-		switch k {
-		case ebiten.KeyY:
-			if allowed := rules.Races[c.race].Classes; len(allowed) == 1 {
-				c.class = allowed[0]
-				c.step = stepName
-			} else {
-				c.step = stepClass
-			}
-		case ebiten.KeyN:
-			// 不留 → 重擲同一個種族,回合數歸 1(這是新的一位角色)。
-			c.rolled = town.RollAll(g.rand)
-			c.picked = map[int]bool{}
-			c.round, c.step = 1, stepAdjust
+		c.picked = map[int]bool{}
+		c.round++
+		// ⚠ **ESC 一律消耗一輪,選沒選項目都一樣**,而總共只有三輪
+		// (原版實跑:`Adjustment 1/2/3`,第三次 ESC 直接進 `Choose class`)。
+		// 先前寫成「沒選項目才算做完」= 無限重擲,而重擲**嚴格有利**
+		// (屬性是 2…13 的三角分佈,不滿意就再擲)—— 玩家可以把五項刷到 13。
+		if c.round > town.CreateAdjustRounds {
+			c.nextAfterAdjust()
 		}
 
 	case stepClass:
+		// 原版是 `A) Warrior / B) Wizard`(實跑 `r3d4.png`)——
+		// ⚠ 助憶鍵照原版,不照中文詞的第一個字母。
 		switch k {
-		case ebiten.KeyF:
+		case ebiten.KeyA:
 			c.class = rules.ClassHero
 			c.step = stepName
-		case ebiten.KeyW:
+		case ebiten.KeyB:
 			c.class = rules.ClassWizard
 			c.step = stepName
+		}
+
+	case stepKeep:
+		// ⚠ 原版把這一句問在**最後**(命名之後),印在整個畫面最下方:
+		// 看完成品再決定留不留。`N` 是**放棄**,回名冊 —— 不是「重擲一組」。
+		switch k {
+		case ebiten.KeyY:
+			g.finishCreate()
+		case ebiten.KeyN:
+			g.create = nil
+			if g.roster != nil {
+				g.roster.msg = "沒有建立角色。"
+			}
 		}
 
 	case stepName:
@@ -121,7 +124,11 @@ func (g *Game) createKey(k ebiten.Key) {
 			return
 		}
 		if k == ebiten.KeyEnter || k == ebiten.KeyKPEnter {
-			g.finishCreate()
+			if strings.TrimSpace(c.name) == "" {
+				c.msg = "還沒輸入名稱。"
+				return
+			}
+			c.step = stepKeep
 		}
 	}
 }
@@ -228,13 +235,14 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 
 	switch c.step {
 	case stepAdjust:
-		line(fmt.Sprintf("第 %d 輪調整:按 1–5 選要重擲的項目,ESC 執行;", c.round))
-		line("沒選任何一項時按 ESC 進到下一步。")
+		line(fmt.Sprintf("第 %d／%d 輪調整:按 1–5 選要重擲的項目,ESC 執行。",
+			c.round, town.CreateAdjustRounds))
+		line("ESC 一律用掉一輪,三輪用完就進到下一步。")
+	case stepClass:
+		line("選職業:A) 戰士　B) 巫師") // CHARUTIL:`A) Warrior / B) Wizard`
 	case stepKeep:
 		line("要保留這位角色嗎?(Y/N)") // CHARUTIL:33
-		line("(N 會用同一個種族重擲一組)")
-	case stepClass:
-		line("選職業:F) 戰士　W) 巫師")
+		line("(N 會放棄這位角色,回到名冊)")
 	case stepName:
 		line(fmt.Sprintf("名稱(最多 %d 字):%s_", town.NameMaxRunes, c.name))
 		line("Enter 確定,ESC 取消")
@@ -243,4 +251,16 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 	if c.msg != "" {
 		line("⚠ " + c.msg)
 	}
+}
+
+// nextAfterAdjust 是三輪調整用完之後往哪走:能選職業就選,不能就直接命名。
+//
+// ⚠ **先選種族再選職業** —— 五個種族只有人類能選(檔頭)。
+func (c *createState) nextAfterAdjust() {
+	if allowed := rules.Races[c.race].Classes; len(allowed) == 1 {
+		c.class = allowed[0]
+		c.step = stepName
+		return
+	}
+	c.step = stepClass
 }

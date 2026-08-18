@@ -7,6 +7,16 @@ import (
 	"shardofspring/internal/rules"
 )
 
+// CreateAdjustRounds 是創角時「重擲屬性」的輪數上限:**3**。
+//
+// 原版實跑:`Adjustment 1` → ESC → `Adjustment 2` → ESC → `Adjustment 3`
+// → ESC → 直接進 `Choose class`(2026-08-18,兩次獨立實跑)。
+// **ESC 不論有沒有選項目都消耗一輪。**
+//
+// ⚠ 這是規則不是介面:重擲**嚴格有利**(屬性是 2…13 的三角分佈,
+// 不滿意就再擲,而且沒有代價),所以「無限重擲」等於讓玩家把五項刷到滿。
+const CreateAdjustRounds = 3
+
 // 角色創造。流程出自 `CHARUTIL.EXE` 的實跑(docs/re/143):
 //
 //	C)reate → Choose Race: H)uman D)warf T)roll E)lf G)nome

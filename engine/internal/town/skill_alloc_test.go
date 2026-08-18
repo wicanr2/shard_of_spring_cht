@@ -86,19 +86,30 @@ func TestLearnSkill_HeroAndWizardUseDifferentTables(t *testing.T) {
 	}
 }
 
-// 驗收 #5:已學過,擋下且不扣點。
-func TestLearnSkill_Already(t *testing.T) {
+// 已學過 = **取消並退點**(原版分配畫面寫著 `(or remove)`,實跑證實)。
+//
+// ⚠ 這一條先前的斷言是「擋下且不扣點」,那是**具名假設** ——
+// 原版實跑推翻了它:智能 9 學 Sword(成本 2)→ 剩 7 → 再按一次 → 剩 9。
+func TestLearnSkill_AlreadyRemovesAndRefunds(t *testing.T) {
 	c := skillHero(5, "0010000000") // 編號 3(釘頭鎚)已經學過
 	before := c.SkillPts
+	cost, _ := SkillCost(rules.ClassHero, 3)
 	got := LearnSkill(&c, 3)
-	if got != LearnAlready {
-		t.Fatalf("LearnSkill = %v,想要 LearnAlready", got)
+	if got != LearnRemoved {
+		t.Fatalf("LearnSkill = %v,想要 LearnRemoved", got)
+	}
+	if c.SkillPts != before+cost {
+		t.Errorf("退點不對:%d → %d(成本 %d)", before, c.SkillPts, cost)
+	}
+	if c.Skills != "0000000000" {
+		t.Errorf("旗標沒清掉:%q", c.Skills)
+	}
+	// 再按一次應該學回來,點數回到原值 —— 一來一回不該憑空生點數。
+	if got := LearnSkill(&c, 3); got != LearnOK {
+		t.Fatalf("再學一次 = %v,想要 LearnOK", got)
 	}
 	if c.SkillPts != before {
-		t.Errorf("擋下卻扣了點:%d → %d", before, c.SkillPts)
-	}
-	if c.Skills != "0010000000" {
-		t.Errorf("Skills 被動到了:%q", c.Skills)
+		t.Errorf("一來一回之後點數 %d,原本 %d", c.SkillPts, before)
 	}
 }
 

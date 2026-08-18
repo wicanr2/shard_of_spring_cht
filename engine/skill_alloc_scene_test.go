@@ -114,7 +114,7 @@ func TestTrainMember_OpensSkillAllocLeftoverCarriesOver(t *testing.T) {
 }
 
 // 驗收 #5(UI 層):已經學過的技能透過畫面重複學一次,不會再扣一次點。
-func TestSkillAllocKey_AlreadyLearnedDoesNotDeductAgain(t *testing.T) {
+func TestSkillAllocKey_SecondPressRemovesAndRefunds(t *testing.T) {
 	c := original.Character{ID: 1, Class: byte(rules.ClassHero), SkillPts: 5, Skills: "0000000000"}
 	g := &Game{chars: []original.Character{c}}
 	g.openSkillAlloc(1, -1, nil)
@@ -125,13 +125,18 @@ func TestSkillAllocKey_AlreadyLearnedDoesNotDeductAgain(t *testing.T) {
 		t.Fatalf("第一次學完應剩 4 點,得 %d", g.chars[0].SkillPts)
 	}
 
-	g.skillAllocKey(ebiten.KeyDigit3) // 再學一次同一項
+	// ⚠ 同一個編號按第二次 = **取消並退點**(原版右欄的 `(or remove)`)。
+	// 而且**要寫回名冊** —— 只改暫存的話玩家按了看起來沒事,離開就白按。
+	g.skillAllocKey(ebiten.KeyDigit3)
 	g.skillAllocKey(ebiten.KeyEnter)
-	if g.chars[0].SkillPts != 4 {
-		t.Fatalf("重複學不該再扣點:得 %d,想要仍是 4", g.chars[0].SkillPts)
+	if g.chars[0].SkillPts != 5 {
+		t.Fatalf("取消應該退點:得 %d,想要 5", g.chars[0].SkillPts)
+	}
+	if g.chars[0].Skills[2] != '0' {
+		t.Errorf("取消之後旗標應該清掉:%q", g.chars[0].Skills)
 	}
 	if g.skillAlloc.msg == "" {
-		t.Error("重複學應該有提示訊息")
+		t.Error("取消應該有提示訊息")
 	}
 }
 

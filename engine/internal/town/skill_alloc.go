@@ -17,7 +17,8 @@ type LearnResult int
 const (
 	LearnOK LearnResult = iota
 	LearnBadNumber
-	LearnAlready
+	// LearnRemoved:原本學過,這一次按取消掉並退點(見 LearnSkill)。
+	LearnRemoved
 	LearnNotEnough
 )
 
@@ -25,16 +26,14 @@ const (
 // 亂數字回應——這裡沿用引擎其他地方的中文措辭,不硬翻那句(它本來就
 // 不是給玩家準確資訊用的)。
 //
-// ⚠ **LearnAlready 與 LearnNotEnough 的原版訊息未解**(docs/spec/20 §4:
-// TOWN.EXE sub_11D09 那段輸入迴圈沒有讀過)。這兩句文字、以及「擋下、
-// 不扣點」這個行為本身,都是**具名假設**,不是照原文譯出來的——理由見
-// LearnSkill 的說明。
+// ⚠ `LearnNotEnough` 走的是 TOWN:54;`LearnRemoved` 的原版措辭未解
+// (畫面上只有 `(or remove)` 這個提示)。`LearnBadNumber` 同樣是引擎的措辭。
 func (r LearnResult) String() string {
 	switch r {
 	case LearnBadNumber:
 		return "沒有這個編號的技能。"
-	case LearnAlready:
-		return "已經學過這項技能了。"
+	case LearnRemoved:
+		return "取消了這項技能,點數退回。"
 	case LearnNotEnough:
 		// TOWN:54「Not enough IQ !」——「IQ」指的是**剩餘技能點數**
 		// (`CHARS.DAT` 位移 89,創造時 = 智能),不是智能本身。
@@ -65,18 +64,36 @@ func LearnSkill(c *original.Character, n int) LearnResult {
 	if !ok {
 		return LearnBadNumber
 	}
+	// ⚠ **已經學過 = 取消,並把點數退回來** —— 原版的分配畫面右欄
+	// 就寫著 `Enter: # to choose (or remove)`,而實跑證實了它:
+	// 智能 9 學 Sword(成本 2)→ 剩 7 → 再按一次 → 剩 9、星號消失
+	// (2026-08-18,workplace/dosbox/shots/r3e1-learn.png / r3e2-remove.png)。
+	//
+	// ⚠ **種族技能能不能這樣退,沒有量過** —— 那是白送的旗標,
+	// 退掉會憑空多出點數。這裡照畫面上寫的規則一視同仁,
+	// ⛔ 不替原版發明一條它沒宣告的例外。
 	if n <= len(c.Skills) && c.Skills[n-1] == '1' {
-		return LearnAlready
+		flags := skillFlags(c.Skills)
+		flags[n-1] = '0'
+		c.Skills = string(flags)
+		c.SkillPts += cost
+		return LearnRemoved
 	}
 	if c.SkillPts < cost {
 		return LearnNotEnough
 	}
-	flags := []byte(c.Skills)
+	flags := skillFlags(c.Skills)
+	flags[n-1] = '1'
+	c.Skills = string(flags)
+	c.SkillPts -= cost
+	return LearnOK
+}
+
+// skillFlags 把技能旗標補滿 10 格再回傳可改的複本。
+func skillFlags(s string) []byte {
+	flags := []byte(s)
 	for len(flags) < 10 {
 		flags = append(flags, '0')
 	}
-	flags[n-1] = '1'
-	c.Skills = string(flags[:10])
-	c.SkillPts -= cost
-	return LearnOK
+	return flags[:10]
 }

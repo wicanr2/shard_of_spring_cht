@@ -120,6 +120,12 @@ func (g *Game) confirmSkillAlloc() {
 		a.msg = fmt.Sprintf("學會了「%s」。", name)
 		return
 	}
+	// 取消也要寫回去 —— 點數退了、旗標清了,不寫回等於白按。
+	if r == town.LearnRemoved {
+		g.applySkillAllocChar(c)
+		a.msg = fmt.Sprintf("取消了「%s」,點數退回。", name)
+		return
+	}
 	if !hasName {
 		name = fmt.Sprintf("編號 %d", n)
 	}
@@ -195,6 +201,9 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 	y += lh * 0.5
 	// TOWN:51/52「Enter skill,」+「(0 exits) 」(F3)。
 	line("輸入技能,(0離開)：" + a.input + "_")
+	// ⚠ 原版右欄寫著 `Enter: # to choose (or remove)` —— **同一個編號按第二次
+	// 就取消並退點**。不寫出來的話玩家不會知道自己點錯了還有救。
+	line("(已學過的再輸入一次會取消,點數退回)")
 	if a.msg != "" {
 		y += lh * 0.5
 		line(a.msg)

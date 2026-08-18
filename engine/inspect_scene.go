@@ -95,6 +95,15 @@ func (g *Game) inspectLines() []string {
 	}
 	u := f.Units[st.idx]
 	status := u.StatusText()
+	// ⚠ **隊員只印名字與狀態**,照原版(2026-08-18 實跑 `i1-inspect.png`:
+	// `Fire Hawk` + `Status: OK`,沒有屬性)。這個面板是拿來**偵察怪物**的;
+	// 自己人的數值在角色卡與側欄上,印兩份只是把面板塞滿。
+	if !u.IsMonster {
+		return []string{
+			fmt.Sprintf("%s　%s%s", u.Name, inspectStatus, status),
+			inspectScroll,
+		}
+	}
 	// 防護 = 防具的欄4 + 護甲技能(傷害公式減的就是這兩項,docs/spec/01 §5)。
 	armor := f.ArmorRating(st.idx)
 	out := []string{

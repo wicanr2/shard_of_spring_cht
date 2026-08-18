@@ -64,9 +64,14 @@
 ## 2. 載入迴圈:`FOR I = 10 TO 38`
 
 `0x10EE9`–`0x10F51` 依序處理三個檔案。形狀都是
-`mov bx, <目標位址>` → `INT 3F:57` → `mov bx, <檔名描述子>` → `INT 3F:55`(開檔):
+`mov bx, <目標位址>` → `INT 3F:57`(整數轉浮點)→ `mov bx, <第二個運算元>` →
+`INT 3F:55`(兩數相加,[`38`](38-api-are-basic-primitives.md) §1 逐條讀過本體):
 
-| 檔案 | 檔名描述子 | 目標 |
+⚠ **這兩個 API 都不是檔案操作** —— 下表的位址是逐條讀出來的事實,
+但「哪一步真的把檔案打開」在這一段裡**沒有讀到**。目標位址由
+[`52`](52-world-map-reader-and-shared-grid.md) 獨立佐證,不靠這一段的解讀。
+
+| 檔案 | 第二個運算元 | 目標 |
 |---|---|---|
 | `wrldmap.bin` | `ds:0CF2Eh` | **`0x6822`**(與 [`52`](52-world-map-reader-and-shared-grid.md) 一致)|
 | `wrlditem.pic` | `ds:0CF3Eh` | 逐行讀,見下 |

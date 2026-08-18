@@ -335,6 +335,18 @@ func run(in, out, transDir string) error {
 	if err := writeJSON(filepath.Join(out, "data", "mazedata.json"), entries); err != nil {
 		return err
 	}
+	// 地城名在 `MENU.EXE` 的兩串 DATA 裡,不在 MAZEDATA(docs/re/222)。
+	// 索引 = 入口編號,所以與 mazedata.json 同序。
+	dnames, err := original.DungeonNames(mustRead(in, "MENU.EXE"))
+	for i := range dnames {
+		dnames[i] = lang.dungeons.Get(i, "name", dnames[i])
+	}
+	if err := step("dungeon names", len(dnames), err); err != nil {
+		return err
+	}
+	if err := writeJSON(filepath.Join(out, "data", "dungeons.json"), dnames); err != nil {
+		return err
+	}
 	nMaze, nEvent, nText := 0, 0, 0
 	seenMaze, seenText := map[int]bool{}, map[int]bool{}
 	for _, e := range entries {
@@ -503,6 +515,7 @@ func writePNG(path string, img image.Image) error {
 // langTables 是所有譯文表。docs/spec/10 §2。
 type langTables struct {
 	monsters, spells, items original.Lang
+	dungeons                original.Lang // 地城名(docs/re/222),row = 入口編號
 	dungeon                 map[int]map[int]string // DT 檔號 → id → 譯文
 	places                  map[string]string      // 城鎮／商店名:原文 → 譯文
 	rumors                  map[int]string         // 酒館傳聞(docs/re/138 §4)
@@ -526,6 +539,7 @@ func loadLang(dir string) langTables {
 	lt.monsters = original.ParseLangTSV(read("names/monsters.tsv"))
 	lt.spells = original.ParseLangTSV(read("names/spells.tsv"))
 	lt.items = original.ParseLangTSV(read("names/items.tsv"))
+	lt.dungeons = original.ParseLangTSV(read("names/dungeons.tsv"))
 	for _, n := range []int{0, 1, 2, 3, 4, 5, 6, 7, 51} {
 		if b := read(fmt.Sprintf("dungeon-text/DT%dTEXT.tsv", n)); b != nil {
 			lt.dungeon[n] = original.ParseDungeonTextTSV(b)

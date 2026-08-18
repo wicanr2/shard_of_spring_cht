@@ -1,6 +1,7 @@
 package original
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
 	"strings"
@@ -244,4 +245,47 @@ func ParseDungeonText(d []byte) map[int]string {
 		out[n] = strings.TrimSpace(ln[3:])
 	}
 	return out
+}
+
+// 地城名的兩串 `DATA` 敘述在 `MENU.EXE` 的檔案位移(docs/re/123 §1)。
+//
+// ⚠ 名字**不在 `MAZEDATA.BIN` 裡** —— 那八欄沒有名稱欄(見 MazeEntry)。
+// `MENU` 開機時把兩串 `DATA` 讀進 COMMON,`MAZEMOVE` 進地城時印在左上角。
+const (
+	menuDungeonList1 = 10030 // 6 個,對應入口 0–5
+	menuDungeonList2 = 10103 // 7 個,對應入口 6–12
+)
+
+// DungeonNames 從 `MENU.EXE` 讀出 13 個地城名,索引 = `MAZEDATA` 的入口編號。
+//
+// 對應關係是**實跑量出來的**(docs/re/222):入口 0 `Old Man in Cave`、
+// 2 `Black Fort`、5 `Ralith`、7 `Murthin`、11 `Vandiguard` ——
+// 兩串各自的頭、中、尾都命中。
+func DungeonNames(menuExe []byte) ([]string, error) {
+	var out []string
+	for _, spec := range []struct {
+		off, want int
+	}{{menuDungeonList1, 6}, {menuDungeonList2, 7}} {
+		if spec.off >= len(menuExe) {
+			return nil, fmt.Errorf("MENU.EXE 只有 %d bytes,讀不到位移 %d",
+				len(menuExe), spec.off)
+		}
+		end := bytes.IndexByte(menuExe[spec.off:], 0)
+		if end < 0 {
+			return nil, fmt.Errorf("位移 %d 之後沒有 null 結尾", spec.off)
+		}
+		// ⚠ 每一串開頭有一個前導空白,那是 BASIC `DATA` 在逗號後保留空白的
+		// 慣例,不是名稱的一部分(docs/re/123 §1)。末串的 `Ralith.` 也一樣 ——
+		// 那個句點是敘述的結束,不是名字。
+		var names []string
+		for _, s := range strings.Split(string(menuExe[spec.off:spec.off+end]), ",") {
+			names = append(names, strings.TrimSuffix(strings.TrimSpace(s), "."))
+		}
+		if len(names) != spec.want {
+			return nil, fmt.Errorf("位移 %d 切出 %d 個名字,應為 %d:%q",
+				spec.off, len(names), spec.want, names)
+		}
+		out = append(out, names...)
+	}
+	return out, nil
 }

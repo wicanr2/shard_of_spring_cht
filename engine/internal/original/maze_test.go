@@ -314,3 +314,37 @@ func TestMazeDataAxesAreWithinRange(t *testing.T) {
 		t.Error("沒有任何一筆 StartMajor > 50 —— 值域分不出兩軸,這條測試失效了")
 	}
 }
+
+// TestDungeonNamesMatchTheEntryTable —— 13 個地城名,索引 = MAZEDATA 的入口編號。
+//
+// 對應關係是原版實跑量出來的(docs/re/222):五個點分別落在兩串 DATA 的
+// 頭、中、尾。⚠ 改這張表等於改「哪個入口叫什麼」,要先有新的實跑證據。
+func TestDungeonNamesMatchTheEntryTable(t *testing.T) {
+	names, err := DungeonNames(read(t, "MENU.EXE"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	entries, err := ParseMazeData(read(t, "MAZEDATA.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(names) != len(entries) {
+		t.Fatalf("%d 個名字對 %d 個入口 —— 索引對不上就不能拿來當名字",
+			len(names), len(entries))
+	}
+	// 五個實跑量到的點(docs/re/222 §2)。
+	for _, w := range []struct {
+		i    int
+		name string
+	}{
+		{0, "Old Man in Cave"}, // workplace/dosbox/shots/d0-in.png
+		{2, "Black Fort"},      // docs/re/147
+		{5, "Ralith"},          // d5-in.png
+		{7, "Murthin"},         // d7-in.png
+		{11, "Vandiguard"},     // d11-in.png
+	} {
+		if names[w.i] != w.name {
+			t.Errorf("入口 %d 是 %q,實跑量到的是 %q", w.i, names[w.i], w.name)
+		}
+	}
+}

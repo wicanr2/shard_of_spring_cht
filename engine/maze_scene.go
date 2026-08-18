@@ -18,6 +18,10 @@ import (
 
 // mazeLevel 是載進來的一層。
 type mazeLevel struct {
+	// index 是這一層在 `MAZEDATA` 裡的**入口編號** —— 地城名靠它查
+	// (docs/re/222:名字在 MENU.EXE 的兩串 DATA,索引就是入口編號)。
+	// ⚠ 不能用 `MazeFile` 代替:入口 0/1/4/6 共用 DG1、7–11 共用 DG6。
+	index  int
 	entry  original.MazeEntry
 	grid   *original.Maze
 	events []original.Event
@@ -26,11 +30,11 @@ type mazeLevel struct {
 
 // enterMaze 從世界地圖進入迷宮。回 false 表示這一格沒有入口。
 func (g *Game) enterMaze(x, y int) bool {
-	for _, e := range g.mazeData {
+	for i, e := range g.mazeData {
 		if e.WorldX != x || e.WorldY != y {
 			continue
 		}
-		lv, err := g.loadLevel(e)
+		lv, err := g.loadLevel(i, e)
 		if err != nil {
 			g.warnings = append(g.warnings, err.Error())
 			return false
@@ -47,8 +51,8 @@ func (g *Game) enterMaze(x, y int) bool {
 	return false
 }
 
-func (g *Game) loadLevel(e original.MazeEntry) (*mazeLevel, error) {
-	lv := &mazeLevel{entry: e}
+func (g *Game) loadLevel(i int, e original.MazeEntry) (*mazeLevel, error) {
+	lv := &mazeLevel{index: i, entry: e}
 	if err := readJSON(filepath.Join(g.assets, "data",
 		fmt.Sprintf("maze%d.json", e.MazeFile)), &lv.grid); err != nil {
 		return nil, fmt.Errorf("讀 DG%d:%w", e.MazeFile, err)
@@ -131,10 +135,14 @@ func (g *Game) resumeMaze(slot int) {
 		return
 	}
 	var entry original.MazeEntry
-	found := false
-	for _, e := range g.mazeData {
+	idx, found := -1, false
+	// ⚠ 存檔只記**迷宮檔號**(GROUPS.DAT 位移 83),不記入口編號 ——
+	// 而入口 0/1/4/6 共用 DG1、7–11 共用 DG6,所以讀檔回到這幾個地城時
+	// 取的是第一個相符的入口,**名字可能不是原本那一個**。
+	// 原版怎麼記這件事沒讀(docs/re/222 §4)。
+	for i, e := range g.mazeData {
 		if e.MazeFile == n {
-			entry, found = e, true
+			entry, idx, found = e, i, true
 			break
 		}
 	}
@@ -142,7 +150,7 @@ func (g *Game) resumeMaze(slot int) {
 		g.warnings = append(g.warnings, fmt.Sprintf("存檔記著在 DG%d,但找不到這個地城", n))
 		return
 	}
-	lv, err := g.loadLevel(entry)
+	lv, err := g.loadLevel(idx, entry)
 	if err != nil {
 		g.warnings = append(g.warnings, "重新載入迷宮失敗:"+err.Error())
 		return
@@ -232,7 +240,7 @@ func (g *Game) fireTrigger(t maze.Trigger) {
 // 靜默留下的話,玩家看到的是「樓梯壞掉」,而那查不出原因。
 func (g *Game) crossLevel(target int) {
 	cur := g.level.entry
-	for _, e := range g.mazeData {
+	for i, e := range g.mazeData {
 		if e.MazeFile == cur.MazeFile {
 			continue
 		}
@@ -240,7 +248,7 @@ func (g *Game) crossLevel(target int) {
 		if !relatedMazeFile(cur.MazeFile, e.MazeFile) {
 			continue
 		}
-		lv, err := g.loadLevel(e)
+		lv, err := g.loadLevel(i, e)
 		if err != nil {
 			g.warnings = append(g.warnings, err.Error())
 			return
@@ -334,11 +342,8 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	// 而 ui.Wrap 是按欄數硬斷的,會把「能見度」從中間切開。
 	g.drawMessageLines(dst, []string{
 		// ⚠ **不印格座標與朝向編號** —— 那是內部狀態,原版在這個位置印的是
-		// **地城名**(`Black Fort` 之類,2026-08-18 對照原版)。
-		// 名字還沒接:`MAZEDATA` 八欄裡**沒有名稱欄**,而 `MENU.EXE` 位移
-		// 10030 那六個名字要先解出「哪個入口對哪一個」(docs/spec/14 §12-C)。
-		// 在解出來之前寧可只印編號,也不要瞎猜一個名字掛上去。
-		fmt.Sprintf("地城 DG%d", lv.entry.MazeFile),
+		// **地城名**(docs/re/222)。
+		g.dungeonName(lv),
 		fmt.Sprintf("能見度 %d", g.mazeState.Visibility),
 	})
 }
@@ -405,3 +410,19 @@ func (g *Game) drawPrompt(dst *ebiten.Image) {
 // ⚠ 兩列是**同一句在兩個分支各出現一次**(迷宮 5 的兩個方向),
 // 引擎只有一支 crossLevel,兩列共用它。
 const mazeOneMoment = "稍候……　"
+
+// dungeonName 回傳這一層的地城名。
+//
+// 名字來自 `MENU.EXE` 的兩串 `DATA`(docs/re/222),`cmd/convert` 轉成
+// `data/dungeons.json`,索引就是 `MAZEDATA` 的入口編號。
+//
+// ⚠ 讀不到就退回 `地城 DGn` —— ⛔ 不拿別的名字頂替。原版在畫面左上角
+// 印的是名字,而編號是內部狀態;但**印錯名字比印編號糟**。
+func (g *Game) dungeonName(lv *mazeLevel) string {
+	if lv.index >= 0 && lv.index < len(g.dungeonNames) {
+		if n := g.dungeonNames[lv.index]; n != "" {
+			return n
+		}
+	}
+	return fmt.Sprintf("地城 DG%d", lv.entry.MazeFile)
+}

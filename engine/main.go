@@ -81,6 +81,8 @@ type Game struct {
 	// M5:迷宮(docs/spec/08)
 	assets      string
 	mazeData    []original.MazeEntry
+	// dungeonNames:入口編號 → 地城名(docs/re/222)。
+	dungeonNames []string
 	mazeTiles   map[int]*ebiten.Image
 	level       *mazeLevel // nil = 不在迷宮中
 	mazeState   maze.State
@@ -665,6 +667,9 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 		// docs/spec/18 §2:saves/ 預設在資產目錄旁邊,-save 可覆寫(main() 裡)。
 		saveDir: filepath.Join(filepath.Dir(dir), "saves"),
 	}
+	// ⚠ 地城名讀不到**不算錯誤** —— 退回 `地城 DGn`(dungeonName)。
+	// 舊的資產目錄沒有這個檔,而它不影響任何規則。
+	_ = readJSON(filepath.Join(dir, "data", "dungeons.json"), &g.dungeonNames)
 	if err := readJSON(filepath.Join(dir, "data", "mazedata.json"), &g.mazeData); err != nil {
 		return nil, err
 	}

@@ -1,0 +1,14 @@
+row	field	original	orig_bytes	translation	trans_bytes	fits	note
+0	name	Old Man in Cave	15	洞中老者(Old Man in Cave)	29	Y	row = MAZEDATA 的入口編號(docs/re/222)
+1	name	Swamp King	10	沼澤之王(Swamp King)	24	Y	
+2	name	Black Fort	10	黑堡(Black Fort)	18	Y	glossary:黑堡;加註照該處原文的拼法
+3	name	Edrin's Keep	12	艾德林要塞(Edrin's Keep)	29	Y	glossary
+4	name	Gate Keeper	11	守門人(Gate Keeper)	22	Y	
+5	name	Ralith	6	拉利斯(Ralith)	17	Y	glossary;兩條路線的終點,入口 12 是它的下一層
+6	name	Rebel's Hideout	15	叛軍藏身處(Rebel's Hideout)	32	Y	
+7	name	Murthin	7	莫辛(Murthin)	15	Y	glossary;月華家族五座墓之一
+8	name	Cercion	7	瑟西恩(Cercion)	18	Y	glossary
+9	name	Lothian	7	洛西安(Lothian)	18	Y	glossary
+10	name	Eldron	6	艾爾德隆(Eldron)	20	Y	glossary
+11	name	Vandiguard	10	范迪加德(Vandiguard)	24	Y	glossary
+12	name	Ralith	6	拉利斯(Ralith)	17	Y	DG51 —— Ralith 的下一層,不從世界地圖進入

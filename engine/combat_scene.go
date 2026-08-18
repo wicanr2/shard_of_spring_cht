@@ -403,7 +403,7 @@ func (g *Game) drawCombat(dst *ebiten.Image) {
 	y = g.drawBoard(dst, x, y) + lh*0.5
 	if g.cursor != nil {
 		// CMBT:110/111「Use arrow keys to position cursor.」
-		p.Draw(dst, fmt.Sprintf("選施法目標:%s　用方向鍵移動游標。(I/J/K/M 同效)空白鍵施放、ESC 取消",
+		p.Draw(dst, fmt.Sprintf("選施法目標:%s　用方向鍵移動游標。(I/J/K/M 同效)PgDn 施放、ESC 取消",
 			g.cursor.spell.Name), x, y)
 		y += lh * 1.2
 	} else if g.actor >= 0 {

@@ -169,7 +169,8 @@ type castCursorScene struct{ g *Game }
 
 func (s castCursorScene) Prompt() string {
 	// CMBT:118+119「Where do you want to cast it?」+ 114「(ESC to Exit)」
-	return castWhere + castEscExit + "　方向鍵／I・J・K・M：移動游標　　空白鍵：施放"
+	// CMBT:113「Hit PgDn key to cast.」—— 原版在這個位置寫的就是這一句。
+	return castWhere + castEscExit + "　方向鍵／I・J・K・M：移動游標　　" + castPageHint
 }
 func (s castCursorScene) Name() string       { return "cast-cursor" }
 func (s castCursorScene) Handles(Input) bool { return s.g.field != nil && s.g.cursor != nil }

@@ -41,7 +41,9 @@ const (
 	castNotPrepared = "你將還沒準備好那個法術,要到下一回合才行。"
 	// 124+125:游標周圍 5×5 一個單位都沒有(docs/re/195 §2)。
 	castNoOneInArea = "目標區域內沒有人!"
-	castPageHint   = "按 PgDn 鍵"                // 113
+	// 113「Hit PgDn key」—— ⚠ 這一句是**游標階段的確認鍵**,
+	// 不是法術清單的翻頁提示。先前接在翻頁上,而那個位置原版沒有這句話。
+	castPageHint   = "按 PgDn 鍵施放"            // 113
 	castWhere      = "你想施放到哪裡?"           // 118+119
 	castEscExit    = "(ESC離開)"                 // 114
 	// 117/120(`to use.` / `to cast.`)是行動點數不足那兩句的句尾。
@@ -245,7 +247,12 @@ func (g *Game) cursorKey(k ebiten.Key) bool {
 		cu.x--
 	case ebiten.KeyK, ebiten.KeyRight:
 		cu.x++
-	case ebiten.KeySpace:
+	// ⚠ 確認鍵是 **PgDn**,不是空白鍵。原版游標階段的畫面下方就寫著
+	// `Hit PgDn key to cast.`(CMBT:113,2026-08-18 實跑 `q3b-d3.png`)——
+	// 手冊 p.34 的 SPACE BAR 講的是 **Apple II 版**
+	// (CLAUDE.md §6:套手冊之前先問這一頁講哪個平台)。
+	// 空白鍵一併留著:重製版的配置擋不到別的東西。
+	case ebiten.KeyPageDown, ebiten.KeyKPDivide, ebiten.KeySpace:
 		// 沒打中任何東西時**游標留著**,讓玩家改選一格 ——
 		// 關掉游標等於白白吃掉一次施法。
 		if g.castAt(cu.spell, cu.invest, cu.x, cu.y) {
@@ -407,8 +414,10 @@ func (g *Game) drawCastMenu(dst *ebiten.Image) {
 		p.Draw(dst, fmt.Sprintf("%c) %s  每級 %d 點", 'A'+i, s.Name, invest), x, y)
 		y += lh
 	}
+	// ⚠ 翻頁的提示**不要借 CMBT:113** —— 那一句是游標階段的
+	// 「按 PgDn 鍵施放」,原版在法術清單這裡沒有對應的字串。
 	if n := g.castPages(); n > 1 {
-		p.Draw(dst, fmt.Sprintf("第 %d／%d 頁　%s翻頁", g.castPage+1, n, castPageHint), x, y)
+		p.Draw(dst, fmt.Sprintf("第 %d／%d 頁　+／- 翻頁", g.castPage+1, n), x, y)
 	}
 }
 

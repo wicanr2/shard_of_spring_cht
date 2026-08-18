@@ -125,7 +125,8 @@ type Game struct {
 	spells   []original.Spell
 	castUnit int
 	castList []original.Spell
-	// cursor 非 nil = 施法的**選格階段**(手冊 p.34 的 I/J/K/M + 空白鍵)
+	// cursor 非 nil = 施法的**選格階段**(方向鍵/IJKM 移動,PgDn 施放 ——
+	// CMBT:113,手冊 p.34 的空白鍵是 Apple II 版的說法)
 	cursor *castCursor
 	// castSP 非 nil = 施法的**投入點數**那一步(CMBT:101「 # SP ? 」)。
 	// ⚠ 這一步先前被跳掉(固定投一級),而投入量會改變威力與狀態強度 ——

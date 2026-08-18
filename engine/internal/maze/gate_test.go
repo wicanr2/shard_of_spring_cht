@@ -105,15 +105,15 @@ func TestPartyCanWalkThroughOpenedGate(t *testing.T) {
 	major, minor := GateCell()
 
 	// 走廊沿 major 軸(TestGateSitsInACorridor 驗的就是這一軸),
-	// 而 East 的位移是 major+1 —— 從門的前一格朝東走一步就撞到門。
-	blocked := State{Major: major - 1, Minor: minor, Facing: East}
-	if r := blocked.Step(East, m); r == Moved {
+	// 而 major 是**南北**軸(docs/re/224)—— 從門的南邊那一格朝北走一步就撞到門。
+	blocked := State{Major: major + 1, Minor: minor, Facing: North}
+	if r := blocked.Step(North, m); r == Moved {
 		t.Fatal("門還關著就走得過去 —— 那這道門從頭到尾沒有作用")
 	}
 
 	OpenGate(m, GateMaze, 1)
-	open := State{Major: major - 1, Minor: minor, Facing: East}
-	if r := open.Step(East, m); r != Moved {
+	open := State{Major: major + 1, Minor: minor, Facing: North}
+	if r := open.Step(North, m); r != Moved {
 		t.Errorf("門開了卻走不過去(Step 回 %v)", r)
 	}
 }

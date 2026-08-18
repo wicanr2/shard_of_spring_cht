@@ -298,8 +298,11 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	const half = layout.ViewTiles / 2
 	for vy := 0; vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
-			aM := g.mazeState.Major - half + vx
-			am := g.mazeState.Minor - half + vy
+			// ⚠ **Major 畫在垂直軸** —— Major 是南北、Minor 是東西
+			// (docs/re/224)。畫反的話地圖看起來仍然像一座迷宮,
+			// 只是整張轉置,而**事件的方向欄會全部對不上**。
+			aM := g.mazeState.Major - half + vy
+			am := g.mazeState.Minor - half + vx
 			px := float32(layout.View.X + vx*layout.TileDst)
 			py := float32(layout.View.Y + vy*layout.TileDst)
 			if !maze.Visible(g.mazeState, aM, am) {

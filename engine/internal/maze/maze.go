@@ -38,19 +38,24 @@ const (
 
 // delta 回傳朝向在 (Major, Minor) 上的位移。
 //
-// ⚠ Major 是乘 81 的那個索引(docs/re/137)。哪個方向動 Major、
-// 哪個動 Minor,**沒有被 RE 確認過** —— 這裡取「Major 是水平、Minor 是垂直」,
-// 與世界地圖的 x/y 對齊,是實作決定。走起來若發現迷宮橫豎顛倒,改這裡。
+// **Major 是南北(列)、Minor 是東西(行)**(docs/re/224)——
+// 也就是 `Major = y`、`Minor = x`,與直覺相反的那一邊。
+//
+// 判準是**事件表自己**:每個帶方向的事件都要有一格走得進來的來源格
+// (站上去的那一步的前一格)。419 個帶方向的事件裡,
+// 這個對應讓 **418 個**有可走的來源格;把兩軸對調只剩 **75 個**。
+// ⛔ 不要「照世界地圖的 x/y 對齊」去猜 —— 那正是先前的實作決定,
+// 而它讓治療池那類事件**完全沒有路徑可以觸發**(來源格是牆)。
 func (f Facing) delta() (dMajor, dMinor int) {
 	switch f {
 	case North:
-		return 0, -1
-	case East:
-		return 1, 0
-	case South:
-		return 0, 1
-	case West:
 		return -1, 0
+	case East:
+		return 0, 1
+	case South:
+		return 1, 0
+	case West:
+		return 0, -1
 	}
 	return 0, 0
 }

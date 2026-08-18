@@ -1,6 +1,9 @@
 package maze
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"testing"
 
 	"shardofspring/internal/original"
@@ -35,7 +38,8 @@ func TestBlockingIsAnInterval(t *testing.T) {
 		tile int
 		want Result
 	}{{4, Moved}, {5, Blocked}, {10, Blocked}, {11, Moved}, {19, Moved}} {
-		m := grid(map[[2]int]int{{5, 4}: c.tile})
+		// ⚠ 北是 **Major−1**(docs/re/224:Major 是南北軸),不是 Minor−1。
+		m := grid(map[[2]int]int{{4, 5}: c.tile})
 		s := &State{Major: 5, Minor: 5, Facing: North}
 		if r := s.Step(North, m); r != c.want {
 			t.Errorf("格值 %d:得 %v,應為 %v", c.tile, r, c.want)
@@ -267,4 +271,77 @@ func TestDisableTargetBlanksEveryRow(t *testing.T) {
 	if got := Scan(evs, State{Major: 57, Minor: 14, Facing: North}, text).Kind; got != KindNone {
 		t.Errorf("作廢後仍掃得到:%v", got)
 	}
+}
+
+// TestEveryDirectionalEventHasAWalkableSource —— 每個帶方向的事件都要走得進去。
+//
+// 事件的方向欄是「站上這一格時面向哪裡」,而面向 = 上一步的方向,
+// 所以來源格 = 事件格 − delta(方向)。**來源格是牆的事件永遠觸發不了。**
+//
+// 這條同時是兩軸對應的判準(docs/re/224):419 個帶方向的事件裡,
+// 正確的對應讓 418 個有可走的來源格;兩軸對調只剩 75 個。
+// ⛔ 這不是「大部分都對就好」—— 差距是 5.6 倍,不會看錯。
+//
+// ⚠ 唯一那一個例外在 `DT5` 的 (77,1),來源格是 Minor 0(邊界)。沒查。
+func TestEveryDirectionalEventHasAWalkableSource(t *testing.T) {
+	dir := gameDir(t)
+	entries, err := original.ParseMazeData(readGame(t, dir, "MAZEDATA.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	ok, bad := 0, 0
+	for _, e := range entries {
+		if e.MazeFile == 0 {
+			continue
+		}
+		grid, err := original.DecodeSQZ(readGame(t, dir,
+			fmt.Sprintf("DG%dMAZE.SQZ", e.MazeFile)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		evs, err := original.ParseEvents(readGame(t, dir,
+			fmt.Sprintf("DE%dEFF.BIN", e.TextFile)))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, ev := range evs {
+			if ev.Dir == 0 || (ev.Major == 0 && ev.Minor == 0) {
+				continue
+			}
+			dM, dm := Facing(ev.Dir).delta()
+			if original.MazePassable(grid.At(ev.Major-dM, ev.Minor-dm)) {
+				ok++
+			} else {
+				bad++
+			}
+		}
+	}
+	if ok == 0 {
+		t.Fatal("一個帶方向的事件都沒掃到 —— 這條檢查什麼都沒測")
+	}
+	if ok < bad*5 {
+		t.Errorf("帶方向的事件:可達 %d、不可達 %d —— 兩軸的對應反了?"+
+			"(docs/re/224:正確的對應是 418 比 1)", ok, bad)
+	}
+}
+
+// gameDir / readGame:找原版目錄並讀檔。找不到就 skip(同 gate_test.go)。
+func gameDir(t *testing.T) string {
+	t.Helper()
+	for _, d := range []string{"/game/sharspri", "../../../../game/sharspri"} {
+		if _, err := os.Stat(d); err == nil {
+			return d
+		}
+	}
+	t.Skip("找不到原版 game/sharspri —— 這一項沒有被驗證")
+	return ""
+}
+
+func readGame(t *testing.T, dir, name string) []byte {
+	t.Helper()
+	b, err := os.ReadFile(filepath.Join(dir, name))
+	if err != nil {
+		t.Fatal(err)
+	}
+	return b
 }

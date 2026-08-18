@@ -376,26 +376,60 @@ func TestSeedZeroStillVaries(t *testing.T) {
 
 // TestUndeadClassesAreTheReadSet 釘住不死生物的判準。
 //
-// ⚠ 原版比的是**戰鬥屬性 11** 的 65/73/81(已確認),而換算回
-// `MONSTERS.DAT` 欄6 的 {4,5,6} 是**推的**(docs/re/188 §3.1 附推翻條件)。
+// 原版比的是**戰鬥屬性 11** 的 65/73/81(已確認)。換算回 `MONSTERS.DAT`
+// 欄6 要靠「圖組 → 檔號」,而那個換算**現在讀出來了**(docs/re/220):
+//
+//	圖組 = 檔號 × 8 + 25   →   {65,73,81} = 檔 {5,6,7}
+//
+// ⚠ 這張表先前是 `{4,5,6}`,差一位。舊版還為此寫了一句「幽靈不算不死,
+// 本作把它們歸成靈體」——**那是替一個錯誤的數字編出來的解釋**。
+// 內容印證:MONST5 骷髏、MONST6 骷髏巫師、MONST7 幽靈,三個都是不死。
+//
 // 改這張表等於改規則,要先有新的反組譯證據。
 func TestUndeadClassesAreTheReadSet(t *testing.T) {
-	if UndeadClasses != [3]int{4, 5, 6} {
+	if UndeadClasses != [3]int{5, 6, 7} {
 		t.Errorf("不死類別表被改了:%v", UndeadClasses)
 	}
-	// 骷髏/殭屍/食屍鬼是欄6 = 5,骷髏巫師是 6 —— 都算。
-	for _, k := range []int{4, 5, 6} {
+	// 骷髏(5)、骷髏巫師(6)、幽靈(7)—— 都算。
+	for _, k := range []int{5, 6, 7} {
 		if !IsUndead(Unit{IsMonster: true, Kind: k}) {
 			t.Errorf("類別 %d 應該算不死", k)
 		}
 	}
-	// 幽靈/邪靈/魅影是欄6 = 7,**不算**(本作把它們歸成靈體)。
-	if IsUndead(Unit{IsMonster: true, Kind: 7}) {
-		t.Error("類別 7(靈體)不該算不死")
+	// 欄6 = 4 **不存在**(那是隊員巫師的圖檔),不該算。
+	if IsUndead(Unit{IsMonster: true, Kind: 4}) {
+		t.Error("類別 4 是隊員巫師的圖檔,不該算不死")
 	}
 	// 隊員永遠不算 —— 他們的屬性 11 走 41/57 那一組。
 	if IsUndead(Unit{IsMonster: false, Kind: 5}) {
 		t.Error("隊員不該被判成不死生物")
+	}
+}
+
+// TestSpriteFile 釘住「單位 → MONST 檔號」(docs/re/220)。
+//
+// ⚠ 怪物的 Kind 存的是**欄6**,隊員的 Kind 存的是**圖組**(41/57)——
+// 兩者不同尺度。SpriteFile 就是為了把這件事收在一個地方。
+func TestSpriteFile(t *testing.T) {
+	// 隊員:CMBT 的字串表裡寫死 monst2.bin / monst4.bin。
+	if got := SpriteFile(Unit{Kind: KindFighter}); got != SpriteFileFighter {
+		t.Errorf("戰士拿到檔 %d,要 %d", got, SpriteFileFighter)
+	}
+	if got := SpriteFile(Unit{Kind: KindWizard}); got != SpriteFileWizard {
+		t.Errorf("巫師拿到檔 %d,要 %d", got, SpriteFileWizard)
+	}
+	// 怪物:檔號就是欄6。內容對照見 docs/re/220。
+	for _, k := range []int{1, 5, 15, 16, 22} {
+		if got := SpriteFile(Unit{IsMonster: true, Kind: k}); got != k {
+			t.Errorf("怪物欄6=%d 拿到檔 %d", k, got)
+		}
+	}
+	// 超出範圍回 0 —— ⚠ 不要夾到最後一個檔:那會讓每隻沒有圖的怪
+	// 都長成龍,而畫面上完全看不出哪裡不對。
+	for _, k := range []int{0, -1, MonstFiles + 1, 99} {
+		if got := SpriteFile(Unit{IsMonster: true, Kind: k}); got != 0 {
+			t.Errorf("欄6=%d 超出範圍,該回 0,拿到 %d", k, got)
+		}
 	}
 }
 

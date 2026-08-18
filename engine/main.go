@@ -171,6 +171,8 @@ type Game struct {
 	// walk / walkMaze 是隊伍的人形圖示(WALKDRAW.PIC,見 walk.go)。
 	// nil = 沒轉出來,退回白框。
 	walk, walkMaze walkArt
+	// monst 是戰場單位的圖(board_sprite.go)。nil = 沒轉出來,退回文字。
+	monst monstArt
 	// walkGait 是走路動畫的步態,每走成功一步翻面。
 	// ⚠ **只在真的位移時翻**,轉身不翻 —— 原版轉身不換腳。
 	walkGait int
@@ -696,6 +698,7 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	g.panel, g.overlayFont, g.titleFont = panel, overlay, title
 	g.titleArt = loadTitleArt(dir)
 	g.walk, g.walkMaze = loadWalk(dir, "walk"), loadWalk(dir, "walk-maze")
+	g.monst = loadMonst(dir)
 	g.initSound()  // docs/spec/13:失敗只記警告,不影響遊戲
 	g.loadConfig() // 配樂模式等偏好。讀不到就用預設(= 原版)
 	g.shell = &shellState{mode: shellTitle}

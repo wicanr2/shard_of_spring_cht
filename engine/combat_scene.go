@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
@@ -323,7 +324,11 @@ func (g *Game) endTurn() {
 func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 	f, p := g.field, g.panel
 	lh := p.LineHeight()
-	cell := lh * 0.9
+	// 一格 = 17 × 2。⚠ **整數倍**,不然 sprite 會糊(docs/spec/04 §1)。
+	// 先前是 `lh * 0.9`(文字行高),圖畫進去只有 26 px —— 認不出是什麼。
+	// 9 × 34 = 306 px,底下還留得下單位清單。
+	cell := float64(layout.TileSrc * 2)
+	_ = lh
 	// 視窗跟著目前行動的單位;沒有人能動時跟著隊伍的基準格。
 	cx, cy := combat.PartyBaseX, combat.PartyBaseY
 	if g.actor >= 0 && g.actor < len(f.Units) {
@@ -340,13 +345,30 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 			if combat.OnEdge(x, y) {
 				ch = "○" // 圓點 = 出口(手冊 p.33)
 			}
+			px, py := x0+float64(vx)*cell, y0+float64(vy)*cell
 			if g.cursor != nil && g.cursor.x == x && g.cursor.y == y {
 				ch = "✚" // 施法游標
 			} else if i := f.Occupant(x, y); i >= 0 {
+				// 有圖就畫圖(docs/re/220 的對應)。⚠ 縮到格寬 —— 戰場的一格
+				// 是文字行高算出來的,不是 17×4,所以不能用整數倍放大。
+				if img := g.monst.unit(f.Units[i]); img != nil {
+					op := &ebiten.DrawImageOptions{}
+					sc := cell / float64(img.Bounds().Dx())
+					op.GeoM.Scale(sc, sc)
+					op.GeoM.Translate(px, py)
+					dst.DrawImage(img, op)
+					if i == g.actor {
+						// 輪到誰:原版在那一格畫一個框(2026-08-18 的原版截圖)。
+						vector.StrokeRect(dst, float32(px), float32(py),
+							float32(cell), float32(cell), 1, cgaWhite, false)
+					}
+					continue
+				}
+				// 沒有圖就退回文字 —— ⛔ 不拿別的圖冒充。
 				if f.Units[i].IsMonster {
 					ch = "怪"
 				} else if i == g.actor {
-					ch = "◆" // 輪到誰
+					ch = "◆"
 				} else {
 					ch = "人"
 				}
@@ -354,7 +376,7 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 			if ch == "" {
 				continue
 			}
-			p.Draw(dst, ch, x0+float64(vx)*cell, y0+float64(vy)*cell)
+			p.Draw(dst, ch, px, py)
 		}
 	}
 	return y0 + float64(combat.ViewH)*cell

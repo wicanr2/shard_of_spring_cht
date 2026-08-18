@@ -101,8 +101,7 @@ func TestHealerAsksBeforeCharging(t *testing.T) {
 	g := newTownGame(t, original.ShopHealer, townHealer)
 	gold0, hp0 := g.group.Gold, g.members[0].HP
 
-	g.townKey(ebiten.KeyDigit1) // 選第一位
-	g.townKey(ebiten.KeyW)      // 醫療
+	g.townKey(ebiten.KeyDigit1) // 選第一位 —— 原版沒有服務選單,直接報價
 	if g.healPay == nil {
 		t.Fatal("選完服務應該先問要不要付款")
 	}
@@ -122,7 +121,6 @@ func TestHealerAsksBeforeCharging(t *testing.T) {
 	}
 
 	g.townKey(ebiten.KeyDigit1)
-	g.townKey(ebiten.KeyW)
 	g.townKey(ebiten.KeyY) // 付
 	if g.members[0].HP <= hp0 {
 		t.Errorf("答 Y 應該治療,%d → %d", hp0, g.members[0].HP)
@@ -424,5 +422,63 @@ func TestTownBuildingsInspectByNumber(t *testing.T) {
 	}
 	if g.town == nil || g.town.mode != townBuildings {
 		t.Error("ESC 收角色卡不該順便離開城鎮")
+	}
+}
+
+// TestHealerQuotesTheNeededServiceOnly —— 治療所沒有服務選單,一次一項。
+//
+// 原版選完人直接報價,而報的是「這個人現在最該治的那一項」:
+// 生命 5/15 **且**中毒的角色報 40(解毒價),付完毒解了、**生命還是 5**。
+// ⚠ 也就是**買不到跳過狀態的補血** —— 那是規則不是介面。
+func TestHealerQuotesTheNeededServiceOnly(t *testing.T) {
+	g := newTownGame(t, original.ShopHealer, townHealer)
+	c := &g.members[0]
+	c.MaxHP, c.HP, c.Status = 15, 5, town.StatusPoisoned
+	gold0 := g.group.Gold
+
+	g.townKey(ebiten.KeyDigit1)
+	if g.healPay == nil {
+		t.Fatal("選完人應該直接報價")
+	}
+	if g.healPay.kind != town.HealPoison {
+		t.Errorf("中毒又受傷時該報解毒,得 %v", g.healPay.kind)
+	}
+	want := town.Price(town.UnpoisonPrice, 1)
+	if g.healPay.cost != want {
+		t.Errorf("報價 %d,應為解毒價 %d", g.healPay.cost, want)
+	}
+	g.townKey(ebiten.KeyY)
+	if g.members[0].Status != town.StatusOK {
+		t.Error("付完應該解毒")
+	}
+	if g.members[0].HP != 5 {
+		t.Errorf("解毒不該順便補血,生命 %d", g.members[0].HP)
+	}
+	if g.group.Gold != gold0-float64(want) {
+		t.Errorf("金幣 %.0f,應為 %.0f", g.group.Gold, gold0-float64(want))
+	}
+
+	// 這一次沒有狀態了 → 報的是醫療。
+	g.townKey(ebiten.KeyDigit1)
+	if g.healPay == nil || g.healPay.kind != town.HealWounds {
+		t.Fatalf("狀態解掉之後該報醫療,得 %v", g.healPay)
+	}
+}
+
+// TestHealerQuotesEvenWhenFree —— 滿血的人也照問「0 金幣,付款嗎」。
+//
+// 原版是一致行為(實跑 `r3g3-heal1.png`);先前在 0 元時跳過問句直接
+// 「治療」,玩家會以為自己做了什麼。
+func TestHealerQuotesEvenWhenFree(t *testing.T) {
+	g := newTownGame(t, original.ShopHealer, townHealer)
+	c := &g.members[0]
+	c.MaxHP, c.HP, c.Status = 15, 15, town.StatusOK
+
+	g.townKey(ebiten.KeyDigit1)
+	if g.healPay == nil {
+		t.Fatal("滿血也該報價")
+	}
+	if g.healPay.cost != 0 {
+		t.Errorf("滿血的報價應為 0,得 %d", g.healPay.cost)
 	}
 }

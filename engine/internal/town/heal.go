@@ -73,9 +73,8 @@ func HealCost(c original.Character, k HealKind, mult float64) int {
 
 // Heal 施做一項服務。金幣不足或不需要時回 false,且**不扣錢也不改狀態**。
 //
-// ⚠ 復活只把人拉回**1 點生命**,不是回滿 —— 拉回滿血等於白送一次治療傷勢,
-// 而畫面上看不出來(復活完滿血很像「本來就該這樣」)。
-// ⚠ 這一條沒有原版證據,是**具名的保守選擇**(見 ResurrectAssumption)。
+// ⚠ 復活只把人拉回**1 點生命**,不是回滿 —— 2026-08-18 原版實跑量到的
+// (狀態 5 的角色付 100 金幣之後生命 = 1,`workplace/dosbox/shots/r3j2-after.png`)。
 func Heal(gold *float64, c *original.Character, k HealKind, mult float64) bool {
 	cost := HealCost(*c, k, mult)
 	if cost == 0 || float64(cost) > *gold {
@@ -94,5 +93,30 @@ func Heal(gold *float64, c *original.Character, k HealKind, mult float64) bool {
 	return true
 }
 
-// ResurrectAssumption 是給畫面顯示用的說明。
-const ResurrectAssumption = "⚠ 復活後回幾點生命未解 —— 本引擎回 1 點"
+// ResurrectNote 是給畫面顯示用的說明。原版實跑量過:復活回 **1 點**。
+const ResurrectNote = "復活後回 1 點生命(原版實跑量到的)"
+
+// NeededHeal 回傳這個人**現在該做的那一項**服務。
+//
+// 原版的治療所**沒有服務選單**:選完人直接報價
+// (`That will cost N gold, Pay (Y/N)?`),而報的是「這個人現在最該治的那一項」。
+// 決定性的一次實跑:生命 5/15 **且**中毒的角色報價 40(解毒價),
+// 不是 20+40 —— 付完之後毒解了、**生命還是 5**
+// (2026-08-18,`workplace/dosbox/shots/r3i1-combo.png` / `r3i2-after.png`)。
+//
+// ⚠ 這不需要猜優先序:狀態欄是**單一個值**,同時只會是中毒/束縛/死亡其中之一,
+// 所以規則就是「有狀態先治狀態,沒有才治傷」。
+func NeededHeal(c original.Character) HealKind {
+	switch c.Status {
+	case StatusDead:
+		return HealDeath
+	case StatusBound:
+		return HealBind
+	case StatusPoisoned:
+		return HealPoison
+	}
+	if c.HP <= 0 {
+		return HealDeath // 生命 0 但狀態沒標到 —— 同 HealCost 的判斷
+	}
+	return HealWounds
+}

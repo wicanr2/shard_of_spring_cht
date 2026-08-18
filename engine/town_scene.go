@@ -198,26 +198,15 @@ func (g *Game) townKey(k ebiten.Key) {
 				g.answerHealPay(k)
 				return
 			}
-			// 1–5 選人,再按 W/P/B/R 選服務(docs/re/142 的四項)。
+			// ⚠ **原版沒有服務選單**:選完人直接報價
+			// (`That will cost N gold, Pay (Y/N)?`),而報的是
+			// 「這個人現在最該治的那一項」(town.NeededHeal)。
+			// 中毒又受傷時報的是解毒價,付完毒解了、生命不變 ——
+			// 也就是**買不到跳過狀態的補血**,那是規則不是介面。
 			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
 				ts.page = i // 借 page 當「選到第幾個人」
-				ts.msg = g.members[i].Name + ":選 W 醫療 / P 解毒 / B 解除束縛 / R 復活"
-				return
+				g.askHealPay(i, town.NeededHeal(g.members[i]))
 			}
-			var kind town.HealKind
-			switch k {
-			case ebiten.KeyW:
-				kind = town.HealWounds
-			case ebiten.KeyP:
-				kind = town.HealPoison
-			case ebiten.KeyB:
-				kind = town.HealBind
-			case ebiten.KeyR:
-				kind = town.HealDeath
-			default:
-				return
-			}
-			g.askHealPay(ts.page, kind)
 		case townTrainer:
 			// 選成員的編號升級。訓練免費(手冊 p.37)。
 			if i := int(k - ebiten.Key1); i >= 0 && i < len(g.members) {
@@ -847,10 +836,9 @@ func (g *Game) askHealPay(i int, k town.HealKind) {
 		return
 	}
 	cost := town.HealCost(g.members[i], k, g.town.shop.PriceMult)
-	if cost == 0 {
-		g.healMember(i, k)
-		return
-	}
+	// ⚠ **0 金幣也照問** —— 原版對滿血的人一樣跳出
+	// `That will cost 0 gold, Pay (Y/N)?`(實跑 `r3g3-heal1.png`)。
+	// 先前在 cost == 0 時跳過問句直接「治療」,那會讓玩家以為自己做了什麼。
 	g.healPay = &healPayState{who: i, kind: k, cost: cost}
 	g.town.msg = fmt.Sprintf("這將花費 %d 金幣,付款嗎?(Y/N)", cost)
 }
@@ -1091,14 +1079,16 @@ func (g *Game) buildingLines(ts *townState) []string {
 				town.Price(town.ResurrectPerLv, ts.shop.PriceMult)),
 			"",
 			// TOWN:26「Enter character # to be healed, (ESC exits)」
-			"輸入要醫療的角色編號,(ESC離開)　再按 W 醫療 / P 解毒 / B 解除束縛 / R 復活",
+			// TOWN:26「Enter character # to be healed, (ESC exits)」——
+			// 原版就只有這一句,沒有服務選單。
+			"輸入要醫療的角色編號,(ESC離開)",
 		}
 		for i, c := range g.members {
 			lines = append(lines, fmt.Sprintf("%d) %s　生命 %d／%d　%s　治療費 %d",
 				i+1, c.Name, c.HP, c.MaxHP, c.StatusName(),
 				town.HealCost(c, town.HealWounds, ts.shop.PriceMult)))
 		}
-		return append(lines, "", town.ResurrectAssumption)
+		return append(lines, "", town.ResurrectNote)
 	case original.ShopTavern:
 		lines := []string{
 			// TOWN:55 的原句把兩個指令寫在一行(T)alk / B)uy food)。

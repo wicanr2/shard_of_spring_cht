@@ -333,7 +333,10 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 	for vy := 0; vy < combat.ViewH; vy++ {
 		for vx := 0; vx < combat.ViewW; vx++ {
 			x, y := ox+vx, oy+vy
-			ch := "·" // 空格
+			// 空格**什麼都不畫**。原版的戰場是一片黑,不是點陣
+			// (2026-08-18 對照原版:docs/spec/14 §12-D 的截圖)——
+			// ⚠ 點陣會讓 9×9 視窗看起來像棋盤,而原版只有單位與邊界看得見。
+			ch := ""
 			if combat.OnEdge(x, y) {
 				ch = "○" // 圓點 = 出口(手冊 p.33)
 			}
@@ -347,6 +350,9 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 				} else {
 					ch = "人"
 				}
+			}
+			if ch == "" {
+				continue
 			}
 			p.Draw(dst, ch, x0+float64(vx)*cell, y0+float64(vy)*cell)
 		}

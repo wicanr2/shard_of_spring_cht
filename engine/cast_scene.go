@@ -285,7 +285,7 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 	}
 	// 群體傷害在第 1 回合施放不出來(docs/re/195 §1)。
 	// ⚠ 擋在**扣法力之前** —— 原版那一段也是先擋再扣。
-	if s.Effect == magic.EffGroupDamage && g.field.Round <= 1 {
+	if s.Effect == magic.EffGroupDamage && g.field.Round == 1 {
 		g.field.Log = append(g.field.Log, castNotPrepared)
 		return false
 	}

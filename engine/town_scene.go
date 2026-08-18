@@ -47,6 +47,11 @@ type townState struct {
 	// ⚠ 地城裡紮營也算「室內」—— 三種入口要分得開。
 	wild bool
 
+	// talked = 在酒館按過 T)alk。⚠ 原版**要先開口才聽得到傳聞**
+	// (TOWN:55 的選單就是 `T)alk … B)uy food`)—— 一進門就把傳聞
+	// 印出來,那句選單等於騙人:上面問你要不要交談,下面已經講完了。
+	talked bool
+
 	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別、'R' 調隊形、'T' 傳遞、'C' 施法、'U' 使用道具、'P' 列印
 
 	// pendingBuy 非 nil = 商店裡已經選好道具,正在問「交給角色 #」
@@ -160,6 +165,10 @@ func (g *Game) townKey(k ebiten.Key) {
 		case townTavern:
 			// 原版的酒館選單是 `T)alk … B)uy food`(docs/re/142 §3)。
 			// ⚠ 食糧買在**酒館**,不是旅店。
+			if k == ebiten.KeyT {
+				ts.talked = true
+				return
+			}
 			if k == ebiten.KeyB {
 				g.townCount = 'B'
 				ts.msg = rationsPrompt(town.Price(town.TownFoodPrice, ts.shop.PriceMult))
@@ -1042,7 +1051,9 @@ func (g *Game) buildingLines(ts *townState) []string {
 	case original.ShopInn:
 		return []string{
 			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
-			fmt.Sprintf("R) 住一晚　%d 金幣",
+			// ⚠ 寫「住一晚」會讓人以為按一次只能住一晚 —— 原版問的是
+			// **住幾晚**(TOWN:30/31),而按鍵那一支早就收 1–9。
+			fmt.Sprintf("R) 住宿　每晚 %d 金幣（可一次住 1–9 晚）",
 				town.Price(town.TownInnPrice, ts.shop.PriceMult)),
 			fmt.Sprintf("睡一晚回 %d 生命、%d 法力,並供餐（手冊 p.37）。",
 				town.InnHealHP, town.InnHealSP),
@@ -1070,12 +1081,14 @@ func (g *Game) buildingLines(ts *townState) []string {
 	case original.ShopTavern:
 		lines := []string{
 			// TOWN:55 的原句把兩個指令寫在一行(T)alk / B)uy food)。
-			// 引擎沒有 T)alk 那一步 —— 傳聞直接印在下面,所以只留 B)。
 			"你想要：T)與其他冒險者交談,B)購買食糧?(ESC離開)",
 			// TOWN:58「One day's food for the party costs N gold.」
 			fmt.Sprintf("隊伍一天的食糧花費 %d 金幣。目前 %d 份",
 				town.Price(town.TownFoodPrice, ts.shop.PriceMult), g.group.Provisions),
 			"",
+		}
+		if !ts.talked {
+			return lines
 		}
 		if r, ok := g.rumors[ts.shop.Extra]; ok {
 			return append(lines, r)

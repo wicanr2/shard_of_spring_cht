@@ -352,3 +352,39 @@ func TestTwoExitVariantsAreDistinct(t *testing.T) {
 		t.Error("兩個提問的寫法在原版是不同的(CHARUTIL:52 vs 54)")
 	}
 }
+
+// TestInnMenuSaysHowManyNights —— 旅店選單要講得出「可以住幾晚」。
+//
+// 按鍵那一支一直收 1–9(TestInnAsksHowManyNights 測的就是它),
+// 但選單上寫的是「住一晚」—— 玩家照著字面按,永遠只住一晚,
+// 而那不是規則的限制。⚠ **能做到 ≠ 玩家找得到。**
+func TestInnMenuSaysHowManyNights(t *testing.T) {
+	g := newTownGame(t, original.ShopInn, townInn)
+	lines := strings.Join(g.buildingLines(g.town), "\n")
+	if strings.Contains(lines, "住一晚") {
+		t.Errorf("選單寫「住一晚」會讓玩家以為一次只能住一晚:\n%s", lines)
+	}
+	if !strings.Contains(lines, "1–9") {
+		t.Errorf("選單要標出一次能住幾晚:\n%s", lines)
+	}
+}
+
+// TestTavernRumorNeedsTalking —— 傳聞要按過 T 才聽得到。
+//
+// 選單問「你想要:T)與其他冒險者交談…」,而傳聞早就印在下面 ——
+// 那句話等於騙人。⚠ **選單列了一個指令,它就得真的有事發生。**
+func TestTavernRumorNeedsTalking(t *testing.T) {
+	g := newTownGame(t, original.ShopTavern, townTavern)
+	g.town.shop.Extra = 1
+	g.rumors = map[int]string{1: "有人說北方的礦坑鬧鬼。"}
+
+	before := strings.Join(g.buildingLines(g.town), "\n")
+	if strings.Contains(before, "礦坑鬧鬼") {
+		t.Errorf("還沒開口就聽到傳聞了:\n%s", before)
+	}
+	g.townKey(ebiten.KeyT)
+	after := strings.Join(g.buildingLines(g.town), "\n")
+	if !strings.Contains(after, "礦坑鬧鬼") {
+		t.Errorf("按了 T 應該聽到傳聞:\n%s", after)
+	}
+}

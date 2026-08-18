@@ -139,7 +139,8 @@ func (g *Game) stepCombat() {
 	if combat.ReorderEachRound {
 		f.Sort()
 	}
-	f.Round++
+	// ⚠ 先記錄再遞增 —— `Round` 是**當下這一回合的編號**(從 1 起算),
+	// 不是「已經打完幾回合」。endTurn() 那一支也是打完才 +1。
 	f.Log = append(f.Log, fmt.Sprintf("── 第 %d 回合 ──", f.Round))
 
 	for _, i := range f.Order {
@@ -155,6 +156,7 @@ func (g *Game) stepCombat() {
 			break
 		}
 	}
+	f.Round++
 	g.settle() // 結束了才會做事(settle 自己判斷),與戰場操作走同一條路
 }
 

@@ -10,7 +10,14 @@ import "shardofspring/internal/original"
 func Build(party []original.Character, monsters []original.Monster,
 	items map[int]Item, r FloatRand) *Field {
 
-	f := &Field{Rand: r, Items: items}
+	// ⚠ **回合從 1 起算,不是 0。** 原版的 `ds:9314` 初始化成 0,
+	// 但它在**每回合開頭** `inc`(docs/re/195 §1)—— 所以打第一回合時
+	// 它的值是 1。引擎的第一回合不遞增(玩家直接行動),`Round` 要自己從 1 開始。
+	//
+	// 從 0 起算的後果不是「差一」而是**多擋一回合**:群體傷害的閘門
+	// 「回合 == 1」寫成「≤ 1」才擋得住第一回合,於是第二回合也被擋掉,
+	// 而畫面上第一回合顯示「第 0 回合」。
+	f := &Field{Rand: r, Items: items, Round: 1}
 
 	// 隊上只要有一個人會「策略」,畫面就顯示怪物在追誰(手冊 p.35)。
 	// ⚠ 這是**顯示**能力,不影響任何規則 —— 怪物的鎖定照樣進行。

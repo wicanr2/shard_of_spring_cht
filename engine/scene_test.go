@@ -10,6 +10,7 @@ package main
 // ⚠ 全部走 `g.Update()`,不直呼 handler —— 直呼測到的是規則,不是接線。
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -266,8 +267,11 @@ func TestT3EveryScenePressReacts(t *testing.T) {
 				if g.field == nil {
 					return "戰鬥不該消失"
 				}
-				if g.field.Round < 1 {
-					return "Enter 應該結束這一輪、開下一回合"
+				// 回合從 1 起算(internal/combat/build.go),按一次 Enter
+				// 打完第 1 回合 → 現在是第 2 回合。
+				if g.field.Round != 2 {
+					return fmt.Sprintf("Enter 應該結束這一輪、開下一回合,回合是 %d",
+						g.field.Round)
 				}
 				return ""
 			},

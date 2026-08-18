@@ -516,3 +516,16 @@ func TestStatusToHitBonusStartsAtBound(t *testing.T) {
 		t.Errorf("被縛應該 +30:正常 %d、被縛 %d", base, bound)
 	}
 }
+
+// TestFieldStartsOnRoundOne —— 新建的戰場是**第 1 回合**,不是第 0。
+//
+// 原版的 `ds:9314` 初始化成 0,但它在每回合開頭 `inc`(docs/re/195 §1),
+// 所以打第一回合時值是 1。引擎的第一回合不遞增 —— 從 0 起算的話,
+// 群體傷害的閘門要寫成「≤ 1」才擋得住第一回合,而那會**連第二回合一起擋掉**。
+// 症狀是玩家連兩回合放不出風暴,而畫面上寫著「第 0 回合」。
+func TestFieldStartsOnRoundOne(t *testing.T) {
+	f := Build(nil, nil, nil, NewRand(1))
+	if f.Round != 1 {
+		t.Errorf("新戰場的回合是 %d,應為 1(docs/re/195 §1)", f.Round)
+	}
+}

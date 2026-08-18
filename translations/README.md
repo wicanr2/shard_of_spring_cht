@@ -72,7 +72,7 @@
 translations/
 ├── glossary.md              ← 唯一真相來源
 ├── source/                  ← 從原版抽出的原文(*.tsv);towndata.tsv 譯文也在這
-├── names/                   ← ITEMS / SPELLS / MONSTERS / TITLES 的譯文
+├── names/                   ← ITEMS / SPELLS / MONSTERS / TITLES / 地城名的譯文
 └── dungeon-text/            ← DT0–DT7TEXT.DAT 的譯文,一檔一個地城
 ```
 

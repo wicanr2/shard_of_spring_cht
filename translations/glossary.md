@@ -241,6 +241,15 @@
    **地名與家族**:伊姆羅斯 `Ymros`、拉利斯 `Ralith`、伊斯蘭達 `Islanda`、
    艾德林要塞 `Edrin's Keep`、黑堡 `Blackfort`、月華 `Moonglow`
 
+   **十三個地城**(索引 = `MAZEDATA` 的入口編號,見
+   [`docs/re/222`](../docs/re/222-dungeon-names-by-entry.md);
+   譯文在 `translations/names/dungeons.tsv`):
+   洞中老者 `Old Man in Cave`、沼澤之王 `Swamp King`、黑堡 `Black Fort`、
+   艾德林要塞 `Edrin's Keep`、守門人 `Gate Keeper`、拉利斯 `Ralith`、
+   叛軍藏身處 `Rebel's Hideout`,以及月華家族的五座墓
+   (莫辛、瑟西恩、洛西安、艾爾德隆、范迪加德)。
+   ⚠ **地城名 = 墓主名 = 該地城的頭目名**,三者同名 —— 譯名要一致
+
    **帶稱號的複合形**:毀滅者迪維爾 `Devir the Destroyer`、
    善者蓋林 `Galin the Good`、灰髮艾爾德隆 `Eldron Greyhair`、瘋子莫辛 `Murthin the Mad`
 

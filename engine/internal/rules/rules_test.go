@@ -134,13 +134,48 @@ func TestDispelMatrixMatchesManual(t *testing.T) {
 	}
 }
 
-func TestLevelUpUsesCumulativeColumn(t *testing.T) {
-	// 手冊 p.47 累計欄:等級 1 要 300 才能升 2
-	if CanLevelUp(1, 299) {
-		t.Error("299 經驗不該能從 1 升 2")
+// TestExpForLevelMatchesTheOriginal —— 經驗門檻是**公式**,不是手冊那張表。
+//
+//	門檻(n) = INT( (1.8^n + 2n) × 100 )      TOWN.EXE 0x10FF4(docs/re/223)
+//
+// ⚠ 兩條獨立證據都釘在這裡:
+//  1. 原版實跑量到的四個點(訓練所的「你還需要 N 點經驗」)
+//  2. 手冊 p.47 那張表 = 同一條公式**截到百位**,二十列一列不差
+//
+// 手冊的截尾在低等級差很多(第 1 級 380 → 300),照手冊實作會讓玩家
+// 每一級都比原版早升,而畫面上沒有任何數字看起來是錯的。
+func TestExpForLevelMatchesTheOriginal(t *testing.T) {
+	// 原版實跑(2026-08-18,workplace/dosbox/shots/r3n*.png、r3o*.png)
+	for lv, want := range map[int]int{1: 380, 2: 724, 3: 1183, 4: 1849} {
+		if got := ExpForLevel(lv); got != want {
+			t.Errorf("第 %d 級門檻 %d,原版實跑量到 %d", lv, got, want)
+		}
 	}
-	if !CanLevelUp(1, 300) {
-		t.Error("300 經驗該能從 1 升 2")
+	// 手冊 p.47 的二十列 = 公式截到百位。
+	manual := [...]int{
+		1: 300, 2: 700, 3: 1_100, 4: 1_800, 5: 2_800,
+		6: 4_600, 7: 7_500, 8: 12_600, 9: 21_600, 10: 37_700,
+		11: 66_400, 12: 118_000, 13: 210_800, 14: 377_600, 15: 677_600,
+		16: 1_217_500, 17: 2_189_300, 18: 3_938_200, 19: 7_086_100, 20: 12_752_200,
+	}
+	for lv := 1; lv <= MaxLevel; lv++ {
+		if got := ExpForLevel(lv) / 100 * 100; got != manual[lv] {
+			t.Errorf("第 %d 級公式值截到百位 = %d,手冊 p.47 是 %d", lv, got, manual[lv])
+		}
+	}
+	// ⚠ 型別必須是 float32:float64 從第 11 級起會差 1–2 點。
+	if ExpForLevel(11) != 66_468 {
+		t.Errorf("第 11 級 = %d,MBF 單精度算出來是 66468 —— 是不是用了 float64?",
+			ExpForLevel(11))
+	}
+}
+
+func TestLevelUpUsesTheFormula(t *testing.T) {
+	if CanLevelUp(1, 379) {
+		t.Error("379 經驗不該能從 1 升 2(門檻 380)")
+	}
+	if !CanLevelUp(1, 380) {
+		t.Error("380 經驗該能從 1 升 2")
 	}
 	// 頂級不再升
 	if CanLevelUp(MaxLevel, 99_999_999) {
@@ -152,7 +187,7 @@ func TestLevelUpUsesCumulativeColumn(t *testing.T) {
 // 一旦有人加了價格,這個測試會編不過而不是靜靜地通過。
 func TestLevelUpIsFree(t *testing.T) {
 	var f func(int, int) bool = CanLevelUp
-	if !f(5, 2_800) {
+	if !f(5, 2_889) {
 		t.Error("經驗到了就該能升,不看金幣")
 	}
 }

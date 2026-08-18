@@ -268,5 +268,5 @@ func NeedExp(level int) int {
 	if level < 1 || level >= rules.MaxLevel {
 		return 0
 	}
-	return rules.ExpForLevel[level]
+	return rules.ExpForLevel(level)
 }

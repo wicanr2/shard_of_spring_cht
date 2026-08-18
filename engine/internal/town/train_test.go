@@ -44,11 +44,11 @@ func TestTrainNeedsTheRightGuild(t *testing.T) {
 
 func TestTrainNeedsExperience(t *testing.T) {
 	c := hero(1, 10)
-	if got := Train(&c, 299, 0, capped()); got != TrainNotEnoughExp {
-		t.Fatalf("299 經驗應不足,得 %v", got)
+	if got := Train(&c, 379, 0, capped()); got != TrainNotEnoughExp {
+		t.Fatalf("379 經驗應不足,得 %v", got)
 	}
-	if got := Train(&c, 300, 0, capped()); got != TrainOK {
-		t.Fatalf("300 經驗應可升級,得 %v", got)
+	if got := Train(&c, 380, 0, capped()); got != TrainOK {
+		t.Fatalf("380 經驗應可升級,得 %v", got)
 	}
 	if c.Level != 2 {
 		t.Fatalf("等級應為 2,得 %d", c.Level)
@@ -58,7 +58,7 @@ func TestTrainNeedsExperience(t *testing.T) {
 // 升級只加上限,**當前值一點都不動**(docs/re/184)。
 func TestTrainAddsGrowthToTheCapOnly(t *testing.T) {
 	c := hero(1, 10) // 體能 10 戰士:四捨五入(10 × ~1 × 2/3) + 1 = 8
-	Train(&c, 300, 0, capped())
+	Train(&c, 380, 0, capped())
 	if c.MaxHP != 18 {
 		t.Errorf("最大生命應為 10+8=18,得 %d", c.MaxHP)
 	}
@@ -74,7 +74,7 @@ func TestWizardGrowsSPAndUsesWizardColumn(t *testing.T) {
 		Name: "法", Class: byte(rules.ClassWizard), Level: 1,
 		End: 10, Int: 12, MaxHP: 8, HP: 8, MaxSP: 5, SP: 5,
 	}
-	Train(&c, 300, 1, capped())
+	Train(&c, 380, 1, capped())
 	if c.MaxHP != 8+5 { // 體質 10 的**巫師**欄是 5,不是戰士的 7
 		t.Errorf("巫師最大生命應為 8+5=13,得 %d", c.MaxHP)
 	}
@@ -87,7 +87,7 @@ func TestWizardGrowsSPAndUsesWizardColumn(t *testing.T) {
 func TestTrainIsFreeOfCharge(t *testing.T) {
 	// 手冊 p.37:訓練完全免費。介面上沒有金幣參數,這裡確認升級不需要它。
 	c := hero(1, 10)
-	if Train(&c, 300, 0, capped()) != TrainOK {
+	if Train(&c, 380, 0, capped()) != TrainOK {
 		t.Error("升級不該需要金幣")
 	}
 }
@@ -164,7 +164,7 @@ func TestTrainGrowsAttributes(t *testing.T) {
 	c := hero(1, 10)
 	c.Speed, c.Str, c.Int, c.End, c.ToHit = 8, 8, 8, 8, 8
 	before := c.Speed + c.Str + c.Int + c.End + c.ToHit
-	Train(&c, 300, 0, &combat.ScriptRand{Values: []int{1}})
+	Train(&c, 380, 0, &combat.ScriptRand{Values: []int{1}})
 	after := c.Speed + c.Str + c.Int + c.End + c.ToHit
 	if after-before != AttrGrowthRolls {
 		t.Errorf("升一級應總共加 %d 點屬性,得 %d", AttrGrowthRolls, after-before)
@@ -176,7 +176,7 @@ func TestTrainAwardsSkillPoints(t *testing.T) {
 	// roll 1 = 速度,智能沒長 → 只拿保底的 1 點
 	c := hero(1, 10)
 	c.Int, c.SkillPts = 12, 4
-	Train(&c, 300, 0, &combat.ScriptRand{Values: []int{1}})
+	Train(&c, 380, 0, &combat.ScriptRand{Values: []int{1}})
 	if c.SkillPts != 4+1 {
 		t.Errorf("智能沒長時應為 4+1=5,得 %d", c.SkillPts)
 	}
@@ -184,7 +184,7 @@ func TestTrainAwardsSkillPoints(t *testing.T) {
 	// roll 3 = 智能,三次都中 → 智能 +3,技能點 +3+1
 	d := hero(1, 10)
 	d.Int, d.SkillPts = 12, 0
-	Train(&d, 300, 0, &combat.ScriptRand{Values: []int{3}})
+	Train(&d, 380, 0, &combat.ScriptRand{Values: []int{3}})
 	if d.Int != 15 {
 		t.Fatalf("測試前提壞了:智能應為 15,得 %d", d.Int)
 	}
@@ -198,7 +198,7 @@ func TestTrainAwardsSkillPoints(t *testing.T) {
 func TestTrainSkillPointsFollowActualGrowthNotTheRoll(t *testing.T) {
 	c := hero(1, 10)
 	c.Int, c.SkillPts = AttrGrowthCap, 0
-	Train(&c, 300, 0, &combat.ScriptRand{Values: []int{3}}) // 三次都選智能
+	Train(&c, 380, 0, &combat.ScriptRand{Values: []int{3}}) // 三次都選智能
 	if c.Int != AttrGrowthCap {
 		t.Fatalf("智能不該超過 %d,得 %d", AttrGrowthCap, c.Int)
 	}
@@ -311,7 +311,7 @@ func TestTrainDoesNotHealOnLevelUp(t *testing.T) {
 		Name: "巫", Class: byte(rules.ClassWizard), Level: 1,
 		End: 10, Int: 12, MaxHP: 8, HP: 3, MaxSP: 5, SP: 1,
 	}
-	Train(&c, 300, 1, capped())
+	Train(&c, 380, 1, capped())
 	if c.HP != 3 || c.SP != 1 {
 		t.Errorf("當前生命/法力不該被動到,得 %d/%d", c.HP, c.SP)
 	}
@@ -326,7 +326,7 @@ func TestTotalsClampAt255(t *testing.T) {
 		Name: "巫", Class: byte(rules.ClassWizard), Level: 1,
 		End: 20, Int: 20, MaxHP: MaxTotalPoints, MaxSP: MaxTotalPoints,
 	}
-	Train(&c, 300, 1, capped())
+	Train(&c, 380, 1, capped())
 	if c.MaxHP != MaxTotalPoints || c.MaxSP != MaxTotalPoints {
 		t.Errorf("總量應夾在 %d,得 %d/%d", MaxTotalPoints, c.MaxHP, c.MaxSP)
 	}

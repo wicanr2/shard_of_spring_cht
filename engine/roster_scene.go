@@ -269,6 +269,7 @@ func (g *Game) rosterInfo() {
 			month = fmt.Sprintf("第 %d 月", grp.Month) // 13 月以上沒有名字
 		}
 		out = append(out, fmt.Sprintf("隊伍 #%d　金幣：%.0f　食糧：%d", n, grp.Gold, grp.Provisions))
+		// CHARUTIL:42「Saved in the month of the 」+ 45「Currently in the 」。
 		out = append(out, fmt.Sprintf("　　存檔於%s　目前位於%s", month, g.groupPlace(grp)))
 	}
 	// 原版的資訊頁還有一段「誰在哪一隊」的兩欄表(CHARUTIL:69)。
@@ -620,10 +621,10 @@ func (g *Game) groupPlace(grp original.Group) string {
 	if grp.MazeNum != notInMaze && grp.MazeNum != 0 {
 		for i, e := range g.mazeData {
 			if e.MazeFile == grp.MazeNum && i < len(g.dungeonNames) {
-				return g.dungeonNames[i]
+				return "地城： " + g.dungeonNames[i] // CHARUTIL:44「maze: 」
 			}
 		}
-		return fmt.Sprintf("地城 DG%d", grp.MazeNum)
+		return fmt.Sprintf("地城： DG%d", grp.MazeNum)
 	}
 	return "野外" // CHARUTIL:`Wilderness`
 }

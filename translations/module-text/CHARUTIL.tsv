@@ -9,7 +9,7 @@ row	addr	original	orig_bytes	translation	trans_bytes	fits	note	wired
 39	ds:6D18	Party #	7	隊伍 #	6	Y		engine/roster_scene.go
 40	ds:6D24	Gold:	5	金幣：	6	Y		engine/party_panel.go
 41	ds:6D2E	 Provisions:	12	 食糧：	6	Y		engine/party_panel.go
-42	ds:6D3E	Saved in the month of the 	26	存檔於月份 	11	Y		engine/roster_scene.go
+42	ds:6D3E	Saved in the month of the 	26	存檔於	9	Y	⚠ 後面直接接月份名(MENU.EXE 位移 9888),原版是「the month of the Spirit」	engine/roster_scene.go
 43	ds:6D5C	Wilderness	10	野外	4	Y		engine/camp_actions.go
 44	ds:6D6E	maze: 	6	地城： 	6	Y		engine/roster_scene.go
 45	ds:6D78	Currently in the 	17	目前位於 	9	Y		engine/roster_scene.go

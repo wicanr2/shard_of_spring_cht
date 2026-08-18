@@ -119,7 +119,9 @@ func (g *Game) townKey(k ebiten.Key) {
 	switch ts.mode {
 	case townBuildings:
 		if i := int(k - ebiten.KeyA); i >= 0 && i < len(ts.shops) {
-			ts.shop, ts.msg, ts.page = ts.shops[i], "", 0
+			// ⚠ `talked` 要跟著重置 —— 走出酒館再進來,傳聞要重新問一次,
+			// 不然那句「T)與其他冒險者交談」在第二次進門時又變成擺設。
+			ts.shop, ts.msg, ts.page, ts.talked = ts.shops[i], "", 0, false
 			// 位移 34 的負值決定進哪個畫面(docs/re/138 §2)
 			switch ts.shop.Kind {
 			case original.ShopInn:

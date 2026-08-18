@@ -387,4 +387,11 @@ func TestTavernRumorNeedsTalking(t *testing.T) {
 	if !strings.Contains(after, "礦坑鬧鬼") {
 		t.Errorf("按了 T 應該聽到傳聞:\n%s", after)
 	}
+	// 走出去再進來,要重新問一次。
+	g.town.mode = townBuildings
+	g.town.shops = []original.Shop{g.town.shop}
+	g.townKey(ebiten.KeyA)
+	if g.town.talked {
+		t.Error("重新進店之後 talked 應該重置")
+	}
 }

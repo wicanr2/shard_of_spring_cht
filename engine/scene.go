@@ -477,9 +477,9 @@ func (s rosterHotkey) Handles(in Input) bool {
 	if s.g.roster != nil && s.g.roster.open {
 		return false
 	}
-	// ⚠ `Q)uit` 的確認句掛著時也要讓開 —— 那句問的是 (Y/N),
+	// ⚠ `Q)uit` 的兩句確認掛著時都要讓開 —— 問的是 (Y/N),
 	// 而這個熱鍵會把 `N` 吃掉,於是「取消」變成「開名冊」。
-	if s.g.quitAsk {
+	if s.g.quitAsk || s.g.quitSaveAsk {
 		return false
 	}
 	playing := s.g.shell == nil || s.g.shell.mode == shellPlaying
@@ -634,13 +634,21 @@ func (s mazePromptScene) Update(in Input) Transition {
 type mazeScene struct{ g *Game }
 
 func (s mazeScene) Prompt() string {
-	return "方向鍵／1234：移動　　C：紮營　　S：存檔　　A：另存新檔"
+	if p := s.g.quitFlowPrompt(); p != "" {
+		return p
+	}
+	return "方向鍵／1234：移動　C：紮營　S：存檔　A：另存　Q：離開"
 }
 func (s mazeScene) Name() string         { return "maze" }
 func (s mazeScene) Handles(Input) bool   { return s.g.level != nil }
 func (s mazeScene) Draw(d *ebiten.Image) { s.g.drawMaze(d) }
 func (s mazeScene) Update(in Input) Transition {
 	g := s.g
+	// Q)uit —— 原版地城的小鍵盤模板右下角就是它(2026-08-18 實跑 `q1-afterQ.png`)。
+	// ⚠ **要擺在方向鍵前面**:問句掛著的時候按方向鍵不該讓隊伍走動。
+	if g.quitFlowKey(in) {
+		return TransitionStay
+	}
 	for key, d := range dirs {
 		if in.Pressed(key) {
 			g.stepMaze(maze.Facing(d))
@@ -672,16 +680,72 @@ func (s mazeScene) Update(in Input) Transition {
 type worldScene struct{ g *Game }
 
 func (s worldScene) Prompt() string {
-	if s.g.quitAsk {
-		return quitPrompt
+	if p := s.g.quitFlowPrompt(); p != "" {
+		return p
 	}
 	// ⚠ 欄寬有上限(倚天字型下 80 欄),加一項就要縮別的 ——
 	// `TestEveryScenePrompt` 擋的就是「畫到框外壓住別的面板」。
 	return "方向鍵／1234：移動　C：紮營　P：資訊　N：名冊　S：存檔　A：另存　Q：離開"
 }
 
-// quitPrompt 是原版 `Q)uit` 的確認句(實跑 `r3r3-Q.png`)。
+// quitPrompt 是原版 `Q)uit` 的確認句(實跑 `r3r3-Q.png`;
+// `USERLIB` 的原文 `Are you really sure you wish to Quit (Y/N) ?`)。
 const quitPrompt = "你確定要離開嗎?(Y/N)"
+
+// quitSavePrompt 是答了 `Y` 之後的第二句。
+//
+// ⚠ **原版問兩句**(2026-08-18 實跑 `qy2.png`:`Do you wish to save the game
+// (Y/N) ?`),先前引擎只問第一句就走 —— 玩到一半按 `Q` 會**靜靜地丟掉進度**。
+const quitSavePrompt = "要儲存這場遊戲嗎?(Y/N)"
+
+// quitFlowKey 處理 `Q)uit` 的兩句問答,回 true 表示這一格按鍵被吃掉了。
+//
+// ⚠ 世界地圖與地城共用同一支 —— 原版兩邊的小鍵盤模板右下角都印著 `[Q]`
+// (地城的實跑見 `q1-afterQ.png`),而兩邊的問句一字不差。
+//
+// ⚠ 原版答完之後**直接回到 DOS**(`qn2.png` 印出道別行);
+// 本引擎回**主選單**,而主選單的 `Q` 才離開程式(同一句道別)——
+// 這是具名的實作決定:重製版有多存檔槽與隊伍選擇,回主選單才接得上。
+func (g *Game) quitFlowKey(in Input) bool {
+	switch {
+	case g.quitSaveAsk:
+		switch {
+		case in.Pressed(ebiten.KeyY):
+			g.quitSaveAsk = false
+			g.saveHere()
+			g.openMainMenu()
+		case in.Pressed(ebiten.KeyN):
+			g.quitSaveAsk = false
+			g.openMainMenu()
+		case in.Pressed(ebiten.KeyEscape):
+			g.quitSaveAsk = false // 兩句都問完才走,ESC 是整條取消
+		}
+		return true
+	case g.quitAsk:
+		switch {
+		case in.Pressed(ebiten.KeyY):
+			g.quitAsk, g.quitSaveAsk = false, true
+		case in.Pressed(ebiten.KeyN), in.Pressed(ebiten.KeyEscape):
+			g.quitAsk = false
+		}
+		return true
+	case in.Pressed(ebiten.KeyQ):
+		g.quitAsk = true
+		return true
+	}
+	return false
+}
+
+// quitFlowPrompt 回傳問答中的提示列,沒在問就回空字串。
+func (g *Game) quitFlowPrompt() string {
+	switch {
+	case g.quitSaveAsk:
+		return quitSavePrompt
+	case g.quitAsk:
+		return quitPrompt
+	}
+	return ""
+}
 func (s worldScene) Name() string       { return "world" }
 func (s worldScene) Handles(Input) bool { return true }
 
@@ -768,18 +832,7 @@ func (s worldScene) Update(in Input) Transition {
 	// (`Are you really sure you wish to Quit (Y/N) ?`),`Y` 回主選單。
 	// ⚠ 先前**完全沒有這條路** —— 玩到一半想換一支隊伍只能關掉程式重開。
 	// ⚠ **要擺在方向鍵前面**:問句掛著的時候按方向鍵不該讓隊伍走動。
-	if g.quitAsk {
-		switch {
-		case in.Pressed(ebiten.KeyY):
-			g.quitAsk = false
-			g.openMainMenu()
-		case in.Pressed(ebiten.KeyN), in.Pressed(ebiten.KeyEscape):
-			g.quitAsk = false
-		}
-		return TransitionStay
-	}
-	if in.Pressed(ebiten.KeyQ) {
-		g.quitAsk = true
+	if g.quitFlowKey(in) {
 		return TransitionStay
 	}
 	for key, d := range dirs {

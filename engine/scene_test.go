@@ -704,13 +704,49 @@ func TestWorldQuitAsksThenReturnsToMenu(t *testing.T) {
 	if g.quitAsk {
 		t.Error("按 N 應該取消")
 	}
-	// Y = 回主選單。
+	// Y → 第二句「要儲存這場遊戲嗎」(原版問兩句,2026-08-18 實跑 `qy2.png`),
+	// 再答一次才走。
 	press(t, g, ebiten.KeyQ)
 	press(t, g, ebiten.KeyY)
 	if g.quitAsk {
-		t.Error("按 Y 之後不該還掛著問句")
+		t.Error("按 Y 之後第一句不該還掛著")
+	}
+	if !g.quitSaveAsk {
+		t.Fatal("按 Y 之後要問「要儲存這場遊戲嗎」")
+	}
+	if g.shell != nil && g.shell.mode == shellMainMenu {
+		t.Error("第二句還沒答就回主選單了 —— 那句就等於沒問")
+	}
+	press(t, g, ebiten.KeyN) // 不存檔
+	if g.quitSaveAsk {
+		t.Error("答完第二句不該還掛著")
 	}
 	if g.shell == nil || g.shell.mode != shellMainMenu {
-		t.Errorf("按 Y 應該回主選單,得 %v", g.shell)
+		t.Errorf("答完兩句應該回主選單,得 %v", g.shell)
+	}
+}
+
+// TestMazeQuitAsksToo:地城裡按 `Q` 走同一條問答。
+//
+// 原版地城的小鍵盤模板右下角就印著 `[Q]`,按下去問的是同一句
+// (2026-08-18 實跑 `q1-afterQ.png` → `qy2.png` → 道別行回 DOS)。
+// ⚠ 引擎回主選單而不是回 DOS,理由寫在 quitFlowKey 的說明裡。
+func TestMazeQuitAsksToo(t *testing.T) {
+	g := newPlayingGame(t)
+	g.level = &mazeLevel{}
+	major, minor := g.mazeState.Major, g.mazeState.Minor
+	press(t, g, ebiten.KeyQ)
+	if !g.quitAsk {
+		t.Fatal("地城裡按 Q 應該問一句")
+	}
+	// 問句掛著時按方向鍵不該走動
+	press(t, g, ebiten.KeyUp)
+	if g.mazeState.Major != major || g.mazeState.Minor != minor {
+		t.Errorf("確認期間隊伍走動了:(%d,%d) → (%d,%d)",
+			major, minor, g.mazeState.Major, g.mazeState.Minor)
+	}
+	press(t, g, ebiten.KeyN)
+	if g.quitAsk {
+		t.Error("按 N 應該取消")
 	}
 }

@@ -83,6 +83,9 @@ type Game struct {
 	mazeData    []original.MazeEntry
 	// quitAsk:世界地圖按了 `Q`,正在問「你確定要離開嗎」(scene.go)。
 	quitAsk bool
+	// quitSaveAsk:上一句答了 `Y`,正在問「要儲存這場遊戲嗎」——
+	// 原版問兩句(2026-08-18 實跑),只問第一句會靜靜地丟掉進度。
+	quitSaveAsk bool
 	// dungeonNames:入口編號 → 地城名(docs/re/222)。
 	dungeonNames []string
 	mazeTiles   map[int]*ebiten.Image

@@ -26,18 +26,18 @@
 | [`05-world-scene.md`](05-world-scene.md) | **世界地圖場景**(9×9 視野、地形值總表、移動、可通行性八條規則)|
 | [`06-party-and-save.md`](06-party-and-save.md) | **隊伍、角色與存檔**(兩個檔的關係、成員槽、狀態欄)|
 | [`07-combat-scene.md`](07-combat-scene.md) | **戰鬥場景**(單位陣列、先攻、可重現的亂數);傷害公式整段已讀通([`re/153`](../re/153-damage-formula-closed.md))|
-| [`08-maze-scene.md`](08-maze-scene.md) | **迷宮與事件**(Major/Minor 座標、視野、事件三類、跨關卡)|
+| [`08-maze-scene.md`](08-maze-scene.md) | **迷宮與事件**(Major/Minor 座標、視野、事件三類、跨關卡、隨機遭遇)。⚠ **Major 是南北、Minor 是東西**([`re/224`](../re/224-maze-axes-major-is-north-south.md))|
 | [`09-magic-items.md`](09-magic-items.md) | **法術與道具**(施法閘門、威力、狀態強度、道具發動 = `擲骰(100) ≤ 欄6`);⚠ 效果類別 3/13 未解 |
 | [`10-localization.md`](10-localization.md) | **中文化上線**(轉檔期併入、破格的定義與預算)|
-| [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 旅店 / 酒館 / 訓練所 / 治療所 / 營地 / 名冊 / 角色創造**;⚠ 屬性算式的兩個常數未解|
+| [`11-town-camp-roster.md`](11-town-camp-roster.md) | **城鎮 / 商店 / 旅店 / 酒館 / 訓練所 / 治療所 / 營地 / 名冊 / 角色創造**;⚠ 屬性算式的兩個常數未解。升級門檻是公式不是手冊那張表([`re/223`](../re/223-experience-threshold-formula.md))|
 | [`13-sound.md`](13-sound.md) | **聲音**(`PLAY` 巨集的解析與方波合成);⚠ 十五段樂譜的**用途**是位置上的推測 |
 | [`14-remake-worklist.md`](14-remake-worklist.md) | **Remake worklist —— 狀態的單一真相來源**。RE 階段結束後「規則實作完 → 遊戲做完」之間的差距,含順序與理由 |
 | [`15-game-shell.md`](15-game-shell.md) | **遊戲外殼**:標題、主選單、隊伍選擇、全滅與結局。⚠ 原版主選單**沒有「開新遊戲」** |
-| [`16-camp-actions.md`](16-camp-actions.md) | 營地的 `C)ast`/`U)se`/`P)rint` 與**施法的投入點數** —— 規則全已解,只差接線 |
+| [`16-camp-actions.md`](16-camp-actions.md) | 營地的 `C)ast`/`U)se`/`P)rint` 與**施法的投入點數** —— 全部實作完成 |
 | [`17-scripted-fights.md`](17-scripted-fights.md) | **腳本戰鬥**:事件指定的怪物清單(`ds:372C + 2i`,哨兵 99)。533 = 2 × Great Dragon + Siriadne |
 | [`18-save-format.md`](18-save-format.md) | **自己的存檔格式**(JSON,一檔 = 25 角色 + 5 隊伍 + 進度)。⚠ 順帶修掉「一次性事件會復活」|
 | [`19-module-text.md`](19-module-text.md) | **模組內文本的中文化**(F1)。⚠ 主產品是「讓畫面說原版說的話」,**副產品是覆蓋率稽核** |
-| [`12-combat-board.md`](12-combat-board.md) | **戰場**(格陣列 31 寬、畫面 15×15 視窗、行動點數 = 速度、只打面前那一格、走上外圈離場);⚠ 高度與怪物擲骰範圍未解、AI 是佔位 |
+| [`12-combat-board.md`](12-combat-board.md) | **戰場**(格陣列 31 寬、畫面 15×15 視窗、行動點數 = 速度、只打面前那一格、走上外圈離場);高度 = 31([`re/218`](../re/218-four-named-assumptions-audited.md));⚠ 怪物**施法**只解規則沒接線(投入與目標格未讀到)|
 
 ## ⚠ 實作前必讀的六條
 
@@ -59,20 +59,22 @@
 
 ## ⚠ 標 READY 不等於零疑問
 
-每份規格結尾都有「未解」段。**目前還開著的洞**(2026-08-15):
+每份規格結尾都有「未解」段。**目前還開著的洞**(2026-08-18,QA 三輪之後):
 
-| 洞 | 出處 |
-|---|---|
-| 戰鬥屬性 **14** 的語意 | [`spec/01`](01-combat.md) §9;它決定要不要查空手道旗標([`re/153`](../re/153-damage-formula-closed.md) §5)。⚠ 屬性 **18** 已有形狀([`re/158`](../re/158-attribute-18-is-a-coin-flipped-preference.md))|
-| 法術效果類別 **3** | [`spec/09`](09-magic-items.md) |
-| 屬性算式的兩個常數 `A` / `B` | [`spec/11`](11-town-camp-roster.md) §5;**形狀已讀出**([`re/156`](../re/156-attribute-roll-shape.md)),只剩值 |
-| 戰場的**怪物佈陣與 AI** | [`spec/12`](12-combat-board.md) §5;⚠ **隊伍的佈陣已解**([`re/160`](../re/160-party-deploys-three-per-row.md))|
-| 迷宮的**寶石謎題 / 治療池觸發點** | [`spec/08`](08-maze-scene.md) §5.5;規則已解,是哪一筆事件叫起它們未解 |
-| 戰後**金幣**的四個常數 | [`re/152`](../re/152-experience-settlement-formula.md) §2.3;**管線形狀已通**(含兩次次方),⚠ 手冊沒寫金幣 → **唯一的路是 oracle 實測**。引擎已發金幣,走具名佔位 |
-| 營地的 `H)unt` / `I)dentify` / `P)rint` | [`spec/11`](11-town-camp-roster.md) §4;⚠ `R)eorder` 與 `T)rade` **已實作**(效果由已解的結構決定)|
+| 洞 | 出處 | 現在怎麼辦 |
+|---|---|---|
+| **一場遭遇有幾隻怪** | [`re/225`](../re/225-encounter-monster-count-anchor.md) | 算式的位置釘住了(`CMBT 0x11180`),缺 `INT 3F:C4` 的運算元約定。引擎一場放一隻,**標在畫面上** |
+| **怪物施法的投入與目標格** | [`spec/12`](12-combat-board.md) | 施不施、放哪招都解了([`re/170`](../re/170-monster-ai-casts-by-spell-family.md)、[`186`](../re/186-monster-ai-target-placement-cast.md)),但投入幾點與 5×5 的中心點沒讀到。怪物只移動與普攻,**標在畫面上** |
+| 法術效果**類別 13** | [`spec/09`](09-magic-items.md) | 不套用效果,訊息含「未解」 |
+| `ds:1Fh` 的執行期間接寫入 | [`re/218`](../re/218-four-named-assumptions-audited.md) §4 | **靜態關不掉**(結構性)。要實跑一個取整看得出差別的地方才能定案 |
+| 十五段樂譜的**用途** | [`spec/13`](13-sound.md) | 位置上的推測,不影響規則 |
 
-**已經填掉的**(不要再照舊引用):傷害公式的兩個係數(`k₁` = 0.5、`k₂` 折進 `Roll`)、
-擲骰面數(= 100)、`CHARS.DAT` 位移 1(= 所屬隊伍)、經驗值的位移與結算算式、
-魔法道具的發動判定(欄6 就是百分比)、屬性算式的形狀、**先攻每回合重排**。
+**已經填掉的**(不要再照舊引用):傷害公式的兩個係數、擲骰面數(= 100)、
+`CHARS.DAT` 位移 1、經驗值的位移與結算算式、魔法道具的發動判定、
+屬性算式的形狀**與兩個常數**(`A` = 6、`B` = 2)、先攻每回合重排、
+戰鬥屬性 14(= 怪物的法術系別)、法術效果類別 3(= 命中能力)、
+迷宮的寶石謎題與治療池**觸發點**、戰後金幣的四個常數、
+營地的 `H)unt`/`I)dentify`/`P)rint`、戰場高度(= 31)、
+**升級門檻**(是公式不是手冊那張表)、**迷宮的兩軸**。
 
 **實作時遇到這些,不要猜 —— 回 `docs/re/` 或回 IDA。**

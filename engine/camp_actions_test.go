@@ -905,3 +905,47 @@ func TestCampCastFizzlesAndStillCostsPoints(t *testing.T) {
 		t.Errorf("失敗照樣扣法力:%d → %d,想要 %d", sp0, g.members[0].SP, sp0-10)
 	}
 }
+
+// 世界地圖按 C 紮營,而且算**野外**(打得到獵)。
+//
+// 原版:`Making Camp..` 在 WRLDMOVE.EXE 與 MAZEMOVE.EXE 各一次、
+// TOWN.EXE 零次(docs/spec/14 §12-B)。營地的 11 個指令在原版是
+// 野外隨時可用的 —— 只能在城鎮紮營會改變遠征地城的節奏。
+func TestCampFromWorldIsWild(t *testing.T) {
+	g := newPlayingGame(t)
+	press(t, g, ebiten.KeyC)
+	if g.town == nil {
+		t.Fatal("世界地圖按 C 沒有紮營")
+	}
+	if g.town.mode != townCamp {
+		t.Errorf("紮營之後的模式是 %v,要 townCamp", g.town.mode)
+	}
+	if !g.town.wild {
+		t.Error("世界地圖紮營要算野外(打得到獵)")
+	}
+	// 拔營回地圖,不是回建築清單 —— 野外沒有建築清單。
+	press(t, g, ebiten.KeyEscape)
+	if g.town != nil {
+		t.Errorf("野外拔營應該回地圖,卻停在 %v", g.town.mode)
+	}
+}
+
+// 城鎮裡紮營算**室內** —— 先前的判定是「不在迷宮 + 模式是營地」,
+// 那在城鎮裡也成立,於是城裡打得到獵,而畫面上完全看不出哪裡不對。
+func TestCampInTownIsIndoors(t *testing.T) {
+	g := newPlayingGame(t)
+	if len(g.townSites) == 0 {
+		t.Skip("沒有城鎮座標表")
+	}
+	s := g.townSites[0]
+	if !g.enterTown(s.X, s.Y) {
+		t.Fatal("進不了城鎮")
+	}
+	press(t, g, ebiten.KeyZ)
+	if g.town.mode != townCamp {
+		t.Fatalf("城鎮按 Z 沒進營地,模式是 %v", g.town.mode)
+	}
+	if g.town.wild {
+		t.Error("城鎮裡紮營要算室內(打不到獵)")
+	}
+}

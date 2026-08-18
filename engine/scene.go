@@ -612,7 +612,7 @@ func (s mazePromptScene) Update(in Input) Transition {
 type mazeScene struct{ g *Game }
 
 func (s mazeScene) Prompt() string {
-	return "方向鍵／1234：移動　　ESC：離開地城　　S：存檔　　A：另存新檔"
+	return "方向鍵／1234：移動　　C：紮營　　S：存檔　　A：另存新檔"
 }
 func (s mazeScene) Name() string         { return "maze" }
 func (s mazeScene) Handles(Input) bool   { return s.g.level != nil }
@@ -624,12 +624,15 @@ func (s mazeScene) Update(in Input) Transition {
 			g.stepMaze(maze.Facing(d))
 		}
 	}
-	if in.Pressed(ebiten.KeyEscape) {
-		// ⚠ 原版怎麼離開迷宮**未解**(docs/re/146 §2)。實跑已經排除
-		// `ESC` 與 `E`(兩者在原版的迷宮裡都沒有作用),`Q` 是離開遊戲。
-		// 這裡沿用 ESC 是**本引擎的選擇**,不是原版行為。
-		g.level = nil
-		g.syncMazeNum()
+	// ⛔ **沒有 ESC 脫離。** 原版離開地城的唯一方式是**走到格陣列界外**
+	// (docs/re/147 已解,stepMaze 的 maze.Left 那一支就是它)——
+	// ESC 曾經是本引擎多開的第二條出路,而那是一道作弊門:
+	// 從最深處一鍵回地面,原版要一路走回入口。
+	//
+	// C)amp —— 原版在地城裡也能紮營(camp_entry.go)。
+	if in.Pressed(ebiten.KeyC) {
+		g.makeCamp(false) // 地城裡算室內:打不到獵
+		return TransitionStay
 	}
 	// docs/spec/18 §3.2 MazeFile + 驗收 4:原版在迷宮裡也存得了檔
 	// (GROUPS.DAT 位移 79/81 就是為此存在的)。
@@ -647,7 +650,7 @@ func (s mazeScene) Update(in Input) Transition {
 type worldScene struct{ g *Game }
 
 func (s worldScene) Prompt() string {
-	return "方向鍵／1234：移動　　N：名冊　　S：存檔　　A：另存新檔"
+	return "方向鍵／1234：移動　　C：紮營　　N：名冊　　S：存檔　　A：另存新檔"
 }
 func (s worldScene) Name() string       { return "world" }
 func (s worldScene) Handles(Input) bool { return true }
@@ -754,6 +757,11 @@ func (s worldScene) Update(in Input) Transition {
 		if g.party.Encounter == 0 {
 			g.startCombat()
 		}
+	}
+	// C)amp —— 原版在世界地圖按 C 直接紮營(camp_entry.go)。
+	if in.Pressed(ebiten.KeyC) {
+		g.makeCamp(true) // 野外:打得到獵
+		return TransitionStay
 	}
 	if in.Pressed(ebiten.KeyS) {
 		g.saveHere()

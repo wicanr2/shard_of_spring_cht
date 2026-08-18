@@ -42,6 +42,11 @@ type townState struct {
 	// 打獵、鑑定,加上 docs/spec/16 補上的施法、使用道具、列印。
 	campWho  int  // 選到第幾位成員
 	campWho2 int  // 第二位(R)eorder / T)rade 用)
+	// wild = 這個營地紮在**野外**(世界地圖),不是城鎮裡也不是地城裡。
+	// 只有野外能打獵(原版:`You're inside!`)。
+	// ⚠ 地城裡紮營也算「室內」—— 三種入口要分得開。
+	wild bool
+
 	campMode byte // 0 = 選單、'#' 角色卡、'W' 裝武器、'A' 穿防具、'D' 丟棄、'E' 裝備選類別、'R' 調隊形、'T' 傳遞、'C' 施法、'U' 使用道具、'P' 列印
 
 	// pendingBuy 非 nil = 商店裡已經選好道具,正在問「交給角色 #」
@@ -295,7 +300,14 @@ func (g *Game) townKey(k ebiten.Key) {
 				ts.msg += "　" + n + " 在夜裡死去。"
 			}
 		case ebiten.KeyEscape:
-			ts.mode, ts.msg = townBuildings, "拔營中……" // CAMP:19「Breaking Camp..」
+			// CAMP:19「Breaking Camp..」
+			// ⚠ 野外與地城的營地**沒有建築清單可回** —— 回去的是地圖。
+			if ts.name == "" {
+				g.town = nil
+				g.saveMsg = "拔營中……"
+				return
+			}
+			ts.mode, ts.msg = townBuildings, "拔營中……"
 		}
 	}
 }
@@ -1096,8 +1108,10 @@ func (g *Game) hunt(who int) {
 	ts := g.town
 	c := &g.members[who]
 	// 原版的「在野外」是 `ds:3534 ≥ 99`,而那個變數的來源未解 ——
-	// 引擎用「不在迷宮、也不在城鎮」。營地開在城鎮裡時就是室內。
-	outdoors := g.level == nil && g.town != nil && g.town.mode == townCamp
+	// 引擎改用**營地是從哪裡開的**:世界地圖 = 野外,城鎮與地城 = 室內。
+	// ⚠ 先前寫成 `g.level == nil && mode == townCamp`,那在**城鎮裡紮營**時
+	// 也成立 —— 城裡打得到獵,而畫面上完全看不出哪裡不對。
+	outdoors := g.town != nil && g.town.wild
 	if gate := town.CanHunt(*c, outdoors); gate != town.SkillOK {
 		ts.msg = c.Name + "：" + gate.String()
 		return

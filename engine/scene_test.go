@@ -418,10 +418,20 @@ func TestT3EveryScenePressReacts(t *testing.T) {
 				g.overlay, g.prompt = "", nil // 進場敘述會蓋在上面,先收掉
 				return g
 			},
-			keys: []ebiten.Key{ebiten.KeyEscape},
+			// ⛔ **ESC 不再離開地城。** 原版的唯一出路是走到格陣列界外
+			// (docs/re/147),ESC 曾經是本引擎多開的第二條出路 —— 一道作弊門。
+			// 現在這一格測的是 `C` 紮營(原版在地城裡也能紮營,
+			// docs/spec/14 §12-B:`Making Camp..` 在 MAZEMOVE.EXE 裡)。
+			keys: []ebiten.Key{ebiten.KeyC},
 			want: func(g *Game) string {
-				if g.level != nil {
-					return "ESC 應該離開迷宮(⚠ 這是本引擎的選擇,原版未解)"
+				if g.level == nil {
+					return "C 不該離開地城"
+				}
+				if g.town == nil || g.town.mode != townCamp {
+					return "地城裡按 C 應該紮營"
+				}
+				if g.town.wild {
+					return "地城裡紮營算室內,wild 應該是 false(打不到獵)"
 				}
 				return ""
 			},

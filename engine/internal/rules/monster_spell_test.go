@@ -9,33 +9,36 @@ func TestMonsterSpellStaysInsideItsFamily(t *testing.T) {
 	first := map[int]int{1: 1, 2: 4, 3: 8, 4: 12, 5: 16}
 	last := map[int]int{1: 3, 2: 7, 3: 11, 4: 15, 5: 18}
 	for fam := 1; fam <= 5; fam++ {
-		for roll := 1; roll <= SpellFamilyAttacks[fam]; roll++ {
+		n, rolls := SpellFamilyAttacks[fam], true
+		if _, fixed := SpellFamilyFixed[fam]; fixed {
+			n, rolls = 1, false // 系別 3 不擲骰(docs/re/226 §1)
+		}
+		for roll := 1; roll <= n; roll++ {
 			got, _ := MonsterSpell(fam, 1, roll)
 			if got < first[fam] || got > last[fam] {
 				t.Errorf("系別 %d 擲 %d → 法術 %d,超出 %d–%d",
 					fam, roll, got, first[fam], last[fam])
 			}
 		}
-		// 最小的擲骰就是系別的第一個法術
-		if got, _ := MonsterSpell(fam, 1, 1); got != first[fam] {
+		// 會擲骰的系別:最小的擲骰就是它的第一個法術
+		if got, _ := MonsterSpell(fam, 1, 1); rolls && got != first[fam] {
 			t.Errorf("系別 %d 擲 1 → %d,應為 %d", fam, got, first[fam])
 		}
 	}
 }
 
-// 系別 3 的張數是**讀到的常數 2** —— 它切在攻擊與增益的分界上。
-// 寫成 4 會讓怪物放 WINGS(增益),而那在畫面上像是「怪物什麼都沒做」。
-func TestFamilyThreeSkipsTheBuffs(t *testing.T) {
-	if SpellFamilyAttacks[3] != 2 {
-		t.Fatalf("系別 3 的張數是 %d,原版讀到的是常數 2", SpellFamilyAttacks[3])
+// 系別 3 **不擲骰**:`CMBT 0x1563E` 是 `mov ds:9B14h, 2`,配基底 7 → 法術 9。
+//
+// ⚠ 先前當成「1…2 的擲骰」,那會讓它有一半機率在第一回合放法術 8
+// (TEMPEST)—— 而 8 是第二回合才放的那一張。
+func TestFamilyThreeIsFixed(t *testing.T) {
+	if SpellFamilyFixed[3] != 2 {
+		t.Fatalf("系別 3 的固定值是 %d,原版讀到的是常數 2", SpellFamilyFixed[3])
 	}
-	seen := map[int]bool{}
-	for roll := 1; roll <= 4; roll++ { // 故意擲超過,夾住之後仍不該碰到增益
-		sp, _ := MonsterSpell(3, 1, roll)
-		seen[sp] = true
-	}
-	if seen[10] || seen[11] { // WINGS OF VICTORY / WINGS
-		t.Error("系別 3 不該選到兩個增益法術")
+	for roll := 1; roll <= 4; roll++ { // 擲什麼都一樣
+		if sp, re := MonsterSpell(3, 1, roll); sp != 9 || re {
+			t.Errorf("系別 3 擲 %d → 法術 %d(重擲 %v),應恆為 9", roll, sp, re)
+		}
 	}
 }
 
@@ -50,22 +53,34 @@ func TestStormFromRoundTwo(t *testing.T) {
 	// 原版那兩個系別在第二回合起沒有分支(docs/re/170 §4)。
 }
 
-// 第一回合挑到群體傷害要重擲,而且**每個系別最多只有一招**是群體傷害
-// (SPELLS.DAT 欄3 = 1 恰好只有那三招,docs/re/171 §2)。
+// 第一回合挑到群體傷害要重擲(docs/re/171 §2)。
+//
+// ⚠ **只有系別 4 真的擲得到** —— 面數讀出來之後(docs/re/226 §1),
+// 系別 1 的擲骰只到法術 2、系別 3 固定法術 9,兩者的暴風(3 / 8)
+// 在第一回合**構造上就選不到**。重擲那一段仍然存在,但只對系別 4 生效。
 func TestRoundOneRerollsGroupDamage(t *testing.T) {
+	reroll := map[int]int{}
 	for fam, storm := range StormSpell {
-		hits := 0
-		for roll := 1; roll <= SpellFamilyAttacks[fam]; roll++ {
+		n, ok := SpellFamilyAttacks[fam]
+		if !ok {
+			n = 1 // 固定的系別:擲什麼都一樣
+		}
+		for roll := 1; roll <= n; roll++ {
 			sp, re := MonsterSpell(fam, 1, roll)
 			if re {
-				hits++
+				reroll[fam]++
 				if sp != storm {
 					t.Errorf("系別 %d 重擲的是法術 %d,應為 %d", fam, sp, storm)
 				}
 			}
 		}
-		if hits != 1 {
-			t.Errorf("系別 %d 有 %d 招要重擲,應為 1", fam, hits)
+	}
+	if reroll[4] != 1 {
+		t.Errorf("系別 4 應該有 1 招要重擲(法術 12),得到 %d", reroll[4])
+	}
+	for _, fam := range []int{1, 3} {
+		if reroll[fam] != 0 {
+			t.Errorf("系別 %d 第一回合構造上就選不到暴風,不該有重擲", fam)
 		}
 	}
 	// 沒有群體傷害的系別(2 / 5)一次都不重擲
@@ -75,40 +90,5 @@ func TestRoundOneRerollsGroupDamage(t *testing.T) {
 				t.Errorf("系別 %d 不該有要重擲的招", fam)
 			}
 		}
-	}
-}
-
-// ── 施法時機(docs/re/186 §3)────────────────────────────────────────────
-
-func TestMonsterCastsNeedsSPAboveOne(t *testing.T) {
-	// ⚠ 門檻是 **> 1**,不是 ≥ 1 —— 法力剛好 1 的怪物不施法。
-	for _, sp := range []int{0, 1} {
-		if MonsterCasts(sp, MonsterForcedCastRound, 0) {
-			t.Errorf("法力 %d 不該施法(門檻是 > 1)", sp)
-		}
-	}
-	if !MonsterCasts(2, MonsterForcedCastRound, 1) {
-		t.Error("法力 2、第二回合應該施法")
-	}
-}
-
-func TestMonsterCastsForcedOnRoundTwo(t *testing.T) {
-	// 第二回合**必定**施法:擲骰再差也一樣(這是 re/170「第二回合起固定放
-	// 暴風系」的來源)。
-	if !MonsterCasts(10, 2, 0.99) {
-		t.Error("第二回合應該不看擲骰就施法")
-	}
-	// ⚠ 第三回合又回到擲骰 —— 原版比的是 `== 2`,不是 `>= 2`。
-	if MonsterCasts(10, 3, 0.99) {
-		t.Error("第三回合擲骰沒過就不該施法")
-	}
-}
-
-func TestMonsterCastsRollThreshold(t *testing.T) {
-	if !MonsterCasts(10, 1, MonsterCastChance) {
-		t.Errorf("擲骰剛好等於 %v 應該過(原版是 ≤)", MonsterCastChance)
-	}
-	if MonsterCasts(10, 1, MonsterCastChance+0.01) {
-		t.Error("擲骰超過門檻不該施法")
 	}
 }

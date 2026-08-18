@@ -9,15 +9,26 @@ package rules
 // 索引是屬性 14(1–5)。把欄 2 攤開,五個系別剛好從法術 1/4/8/12/16 起。
 var SpellFamilyBase = map[int]int{1: 0, 2: 3, 3: 7, 4: 11, 5: 15}
 
-// SpellFamilyAttacks 是每個系別**只挑攻擊法術**的張數(docs/re/170 §3)。
+// SpellFamilyAttacks 是每個系別**擲骰的面數**(docs/re/226 §1,逐條讀出來)。
 //
-// 系別 3 是讀到的常數 2(TEMPEST / STILL AIR,跳過兩個增益);
-// 系別 2 / 5 走 ds:94BE = 3(docs/re/160 §1.1)。
+//	系別 1  INT(RND × 2) + 1      → 法術 1–2
+//	系別 2  INT(RND × 3) + 1      → 法術 4–6      (ds:94BE = 3)
+//	系別 4  INT(RND × 4) + 1      → 法術 12–15
+//	系別 5  INT(RND × 3) + 1      → 法術 16–18
 //
-// ⚠ 系別 1 與 4 的張數**沒有讀到** —— 它們走 `INT 3F:AD` 加一個內嵌位元組,
-// 那條 API 未解。這裡填 3 與 4 是**由「只挑攻擊法術」推的**:
-// 系別 1 的 1–3、系別 4 的 12–15 全是攻擊法術。
-var SpellFamilyAttacks = map[int]int{1: 3, 2: 3, 3: 2, 4: 4, 5: 3}
+// 面數來自 `INT 3F:AD` 的內嵌位元組:那條 API 把**浮點指數加上**該值,
+// 也就是 `FAC × 2^n` —— 內嵌 01 = ×2、02 = ×4(`BRUN30 0x1AC66` 的
+// `lodsb` + `add es:1Dh, al`)。系別 2/5 不走它,走 `ds:94BE` 的乘法。
+//
+// ⚠ **系別 3 不在這張表裡** —— 它不擲骰,見 SpellFamilyFixed。
+var SpellFamilyAttacks = map[int]int{1: 2, 2: 3, 4: 4, 5: 3}
+
+// SpellFamilyFixed 是**不擲骰**的系別:直接寫死系別內的第幾張。
+//
+// 系別 3 在 `CMBT 0x1563E` 是 `mov ds:9B14h, 2` —— 常數 2,配基底 7
+// 得到法術 **9**(STILL AIR)。⚠ 先前當成「1…2 的擲骰」,那會讓
+// 系別 3 的怪物有一半機率放法術 8(TEMPEST),而 8 是第二回合才放的那一張。
+var SpellFamilyFixed = map[int]int{3: 2}
 
 // StormSpell 是第二回合起固定放的那一招,索引是屬性 14(docs/re/170 §4)。
 //
@@ -58,14 +69,18 @@ func MonsterSpell(family, round, roll int) (spell int, reroll bool) {
 	if !ok {
 		return 0, false
 	}
-	n := SpellFamilyAttacks[family]
-	if roll < 1 {
-		roll = 1
+	off, fixed := SpellFamilyFixed[family]
+	if !fixed {
+		off = roll
+		n := SpellFamilyAttacks[family]
+		if off < 1 {
+			off = 1
+		}
+		if off > n {
+			off = n
+		}
 	}
-	if roll > n {
-		roll = n
-	}
-	got := base + roll
+	got := base + off
 	// 第一回合挑到群體傷害(SPELLS.DAT 欄3 = 1)就重選。
 	// 每個系別最多只有一招是群體傷害,就是 StormSpell 那一張。
 	if got == StormSpell[family] {

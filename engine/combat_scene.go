@@ -41,17 +41,20 @@ func (g *Game) startCombat() bool {
 		zone = rules.MazeZone(g.level.entry.MazeFile,
 			g.mazeState.Major, g.mazeState.Minor)
 	}
-	pick, ok := g.pickMonster(zone)
+	row, ok := g.pickEncounter(zone)
 	if !ok {
 		// ⚠ 原版沒有次數上限,湊不到就當掉。引擎**明講**而不是
-		// 悄悄退回「最接近的一隻」—— 那會讓原版不存在的怪物出現。
+		// 悄悄退回「最接近的一列」—— 那會讓原版不存在的組合出現。
 		g.warnings = append(g.warnings,
-			fmt.Sprintf("區域 %d 找不到難度階級落在 ±%d 內的怪物(docs/re/169 §5)",
+			fmt.Sprintf("區域 %d 在遭遇表裡找不到落在 ±%d 內的列(docs/re/225 §5)",
 				zone, rules.ZoneTolerance))
 		return false
 	}
-	g.field = combat.Build(g.members, []original.Monster{g.monsters[pick]},
-		g.items, g.rand)
+	group := g.composeEncounter(row)
+	if len(group) == 0 {
+		return false
+	}
+	g.field = combat.Build(g.members, group, g.items, g.rand)
 	g.field.PartySlots = g.group.MemberSlotNumbers() // 站位看槽號(docs/re/210)
 	g.field.Place()
 	g.field.ResetPoints(&g.points)
@@ -60,7 +63,7 @@ func (g *Game) startCombat() bool {
 	g.actor = g.firstActor()
 	// WRLDMOVE:44 / MAZEMOVE:90「    C O M B A T !」—— 原版遭遇時的橫幅。
 	g.field.Log = append(g.field.Log, CombatBanner,
-		fmt.Sprintf("遭遇 %s!", g.monsters[pick].Name))
+		fmt.Sprintf("遭遇 %s!", group[0].Name))
 	// ⚠ 原版**先把這一場的怪逐行列出來**、等玩家按一個鍵,才畫戰場
 	// (2026-08-18 實跑 `q3b-c0.png`:七行 `Kobold` + `[Press a key]`)。
 	// 少了這一步,玩家不知道自己遇上了什麼就直接進戰場。
@@ -566,30 +569,64 @@ func (g *Game) tacticsLine(u combat.Unit) string {
 	return "　目標> " + f.Units[t].Name
 }
 
-// pickMonster 依區域挑一隻怪物,照原版的「不合就重擲」。
+// pickEncounter 依區域挑**遭遇表的一列**,照原版的「不合就重擲」。
+//
+// ⚠ 比對的是那一列的欄 0(`Encounter.Zone`),**不是那隻怪自己的難度階級**
+// (docs/re/225 §5)。兩者的值域看起來一樣,所以先前那個讀法在畫面上
+// 也「像是對的」—— 差別在組成:原版一場是一群、而且會混相鄰階級。
 //
 // ⚠ 原版的重擲**沒有上限**(無條件 `jg` 回頭),湊不到就當掉。
 // 這裡加上限是**實作決定**;耗盡時回 false,由呼叫端明講,
-// ⛔ 不用「取最接近的一隻」代替。
-func (g *Game) pickMonster(zone int) (int, bool) {
-	// 先看有沒有合格的 —— 沒有的話重擲多少次都沒用。
+// ⛔ 不用「取最接近的一列」代替。
+func (g *Game) pickEncounter(zone int) (original.Encounter, bool) {
 	any := false
-	for _, m := range g.monsters {
-		if rules.ZoneAccepts(zone, m.Tier) {
+	for _, e := range g.encounters {
+		if rules.ZoneAccepts(zone, e.Zone) {
 			any = true
 			break
 		}
 	}
 	if !any {
-		return 0, false
+		return original.Encounter{}, false
 	}
 	for i := 0; i < monsterPickTries; i++ {
-		p := g.rand.Roll(len(g.monsters)) - 1
-		if rules.ZoneAccepts(zone, g.monsters[p].Tier) {
-			return p, true
+		e := g.encounters[g.rand.Roll(len(g.encounters))-1]
+		if rules.ZoneAccepts(zone, e.Zone) {
+			return e, true
 		}
 	}
-	return 0, false
+	return original.Encounter{}, false
+}
+
+// composeEncounter 把一列展開成這一場的怪物清單(docs/re/225 §6)。
+//
+//	隻數 = rules.EncounterCount(欄1)
+//	重複:挑一欄(2–5)、擲一個「連放幾隻」,放進清單,直到放滿
+//
+// ⚠ **不是每一隻各擲一次** —— 原版擲的是「這一種放幾隻」,
+// 所以同一種會成串出現(實測十二場:七場清一色、三場兩種混編)。
+// ⛔ 改成逐隻擲會讓四個候選平均分佈,那是另一個分佈。
+func (g *Game) composeEncounter(e original.Encounter) []original.Monster {
+	total := rules.EncounterCount(e.Cap, g.rand.Float01())
+	if total > combat.MonsterMax {
+		total = combat.MonsterMax // 場上就這麼多槽
+	}
+	out := make([]original.Monster, 0, total)
+	for tries := 0; len(out) < total && tries < monsterPickTries; tries++ {
+		k := int(float64(len(e.Monsters)) * g.rand.Float01()) // INT(RND×4)
+		if k < 0 || k >= len(e.Monsters) {
+			continue
+		}
+		idx := e.Monsters[k]
+		if idx < 0 || idx >= len(g.monsters) {
+			continue // 表裡的編號超出怪物表 —— 跳過,不拿別隻頂替
+		}
+		n := rules.EncounterRun(total, len(out), g.rand.Float01())
+		for j := 0; j < n && len(out) < total; j++ {
+			out = append(out, g.monsters[idx])
+		}
+	}
+	return out
 }
 
 // monsterPickTries 是重擲的上限。原版沒有這個數字(見 pickMonster)。

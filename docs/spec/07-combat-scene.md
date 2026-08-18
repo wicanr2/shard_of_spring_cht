@@ -113,10 +113,15 @@ type Rand interface { Roll(faces int) int }   // 回 1..faces
 耗盡時在提示列明講;⛔ **不用「取最接近的一隻」代替** ——
 那會讓一個原版不會出現的怪物出現。
 
-⚠ **一場遭遇有幾隻怪、怎麼決定,未讀**([`re/169`](../re/169-encounter-zone-selects-the-monster.md) §6)。
-引擎目前一場一隻。
+一場遭遇有幾隻、是哪幾隻,由 `RNDMONST.BIN` 決定([`re/225`](../re/225-encounter-monster-count-anchor.md)、
+[`formats/08`](../formats/08-rndmonst-bin.md))—— **挑的是那張表的一列**,
+不是直接挑一隻怪。⚠ 上一段的「重擲」指的也是重挑**列**。
 
-**最終首領永遠不會隨機出現**:`Siriadne !` 的難度階級是 **13**,
+**最終首領永遠不會隨機出現** —— 現在有更直接的理由:她**根本不在遭遇表裡**。
+`RNDMONST.BIN` 的四個候選欄只用到怪物編號 0–62(55 種),`Siriadne !` 是 71。
+以下這一段是原本的理由,結論相同:
+
+`Siriadne !` 的難度階級是 **13**,
 而區域最大是 9(`|13 − 9| = 4 > 1`)—— 她由事件 533 的腳本放上場
 ([`re/161`](../re/161-maze-event-dispatch.md) §4)。
 ⚠ 階級 **10** 的十二隻(元素生物、Great Dragon、Titan…)**在區域 9 挑得到**。

@@ -619,7 +619,7 @@ func TestCommittedAssetsAreComplete(t *testing.T) {
 		{"gfx/walk/w*.png", 10},      // WALKDRAW 十段(世界地圖色盤,docs/re/219)
 		{"gfx/walk-maze/w*.png", 10}, // 同一批,地城色盤(0x3D8 = 0x0E)
 		{"gfx/startup.png", 1},       // STARTUP.BIN 的整頁 CGA
-		{"data/*.json", 34}, // 含 dungeons.json(docs/re/222)
+		{"data/*.json", 35}, // 含 encounters.json(docs/re/225)
 		{"save/*.DAT", 2},
 	} {
 		got, err := filepath.Glob(filepath.Join(src, w.glob))

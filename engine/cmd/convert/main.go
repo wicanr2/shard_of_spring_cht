@@ -335,6 +335,16 @@ func run(in, out, transDir string) error {
 	if err := writeJSON(filepath.Join(out, "data", "mazedata.json"), entries); err != nil {
 		return err
 	}
+	// 隨機遭遇表(docs/re/225):72 列 × 6 欄。⚠ 這張表才是遭遇的來源,
+	// 區域比對用的是它的欄 0,不是怪物自己的難度階級。
+	encs, err := original.DecodeEncounters(mustRead(in, "RNDMONST.BIN"))
+	if err := step("encounters", len(encs), err); err != nil {
+		return err
+	}
+	if err := writeJSON(filepath.Join(out, "data", "encounters.json"), encs); err != nil {
+		return err
+	}
+
 	// 地城名在 `MENU.EXE` 的兩串 DATA 裡,不在 MAZEDATA(docs/re/222)。
 	// 索引 = 入口編號,所以與 mazedata.json 同序。
 	dnames, err := original.DungeonNames(mustRead(in, "MENU.EXE"))

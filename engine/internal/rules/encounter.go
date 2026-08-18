@@ -1,5 +1,7 @@
 package rules
 
+import "math"
+
 // 遭遇的怪物由「區域編號」挑。docs/re/169。
 //
 // 原版把區域編號(`ds:3656`)填在**送出戰鬥的那一支模組**裡,`CMBT` 才讀 ——
@@ -65,4 +67,54 @@ func ZoneAccepts(zone, tier int) bool {
 		d = -d
 	}
 	return d <= ZoneTolerance
+}
+
+// ---------------------------------------------------------------------------
+// 一場遭遇有幾隻、是哪幾隻(docs/re/225 §2、§6)
+// ---------------------------------------------------------------------------
+
+// EncounterOffset 是隻數算式的常數項。原版是 `ds:9464`,
+// 也就是擲骰式 `INT(RND×N)+1` 的那個 `+1`(docs/re/136 §3)。
+const EncounterOffset = 1
+
+// EncounterHalf 是算式裡的 `ds:9460 = 0.5`(docs/re/153 §6)。
+const EncounterHalf = 0.5
+
+// EncounterCount 回傳這一場有幾隻怪。`cap` 是遭遇表的欄 1。
+//
+//	隻數 = INT( cap × RND × 0.5 ) + cap × 0.5 + 1      (最後四捨五入成整數)
+//	隻數 > cap → 隻數 = cap                             ★ 上限就是同一欄
+//
+// ⚠ **上限那一行不是保險絲,是規則**(`CMBT 0x11245` 的 `cmp` + `jl`)——
+// 少了它,`cap = 7` 的表列會擲出 8 隻,而實測十二場的最大值就是 7。
+//
+// ⚠ 最後一步是**四捨五入**不是截尾(`INT 3F:77` 沒配 `INT 3D:03`,
+// docs/re/185):`cap` 是奇數時兩者差 1。
+func EncounterCount(capCol int, roll float64) int {
+	if capCol <= 0 {
+		return 1
+	}
+	n := float64(int(float64(capCol)*roll*EncounterHalf)) +
+		float64(capCol)*EncounterHalf + EncounterOffset
+	out := int(math.Floor(n + 0.5)) // roundHalfUp:負值也要往下取
+	if out > capCol {
+		out = capCol
+	}
+	if out < 1 {
+		out = 1
+	}
+	return out
+}
+
+// EncounterRun 回傳「這一種怪連放幾隻」。`placed` 是已經放進清單的數量。
+//
+//	n = round( 隻數 × RND − 已放 + 1 )
+//
+// `CMBT 0x11294`–`0x112D1`:兩個 `RND` 分別決定**挑哪一欄**與**連放幾隻**,
+// 所以一場遭遇會出現「四隻甲 ＋ 一隻乙」這種組合,而不是每一隻各擲一次。
+//
+// ⚠ 回傳值可能 ≤ 0 —— 原版的內層 `FOR` 在那種情況下一次都不跑,
+// 外層迴圈重挑一欄。⛔ 不要把它夾到 1:那會改變組成的分佈。
+func EncounterRun(total, placed int, roll float64) int {
+	return int(math.Floor(float64(total)*roll - float64(placed) + EncounterOffset + 0.5))
 }

@@ -274,3 +274,49 @@ func ParseTownSites(d []byte) ([]TownSite, error) {
 	}
 	return out, nil
 }
+
+// ---------------------------------------------------------------------------
+// RNDMONST.BIN — 隨機遭遇表(docs/re/225)
+// ---------------------------------------------------------------------------
+
+// EncounterCols 是每一列的欄數。72 列 × 6 欄 = 432 word,
+// 正好是 `RNDMONST.BIN` 扣掉 BSAVE 容器之後的長度。
+const EncounterCols = 6
+
+// EncounterSlots 是一列裡有幾個候選怪物(欄 2–5)。
+const EncounterSlots = 4
+
+// Encounter 是隨機遭遇表的一列。
+//
+// ⚠ **這張表才是遭遇的來源**,不是 `MONSTERS.DAT` ——
+// 區域比對用的是這裡的 `Zone`(欄 0),不是那隻怪自己的難度階級
+// (docs/re/225 §5:`CMBT` 把陣列位址交給原生常式去填,填的就是這個檔)。
+type Encounter struct {
+	Zone     int   `json:"zone"`     // 欄 0:與區域編號比,差 ≤ 1 才合格
+	Cap      int   `json:"cap"`      // 欄 1:隻數的上限,也是隻數算式的係數
+	Monsters []int `json:"monsters"` // 欄 2–5:四個候選,**允許重複**
+}
+
+// DecodeEncounters 解析 RNDMONST.BIN(BSAVE 容器,word 陣列,**欄主序**,
+// 與 MAZEDATA 同一種排法)。
+func DecodeEncounters(d []byte) ([]Encounter, error) {
+	b, err := ParseBSAVE(d)
+	if err != nil {
+		return nil, err
+	}
+	w := bodyWords(b.Body)
+	n := len(w) / EncounterCols
+	if n == 0 {
+		return nil, fmt.Errorf("RNDMONST.BIN 只有 %d 個 word", len(w))
+	}
+	col := func(c, i int) int { return int(int16(w[c*n+i])) }
+	out := make([]Encounter, n)
+	for i := range out {
+		ms := make([]int, EncounterSlots)
+		for k := range ms {
+			ms[k] = col(2+k, i)
+		}
+		out[i] = Encounter{Zone: col(0, i), Cap: col(1, i), Monsters: ms}
+	}
+	return out, nil
+}

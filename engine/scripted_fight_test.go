@@ -37,6 +37,12 @@ func newScriptedFightTestGame(t *testing.T) *Game {
 
 	g := &Game{
 		monsters: monsters,
+		// 一列「區域 1」的遭遇表:四個候選都是索引 5(留空的佔位怪),
+		// 上限 testEncounterCap。⚠ 隨機遭遇讀的是**這張表**而不是怪物表
+		// (docs/re/225 §5),沒有它就不會有隨機遭遇。
+		encounters: []original.Encounter{
+			{Zone: 1, Cap: testEncounterCap, Monsters: []int{5, 5, 5, 5}},
+		},
 		members: []original.Character{
 			{Party: '1', Name: "灰燼", ID: 1, Class: '1', Race: 'H',
 				Speed: 10, Str: 10, ToHit: 10, MaxHP: 50, HP: 50, Level: 5,
@@ -48,6 +54,9 @@ func newScriptedFightTestGame(t *testing.T) *Game {
 	}
 	return g
 }
+
+// testEncounterCap 是測試遭遇表那一列的欄 1(隻數上限)。
+const testEncounterCap = 6
 
 // killAllMonsters 直接把場上怪物打到 0 血。測試不驗傷害公式(那是
 // internal/combat 自己的測試範圍),只驗「打贏之後」的流程,所以不必真的
@@ -165,7 +174,10 @@ func TestFireTriggerFallsBackForUnscriptedTarget(t *testing.T) {
 	}
 }
 
-// 對照組:既有的隨機遭遇路徑(docs/re/169)不能被這次改動動到。
+// 對照組:既有的隨機遭遇路徑(docs/re/225)不能被這次改動動到。
+//
+// ⚠ 隨機遭遇是**一群**(docs/re/225 §6),隻數由遭遇表的欄 1 決定 ——
+// 這一條驗的是「走得通而且隻數落在表的上限內」,不是固定幾隻。
 func TestRandomEncounterStillWorks(t *testing.T) {
 	g := newScriptedFightTestGame(t)
 	g.party.X, g.party.Y = 10, 10 // rules.WorldZone → 1(西北起始區)
@@ -175,8 +187,12 @@ func TestRandomEncounterStillWorks(t *testing.T) {
 	if g.bossFight {
 		t.Errorf("隨機遭遇不該動到 g.bossFight")
 	}
-	if n := monsterCount(g.field); n != 1 {
-		t.Errorf("隨機遭遇一律只挑 1 隻(startCombat 既有行為),得到 %d", n)
+	n := monsterCount(g.field)
+	if n < 1 {
+		t.Errorf("隨機遭遇至少要有一隻,得到 %d", n)
+	}
+	if n > testEncounterCap {
+		t.Errorf("隻數 %d 超過測試遭遇表的上限 %d", n, testEncounterCap)
 	}
 }
 
@@ -281,8 +297,8 @@ func TestSecondRandomFightDoesNotInheritScriptedMonsters(t *testing.T) {
 	if !g.startCombat() {
 		t.Fatalf("隨機遭遇應該照舊觸發")
 	}
-	if n := monsterCount(g.field); n != 1 {
-		t.Fatalf("前提不成立:隨機遭遇應該只有 1 隻,得到 %d", n)
+	if n := monsterCount(g.field); n < 1 || n > testEncounterCap {
+		t.Fatalf("前提不成立:隨機遭遇的隻數應在 1…%d,得到 %d", testEncounterCap, n)
 	}
 	for i := combat.MonsterBase; i < combat.MonsterBase+combat.MonsterMax; i++ {
 		if n := g.field.Units[i].Name; n == "Great Dragon" || n == "Siriadne !" || n == "Hill Giant" {

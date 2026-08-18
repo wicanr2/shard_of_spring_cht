@@ -86,3 +86,65 @@ func TestEveryZoneHasCandidates(t *testing.T) {
 		t.Error("區域 9 應該挑得到階級 10(元素生物、Great Dragon 那一批)")
 	}
 }
+
+// ── 一場遭遇有幾隻(docs/re/225 §2)────────────────────────────────────
+
+// TestEncounterCountStaysWithinTheCap:上限那一行是**規則**不是保險絲。
+//
+// `cap = 7` 時算式本身擲得出 8(`INT(7×RND×0.5)` 最大 3,加 3.5 加 1 = 7.5 → 8),
+// 而實測十二場的最大值是 7 —— 少了上限,難度會整批偏高一級。
+func TestEncounterCountStaysWithinTheCap(t *testing.T) {
+	for _, capCol := range []int{4, 5, 6, 7} {
+		seen := map[int]bool{}
+		for i := 0; i <= 100; i++ {
+			n := EncounterCount(capCol, float64(i)/101)
+			if n < 1 || n > capCol {
+				t.Errorf("cap %d:擲出 %d 隻,應落在 1…%d", capCol, n, capCol)
+			}
+			seen[n] = true
+		}
+		if len(seen) < 2 {
+			t.Errorf("cap %d:整段 RND 只擲得出 %v —— 那不是一條隨機算式", capCol, seen)
+		}
+	}
+}
+
+// TestEncounterCountMatchesTheFieldSamples:十二場實測的隻數都在算式的值域內。
+//
+// 實測(docs/re/225 §8)區域 1:cap 6 的列給 4–6、cap 7 的列給 5–7。
+func TestEncounterCountMatchesTheFieldSamples(t *testing.T) {
+	rangeOf := func(capCol int) (lo, hi int) {
+		lo, hi = 99, 0
+		for i := 0; i <= 200; i++ {
+			n := EncounterCount(capCol, float64(i)/201)
+			if n < lo {
+				lo = n
+			}
+			if n > hi {
+				hi = n
+			}
+		}
+		return
+	}
+	for _, c := range []struct{ capCol, lo, hi int }{{6, 4, 6}, {7, 5, 7}} {
+		lo, hi := rangeOf(c.capCol)
+		if lo != c.lo || hi != c.hi {
+			t.Errorf("cap %d 的值域是 %d…%d,實測對應的是 %d…%d",
+				c.capCol, lo, hi, c.lo, c.hi)
+		}
+	}
+}
+
+// TestEncounterRunCanTakeEverything:一次就放滿是**常見**情況,不是邊界。
+//
+// 實測十二場有七場清一色 —— 那是「連放」擲出整數群的結果。
+// ⛔ 若把 EncounterRun 夾到 1,清一色就只能靠「四欄剛好同一隻」發生。
+func TestEncounterRunCanTakeEverything(t *testing.T) {
+	if n := EncounterRun(7, 0, 0.99); n < 7 {
+		t.Errorf("RND 接近 1 時應該一次放滿(≥7),得到 %d", n)
+	}
+	// 已放的數量會把它壓下去 —— 這是原版的減項,不是保護。
+	if n := EncounterRun(7, 6, 0.1); n > 1 {
+		t.Errorf("已放 6 隻、RND 很小時不該再放 %d 隻", n)
+	}
+}

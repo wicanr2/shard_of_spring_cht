@@ -14,6 +14,7 @@
 | [`formats/05-world-map.md`](../formats/05-world-map.md) | 世界地圖 103×121、BSAVE 容器 |
 | [`formats/06-maze.md`](../formats/06-maze.md) | `.SQZ` 解碼、迷宮 81 列、事件表 |
 | [`formats/07-graphics.md`](../formats/07-graphics.md) | 圖塊 17×17、`MONST` 交錯、`DRAW` 巨集、調色盤 |
+| [`formats/08-rndmonst-bin.md`](../formats/08-rndmonst-bin.md) | **隨機遭遇表** 72 列 × 6 欄:區域、隻數上限、四個候選怪 |
 
 ## 遊戲規則與實作
 
@@ -63,12 +64,12 @@
 
 | 洞 | 出處 | 現在怎麼辦 |
 |---|---|---|
-| **一場遭遇有幾隻怪** | [`re/225`](../re/225-encounter-monster-count-anchor.md) | 算式逐條讀完(`INT(c × RND × 0.5) + c × 0.5 + 1`),缺的是 `c` —— 那張陣列由原生常式填,欄位不是 `MONSTERS.DAT` 的原始欄序。引擎一場放一隻,**標在畫面上** |
+| **戰場地形的格值 → 圖塊** | [`re/227`](../re/227-fastcmbt-is-nine-get-arrays.md) §3 | 格式與地形產生器都讀完了,缺中間那層對映(格值 2/5/6/7/12/18,圖只有 9 張)。引擎**不畫地形** |
 | 法術效果**類別 13** | [`spec/09`](09-magic-items.md) | 不套用效果,訊息含「未解」 |
 | `ds:1Fh` 的執行期間接寫入 | [`re/218`](../re/218-four-named-assumptions-audited.md) §4 | **靜態關不掉**(結構性)。要實跑一個取整看得出差別的地方才能定案 |
 | 十五段樂譜的**用途** | [`spec/13`](13-sound.md) | 位置上的推測,不影響規則 |
 
-**已經填掉的**(不要再照舊引用):傷害公式的兩個係數、擲骰面數(= 100)、
+**已經填掉的**(不要再照舊引用):一場遭遇的隻數與組成([`re/225`](../re/225-encounter-monster-count-anchor.md):`RNDMONST.BIN` 就是遭遇表)、怪物施法的投入與目標格([`re/226`](../re/226-monster-cast-invest-and-target.md))、傷害公式的兩個係數、擲骰面數(= 100)、
 `CHARS.DAT` 位移 1、經驗值的位移與結算算式、魔法道具的發動判定、
 屬性算式的形狀**與兩個常數**(`A` = 6、`B` = 2)、先攻每回合重排、
 戰鬥屬性 14(= 怪物的法術系別)、法術效果類別 3(= 命中能力)、

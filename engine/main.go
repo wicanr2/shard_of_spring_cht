@@ -63,6 +63,9 @@ type Game struct {
 
 	// M4:戰鬥(docs/spec/07)
 	monsters []original.Monster
+	// encounters 是 RNDMONST.BIN 的 72 列(docs/re/225 §5)——
+	// **遭遇挑的是這張表的列**,不是直接挑一隻怪。
+	encounters []original.Encounter
 	items    map[int]combat.Item
 	// rand 是遊戲全域的擲骰來源。⚠ 型別是**介面**不是 `*combat.SeededRand` ——
 	// 測試要能換成固定值的擲骰(發動判定會擋掉大多數低效力的法術,
@@ -785,6 +788,11 @@ func (g *Game) loadCombat(dir string, seed uint64) error {
 		return err
 	}
 	if err := readJSON(filepath.Join(dir, "data", "spells.json"), &g.spells); err != nil {
+		return err
+	}
+	// 隨機遭遇表(docs/re/225)。⚠ 讀不到就**沒有隨機遭遇**,
+	// 不退回「隨便挑一隻」—— 那會生出原版不存在的組合。
+	if err := readJSON(filepath.Join(dir, "data", "encounters.json"), &g.encounters); err != nil {
 		return err
 	}
 	if err := readJSON(filepath.Join(dir, "data", "townsites.json"), &g.townSites); err != nil {

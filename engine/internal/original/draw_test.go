@@ -175,3 +175,60 @@ func TestEmptyRowsMatchUnusedTiles(t *testing.T) {
 // ⚠ 這份清單是**寫死的例外**。它變動表示地圖或偏移變了,要回去查,
 // 不要直接改數字。
 var unusedWrldItem = map[int]bool{23: true, 26: true, 29: true}
+
+// TestLeadingBareMoveIsAnImpliedBM —— 每段開頭的裸位移(`+8,-1`)是隱含的 `BM`。
+//
+// 遊戲端寫的是 `DRAW "BM" + 段$`,那兩個字母**不在檔案裡**(docs/re/221)。
+// 少了它,人形會被畫到格子外面然後被裁掉:東向那一段 48 點只剩 34 點。
+//
+// ⚠ 這個 bug **在帳篷那一段上看不出來**:它的位移剛好是 `+0,+0`。
+// 「有一個樣本剛好是零」是最難發現的那種偏移錯 —— 所以這裡逐段檢查,不挑樣本。
+func TestLeadingBareMoveIsAnImpliedBM(t *testing.T) {
+	segs := SplitPIC(read(t, "WALKDRAW.PIC"))
+	if len(segs) != 10 {
+		t.Fatalf("WALKDRAW 解出 %d 段,應為 10(docs/re/219 §2)", len(segs))
+	}
+	lit := func(s string) int {
+		im, n := RenderDraw(s, 17, 17), 0
+		for _, p := range im.Pix {
+			if p != 0 {
+				n++
+			}
+		}
+		return n
+	}
+	// 逐段量「套位移」與「拿掉位移」的亮點數。0 是帳篷,位移為零所以兩者相同;
+	// 其餘九段都必須變多 —— 沒變多就是位移沒吃到。
+	want := []struct{ with, without int }{
+		{48, 48}, {68, 58}, {68, 55}, {48, 34}, {50, 35},
+		{66, 56}, {66, 59}, {49, 28}, {50, 27}, {62, 44},
+	}
+	for i, seg := range segs {
+		off := leadingMove.FindString(seg)
+		if off == "" {
+			t.Errorf("段 %d 開頭 %q 沒認出裸位移", i, head(seg))
+			continue
+		}
+		with, without := lit(seg), lit(strings.TrimPrefix(seg, off))
+		if i != 0 && with <= without {
+			t.Errorf("段 %d(位移 %s):套用後亮 %d 點、不套 %d 點 —— "+
+				"位移應該把圖移進畫面,亮點要變多", i, off, with, without)
+		}
+		if with != want[i].with || without != want[i].without {
+			t.Errorf("段 %d 亮點 %d/%d,量到的是 %d/%d(docs/re/221 §2)",
+				i, with, without, want[i].with, want[i].without)
+		}
+	}
+	// 段 6 的位移是 `+4,0` —— y **沒有正負號**。要求兩邊都有號的正規式
+	// 會安靜地漏掉南向那一段,而畫面上仍然有一個人形,看不出哪裡不對。
+	if !strings.HasPrefix(segs[6], "+4,0") {
+		t.Errorf("段 6 開頭是 %q,預期 `+4,0`(y 不帶號的那個樣本)", head(segs[6]))
+	}
+}
+
+func head(s string) string {
+	if len(s) > 20 {
+		return s[:20] + "…"
+	}
+	return s
+}

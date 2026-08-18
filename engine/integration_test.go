@@ -591,3 +591,45 @@ func TestT2SameSeedSameResult(t *testing.T) {
 		t.Fatalf("指紋不完整:%s", a)
 	}
 }
+
+// TestCommittedAssetsAreComplete —— 版控裡的 `assets/` 要含 `cmd/convert` 的**全部**產物。
+//
+// ⚠ 這條擋的是一個**全綠的失敗**:轉換器新增了輸出(人形、開機畫面),
+// 我把它轉進 `workplace/` 給截圖用,卻沒有同步版控那份 ——
+// 於是 clone 這個 repo 跑起來看到的是白框,而**沒有任何測試會紅**,
+// 因為當時截圖測試讀的是 workplace 那份。
+//
+// 兩道防線,缺一不可:
+//  1. 這張表(數量對不上就紅)
+//  2. `shot_test.go` / `promo_test.go` 預設讀版控這份 —— 讓截圖與遊戲看到同一批檔
+//
+// **新增 `cmd/convert` 的輸出時要加一行**,而加了之後這裡會紅到你重跑轉換器
+// 並且把產物 commit 進來為止。那正是它的用途。
+func TestCommittedAssetsAreComplete(t *testing.T) {
+	src := assetsSource(t)
+	for _, w := range []struct {
+		glob string
+		n    int
+	}{
+		{"gfx/world/*.png", 32},      // 世界地圖圖塊(FASTWRLD + WRLDITEM)
+		{"gfx/maze/*.png", 29},       // 地城圖塊(MAZEITEM + 牆/門/水…)
+		{"gfx/tiles/*.png", 9},       // 98-byte 小圖塊
+		{"gfx/monst/*.png", 22},      // MONST1–22
+		{"gfx/pict/*.png", 5},        // PICT1/2/6/7/8
+		{"gfx/walk/w*.png", 10},      // WALKDRAW 十段(世界地圖色盤,docs/re/219)
+		{"gfx/walk-maze/w*.png", 10}, // 同一批,地城色盤(0x3D8 = 0x0E)
+		{"gfx/startup.png", 1},       // STARTUP.BIN 的整頁 CGA
+		{"data/*.json", 33},
+		{"save/*.DAT", 2},
+	} {
+		got, err := filepath.Glob(filepath.Join(src, w.glob))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if len(got) != w.n {
+			t.Errorf("%s:版控裡有 %d 個,應該是 %d 個 —— "+
+				"重跑 `tools/go.sh run ./cmd/convert -in /game/sharspri -out …` "+
+				"並把產物 commit 進 assets/", w.glob, len(got), w.n)
+		}
+	}
+}

@@ -29,7 +29,7 @@ MODE="${1:-all}"
 record() {
   echo "→ 錄影格" >&2
   rm -rf "$FRAMES"
-  SHARD_NOSOUND=1 PROMO_DIR=/workplace/promo-frames SHOT_ASSETS=/workplace/assets2 \
+  SHARD_NOSOUND=1 PROMO_DIR=/workplace/promo-frames \
     "$ROOT/tools/go.sh" test -count=1 -run TestPromoFrames
   echo "   $(find "$FRAMES" -name 'frame-*.png' | wc -l) 格" >&2
 }

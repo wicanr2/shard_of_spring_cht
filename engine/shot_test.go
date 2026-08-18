@@ -2,7 +2,7 @@ package main
 
 // 產生 README 用的畫面截圖。**這不是驗收測試** —— 只在 SHOT_DIR 指定時跑。
 //
-//	SHOT_DIR=/out SHOT_ASSETS=/workplace/assets2 go test -run TestShots -count=1
+//	SHOT_DIR=/out go test -run TestShots -count=1
 //
 // ⚠ **一定要跑 ebiten.RunGame**。先前試過「離屏 NewImage + g.Draw + png.Encode」,
 // 結果是 `panic: ui: ReadPixels cannot be called before the game starts` ——
@@ -68,8 +68,14 @@ func (r *shotRunner) Layout(int, int) (int, int) { return layout.ScreenW, layout
 
 func TestShots(t *testing.T) {
 	outDir, assets := os.Getenv("SHOT_DIR"), os.Getenv("SHOT_ASSETS")
-	if outDir == "" || assets == "" {
-		t.Skip("沒有 SHOT_DIR / SHOT_ASSETS —— 這不是驗收測試,平常不跑")
+	if outDir == "" {
+		t.Skip("沒有 SHOT_DIR —— 這不是驗收測試,平常不跑")
+	}
+	// ⚠ **預設讀版控裡的 `assets/`**,不是 workplace 的複本 ——
+	// 兩份分家的時候,截圖看起來一切正常,而玩家 clone 下來跑的是另一批檔
+	// (integration_test.go 的 TestCommittedAssetsAreComplete 是另一道防線)。
+	if assets == "" {
+		assets = assetsSource(t)
 	}
 	if err := os.MkdirAll(outDir, 0o755); err != nil {
 		t.Fatal(err)

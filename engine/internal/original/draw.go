@@ -51,11 +51,32 @@ func (c *drawCanvas) line(x0, y0, x1, y1 float64, col uint8) {
 // 實測 `WRLDITEM.PIC` 各段相對起點的繪製範圍是 x∈[0,16]、y∈[−16,0] ——
 // 全部往右上方畫。從中央起筆會把圖切掉一半,而**畫面上看起來仍像某種圖案**,
 // 不會有任何錯誤訊息。
+// leadingMove 認「開頭那個沒有指令字母的相對位移」,例如 `+4,-1`。
+//
+// ⚠ `WALKDRAW.PIC` 每一行都以這種形式起頭,因為遊戲端寫的是
+// `DRAW "BM" + 段$` —— **那兩個字母不在檔案裡**(docs/re/221)。
+// 少了它,東/西兩個朝向的人形會貼在格子最左緣:
+// x 偏 8 px,在 4× 放大下是 32 個螢幕像素。
+//
+// ⚠ 這個 bug **在帳篷那一段上看不出來** —— 它的位移剛好是 `+0,+0`。
+// 「有一個樣本剛好是零」是最難發現的那種偏移錯。
+// ⚠ **只有 x 要有正負號,y 不必**(段 6 是 `+4,0`)—— BASIC 的 `M` 是否為相對位移
+// 由 **x 的符號**決定,y 跟著走。要求兩邊都有號的話,南向那一段會安靜地漏掉。
+var leadingMove = regexp.MustCompile(`^\s*([+\-]\d+)\s*,\s*([+\-]?\d+)`)
+
 func RenderDraw(macro string, w, h int) *image.Paletted {
 	cv := &drawCanvas{w: w, h: h, px: make([]uint8, w*h)}
 	x, y := 0.0, float64(h-1)
 	color := uint8(3)
 	scale, ang := 4.0, 0.0
+
+	// 開頭的裸位移 = 隱含的 `BM`(見 leadingMove)。移動但不畫。
+	if m := leadingMove.FindStringSubmatch(macro); m != nil {
+		dx, _ := strconv.Atoi(m[1])
+		dy, _ := strconv.Atoi(m[2])
+		x, y = x+float64(dx), y+float64(dy)
+		macro = macro[len(m[0]):]
+	}
 
 	for _, m := range drawTok.FindAllStringSubmatch(macro, -1) {
 		pre := strings.ToUpper(m[1])

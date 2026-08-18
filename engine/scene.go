@@ -703,10 +703,16 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 	}
 
 	if !inCombat && !inMaze && !inTown && !inRoster {
-		// 隊伍所在格的框
-		c := float32(layout.View.X + half*layout.TileDst)
-		r := float32(layout.View.Y + half*layout.TileDst)
-		vector.StrokeRect(dst, c, r, layout.TileDst, layout.TileDst, 3, cgaWhite, false)
+		// 隊伍所在格:畫**人形**(原版的 WALKDRAW.PIC,walk.go)。
+		// ⚠ 人形同時是**朝向的顯示** —— 世界地圖是「先轉再走」,
+		// 沒有它玩家按一次方向鍵不會動、卻不知道為什麼(docs/spec/14 §12-C)。
+		c := float64(layout.View.X + half*layout.TileDst)
+		r := float64(layout.View.Y + half*layout.TileDst)
+		if !drawWalk(dst, g.walk.seg(int(g.party.Facing), g.walkGait), c, r) {
+			// 圖沒轉出來就退回白框 —— ⛔ 不拿別的圖冒充。
+			vector.StrokeRect(dst, float32(c), float32(r),
+				layout.TileDst, layout.TileDst, 3, cgaWhite, false)
+		}
 	}
 
 	frame := func(rc layout.Rect) {
@@ -729,6 +735,9 @@ func (s worldScene) Update(in Input) Transition {
 		if g.party.Step(world.Facing(d), g.world) != world.Moved {
 			continue
 		}
+		// ⚠ 步態**只在真的位移時**翻 —— 轉身不換腳(walk.go)。
+		// Step 的回傳值把「轉身」與「位移」分開,這一行放在 Moved 之後才對。
+		g.walkGait++
 		// 站到拱門那一格且朝南 → 印敘述(docs/re/198)
 		g.archwayCheck()
 		// 踩到地城入口 → 進迷宮(docs/spec/08 §6)

@@ -168,6 +168,13 @@ type Game struct {
 	// M12:遊戲外殼(docs/spec/15-game-shell.md)。標題/主選單/隊伍選擇/全滅/結局。
 	shell     *shellState
 	titleFont *render.Painter // 標題用 32px(docs/spec/04 §4)
+	// walk / walkMaze 是隊伍的人形圖示(WALKDRAW.PIC,見 walk.go)。
+	// nil = 沒轉出來,退回白框。
+	walk, walkMaze walkArt
+	// walkGait 是走路動畫的步態,每走成功一步翻面。
+	// ⚠ **只在真的位移時翻**,轉身不翻 —— 原版轉身不換腳。
+	walkGait int
+
 	// titleArt 是 STARTUP.BIN 左側那塊美術面板(docs/spec/15 §3)。
 	// **nil = 沒轉出來**,標題畫面退回純文字 —— ⛔ 不拿別的圖冒充。
 	titleArt *ebiten.Image
@@ -688,6 +695,7 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	fmt.Fprintln(os.Stderr, "字型:", fontName)
 	g.panel, g.overlayFont, g.titleFont = panel, overlay, title
 	g.titleArt = loadTitleArt(dir)
+	g.walk, g.walkMaze = loadWalk(dir, "walk"), loadWalk(dir, "walk-maze")
 	g.initSound()  // docs/spec/13:失敗只記警告,不影響遊戲
 	g.loadConfig() // 配樂模式等偏好。讀不到就用預設(= 原版)
 	g.shell = &shellState{mode: shellTitle}

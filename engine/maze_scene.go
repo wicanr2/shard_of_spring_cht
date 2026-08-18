@@ -174,6 +174,7 @@ func (g *Game) stepMaze(dir maze.Facing) {
 		g.overlay = "離開地城……" // MAZEMOVE:88
 		return
 	case maze.Moved:
+		g.walkGait++ // 同世界地圖:轉身不翻步態
 	default:
 		return
 	}
@@ -313,10 +314,15 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 			}
 		}
 	}
-	// 隊伍所在格
-	c := float32(layout.View.X + half*layout.TileDst)
-	r := float32(layout.View.Y + half*layout.TileDst)
-	vector.StrokeRect(dst, c, r, layout.TileDst, layout.TileDst, 3, cgaWhite, false)
+	// 隊伍所在格:人形(walk.go)。⚠ 地城用**另一組色盤**(0x0E),
+	// 所以讀的是 walk-maze 那一份 —— 用世界地圖那份畫出來仍然是一個人形,
+	// 只是顏色不對。
+	c := float64(layout.View.X + half*layout.TileDst)
+	r := float64(layout.View.Y + half*layout.TileDst)
+	if !drawWalk(dst, g.walkMaze.seg(int(g.mazeState.Facing), g.walkGait), c, r) {
+		vector.StrokeRect(dst, float32(c), float32(r),
+			layout.TileDst, layout.TileDst, 3, cgaWhite, false)
+	}
 
 	// ⚠ 自己斷成兩行,不要靠折行 —— 這段固定超過訊息面板的 30 欄,
 	// 而 ui.Wrap 是按欄數硬斷的,會把「能見度」從中間切開。

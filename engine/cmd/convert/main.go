@@ -12,6 +12,7 @@ import (
 	"flag"
 	"fmt"
 	"image"
+	"image/color"
 	"image/png"
 	"os"
 	"path/filepath"
@@ -260,6 +261,46 @@ func run(in, out, transDir string) error {
 		nWorld++
 	}
 	if err := step("world tiles", nWorld, nil); err != nil {
+		return err
+	}
+
+	// WALKDRAW.PIC:隊伍的人形圖示(docs/spec/14 §12)。
+	//
+	// ⚠ **它不是地形圖塊**,是畫在地形**上面**的角色 —— 世界地圖與地城共用同一份
+	// (`MENU.EXE` 載入後放進 COMMON,只有它含這個檔名)。
+	// 索引的語意見 docs/re/219;這裡**十段全部輸出、不濾空行**,行號就是索引。
+	if err := os.MkdirAll(filepath.Join(out, "gfx", "walk"), 0o755); err != nil {
+		return err
+	}
+	wd := original.SplitPIC(mustRead(in, "WALKDRAW.PIC"))
+	nWalk := 0
+	for k, row := range wd {
+		if strings.TrimSpace(row) == "" {
+			continue
+		}
+		// ⚠ **同一張圖要輸出兩份色盤。** `WRLDMOVE` 寫 `0x3D8 = 0x0A`、
+		// `MAZEMOVE` 寫 `0x0E`(docs/re/146 §4),所以世界地圖與地城的人形
+		// 顏色不同 —— 只輸出一份的話,其中一個場景的顏色會是錯的,
+		// 而畫面上仍然是一個人形,看不出哪裡不對。
+		drawn := original.RenderDraw(row, 17, 17)
+		for _, v := range []struct {
+			dir string
+			pal color.Palette
+		}{
+			{"walk", original.PaletteWorld},
+			{"walk-maze", original.PaletteMaze},
+		} {
+			if err := os.MkdirAll(filepath.Join(out, "gfx", v.dir), 0o755); err != nil {
+				return err
+			}
+			if err := writePNG(filepath.Join(out, "gfx", v.dir, fmt.Sprintf("w%d.png", k)),
+				original.WithPalette(drawn, v.pal)); err != nil {
+				return err
+			}
+		}
+		nWalk++
+	}
+	if err := step("walk", nWalk, nil); err != nil {
 		return err
 	}
 

@@ -155,12 +155,13 @@ func TestToHitIsAPercentage(t *testing.T) {
 	if 100-BerserkThreshold != 25 {
 		t.Errorf("狂暴機率 %d%%,應為 25%%", 100-BerserkThreshold)
 	}
-	// 目前兩條:一場遭遇的隻數(docs/re/225)、怪物施法的投入與目標格。
+	// 目前一條:一場遭遇的隻數(docs/re/225)。怪物施法的投入與目標格
+	// 已經解掉(docs/re/226),接上去了。
 	// 這條的用意是**清單與規格一起改**:新增或解掉一項時它會失敗,
 	// 逼人回來更新規格。⛔ 清空了也不要把 Unresolved 拆掉,
 	// 下一個未解項要有地方放(combat.go 的說明)。
-	if len(Unresolved) != 2 {
-		t.Errorf("未解項清單有 %d 條,應為 2:%v", len(Unresolved), Unresolved)
+	if len(Unresolved) != 1 {
+		t.Errorf("未解項清單有 %d 條,應為 1:%v", len(Unresolved), Unresolved)
 	}
 }
 

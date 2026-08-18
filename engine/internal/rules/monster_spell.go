@@ -103,3 +103,27 @@ func MonsterCasts(sp, round int, roll float64) bool {
 	}
 	return round == MonsterForcedCastRound || roll <= MonsterCastChance
 }
+
+// ── 投入點數(docs/re/226 §2)──────────────────────────────────────────
+
+// MonsterInvestLevels 是怪物投入的級數:**兩級**。原版把單價 `shl dx, 1`
+// 之後拿去比法力(`CMBT 0x15755`),所以是固定的兩倍,不是擲骰。
+const MonsterInvestLevels = 2
+
+// MonsterInvest 回傳怪物這一次施法要投入幾點。
+//
+//	法力 ≥ 單價 × 2 → 投入 單價 × 2
+//	否則            → 投入 剩下的全部法力
+//
+// 原版的判斷寫成 `法力 > 單價×2 − 1`(`CMBT 0x15759` 的 `dec dx` 配 `jg`),
+// 與 `≥` 等價 —— ⚠ 兩者在**整數**上才等價,不要改寫成浮點比較。
+func MonsterInvest(sp, unitCost int) int {
+	want := MonsterInvestLevels * unitCost
+	if sp >= want {
+		return want
+	}
+	if sp < 0 {
+		return 0
+	}
+	return sp
+}

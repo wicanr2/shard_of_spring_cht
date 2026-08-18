@@ -74,7 +74,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | **繁體中文化** | ✅ 資料檔 439 段(怪物 74 / 法術 33 / 道具 57 / 地城 87)＋ 模組內字串 **381 / 381 全部譯完並接回引擎** |
 | **打包發行** | ✅ `v0.2.0`:Linux **AppImage** / Windows zip / macOS universal,見 [Releases](../../releases)。`tools/release.sh` 一鍵三平台 |
 | **對照原版三輪 QA** | ✅ 用 DOSBox 跑原版逐畫面比對,三輪共約 55 條。規則層只錯四條,而**四條都沒有症狀** —— 升級門檻、迷宮兩軸、地城遭遇、創角重擲上限([worklist](docs/spec/14-remake-worklist.md) §12)|
-| **還開著的** | 兩項要新 RE(遭遇的隻數、怪物施法的投入與目標格,兩項都標在遊戲畫面上)、一批版面差異、以及場景架構重構 C2(它的[重啟判準量過了、未達成](docs/spec/14-remake-worklist.md))|
+| **還開著的** | 一項要新 RE(遭遇的隻數,標在遊戲畫面上)、三項版面差異(戰場地形、ESC 扣點時機、地城 `Q` 鍵)、以及場景架構重構 C2(它的[重啟判準量過了、未達成](docs/spec/14-remake-worklist.md))|
 
 進度的單一真相來源是 [`docs/spec/14-remake-worklist.md`](docs/spec/14-remake-worklist.md),
 ⛔ 不要從這裡複製狀態。
@@ -104,7 +104,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | 缺口 | 現在怎麼做 |
 |---|---|
 | 一場遭遇有幾隻怪 | 原版是**一群**而且會混種;算式的位置釘住了([`re/225`](docs/re/225-encounter-monster-count-anchor.md)),還缺一個執行期 API 的運算元約定 → **一場只放一隻**,並在畫面上標出來 |
-| 怪物施法 | 施不施、放哪一招都解了,但**投入幾點**與**目標格**沒讀到 → 怪物只移動與普攻,並在畫面上標出來 |
+| 怪物施法 | 全解:投入 = 法力單價 ×2(不夠就全押)、目標格 = 它鎖定的那個人([`re/226`](docs/re/226-monster-cast-invest-and-target.md))|
 
 ⛔ 兩項都不湊一個看起來合理的值 —— 湊了就等於自己發明規則,而玩家看不出來。
 

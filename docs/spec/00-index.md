@@ -37,7 +37,7 @@
 | [`17-scripted-fights.md`](17-scripted-fights.md) | **腳本戰鬥**:事件指定的怪物清單(`ds:372C + 2i`,哨兵 99)。533 = 2 × Great Dragon + Siriadne |
 | [`18-save-format.md`](18-save-format.md) | **自己的存檔格式**(JSON,一檔 = 25 角色 + 5 隊伍 + 進度)。⚠ 順帶修掉「一次性事件會復活」|
 | [`19-module-text.md`](19-module-text.md) | **模組內文本的中文化**(F1)。⚠ 主產品是「讓畫面說原版說的話」,**副產品是覆蓋率稽核** |
-| [`12-combat-board.md`](12-combat-board.md) | **戰場**(格陣列 31 寬、畫面 15×15 視窗、行動點數 = 速度、只打面前那一格、走上外圈離場);高度 = 31([`re/218`](../re/218-four-named-assumptions-audited.md));⚠ 怪物**施法**只解規則沒接線(投入與目標格未讀到)|
+| [`12-combat-board.md`](12-combat-board.md) | **戰場**(格陣列 31 寬、畫面 15×15 視窗、行動點數 = 速度、只打面前那一格、走上外圈離場);高度 = 31([`re/218`](../re/218-four-named-assumptions-audited.md));怪物**施法**已接線(投入 = 單價 ×2、目標格 = 鎖定的那個人,[`re/226`](../re/226-monster-cast-invest-and-target.md))|
 
 ## ⚠ 實作前必讀的六條
 
@@ -63,8 +63,7 @@
 
 | 洞 | 出處 | 現在怎麼辦 |
 |---|---|---|
-| **一場遭遇有幾隻怪** | [`re/225`](../re/225-encounter-monster-count-anchor.md) | 算式的位置釘住了(`CMBT 0x11180`),缺 `INT 3F:C4` 的運算元約定。引擎一場放一隻,**標在畫面上** |
-| **怪物施法的投入與目標格** | [`spec/12`](12-combat-board.md) | 施不施、放哪招都解了([`re/170`](../re/170-monster-ai-casts-by-spell-family.md)、[`186`](../re/186-monster-ai-target-placement-cast.md)),但投入幾點與 5×5 的中心點沒讀到。怪物只移動與普攻,**標在畫面上** |
+| **一場遭遇有幾隻怪** | [`re/225`](../re/225-encounter-monster-count-anchor.md) | 算式逐條讀完(`INT(c × RND × 0.5) + c × 0.5 + 1`),缺的是 `c` —— 那張陣列由原生常式填,欄位不是 `MONSTERS.DAT` 的原始欄序。引擎一場放一隻,**標在畫面上** |
 | 法術效果**類別 13** | [`spec/09`](09-magic-items.md) | 不套用效果,訊息含「未解」 |
 | `ds:1Fh` 的執行期間接寫入 | [`re/218`](../re/218-four-named-assumptions-audited.md) §4 | **靜態關不掉**(結構性)。要實跑一個取整看得出差別的地方才能定案 |
 | 十五段樂譜的**用途** | [`spec/13`](13-sound.md) | 位置上的推測,不影響規則 |

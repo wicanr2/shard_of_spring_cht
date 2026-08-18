@@ -344,8 +344,15 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 		friendly = s.Power > 0
 	}
 	if friendly {
+		// 增益套在**施法者自己那一邊**:玩家施法給全隊,怪物施法給怪物。
+		// ⚠ 「套全隊」是引擎的具名實作決定(原版怎麼選增益目標未解);
+		// 「哪一邊」則不是選擇 —— 照原樣寫的話,怪物施的增益會加在隊伍身上。
+		lo, hi := combat.PartyBase, combat.PartyBase+combat.PartyMax
+		if caster.IsMonster {
+			lo, hi = combat.MonsterBase, combat.MonsterBase+combat.MonsterMax
+		}
 		targets = nil
-		for i := combat.PartyBase; i < combat.PartyBase+combat.PartyMax; i++ {
+		for i := lo; i < hi; i++ {
 			if g.field.Units[i].Name != "" {
 				targets = append(targets, &g.field.Units[i])
 			}

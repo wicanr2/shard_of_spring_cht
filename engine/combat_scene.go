@@ -307,7 +307,12 @@ func (g *Game) endTurn() {
 		}
 		u := f.Units[i]
 		if u.Alive() && u.OnField() {
-			f.MonsterTurn(&g.points, i)
+			// 先問施法(docs/re/226):施了就結束這一隻的回合,
+			// 沒施才走移動與普攻。⚠ 順序照原版 —— `CMBT 0x12472`
+			// 的分岔在**行動之前**,不是「走完了再看要不要施法」。
+			if !g.monsterCast(i) {
+				f.MonsterTurn(&g.points, i)
+			}
 		}
 	}
 	if f.Outcome() != combat.Ongoing {

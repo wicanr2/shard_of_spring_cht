@@ -23,6 +23,26 @@ func TestFastWorldTiles(t *testing.T) {
 	}
 }
 
+// FASTCMBT.BIN 與 FASTWRLD.BIN 同格式(docs/re/227 §1)——
+// 同一支解碼器讀得動,而且九張的尺寸都對。
+//
+// ⚠ 這一條釘的是**格式**不是用途:格值 → 圖塊編號還沒讀到(227 §3),
+// 所以引擎目前不畫戰場地形。⛔ 不要因為「資產解得出來」就去湊那張對映表。
+func TestFastCombatTilesShareTheFormat(t *testing.T) {
+	tiles, err := DecodeFastWorld(read(t, "FASTCMBT.BIN"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(tiles) != 9 {
+		t.Fatalf("FASTCMBT 解出 %d 張,應為 9(docs/re/227 §1)", len(tiles))
+	}
+	for i, im := range tiles {
+		if w, h := im.Bounds().Dx(), im.Bounds().Dy(); w != 17 || h != 17 {
+			t.Errorf("FASTCMBT 第 %d 張是 %d×%d,應為 17×17", i, w, h)
+		}
+	}
+}
+
 func TestWrldItemRows(t *testing.T) {
 	rows := SplitPIC(read(t, "WRLDITEM.PIC"))
 	// ⚠ 29 行含 6 個空行。空行**不可以被濾掉** —— 行號就是索引

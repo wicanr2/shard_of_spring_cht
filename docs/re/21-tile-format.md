@@ -74,9 +74,12 @@ BSAVE 標頭(7 bytes)          ← docs/re/19
 | `PICT1/2/6/7/8.BIN` | 5,972 | 待讀 | 待驗 |
 | `DE*EFF.BIN` ×10 | 1,060 | 待讀 | 待驗 |
 
-同一套讀法應該直接適用,**但要逐組驗過再宣告** ——
-`FASTCMBT.BIN` / `RNDMONST.BIN` / `MAZEDATA.BIN` 這些名字不像圖的檔案
-很可能不是 `GET` 陣列。
+同一套讀法應該直接適用,**但要逐組驗過再宣告**。
+
+⚠ **`FASTCMBT.BIN` 驗過了,它是 `GET` 陣列** —— 9 × 92,九塊的標頭
+全部是 (34,17),與 `FASTWRLD.BIN` 逐項相同([`227`](227-fastcmbt-is-nine-get-arrays.md) §1)。
+「名字不像圖」不是證據,那一句原本只是猜測。`RNDMONST.BIN` / `MAZEDATA.BIN`
+另有下落(`MAZEDATA` 是八欄的迷宮參數表,[`56`](56-maze-tile-classes-and-mazedata-columns.md))。
 
 ## 5. 尚未解開
 

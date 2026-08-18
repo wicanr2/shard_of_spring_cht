@@ -613,3 +613,32 @@ func TestWorldViewShrinksAtNight(t *testing.T) {
 		t.Error("半徑 1 時左上角應該被裁掉,裁切條件寫錯了")
 	}
 }
+
+// P) 隊伍資訊:唯一看得到日、月與能見度的地方(docs/spec/14 §12-C)。
+func TestPartyInfoScreen(t *testing.T) {
+	g := newPlayingGame(t)
+	press(t, g, partyInfoKey)
+	if g.overlay == "" {
+		t.Fatal("按 P 沒有開資訊頁")
+	}
+	for _, want := range []string{"時", "日", "能見度"} {
+		if !strings.Contains(g.overlay, want) {
+			t.Errorf("資訊頁少了 %q:%q", want, g.overlay)
+		}
+	}
+}
+
+// 月份名只有 12 個,而時鐘的月份範圍是 1–21。
+//
+// ⚠ 超出 12 要**回空字串**,不要用 (m-1)%12 繞回去湊一個名字 ——
+// 那會產生一個看起來合理的假答案,而原版第 13 個月印什麼**未查**。
+func TestMonthNameStopsAtTwelve(t *testing.T) {
+	if monthName(1) == "" || monthName(12) == "" {
+		t.Error("1–12 月都該有名字")
+	}
+	for _, m := range []int{0, 13, 21, 99, -1} {
+		if got := monthName(m); got != "" {
+			t.Errorf("第 %d 月不該有名字,拿到 %q", m, got)
+		}
+	}
+}

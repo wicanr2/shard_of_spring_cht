@@ -327,9 +327,13 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	// ⚠ 自己斷成兩行,不要靠折行 —— 這段固定超過訊息面板的 30 欄,
 	// 而 ui.Wrap 是按欄數硬斷的,會把「能見度」從中間切開。
 	g.drawMessageLines(dst, []string{
-		fmt.Sprintf("地城 DG%d　(%d, %d)", lv.entry.MazeFile,
-			g.mazeState.Major, g.mazeState.Minor),
-		fmt.Sprintf("朝向 %d　能見度 %d", g.mazeState.Facing, g.mazeState.Visibility),
+		// ⚠ **不印格座標與朝向編號** —— 那是內部狀態,原版在這個位置印的是
+		// **地城名**(`Black Fort` 之類,2026-08-18 對照原版)。
+		// 名字還沒接:`MAZEDATA` 八欄裡**沒有名稱欄**,而 `MENU.EXE` 位移
+		// 10030 那六個名字要先解出「哪個入口對哪一個」(docs/spec/14 §12-C)。
+		// 在解出來之前寧可只印編號,也不要瞎猜一個名字掛上去。
+		fmt.Sprintf("地城 DG%d", lv.entry.MazeFile),
+		fmt.Sprintf("能見度 %d", g.mazeState.Visibility),
 	})
 }
 

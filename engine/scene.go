@@ -650,7 +650,7 @@ func (s mazeScene) Update(in Input) Transition {
 type worldScene struct{ g *Game }
 
 func (s worldScene) Prompt() string {
-	return "方向鍵／1234：移動　　C：紮營　　N：名冊　　S：存檔　　A：另存新檔"
+	return "方向鍵／1234：移動　　C：紮營　　P：資訊　　N：名冊　　S：存檔　　A：另存新檔"
 }
 func (s worldScene) Name() string       { return "world" }
 func (s worldScene) Handles(Input) bool { return true }
@@ -761,6 +761,11 @@ func (s worldScene) Update(in Input) Transition {
 	// C)amp —— 原版在世界地圖按 C 直接紮營(camp_entry.go)。
 	if in.Pressed(ebiten.KeyC) {
 		g.makeCamp(true) // 野外:打得到獵
+		return TransitionStay
+	}
+	// P) —— 隊伍資訊(party_info.go)。**唯一看得到日、月與能見度的地方。**
+	if in.Pressed(partyInfoKey) {
+		g.openPartyInfo()
 		return TransitionStay
 	}
 	if in.Pressed(ebiten.KeyS) {

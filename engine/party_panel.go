@@ -42,6 +42,14 @@ func (g *Game) drawParty(dst *ebiten.Image) {
 	g.panel.Draw(dst, fmt.Sprintf("金幣：%.0f", g.group.Gold), at(ui.ColNum), y)
 	y += lh
 	g.panel.Draw(dst, fmt.Sprintf("食糧：%d", g.group.Provisions), at(ui.ColNum), y)
+	// 時刻與朝向。**原版右下角常駐一個框寫 `Hour N   Facing ↓`**
+	// (2026-08-18 對照原版,docs/spec/14 §12-C)——
+	// ⚠ 兩個都是玩家每一步都要用的資訊:時刻決定天色與視野
+	// (docs/re/213),朝向決定按鍵會轉身還是前進(「先轉再走」)。
+	// 先前只出現在**視窗標題列**,遊戲畫面上讀不到。
+	y += lh
+	g.panel.Draw(dst, fmt.Sprintf("時刻：%d 時　朝向：%s",
+		g.party.Clock.Hour, facingArrow(g.facingNow())), at(ui.ColNum), y)
 
 	// 提示列:**由實際會接手按鍵的場景自己說**(message.go 的 activeScene)。
 	// ⚠ 先前這裡是一個 switch,自己判斷「現在是哪個畫面」—— 與 Update() 的

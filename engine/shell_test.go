@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 
 	"shardofspring/internal/combat"
+	"shardofspring/internal/layout"
 	"shardofspring/internal/original"
 	"shardofspring/internal/save"
 	"shardofspring/internal/ui"
@@ -846,5 +848,34 @@ func TestSaveAsRejectsEmptyName(t *testing.T) {
 	}
 	if g.saveAs.msg == "" {
 		t.Errorf("應該顯示錯誤訊息")
+	}
+}
+
+// TestPartySelectFitsTheView —— 隊伍那幾行不可以超出主視野的欄寬。
+//
+// `p.Draw` 不裁切:太長的行會畫到白框外面去,而畫面上看起來像
+// 「字跑到框外」而不是「少了東西」。五人隊 + 等級 + 座標本來就會超。
+func TestPartySelectFitsTheView(t *testing.T) {
+	g := newShellTestGame(t)
+	if err := g.openPartySelect(); err != nil {
+		t.Fatal(err)
+	}
+	// ⚠ 全空就是**空轉的綠燈** —— 這條檢查要有真的隊伍才有意義。
+	checked := 0
+	for i, grp := range g.shell.slots {
+		if grp.Blank() {
+			continue
+		}
+		checked++
+		full := fmt.Sprintf("%d) %s", i+1, g.partySummary(grp))
+		for _, w := range ui.Wrap(full, layout.ViewCols) {
+			if c := ui.Cols(w); c > layout.ViewCols {
+				t.Errorf("第 %d 隊折出 %d 欄的一行(上限 %d):%q",
+					i+1, c, layout.ViewCols, w)
+			}
+		}
+	}
+	if checked == 0 {
+		t.Fatal("五個槽全是空的 —— 這條檢查什麼都沒測到")
 	}
 }

@@ -495,8 +495,9 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 
 	case townShop:
 		// WRLDMOVE:42「Entering ...」—— 原版走進一間店時印的那一句。
-		p.Draw(dst, fmt.Sprintf("正在進入……%s　價格倍率 %.2f",
-			ts.shop.Name, ts.shop.PriceMult), x, y)
+		// ⚠ **不印價格倍率** —— 那是內部參數,原版只給玩家看價格本身。
+		// 倍率已經算進每一項的售價裡了(town.Price),再印一次是除錯資訊。
+		p.Draw(dst, "正在進入……"+ts.shop.Name, x, y) // WRLDMOVE:42
 		y += lh * 1.5
 		stock := ts.shopStock(g.itemList)
 		lo := ts.page * shopPageSize
@@ -507,12 +508,16 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 				x+380, y)
 			y += lh
 		}
-		pageLine := fmt.Sprintf("第 %d／%d 頁　+ 下一頁　- 上一頁",
-			ts.page+1, ts.pages(g.itemList))
-		if ts.page+1 < ts.pages(g.itemList) {
-			pageLine += "　【更多】" // TOWN:11「[MORE]」
+		// ⚠ 只有一頁就不印分頁列 —— 原版的 `[MORE]` 是**有下一頁才出現**的,
+		// 常駐一行「第 1／1 頁」是引擎自己加的除錯資訊。
+		if n := ts.pages(g.itemList); n > 1 {
+			pageLine := fmt.Sprintf("第 %d／%d 頁　+ 下一頁　- 上一頁", ts.page+1, n)
+			if ts.page+1 < n {
+				pageLine += "　【更多】" // TOWN:11「[MORE]」
+			}
+			p.Draw(dst, pageLine, x, y+lh*0.5)
+			y += lh
 		}
-		p.Draw(dst, pageLine, x, y+lh*0.5)
 		y += lh * 2
 		for _, u := range town.ShopUnresolved {
 			for _, w := range ui.Wrap("⚠ "+u, 58) {
@@ -1050,7 +1055,6 @@ func (g *Game) buildingLines(ts *townState) []string {
 	switch ts.shop.Kind {
 	case original.ShopInn:
 		return []string{
-			fmt.Sprintf("價格倍率 %.2f", ts.shop.PriceMult),
 			// ⚠ 寫「住一晚」會讓人以為按一次只能住一晚 —— 原版問的是
 			// **住幾晚**(TOWN:30/31),而按鍵那一支早就收 1–9。
 			fmt.Sprintf("R) 住宿　每晚 %d 金幣（可一次住 1–9 晚）",
@@ -1060,7 +1064,7 @@ func (g *Game) buildingLines(ts *townState) []string {
 		}
 	case original.ShopHealer:
 		lines := []string{
-			fmt.Sprintf("價格倍率 %.2f　（治療所不受說服技能影響）", ts.shop.PriceMult),
+			"（治療所不受說服技能影響）",
 			"",
 			fmt.Sprintf("醫療　每點生命 %d　　解毒　%d",
 				town.Price(town.HealPerHP, ts.shop.PriceMult),

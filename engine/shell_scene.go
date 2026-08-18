@@ -533,20 +533,28 @@ func (g *Game) drawMainMenu(dst *ebiten.Image) {
 		return
 	}
 	strokeFrame(dst, layout.View)
+	strokeFrame(dst, layout.Message)
 	strokeFrame(dst, layout.Prompt)
 
+	// ⚠ **原版從開機到關機,左邊一直掛著封面圖**(workplace/qa/o2-mainmenu.png):
+	// 美術在地圖框的位置,選單在右邊那個框裡。重製版先前按任意鍵之後整片全黑 ——
+	// 圖已經轉出來了(`gfx/startup.png`),只是沒有人畫。
+	g.drawTitleArtIn(dst, layout.View)
+
 	lh := p.LineHeight()
-	x := float64(layout.View.X + ui.PanelPad)
-	y := float64(layout.View.Y + ui.PanelPad)
+	x := float64(layout.Message.X + ui.PanelPad)
+	y := float64(layout.Message.Y + ui.PanelPad)
 	line := func(s string) { p.Draw(dst, s, x, y); y += lh }
 
 	line("主選單")
 	y += lh * 0.5
 	// 主選單四項的字面照 MENU.tsv 第 13/14/17/18 列(F3)。
 	// ⚠ 括號後面**不留空格**:原版是 `L)oad a Party.`,那個字母就是要按的鍵。
-	line("L)讀取隊伍。── 進入遊戲")
-	line("C)角色管理工具。── 造角色、組隊")
-	line("P)製作者的話。── 本引擎改成按鍵表")
+	// ⚠ 一行不要超過 layout.MsgCols —— 這個框只有 30 欄,
+	// 而 p.Draw 不裁切,超出的部分會畫到框外面去。
+	line("L)讀取隊伍。")
+	line("C)角色管理工具。")
+	line("P)製作者的話。")
 	line("Q)結束遊戲。")
 	if g.shell.msg != "" {
 		y += lh * 0.5
@@ -656,7 +664,15 @@ func (g *Game) drawPartySelect(dst *ebiten.Image) {
 			line(fmt.Sprintf("%d)（空）", n))
 			continue
 		}
-		line(fmt.Sprintf("%d) %s", n, g.partySummary(grp)))
+		// ⚠ 五個人的名字加等級再加座標會超過主視野的欄寬,而 `p.Draw`
+		// **不裁切** —— 超出的部分直接畫到白框外面去。折行,不要靠運氣。
+		for j, w := range ui.Wrap(fmt.Sprintf("%d) %s", n, g.partySummary(grp)),
+			layout.ViewCols) {
+			if j > 0 {
+				w = "　　" + w // 續行縮排,看得出是同一隊
+			}
+			line(w)
+		}
 	}
 	if g.shell.msg != "" {
 		y += lh * 0.5
@@ -714,4 +730,28 @@ func drawCenter(p *render.Painter, dst *ebiten.Image, s string, cx, y float64) {
 func strokeFrame(dst *ebiten.Image, rc layout.Rect) {
 	vector.StrokeRect(dst, float32(rc.X), float32(rc.Y), float32(rc.W), float32(rc.H),
 		2, cgaWhite, false)
+}
+
+// drawTitleArtIn 把封面美術等比放進指定框(整數倍,置中)。
+//
+// ⚠ 倍率**取整**:非整數倍會讓 CGA 的像素邊緣糊掉(docs/spec/04 §1)。
+// ⚠ 沒有圖就什麼都不畫 —— ⛔ 不拿別的圖冒充(docs/spec/15 §3)。
+func (g *Game) drawTitleArtIn(dst *ebiten.Image, rc layout.Rect) {
+	if g.titleArt == nil {
+		return
+	}
+	b := g.titleArt.Bounds()
+	// ⚠ 這裡**不扣內距** —— 扣了之後 612 高只放得下 2×(400 px),
+	// 而 3×(600 px)其實裝得進框裡,差別在畫面上很明顯。
+	k := min(rc.W/b.Dx(), rc.H/b.Dy())
+	if k < 1 {
+		return
+	}
+	w, h := float64(b.Dx()*k), float64(b.Dy()*k)
+	var op ebiten.DrawImageOptions
+	op.GeoM.Scale(float64(k), float64(k))
+	op.GeoM.Translate(float64(rc.X)+(float64(rc.W)-w)/2,
+		float64(rc.Y)+(float64(rc.H)-h)/2)
+	op.Filter = ebiten.FilterNearest
+	dst.DrawImage(g.titleArt, &op)
 }

@@ -29,6 +29,7 @@ HUNTING = 9
 
 GL = 90                                      # GROUPS.DAT 每筆 90 bytes
 OFF_WX, OFF_WY, OFF_FACING = 35, 37, 41      # 1-based(docs/formats/02)
+OFF_MAZENUM = 83                             # 99 = 不在迷宮(docs/re/169)
 PARTY5 = 4                                   # 出貨檔唯一有內容的那一筆
 
 # ⚠ `place` 改的是**隊伍在世界地圖的座標**。
@@ -56,6 +57,12 @@ def place(root, spec):
     put16(r, OFF_WX, x)
     put16(r, OFF_WY, y)
     put16(r, OFF_FACING, facing)
+    # ⚠ **一併清掉迷宮編號** —— 放到世界地圖上就表示不在迷宮裡。
+    # 少了這一步,上一次實驗留下的編號會讓遊戲以為隊伍還在地城,
+    # 開機之後直接轉交 MAZEMOVE 然後噴
+    # `File not found in line 61440 of module MAZEMOVE` ——
+    # 那個訊息看起來像**檔案缺了**,實際上是存檔的狀態不一致。
+    put16(r, OFF_MAZENUM, 99)
     f.write_bytes(bytes(d))
     print(f"已把 PARTY #5 放到 ({x},{y}) 面向 {facing}:{f}")
 

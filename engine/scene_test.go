@@ -298,13 +298,15 @@ func TestT3EveryScenePressReacts(t *testing.T) {
 				g.openSkillAlloc(1, 0, nil)
 				return g
 			},
-			keys: []ebiten.Key{ebiten.KeyDigit7},
+			// ⚠ 一頁 5 項、**單鍵選取**(town.SkillPageSize):按 `2` 就是
+			// 選第 2 項,不必按 Enter。空白鍵翻頁。
+			keys: []ebiten.Key{ebiten.KeySpace},
 			want: func(g *Game) string {
 				if g.skillAlloc == nil {
-					return "數字鍵不該關掉技能點畫面"
+					return "空白鍵不該關掉技能點畫面"
 				}
-				if g.skillAlloc.input != "7" {
-					return "數字鍵應該進到輸入緩衝"
+				if g.skillPages() > 1 && g.skillAlloc.page == 0 {
+					return "空白鍵應該翻頁"
 				}
 				return ""
 			},

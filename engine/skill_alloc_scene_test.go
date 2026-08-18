@@ -44,8 +44,7 @@ func TestFinishCreate_OpensSkillAllocThenSpendAndClose(t *testing.T) {
 	}
 
 	// 學編號 1(劍,成本 2)。
-	g.skillAllocKey(ebiten.KeyDigit1)
-	g.skillAllocKey(ebiten.KeyEnter)
+	g.skillAllocKey(ebiten.KeyDigit1) // 單鍵選取,不必按 Enter
 	if g.chars[0].Skills[0] != '1' {
 		t.Fatalf("學完之後 Skills[0] 應該是 '1',得 %q", g.chars[0].Skills[0])
 	}
@@ -55,7 +54,6 @@ func TestFinishCreate_OpensSkillAllocThenSpendAndClose(t *testing.T) {
 
 	// 0 離開。
 	g.skillAllocKey(ebiten.KeyDigit0)
-	g.skillAllocKey(ebiten.KeyEnter)
 	if g.skillAlloc != nil {
 		t.Fatal("按 0 應該關閉技能點分配畫面")
 	}
@@ -93,7 +91,6 @@ func TestTrainMember_OpensSkillAllocLeftoverCarriesOver(t *testing.T) {
 
 	// 不學任何技能,直接按 0 離開——點數不該憑空消失。
 	g.skillAllocKey(ebiten.KeyDigit0)
-	g.skillAllocKey(ebiten.KeyEnter)
 	if g.skillAlloc != nil {
 		t.Fatal("按 0 應該關閉技能點分配畫面")
 	}
@@ -119,8 +116,7 @@ func TestSkillAllocKey_SecondPressRemovesAndRefunds(t *testing.T) {
 	g := &Game{chars: []original.Character{c}}
 	g.openSkillAlloc(1, -1, nil)
 
-	g.skillAllocKey(ebiten.KeyDigit3) // 釘頭鎚,成本 1
-	g.skillAllocKey(ebiten.KeyEnter)
+	g.skillAllocKey(ebiten.KeyDigit3) // 釘頭鎚,成本 1(單鍵選取,不用 Enter)
 	if g.chars[0].SkillPts != 4 {
 		t.Fatalf("第一次學完應剩 4 點,得 %d", g.chars[0].SkillPts)
 	}
@@ -128,7 +124,6 @@ func TestSkillAllocKey_SecondPressRemovesAndRefunds(t *testing.T) {
 	// ⚠ 同一個編號按第二次 = **取消並退點**(原版右欄的 `(or remove)`)。
 	// 而且**要寫回名冊** —— 只改暫存的話玩家按了看起來沒事,離開就白按。
 	g.skillAllocKey(ebiten.KeyDigit3)
-	g.skillAllocKey(ebiten.KeyEnter)
 	if g.chars[0].SkillPts != 5 {
 		t.Fatalf("取消應該退點:得 %d,想要 5", g.chars[0].SkillPts)
 	}
@@ -146,8 +141,9 @@ func TestSkillAllocKey_NotEnoughDoesNotDeduct(t *testing.T) {
 	g := &Game{chars: []original.Character{c}}
 	g.openSkillAlloc(1, -1, nil)
 
-	g.skillAllocKey(ebiten.KeyDigit7) // 護甲,成本 4,一點都沒有
-	g.skillAllocKey(ebiten.KeyEnter)
+	// ⚠ 編號 7 在**第二頁**(一頁 5 項):先空白鍵翻頁,再按頁內的 `2`。
+	g.skillAllocKey(ebiten.KeySpace)
+	g.skillAllocKey(ebiten.KeyDigit2) // 護甲,成本 4,一點都沒有
 	if g.chars[0].SkillPts != 0 {
 		t.Fatalf("點數不足不該扣成負的:得 %d", g.chars[0].SkillPts)
 	}

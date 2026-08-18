@@ -206,8 +206,12 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 		return
 	}
 
+	// 版面照原版的角色卡:`Name / Race: / Class: / 五屬性 / H.P.: / S.P.:`
+	// (2026-08-18 實跑 `r3c2-roll.png`)。
 	info := rules.Races[c.race]
+	line("名字:" + c.name)
 	line("種族:" + info.Name)
+	line("職業:" + createClassName(c))
 	y += lh * 0.3
 	rows := []struct {
 		n    int
@@ -221,17 +225,25 @@ func (g *Game) drawCreate(dst *ebiten.Image) {
 		{4, "體能", c.rolled.End, info.End},
 		{5, "技巧", c.rolled.Skill, info.Skill},
 	}
+	// ⚠ **調整階段才顯示「擲出 / 修正」兩欄**;調整結束之後原版把修正欄收掉,
+	// 只留最終值(實跑 `r3c2-roll.png` → `r3c6.png`)。
+	// 一直並存的話,玩家分不出哪一個才是真正生效的數字。
+	adjusting := c.step == stepAdjust
 	for _, r := range rows {
 		mark := "  "
 		if c.picked[r.n] {
 			mark = "▶ " // 選中要重擲
 		}
-		// ⚠ 擲出值與種族修正**分兩欄**顯示,與原版一致 —— 修正是事後加的
-		line(fmt.Sprintf("%s%d) %s　%3d　%+d　→ %d",
-			mark, r.n, r.name, r.roll, r.mod, r.roll+r.mod))
+		if adjusting {
+			line(fmt.Sprintf("%s%d) %s　%3d　%+d　→ %d",
+				mark, r.n, r.name, r.roll, r.mod, r.roll+r.mod))
+			continue
+		}
+		line(fmt.Sprintf("   %s　%3d", r.name, r.roll+r.mod))
 	}
 	y += lh * 0.3
 	line(fmt.Sprintf("生命值 %d（= 加完修正的體能）", c.rolled.End+info.End))
+	line("法力值 " + createSPText(c))
 	y += lh * 0.3
 
 	switch c.step {
@@ -264,4 +276,28 @@ func (c *createState) nextAfterAdjust() {
 		return
 	}
 	c.step = stepClass
+}
+
+// createClassName 是角色卡上的職業欄。還沒選到就留白 ——
+// ⛔ 不要先填一個「戰士」:那會讓玩家以為已經選過了。
+func createClassName(c *createState) string {
+	switch c.class {
+	case rules.ClassHero:
+		return "戰士"
+	case rules.ClassWizard:
+		return "巫師"
+	}
+	return "—"
+}
+
+// createSPText 是角色卡上的法力欄。
+//
+// ⚠ 戰士沒有法力(`—`),而**職業還沒選就還不知道** —— 同樣留白。
+// 原版的卡片一直有 `S.P.:` 這一列,選完職業才填上去。
+func createSPText(c *createState) string {
+	if c.class != rules.ClassWizard {
+		return "—"
+	}
+	// 巫師的初始法力 = 加完種族修正的智能(town.wizardSP 的規則)。
+	return fmt.Sprint(c.rolled.Int + rules.Races[c.race].Int)
 }

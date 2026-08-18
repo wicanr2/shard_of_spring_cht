@@ -89,14 +89,13 @@ func (g *Game) rosterKey(k ebiten.Key) {
 	case ebiten.KeyEscape, ebiten.KeyE: // E)xit
 		r.open = false
 		g.saveRoster()
+	// ⚠ 游標**只停在有角色的槽** —— 原版的名冊只列有人的那幾列
+	// (2026-08-18 實跑 `r3a1-charutil.png`),空槽根本不在畫面上,
+	// 停在一個看不見的列上會讓按鍵看起來沒有反應。
 	case ebiten.KeyUp:
-		if r.cursor > 0 {
-			r.cursor--
-		}
+		g.moveRosterCursor(-1)
 	case ebiten.KeyDown:
-		if r.cursor < original.CharSlots-1 {
-			r.cursor++
-		}
+		g.moveRosterCursor(1)
 	case ebiten.KeyC: // C)reate
 		g.openCreate()
 	case ebiten.KeyJ: // J)oin
@@ -271,6 +270,16 @@ func (g *Game) rosterInfo() {
 		out = append(out, fmt.Sprintf("隊伍 #%d　金幣：%.0f　食糧：%d", n, grp.Gold, grp.Provisions))
 		// CHARUTIL:42「Saved in the month of the 」+ 45「Currently in the 」。
 		out = append(out, fmt.Sprintf("　　存檔於%s　目前位於%s", month, g.groupPlace(grp)))
+	}
+	// 角色表(CHARUTIL:46)——**原版把它放在這一頁**,不是主畫面。
+	out = append(out, "", rosterHeader)
+	for i, ch := range g.chars {
+		if !ch.Occupied() {
+			continue
+		}
+		out = append(out, fmt.Sprintf("%2d) %s　%s %s　%d 級　%s",
+			i+1, ui.PadTo(ch.Name, 10), ch.RaceName(), ch.ClassName(),
+			ch.Level, ch.StatusName()))
 	}
 	// 原版的資訊頁還有一段「誰在哪一隊」的兩欄表(CHARUTIL:69)。
 	out = append(out, "", rosterPartyHeader)
@@ -513,32 +522,35 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 	// 這樣改表頭就一定連帶改欄位,不會兩邊各自漂走。
 	// ⚠ 原版最後一欄是「狀態」;引擎多一欄「隊伍」,因為它把原版的兩個畫面
 	// (角色清單與隊伍歸屬)併成一張表(docs/re/203 §3)。
-	head := rosterHeader + "   隊伍"
+	// ⚠ 主畫面是**兩欄** `#) 名字   隊伍`,而且**只列有角色的槽**
+	// (2026-08-18 實跑 `r3a1-charutil.png`:五列,不是 25 列)。
+	// 原版那張 `種族/職業/等級/狀態` 的表是 `I)nformation` 頁在用的 ——
+	// 兩張表的畫面歸屬先前剛好對調了。
+	head := rosterMainHeader
 	c := rosterColumns(head)
-	cNum, cName, cRace, cClass, cLevel, cStatus, cParty :=
-		c[0], c[1], c[2], c[3], c[4], c[5], c[6]
+	cNum, cName, cParty := c[0], c[1], c[2]
 	p.Draw(dst, head, x, y)
 	y += lh * 1.3
+	shown := 0
 	for i, ch := range g.chars {
+		if !ch.Occupied() {
+			continue
+		}
+		shown++
 		if i == r.cursor {
 			p.Draw(dst, "▶", x, y)
 		}
 		p.DrawRight(dst, fmt.Sprint(i+1), col(cNum)+ui.ColUnit*2, y)
-		if !ch.Occupied() {
-			p.Draw(dst, "（空）", col(cName), y)
-			y += lh
-			continue
-		}
 		p.Draw(dst, ch.Name, col(cName), y)
-		p.Draw(dst, ch.RaceName(), col(cRace), y)
-		p.Draw(dst, ch.ClassName(), col(cClass), y)
-		p.DrawRight(dst, fmt.Sprint(ch.Level), col(cLevel)+ui.ColUnit*2, y)
-		p.Draw(dst, ch.StatusName(), col(cStatus), y)
 		party := "—"
 		if n, in := ch.InParty(); in {
 			party = fmt.Sprint(n)
 		}
 		p.Draw(dst, party, col(cParty), y)
+		y += lh
+	}
+	if shown == 0 {
+		p.Draw(dst, "（名冊是空的 —— 按 C 建立角色）", x, y)
 		y += lh
 	}
 	// I)nformation 的資訊頁蓋在名單上 —— 兩層字疊在一起讀不出來。
@@ -567,9 +579,13 @@ func (g *Game) drawRoster(dst *ebiten.Image) {
 const (
 	rosterRemoveAsk  = "(0離開) ?" // 52
 	rosterDisbandAsk = "(0離開)?"  // 54
-	// rosterHeader 是名冊主畫面的表頭(46)。⚠ 欄位間距照原版的空白數,
-	// 資料列用 ui.Cols 量同一組欄位起點,兩邊才對得齊。
+	// rosterHeader 是 **I)nformation** 那一頁的角色表表頭(CHARUTIL:46)。
+	// ⚠ 欄位間距照原版的空白數,資料列用 ui.Cols 量同一組欄位起點,兩邊才對得齊。
+	// ⚠ **它不是主畫面的表頭** —— 主畫面是兩欄的 rosterMainHeader
+	// (2026-08-18 實跑:兩張表的畫面歸屬先前對調了)。
 	rosterHeader = "#) 名字         種族   職業    等級    狀態"
+	// rosterMainHeader 是名冊**主畫面**的表頭:兩欄,只列有角色的槽。
+	rosterMainHeader = "#) 名字            隊伍"
 	// rosterPartyHeader 是 I)nformation 裡「誰在哪一隊」那一段的表頭(69),
 	// 原版是兩欄並排。
 	rosterPartyHeader = " #) 名字        隊伍          #) 名字        隊伍"
@@ -627,4 +643,18 @@ func (g *Game) groupPlace(grp original.Group) string {
 		return fmt.Sprintf("地城： DG%d", grp.MazeNum)
 	}
 	return "野外" // CHARUTIL:`Wilderness`
+}
+
+// moveRosterCursor 把游標移到**下一個有角色的槽**。
+//
+// ⚠ 名冊只列有人的那幾列,游標停在看不見的空槽上會讓按鍵看起來沒反應。
+// 沒有任何角色時游標留在原地(不會無限迴圈)。
+func (g *Game) moveRosterCursor(d int) {
+	r := g.roster
+	for i := r.cursor + d; i >= 0 && i < len(g.chars); i += d {
+		if g.chars[i].Occupied() {
+			r.cursor = i
+			return
+		}
+	}
 }

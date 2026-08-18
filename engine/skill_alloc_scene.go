@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -35,7 +34,10 @@ type skillAllocState struct {
 	memberIdx int
 
 	input string // 數字輸入緩衝(docs/spec/20 §2 的技能編號)
-	msg   string
+	// page 是目前這一頁(每頁 SkillPageSize 項)。原版一頁 5 項、`SPACE` 翻頁,
+	// 而**一頁 5 項正是「單鍵就能選」的理由** —— 十項擠一頁的話 10 要按兩個鍵。
+	page int
+	msg  string
 
 	onDone func(g *Game) // 按 0 離開之後要接著做的事;nil = 沒有
 }
@@ -78,35 +80,28 @@ func (g *Game) skillAllocKey(k ebiten.Key) {
 		return
 	}
 	switch {
-	case k >= ebiten.KeyDigit0 && k <= ebiten.KeyDigit9:
-		if len(a.input) < 2 { // 技能編號最多兩位數(10)
-			a.input += string(rune('0' + int(k-ebiten.KeyDigit0)))
-		}
-	case k == ebiten.KeyBackspace && a.input != "":
-		a.input = a.input[:len(a.input)-1]
-	case k == ebiten.KeyEnter, k == ebiten.KeyKPEnter:
-		g.confirmSkillAlloc()
+	// ⚠ **單鍵選取**:原版一頁 5 項,按 `1`–`5` 直接選那一項,不必按 Enter
+	// (右欄寫著 `Enter: # to choose (or remove)`,而畫面上的編號是頁內編號)。
+	case k >= ebiten.KeyDigit1 && k <= ebiten.KeyDigit5:
+		g.pickSkill(a.page*town.SkillPageSize + int(k-ebiten.KeyDigit1) + 1)
+	case k == ebiten.KeyDigit0, k == ebiten.KeyKP0:
+		g.closeSkillAlloc()
+	// `SPACE` 翻頁(原版 `SPACE for next page`)。+/- 一併收,兩邊都順手。
+	case k == ebiten.KeySpace, k == ebiten.KeyEqual, k == ebiten.KeyKPAdd:
+		a.page = (a.page + 1) % g.skillPages()
+	case k == ebiten.KeyMinus, k == ebiten.KeyKPSubtract:
+		a.page = (a.page + g.skillPages() - 1) % g.skillPages()
 	case k == ebiten.KeyEscape:
 		g.closeSkillAlloc()
 	}
 }
 
-// confirmSkillAlloc 處理按下 Enter 那一刻:空字串什麼都不做、輸入 0 離開,
-// 1–10 交給 town.LearnSkill 判。
+// pickSkill 處理「選了第 n 項技能」:交給 town.LearnSkill 判(學會 / 取消 / 不足)。
 //
 // ⚠ **0 隨時能離開,不強迫花完**——SkillPts 存的就是「剩餘」,而且升級會
 // 累積(docs/spec/20 §2)。
-func (g *Game) confirmSkillAlloc() {
+func (g *Game) pickSkill(n int) {
 	a := g.skillAlloc
-	n, err := strconv.Atoi(a.input)
-	a.input = ""
-	if err != nil {
-		return // 空字串按 Enter,什麼都不做
-	}
-	if n == 0 {
-		g.closeSkillAlloc()
-		return
-	}
 	c, ok := g.skillAllocChar()
 	if !ok {
 		g.skillAlloc = nil
@@ -184,28 +179,58 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 	}
 	y += lh * 0.5
 
+	// ⚠ 一頁 5 項(town.SkillPageSize),照原版 —— 而**一頁 5 項正是
+	// 「按一個鍵就選得到」的理由**:編號是頁內的 1–5。
 	class := rules.Class(c.Class)
-	for n := 1; n <= 10; n++ {
+	lo := a.page * town.SkillPageSize
+	for i := 0; i < town.SkillPageSize; i++ {
+		n := lo + i + 1
 		name, has := town.SkillName(class, n)
 		if !has {
 			continue
 		}
 		cost, _ := town.SkillCost(class, n)
-		mark := ""
+		mark := " "
 		if n <= len(c.Skills) && c.Skills[n-1] == '1' {
-			mark = "  ✓已學"
+			mark = "*" // 原版學過的那一項在名字前面加 `*`
 		}
-		line(fmt.Sprintf("%2d) %s (%d)%s", n, ui.PadTo(name, 8), cost, mark))
+		line(fmt.Sprintf("%d) %s%s (%d)", i+1, mark, ui.PadTo(name, 8), cost))
+	}
+	if np := g.skillPages(); np > 1 {
+		line(fmt.Sprintf("第 %d／%d 頁　空白鍵翻頁", a.page+1, np))
 	}
 	line(" 0) 結束")
 	y += lh * 0.5
-	// TOWN:51/52「Enter skill,」+「(0 exits) 」(F3)。
-	line("輸入技能,(0離開)：" + a.input + "_")
+	// 兩個入口兩份措辭:創角走 CHARUTIL、升級走 TOWN:51/52
+	// 「Enter skill,」+「(0 exits) 」(F3)。
+	if a.memberIdx < 0 {
+		line("選一項技能,(0離開)")
+	} else {
+		line("輸入技能,(0離開)")
+	}
 	// ⚠ 原版右欄寫著 `Enter: # to choose (or remove)` —— **同一個編號按第二次
 	// 就取消並退點**。不寫出來的話玩家不會知道自己點錯了還有救。
-	line("(已學過的再輸入一次會取消,點數退回)")
+	line("(標 * 的已經學過,再按一次會取消並退點)")
 	if a.msg != "" {
 		y += lh * 0.5
 		line(a.msg)
 	}
+}
+
+// skillPages 回傳這個職業的技能要分成幾頁。至少 1,免得取模除以零。
+func (g *Game) skillPages() int {
+	c, ok := g.skillAllocChar()
+	if !ok {
+		return 1
+	}
+	n := 0
+	for i := 1; i <= 10; i++ {
+		if _, has := town.SkillName(rules.Class(c.Class), i); has {
+			n = i
+		}
+	}
+	if n <= 0 {
+		return 1
+	}
+	return (n + town.SkillPageSize - 1) / town.SkillPageSize
 }

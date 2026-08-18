@@ -929,17 +929,26 @@ func (g *Game) trainMember(i, guildExtra int) {
 			ups = append(ups, "1 點"+town.AttrNames[k])
 		}
 	}
-	msg := fmt.Sprintf("%s 你升級了!你獲得 %d 點生命點數。",
-		c.Name, c.MaxHP-hpBefore)
+	// ⚠ 原版把這段印成**整頁的訊息**,而且屬性一點一行
+	// (`Stats are up by:` 底下 `1 pt of Skill` 逐行),按一個鍵才進技能點畫面
+	// (2026-08-18 實跑 `r3k2-lvl.png` / `r3k3.png`)。
+	// 擠成一行會把「擲三次、可能重複」這條規則從畫面上抹掉。
+	head := fmt.Sprintf("%s 你升級了!你獲得 %d 點生命點數。", c.Name, c.MaxHP-hpBefore)
 	if d := c.MaxSP - spBefore; d > 0 {
-		msg += fmt.Sprintf("你還獲得 %d 點法力點數!", d)
+		head += fmt.Sprintf("你還獲得 %d 點法力點數!", d)
 	}
+	lines := []string{head}
 	if len(ups) > 0 {
-		msg += "屬性提升：" + strings.Join(ups, "* ")
+		lines = append(lines, "", "屬性提升：")
+		for _, u := range ups {
+			lines = append(lines, "　　"+u)
+		}
 	}
 	// 技能點會累積(docs/re/183 §6),所以印的是總數不是這次發的。
-	msg += fmt.Sprintf("你還剩 %d 點可分配。", c.SkillPts)
-	g.town.msg = msg
+	lines = append(lines, "",
+		fmt.Sprintf("你還剩 %d 點可分配。", c.SkillPts), "", "（按任意鍵）")
+	g.overlay = strings.Join(lines, "\n")
+	g.town.msg = head
 	// docs/spec/20-skill-allocation.md:升級發的點數要有地方花——接技能點
 	// 分配畫面(蓋掉主視野,上面這句訊息留在訊息列繼續顯示)。onDone 是
 	// nil——這裡要接續的事(升級訊息)已經在打開畫面之前設定好了。
@@ -961,14 +970,23 @@ func (g *Game) charCard(c original.Character) []string {
 	if st == "" {
 		st = "正常"
 	}
+	// ⚠ 版面是**單欄**,照原版:`<名字>  LVL: n` 之後五個屬性一行一個,
+	// 再接生命/法力/經驗/狀態(2026-08-18 實跑 `r3f2-sel1.png`)。
+	// 先前排成雙欄,一眼看去像同一列的兩個數字有關係,而它們沒有。
 	return []string{
-		fmt.Sprintf("%s　%s %s　等級 %d", c.Name, c.RaceName(), c.ClassName(), c.Level),
+		fmt.Sprintf("%s　等級 %d", c.Name, c.Level),
+		fmt.Sprintf("%s %s", c.RaceName(), c.ClassName()),
 		"",
-		fmt.Sprintf("速度 %2d　　生命 %d／%d", c.Speed, c.HP, c.MaxHP),
-		fmt.Sprintf("力量 %2d　　法力 %s", c.Str, sp),
-		fmt.Sprintf("智能 %2d　　經驗 %d", c.Int, g.charExp(c)),
-		fmt.Sprintf("體能 %2d　　狀態 %s", c.End, st),
+		fmt.Sprintf("速度 %2d", c.Speed),
+		fmt.Sprintf("力量 %2d", c.Str),
+		fmt.Sprintf("智能 %2d", c.Int),
+		fmt.Sprintf("體能 %2d", c.End),
 		fmt.Sprintf("技巧 %2d", c.ToHit),
+		"",
+		fmt.Sprintf("生命 %d／%d", c.HP, c.MaxHP),
+		fmt.Sprintf("法力 %s", sp),
+		fmt.Sprintf("經驗 %d", g.charExp(c)),
+		fmt.Sprintf("狀態 %s", st),
 	}
 }
 

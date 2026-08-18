@@ -17,6 +17,12 @@ import (
 // 不滿意就再擲,而且沒有代價),所以「無限重擲」等於讓玩家把五項刷到滿。
 const CreateAdjustRounds = 3
 
+// SkillPageSize 是技能點分配畫面**一頁幾項**:5(原版實跑 `r3e3-page2.png`)。
+//
+// ⚠ 這不只是版面 —— **一頁 5 項正是「按一個鍵就選得到」的理由**:
+// 編號是頁內的 1–5,十項擠一頁的話「10」要按兩個鍵,單鍵選取就不成立。
+const SkillPageSize = 5
+
 // 角色創造。流程出自 `CHARUTIL.EXE` 的實跑(docs/re/143):
 //
 //	C)reate → Choose Race: H)uman D)warf T)roll E)lf G)nome

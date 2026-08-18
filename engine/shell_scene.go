@@ -407,7 +407,7 @@ const shellKeyHelp = "按鍵表：" +
 	"主選單　L 載入、C 角色管理、P 本頁、Q 離開；" +
 	"世界地圖／迷宮　方向鍵先轉再走、N 名冊、S 存檔、A 另存；" +
 	"戰鬥　方向鍵移動、A 攻擊、C 施法、U 道具、/ 看單位、S 音效；" +
-	"施法選格　方向鍵移動游標、空白鍵施放、ESC 取消。" +
+	"施法選格　方向鍵移動游標、PgDn 施放、ESC 取消。" +
 	"（按任意鍵關閉）"
 
 // endingText 是引擎暫用的結局文字。
@@ -425,8 +425,8 @@ const credits = "謹以此獻給 Lori Proudfoot。與 Applied Computing Services
 	"共同開發完成。全部使用 Microsoft QuickBasic v3.0 撰寫。"
 
 // endingThanks 是原版跑完結局印的謝幕詞(MENU:148)——**這一句是原版的**,
-// 與上面那段佔位不同。⚠ 分成兩個常數不是排版偏好:ui.Wrap 不處理 `\n`,
-// 併成一個字串會把換行當成一個有寬度的字排進去。
+// 與上面那段佔位不同。⚠ 分成兩個常數是因為**來源不同**:一段是引擎的佔位、
+// 一段是原版台詞,合起來會讓 `tools/check_module_text.py` 對不上 MENU:148。
 const endingThanks = "唐(Don)、萊斯莉(Leslie)與馬丁(Martin)感謝你遊玩《春之石》。"
 
 // drawShell 依 g.shell.mode 畫外殼接管的整個畫布。

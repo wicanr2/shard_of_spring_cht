@@ -187,6 +187,20 @@ func (g *Game) stepMaze(dir maze.Facing) {
 		return
 	}
 	g.fireTrigger(maze.Scan(g.level.events, g.mazeState, g.level.text))
+
+	// docs/formats/02 位移 25:歸零時觸發遭遇檢查 —— **地城裡也會遭遇**。
+	// 手冊「在野外或地城中冒險時」;原版實跑在拉利斯走第三步就撞上一群
+	// (2026-08-18,workplace/dosbox/shots/q3b-p3.png)。
+	//
+	// ⚠ 先前只有世界地圖那一條路呼叫 `startCombat`,而 `startCombat`
+	// **早就寫好了迷宮分支**(`rules.MazeZone`)—— 規則齊了、沒有人叫它。
+	// 症狀是地城變成純散步,而任何測試都不會紅。
+	//
+	// ⚠ 進了事件(傳送、跨層)那幾條路會在 fireTrigger 裡 return,
+	// 所以這一段只在「單純走了一步」時跑到,與世界地圖同一個位置。
+	if g.level != nil && g.field == nil && g.party.Encounter == 0 {
+		g.startCombat()
+	}
 }
 
 func (g *Game) fireTrigger(t maze.Trigger) {

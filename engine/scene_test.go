@@ -646,3 +646,33 @@ func TestMonthNameStopsAtTwelve(t *testing.T) {
 		}
 	}
 }
+
+// TestMazeStepTriggersEncounter —— 地城裡走路也會遭遇。
+//
+// `startCombat` 的迷宮分支(`rules.MazeZone`)早就寫好了,只是**沒有人叫它** ——
+// 唯一的呼叫端是世界地圖。症狀是地城變成純散步,而任何測試都不會紅。
+// ⚠ 這一條測的是**接線**,不是規則:規則在 internal/rules 已經有測試。
+func TestMazeStepTriggersEncounter(t *testing.T) {
+	g := newPlayingGame(t)
+	if len(g.mazeData) == 0 {
+		t.Skip("沒有 MAZEDATA")
+	}
+	e := g.mazeData[0]
+	g.party.X, g.party.Y = e.WorldX, e.WorldY
+	if !g.enterMaze(e.WorldX, e.WorldY) {
+		t.Fatal("進不了地城")
+	}
+	g.overlay = ""
+	g.party.Encounter = 0
+
+	// 朝四個方向各試一次 —— 只要有一步真的走成,遭遇就該觸發。
+	for _, d := range []maze.Facing{maze.North, maze.East, maze.South, maze.West} {
+		g.mazeState.Facing = d // 先轉好,避免第一次按只是轉身
+		g.party.Encounter = 0
+		g.stepMaze(d)
+		if g.field != nil {
+			return
+		}
+	}
+	t.Error("在地城裡走了四步,遭遇倒數是 0 卻沒有開戰")
+}

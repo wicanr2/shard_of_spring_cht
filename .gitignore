@@ -54,3 +54,8 @@ engine/vendor/
 # ⛔ **不進版控**:倚天中文系統是 1993 年的商業軟體,著作權不屬於本專案。
 #    本機版用 `-tags eten` 內嵌它,發行版走預設的開源字型(docs/spec/21)。
 engine/assets/font/
+
+# 發行集中目錄(tools/dist_all.sh)
+# 裡面是**已發布的**三平台二進位 + 推廣片 —— 都是別處已經有的東西,
+# repo 不再收一份。要重建跑 `tools/dist_all.sh`。
+dist-all/

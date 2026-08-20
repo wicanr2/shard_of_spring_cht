@@ -392,3 +392,42 @@ var (
 		"武器知識", "藥劑知識", "物品知識", "怪物知識", "降魔術",
 	}
 )
+
+// ── 沒有效果的技能(docs/spec/14 §13.1)────────────────────────────────
+
+// SkillNoEffect 回答「這一項技能在本引擎裡有沒有效果」。
+//
+// **技能點是不可逆的支出** —— 玩家花掉的點數換不回來,所以「這一項目前
+// 什麼都不做」必須在**他按下去之前**看得到,不能只寫在文件裡。
+//
+// 三項的成因相同(原版行為沒有 RE 出來),但暴露程度先前差很多:
+// 說服有標在商店畫面上,夜視與怪物知識**連提示都沒有**。
+//
+//	戰士 5  夜視        記錄位移 46 —— 全模組沒有讀到消費端
+//	戰士 10 說服能力    位移 51 —— 怎麼降價未解(ShopUnresolved 也列著)
+//	巫師 9  怪物知識    位移 50 —— 沒有讀到消費端
+//
+// ⛔ **巫師 8「物品知識」不列進來。** 它在**原版自己**就是死技能 ——
+// `LoreFor` 的第三段(編號 > 56)接不到任何真實道具(docs/re/167 §4)。
+// 引擎照抄原版的行為就是正確的;標上去等於引擎在替原版下註解,
+// 而那是另一件事。**「引擎還沒做」與「原版就沒做」要分開講。**
+func SkillNoEffect(class rules.Class, n int) bool {
+	if class == rules.ClassWizard {
+		return n == SkillMonsterLore
+	}
+	return n == SkillNightVision || n == SkillPersuasion
+}
+
+// 三項沒有效果的技能編號。⚠ 巫師與戰士**同一格是不同技能**,
+// 所以 SkillMonsterLore 與 SkillHunting 都是 9 並不是筆誤。
+const (
+	SkillNightVision = 5  // 戰士:夜視
+	SkillPersuasion  = 10 // 戰士:說服能力
+	SkillMonsterLore = 9  // 巫師:怪物知識
+)
+
+// SkillNoEffectMark 是技能清單上的記號;SkillNoEffectNote 是底下那一行說明。
+const (
+	SkillNoEffectMark = "!"
+	SkillNoEffectNote = "(標 ! 的原版行為未解,學了目前沒有效果)"
+)

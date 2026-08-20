@@ -182,6 +182,7 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 	// ⚠ 一頁 5 項(town.SkillPageSize),照原版 —— 而**一頁 5 項正是
 	// 「按一個鍵就選得到」的理由**:編號是頁內的 1–5。
 	class := rules.Class(c.Class)
+	noEffect := false // 這一頁有沒有「學了沒效果」的技能
 	lo := a.page * town.SkillPageSize
 	for i := 0; i < town.SkillPageSize; i++ {
 		n := lo + i + 1
@@ -194,7 +195,15 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 		if n <= len(c.Skills) && c.Skills[n-1] == '1' {
 			mark = "*" // 原版學過的那一項在名字前面加 `*`
 		}
-		line(fmt.Sprintf("%d) %s%s (%d)", i+1, mark, ui.PadTo(name, 8), cost))
+		// 沒有效果的技能**在名字後面**加記號(docs/spec/14 §13.1)——
+		// ⚠ 不能佔 `*` 那一格:學過與沒效果是兩件事,
+		// 一個學過的無效技能兩個記號都要看得到。
+		warn := ""
+		if town.SkillNoEffect(class, n) {
+			warn = town.SkillNoEffectMark
+			noEffect = true
+		}
+		line(fmt.Sprintf("%d) %s%s%s (%d)", i+1, mark, ui.PadTo(name, 8), warn, cost))
 	}
 	if np := g.skillPages(); np > 1 {
 		line(fmt.Sprintf("第 %d／%d 頁　空白鍵翻頁", a.page+1, np))
@@ -211,6 +220,11 @@ func (g *Game) drawSkillAlloc(dst *ebiten.Image) {
 	// ⚠ 原版右欄寫著 `Enter: # to choose (or remove)` —— **同一個編號按第二次
 	// 就取消並退點**。不寫出來的話玩家不會知道自己點錯了還有救。
 	line("(標 * 的已經學過,再按一次會取消並退點)")
+	// ⚠ 只在**這一頁真的有**沒效果的技能時才印 —— 每一頁都印會變成背景雜訊,
+	// 而玩家要的是「我正在看的這幾項裡哪一個是坑」。
+	if noEffect {
+		line(town.SkillNoEffectNote)
+	}
 	if a.msg != "" {
 		y += lh * 0.5
 		line(a.msg)

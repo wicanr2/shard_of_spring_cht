@@ -58,7 +58,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | [`docs/column-shard-of-spring.md`](docs/column-shard-of-spring.md) | **這款遊戲是什麼、當年在台灣怎麼賣的** —— 含精訊 1987 中文說明書的一手證據 |
 | [`docs/spec/14-remake-worklist.md`](docs/spec/14-remake-worklist.md) | **「還剩什麼沒做」的單一真相來源** |
 | [`CLAUDE.md`](CLAUDE.md) | 目標、RE 深度邊界、動工閘門、工具鏈、硬規則 |
-| [`docs/re/`](docs/re/) | 231 篇分析筆記,編號即閱讀順序 |
+| [`docs/re/`](docs/re/) | 232 篇分析筆記,編號即閱讀順序 |
 | [`docs/spec/`](docs/spec/) | 收攏後的實作規格,標 READY 才能動工 |
 
 新接手的人讀 `CONTEXT.md` 就能重建全局。
@@ -69,10 +69,10 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 
 | 階段 | 狀態 |
 |---|---|
-| **逆向工程** | ✅ 結束。[`CLAUDE.md`](CLAUDE.md) §2.2 看板的**十二個子系統全部 RE-DONE**,規格標 READY。`docs/re/` **231 篇**筆記 |
+| **逆向工程** | ✅ 結束。[`CLAUDE.md`](CLAUDE.md) §2.2 看板的**十二個子系統全部 RE-DONE**,規格標 READY。`docs/re/` **232 篇**筆記 |
 | **引擎** | ✅ 世界地圖、地城、戰鬥、戰場、法術、道具、城鎮、商店、營地、名冊、創角、訓練、治療、經驗、技能點、音樂、音效都實作了。**18,902 行 Go + 13,613 行測試(483 條)**。⚠ 兩條規則明確地**沒有**實作(見下面「與原版的差異」),而且標在遊戲畫面上 |
 | **繁體中文化** | ✅ 資料檔 439 段(怪物 74 / 法術 33 / 道具 57 / 地城 87)＋ 模組內字串 **381 / 381 全部譯完並接回引擎** |
-| **打包發行** | ✅ `v0.3.2`(2026-08-20):Linux **AppImage** / Windows zip / macOS universal,見 [Releases](../../releases)。`tools/release.sh` 一鍵三平台。從 `v0.3.1` 升上來**不必重轉資產** |
+| **打包發行** | ✅ `v0.4.0`(2026-08-20):Linux **AppImage** / Windows zip / macOS universal,見 [Releases](../../releases)。`tools/release.sh` 一鍵三平台。存檔相容,**不必重轉資產** |
 | **對照原版三輪 QA** | ✅ 用 DOSBox 跑原版逐畫面比對,三輪共約 55 條。規則層只錯四條,而**四條都沒有症狀** —— 升級門檻、迷宮兩軸、地城遭遇、創角重擲上限([worklist](docs/spec/14-remake-worklist.md) §12)|
 | **還開著的** | 只剩場景架構重構 C2,而它的[重啟判準量過了、未達成](docs/spec/14-remake-worklist.md) —— 照規則不動 |
 

@@ -223,6 +223,27 @@ func run(in, out, transDir string) error {
 		return err
 	}
 
+	// 戰場地形圖塊:`FASTCMBT.BIN` 是那九個 98-byte 圖塊的打包本
+	// (docs/re/227 §1,逐位元組相同),同一支解碼器讀得動。
+	// ⚠ 只有槽 2(水)與槽 3(岩漿)會出現在戰場地形上(§2),
+	// 其餘六張仍然輸出 —— 施法動畫用得到暴風那三張。
+	cmbtTiles, err := original.DecodeFastWorld(mustRead(in, "FASTCMBT.BIN"))
+	if err != nil {
+		return fmt.Errorf("FASTCMBT:%w", err)
+	}
+	if err := os.MkdirAll(filepath.Join(out, "gfx", "combat"), 0o755); err != nil {
+		return err
+	}
+	for i, im := range cmbtTiles {
+		if err := writePNG(filepath.Join(out, "gfx", "combat", fmt.Sprintf("c%d.png", i)),
+			original.WithPalette(im, original.PaletteMaze)); err != nil {
+			return err
+		}
+	}
+	if err := step("combat tiles", len(cmbtTiles), nil); err != nil {
+		return err
+	}
+
 	// 世界地形圖塊:依 docs/spec/05 §4 的來源表,每個有來源的地形值輸出一張
 	// 17×17 PNG。⚠ **沒有來源的值(0、10、35–38)不輸出** ——
 	// 引擎在執行期畫成刺眼的佔位符,而不是在這裡偷偷補一張圖。

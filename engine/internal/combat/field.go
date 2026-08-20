@@ -24,7 +24,49 @@ type Field struct {
 	// 與 `Units[PartyBase…]` 同序。**站位看的是它**(docs/re/210)。
 	// 空的時候退回「隊伍裡的第幾個人」—— 只有搬到有間隔的槽時兩者才不同。
 	PartySlots []int
+	// Terrain 是戰場的地形層(docs/re/227 §2):每一格一個**地形格值**,
+	// 0 = 沒有設定過。⚠ 它**不影響任何規則** —— 原版的地形只是背景,
+	// 通行與否看的是格陣列裡的單位,不是地形。
+	Terrain [BoardH][BoardW]int
 }
+
+// SetTerrain 把隊伍周圍的 3×3 地圖格攤成戰場的地形層。
+//
+//	每一格地圖 → 戰場上的 5×5 格(原版 `CMBT 0x10E78` 的 `5 × i + 1`)
+//	3×3 攤開 = 15×15,以隊伍的基準 (13,13) 為中心 → 佔 6…20 兩軸
+//
+// `cells` 是 3×3 的**地形格值**(已經過 rules.BattlefieldCell 換算),
+// 列優先、`cells[0]` 是西北角。長度不是 9 就整片不填。
+//
+// ⚠ 地城戰鬥呼叫端會傳全空 —— 迷宮值不會產生地形(docs/re/227 §2)。
+func (f *Field) SetTerrain(cells []int) {
+	if len(cells) != 9 {
+		return
+	}
+	for i := 0; i < 3; i++ {
+		for j := 0; j < 3; j++ {
+			v := cells[i*3+j]
+			for r := 0; r < TerrainBlock; r++ {
+				for c := 0; c < TerrainBlock; c++ {
+					y, x := TerrainOrigin+i*TerrainBlock+r, TerrainOrigin+j*TerrainBlock+c
+					if y < 0 || y >= BoardH || x < 0 || x >= BoardW {
+						continue
+					}
+					f.Terrain[y][x] = v
+				}
+			}
+		}
+	}
+}
+
+// TerrainBlock 是一格地圖攤成幾格戰場;TerrainOrigin 是 15×15 那一塊的左上角。
+//
+// ⚠ 兩個數字互相牽制:`6 + 3×5 − 1 = 20`,正好是
+// docs/re/186 §1 讀到的怪物出場錨點範圍(6…20)。改一個就要重算另一個。
+const (
+	TerrainBlock  = 5
+	TerrainOrigin = 6
+)
 
 // 戰鬥訊息的字面。**逐字照 `translations/module-text/CMBT.tsv` 第 69–82 列**
 // (F3,docs/spec/19 §1)——畫面要說原版說的話,不是實作時自己寫的中文。

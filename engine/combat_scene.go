@@ -55,6 +55,7 @@ func (g *Game) startCombat() bool {
 		return false
 	}
 	g.field = combat.Build(g.members, group, g.items, g.rand)
+	g.field.SetTerrain(g.battlefieldTerrain()) // 地形層(docs/re/227 §2)
 	g.field.PartySlots = g.group.MemberSlotNumbers() // 站位看槽號(docs/re/210)
 	g.field.Place()
 	g.field.ResetPoints(&g.points)
@@ -360,6 +361,15 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 				ch = "○" // 圓點 = 出口(手冊 p.33)
 			}
 			px, py := x0+float64(vx)*cell, y0+float64(vy)*cell
+			// 地形先畫,單位疊在上面(docs/re/227 §2)。
+			// ⚠ 只有水與岩漿會有圖,其餘一律不畫 —— 原版的戰場多半是全黑的。
+			if img := g.terrainTile(x, y); img != nil {
+				op := &ebiten.DrawImageOptions{}
+				sc := cell / float64(img.Bounds().Dx())
+				op.GeoM.Scale(sc, sc)
+				op.GeoM.Translate(px, py)
+				dst.DrawImage(img, op)
+			}
 			if g.cursor != nil && g.cursor.x == x && g.cursor.y == y {
 				ch = "✚" // 施法游標
 			} else if i := f.Occupant(x, y); i >= 0 {
@@ -567,6 +577,41 @@ func (g *Game) tacticsLine(u combat.Unit) string {
 	}
 	// F3:原版的字面是 `Seeks> `(CMBT:180)。
 	return "　目標> " + f.Units[t].Name
+}
+
+// terrainTile 回傳戰場某一格的地形圖;nil = 不畫。
+func (g *Game) terrainTile(x, y int) *ebiten.Image {
+	if g.cmbtTiles == nil || g.field == nil {
+		return nil
+	}
+	if x < 0 || y < 0 || x >= combat.BoardW || y >= combat.BoardH {
+		return nil
+	}
+	slot := rules.BattlefieldTile(g.field.Terrain[y][x])
+	if slot < 0 {
+		return nil
+	}
+	return g.cmbtTiles[slot]
+}
+
+// battlefieldTerrain 回傳戰場地形層要用的 3×3 地形格值(docs/re/227 §2)。
+//
+// 原版把**隊伍周圍的 3×3 地圖格**放進 COMMON 的 `ds:3740`,`CMBT` 再攤成
+// 15×15。世界戰鬥給世界地形值,地城戰鬥給迷宮格值 ——
+// ⚠ **迷宮值不會產生地形**(換算表只認世界值 10 與 11),所以地城回全空。
+//
+// 回 nil 表示這一場沒有地形層。
+func (g *Game) battlefieldTerrain() []int {
+	if g.level != nil || g.world == nil {
+		return nil // 地城:原版也是一片空地
+	}
+	out := make([]int, 0, 9)
+	for dy := -1; dy <= 1; dy++ {
+		for dx := -1; dx <= 1; dx++ {
+			out = append(out, rules.BattlefieldCell(g.world.At(g.party.X+dx, g.party.Y+dy)))
+		}
+	}
+	return out
 }
 
 // pickEncounter 依區域挑**遭遇表的一列**,照原版的「不合就重擲」。

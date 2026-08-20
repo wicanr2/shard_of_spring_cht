@@ -118,3 +118,47 @@ func EncounterCount(capCol int, roll float64) int {
 func EncounterRun(total, placed int, roll float64) int {
 	return int(math.Floor(float64(total)*roll - float64(placed) + EncounterOffset + 0.5))
 }
+
+// ---------------------------------------------------------------------------
+// 戰場地形(docs/re/227 §2、§3)
+// ---------------------------------------------------------------------------
+
+// 戰場的地形格值。原版把隊伍周圍的 3×3 地圖格換算成這幾個值,
+// 再用「槽 = 格值 − 3」去查 `FASTCMBT.BIN` 的九個槽。
+const (
+	BattlefieldEmpty = 18 // 空地 —— 不畫任何東西
+	BattlefieldWater = 5  // → 槽 2 = WATER
+	BattlefieldLava  = 6  // → 槽 3 = LAVA
+)
+
+// BattlefieldTileBias 是格值與圖塊槽的位移:`槽 = 格值 − 3`。
+//
+// 兩格都是實測確認的(2026-08-20,合成地形:上一列海洋、下一列世界值 10 →
+// 戰場上緣是水面、下緣是岩漿,docs/re/227 §2.1)。
+const BattlefieldTileBias = 3
+
+// BattlefieldCell 把一格**世界地圖**的地形值換成戰場的地形格值。
+//
+// 原版跑兩趟(docs/re/227 §2):第一趟按大類分,第二趟**覆寫**成只剩兩種。
+// 這裡直接寫第二趟的結果 —— ⚠ 照第一趟實作會讓山脈、森林都長出地形,
+// 而那正是被實測否證的版本。
+//
+// ⚠ **地城戰鬥沒有地形**:來源換成迷宮格值,而迷宮值裡沒有 10/11。
+func BattlefieldCell(worldTile int) int {
+	switch worldTile {
+	case 10:
+		return BattlefieldLava
+	case 11:
+		return BattlefieldWater
+	}
+	return BattlefieldEmpty
+}
+
+// BattlefieldTile 回傳這個地形格值要畫第幾張圖塊,-1 = 不畫。
+func BattlefieldTile(cell int) int {
+	slot := cell - BattlefieldTileBias
+	if slot < 0 || slot > 8 || cell == BattlefieldEmpty {
+		return -1
+	}
+	return slot
+}

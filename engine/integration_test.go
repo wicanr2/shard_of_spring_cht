@@ -615,6 +615,7 @@ func TestCommittedAssetsAreComplete(t *testing.T) {
 		{"gfx/maze/*.png", 29},       // 地城圖塊(MAZEITEM + 牆/門/水…)
 		{"gfx/tiles/*.png", 9},       // 98-byte 小圖塊
 		{"gfx/monst/*.png", 22},      // MONST1–22
+		{"gfx/combat/*.png", 9},      // FASTCMBT 的九個槽(docs/re/227)
 		{"gfx/pict/*.png", 5},        // PICT1/2/6/7/8
 		{"gfx/walk/w*.png", 10},      // WALKDRAW 十段(世界地圖色盤,docs/re/219)
 		{"gfx/walk-maze/w*.png", 10}, // 同一批,地城色盤(0x3D8 = 0x0E)

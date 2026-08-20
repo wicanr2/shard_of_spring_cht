@@ -148,3 +148,44 @@ func TestEncounterRunCanTakeEverything(t *testing.T) {
 		t.Errorf("已放 6 隻、RND 很小時不該再放 %d 隻", n)
 	}
 }
+
+// ── 戰場地形(docs/re/227 §2、§3)────────────────────────────────────
+
+// TestBattlefieldOnlyWaterAndLava:世界地形值裡**只有兩個**會長出地形。
+//
+// ⚠ 原版跑兩趟,第二趟把第一趟寫的山脈那一類全部改回空地 ——
+// 照第一趟實作會讓森林與山脈都長出地形,而那正是實測否證的版本。
+func TestBattlefieldOnlyWaterAndLava(t *testing.T) {
+	for v := 0; v <= 40; v++ {
+		got := BattlefieldCell(v)
+		want := BattlefieldEmpty
+		switch v {
+		case 10:
+			want = BattlefieldLava
+		case 11:
+			want = BattlefieldWater
+		}
+		if got != want {
+			t.Errorf("世界值 %d → 格值 %d,應為 %d", v, got, want)
+		}
+	}
+}
+
+// TestBattlefieldTileSlots:水是槽 2、岩漿是槽 3,空地不畫。
+//
+// 槽號直接對到 `FASTCMBT.BIN` 的九個槽(docs/re/227 §1:
+// 0 EXITSPOT / 1 BORDER / 2 WATER / 3 LAVA / …)。
+func TestBattlefieldTileSlots(t *testing.T) {
+	if got := BattlefieldTile(BattlefieldWater); got != 2 {
+		t.Errorf("水 → 槽 %d,應為 2(WATER)", got)
+	}
+	if got := BattlefieldTile(BattlefieldLava); got != 3 {
+		t.Errorf("岩漿 → 槽 %d,應為 3(LAVA)", got)
+	}
+	if got := BattlefieldTile(BattlefieldEmpty); got != -1 {
+		t.Errorf("空地 → 槽 %d,應為 −1(不畫)", got)
+	}
+	if got := BattlefieldTile(0); got != -1 {
+		t.Errorf("沒設定過的格子 → 槽 %d,應為 −1", got)
+	}
+}

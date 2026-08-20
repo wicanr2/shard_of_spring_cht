@@ -63,6 +63,8 @@ type Game struct {
 
 	// M4:戰鬥(docs/spec/07)
 	monsters []original.Monster
+	// cmbtTiles 是戰場地形圖(FASTCMBT 的九個槽)。nil = 資產裡沒有,不畫地形。
+	cmbtTiles combatArt
 	// encounters 是 RNDMONST.BIN 的 72 列(docs/re/225 §5)——
 	// **遭遇挑的是這張表的列**,不是直接挑一隻怪。
 	encounters []original.Encounter
@@ -713,6 +715,7 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	g.titleArt = loadTitleArt(dir)
 	g.walk, g.walkMaze = loadWalk(dir, "walk"), loadWalk(dir, "walk-maze")
 	g.monst = loadMonst(dir)
+	g.cmbtTiles = loadCombatTiles(dir) // 戰場地形(docs/re/227)
 	g.initSound()  // docs/spec/13:失敗只記警告,不影響遊戲
 	g.loadConfig() // 配樂模式等偏好。讀不到就用預設(= 原版)
 	g.shell = &shellState{mode: shellTitle}

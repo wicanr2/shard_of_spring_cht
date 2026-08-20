@@ -11,7 +11,7 @@
 | 原本掛在 I 的檔案 | 實際歸屬 |
 |---|---|
 | `DE*EFF.BIN` / `.MST`(10 對) | **不是法術效果,是地城事件表 → 已歸 G**([`59`](59-de-eff-event-table.md)/[`60`](60-event-lookup-and-tile-19.md))|
-| `FIRESTRM` / `HAILSTRM` / `WINDSTRM.BIN` | 17×17 圖塊(**H** 的格式),但**遊戲從不載入**(§2)|
+| `FIRESTRM` / `HAILSTRM` / `WINDSTRM.BIN` | 17×17 圖塊(**H** 的格式)。**這三個檔本身沒有被開啟**,但內容經由 `FASTCMBT.BIN` 的打包本載入戰鬥模組,施法時用得到([`227`](227-fastcmbt-is-nine-get-arrays.md) §1)|
 
 **法術的規則本身在 `SPELLS.DAT`(E)與 `CMBT.EXE`(J)** —— 那是別的列。
 
@@ -55,6 +55,14 @@
 
 **正對照成立**(`ITEMS.DAT`/`SPELLS.DAT` 確實被多支模組引用),
 所以 `STRM` / `EXITSP` / `LAVA` / `BORDER` 的 **0 命中是真的**,不是搜尋方法的問題。
+
+⚠ **但「沒有人用這個檔名開檔」不等於「這些像素沒被載入」。**
+[`227`](227-fastcmbt-is-nine-get-arrays.md) §1:`FASTCMBT.BIN` 是這**九個檔的打包本**
+(逐位元組相同,順序就是 §1 那張表),`CMBT.EXE` 一次把它 `BLOAD` 進 `ds:7B20`。
+所以三張暴風圖**在戰鬥模組裡是活的** —— 施法時按法術編號取第 6/7/8 槽來畫。
+
+**判準:檔名搜尋回答的是「誰開了這個檔」,不是「這份內容有沒有被用」。**
+同一份像素可以換一個檔名進來。
 
 ⚠ 這正是 `~/diagnosis-notes/docs/02-query-returned-empty/` 講的紀律:
 **下「不存在」的結論前先做正對照。** 沒有那兩列,這一節不能寫。

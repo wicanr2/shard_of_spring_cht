@@ -135,6 +135,22 @@ func TestShots(t *testing.T) {
 			}
 			g.overlay = ""
 		}},
+		{"08-terrain", func(g *Game) {
+			// 海邊的隨機遭遇:戰場上會鋪出水面(docs/re/227 §2)。
+			//
+			// ⚠ 冪等的條件是「**這一場**已經開好了」,不是「有戰場」——
+			// 上一張留下的是腳本戰鬥的 *Field,用 `g.field != nil` 當守門
+			// 會讓這一張變成上一張的複製品(而畫面看起來完全正常)。
+			if g.party.X == 48 && g.party.Y == 68 && g.field != nil {
+				return
+			}
+			g.field, g.level, g.town = nil, nil, nil
+			g.party.X, g.party.Y = 48, 68 // 南岸:北側兩格是海洋
+			if !g.startCombat() {
+				t.Log("⚠ 隨機遭遇沒有觸發")
+			}
+			g.overlay = ""
+		}},
 	}
 
 	ebiten.SetWindowSize(layout.ScreenW, layout.ScreenH)

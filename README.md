@@ -22,8 +22,8 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | **世界地圖** —— 121 × 103 格,9×9 視野,圖塊 4× 整數放大 | **城鎮**(翠綠村)—— 建築清單、商店、旅店、酒館、訓練所、治療所 |
 | ![地城](docs/images/05-maze.png) | ![戰鬥](docs/images/06-combat.png) |
 | **地城** —— 六座迷宮、能見度裁視野、事件表。左上角的地城名對照[入口表](docs/re/222-dungeon-names-by-entry.md) | **最終戰** —— 巨龍 ×2 + 希瑞雅妮。這個組成是[反組譯](docs/re/180-scripted-fight-monster-list.md)與[通關紀錄](docs/re/179-final-battle-composition-from-playthrough.md)**兩條獨立證據鏈**得到的同一個答案 |
-| ![營地](docs/images/07-camp.png) | |
-| **野外營地** —— 地圖留著、隊伍那一格換成帳篷、十一個指令開在右下角那個框,照原版的版面 | |
+| ![營地](docs/images/07-camp.png) | ![海邊的遭遇](docs/images/08-terrain.png) |
+| **野外營地** —— 地圖留著、隊伍那一格換成帳篷、十一個指令開在右下角那個框,照原版的版面 | **海邊的隨機遭遇** —— 一場是**一群**、會混種([`re/225`](docs/re/225-encounter-monster-count-anchor.md):遭遇表是 `RNDMONST.BIN`),戰場鋪出**水面**([`re/227`](docs/re/227-fastcmbt-is-nine-get-arrays.md):來源是隊伍周圍的 3×3 地圖格)|
 
 > ⚠ **截圖與 `assets/` 都含原版美術。** 這讓「repo 維持 private」
 > ([`CLAUDE.md`](CLAUDE.md) §10)變成整個專案**最吃重的一條** ——

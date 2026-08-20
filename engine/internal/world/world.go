@@ -354,3 +354,12 @@ func (s *State) light() {
 	s.Visibility = s.VisDark
 	s.LightTurns = 0
 }
+
+// 沒有光時的能見度。docs/re/229 §1:原版進迷宮時把 `GROUPS.DAT` 位移 61
+// 設成 2,隊上有**戰士**帶夜視就設成 3。
+//
+// ⚠ 獨立印證:出貨的 PARTY #5 那一格就是 **2**,而那支隊伍沒有夜視。
+const (
+	VisDarkBase        = 2
+	VisDarkNightVision = 3
+)

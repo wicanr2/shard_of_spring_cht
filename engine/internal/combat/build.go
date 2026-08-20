@@ -20,6 +20,10 @@ func Build(party []original.Character, monsters []original.Monster,
 	f := &Field{Rand: r, Items: items, Round: 1}
 
 	// 隊上只要有一個人會「策略」,畫面就顯示怪物在追誰(手冊 p.35)。
+	// ⚠ **手冊在這一點上是錯的**:原版讀的是**當下行動者自己**的記錄
+	// (docs/re/229 §3.1)。Field.Tactics 因此只留給
+	// 「這支隊伍裡有沒有人有這個能力」這種粗略用途,
+	// 真正決定面板內容的是 InspectTier(行動者)。
 	// ⚠ 這是**顯示**能力,不影響任何規則 —— 怪物的鎖定照樣進行。
 	for _, c := range party {
 		if skill(c, TacticsSkill) > 0 {
@@ -77,6 +81,9 @@ func Build(party []original.Character, monsters []original.Monster,
 			StatMag: c.StatMag,
 			// 屬性 16/17 只有 Hero 有(位移 49/48 的技能旗標)
 			Berserk: skill(c, 8), ArmSkin: skill(c, 7), Karate: skill(c, KarateSkill),
+			// 位移 47 / 50 的旗標。**兩張表同一格不同技能**,所以這裡
+			// 只搬旗標,語意由 InspectTier 連職業一起判(docs/re/229 §2.2)。
+			Tactics: skill(c, TacticsSkill), MonsterLore: skill(c, MonsterLoreSkill),
 		}
 	}
 	f.Sort()

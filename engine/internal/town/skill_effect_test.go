@@ -16,12 +16,12 @@ func TestSkillNoEffectIsPerClass(t *testing.T) {
 		want  bool
 		why   string
 	}{
-		{rules.ClassHero, SkillNightVision, true, "夜視:沒有消費端"},
+		{rules.ClassHero, SkillNightVision, false, "夜視:docs/re/229 解出來並接線了"},
 		{rules.ClassHero, SkillPersuasion, true, "說服:降價未解"},
 		{rules.ClassHero, SkillMonsterLore, false, "戰士的第 9 格是打獵,有實作"},
 		{rules.ClassHero, 6, false, "策略有實作"},
 		{rules.ClassHero, 4, false, "空手道有實作"},
-		{rules.ClassWizard, SkillMonsterLore, true, "怪物知識:沒有消費端"},
+		{rules.ClassWizard, SkillMonsterLore, false, "怪物知識:docs/re/229 解出來並接線了"},
 		{rules.ClassWizard, SkillNightVision, false, "巫師的第 5 格是精神之誌,有實作"},
 		{rules.ClassWizard, 8, false, "物品知識在原版就是死技能,不歸引擎標(re/167 §4)"},
 		{rules.ClassWizard, 10, false, "降魔術有實作"},
@@ -43,8 +43,8 @@ func TestOnlyThreeSkillsAreMarked(t *testing.T) {
 			}
 		}
 	}
-	if n != 3 {
-		t.Errorf("標了 %d 項,應為 3(夜視 / 說服 / 怪物知識)—— "+
+	if n != 1 {
+		t.Errorf("標了 %d 項,應為 1(只剩說服能力)—— "+
 			"數字變了要回去看 docs/spec/14 §13.1", n)
 	}
 }

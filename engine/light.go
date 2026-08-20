@@ -1,5 +1,11 @@
 package main
 
+import (
+	"shardofspring/internal/rules"
+	"shardofspring/internal/town"
+	"shardofspring/internal/world"
+)
+
 // 光源與能見度的接線(docs/re/204)。
 //
 // 規則本體在 `internal/world`(`State.light` / `Daylight`),因為原版把它與
@@ -13,7 +19,32 @@ package main
 // 不該燒掉一回合火把。
 func (g *Game) syncMazeNum() {
 	g.party.MazeNum = g.mazeNumber()
+	g.refreshNightVision()
 	g.party.RefreshLight()
+}
+
+// 夜視的能見度。docs/re/229 §1。
+//
+//	沒有光的能見度(GROUPS.DAT 位移 61)= 2
+//	隊上有**戰士**帶夜視 → 3
+//
+// ⚠ 原版把這一段放在 `MAZEMOVE` 每一輪都會跑的初始化裡
+// (清逃跑旗標的後面),所以它會跟著隊伍變化重算。引擎在
+// **進迷宮**與**讀檔**兩處呼叫 —— 隊伍在迷宮裡不會換人,兩者等價。
+//
+// ⚠ **職業一定要一起判。** 位移 46 在巫師表是「風誌」(法術系別 3),
+// 只看旗標的話,帶風系的巫師會讓全隊在黑暗裡多看一圈。
+func (g *Game) refreshNightVision() {
+	v := world.VisDarkBase
+	for _, c := range g.members {
+		if rules.Class(c.Class) == rules.ClassHero &&
+			town.HasSkill(c, town.SkillNightVision) {
+			v = world.VisDarkNightVision
+			break
+		}
+	}
+	g.party.VisDark = v
+	g.group.VisDark = v // 存檔要跟著走,否則讀回來又變成舊值
 }
 
 // loadLight 把 `GROUPS.DAT` 的四個欄位讀進隊伍狀態(位移 45/59/61/83)。
@@ -28,5 +59,8 @@ func (g *Game) loadLight() {
 	g.party.LightTurns = g.group.LightTurns
 	g.party.VisLit, g.party.VisDark = g.group.VisLit, g.group.VisDark
 	g.party.MazeNum = g.group.MazeNum
+	// ⚠ 讀檔之後**重算一次夜視** —— 存檔裡那一格是上一次算出來的結果,
+	// 而隊伍在城鎮換過人之後它就過期了。原版每進一次迷宮都重算。
+	g.refreshNightVision()
 	g.party.RefreshLight()
 }

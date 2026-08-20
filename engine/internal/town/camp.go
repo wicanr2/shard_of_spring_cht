@@ -62,6 +62,11 @@ const MaxActiveStatus = 1
 // hasSkill 讀第 n 個技能旗標(1-based)。
 //
 // ⚠ **同一格在兩張表裡是不同的技能** —— 職業由呼叫端先判。
+// HasSkill 是 hasSkill 的匯出版本 —— 引擎層也要判技能旗標
+// (docs/re/229:夜視)。⚠ **旗標本身沒有語意**,同一格在兩張技能表
+// 是不同技能,呼叫端一定要連職業一起判。
+func HasSkill(c original.Character, n int) bool { return hasSkill(c, n) }
+
 func hasSkill(c original.Character, n int) bool {
 	return n >= 1 && n <= len(c.Skills) && c.Skills[n-1] == '1'
 }

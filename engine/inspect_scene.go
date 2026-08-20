@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 
+	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
 	"shardofspring/internal/ui"
 )
@@ -27,14 +28,14 @@ type inspectState struct {
 // inspectFields 是面板上的欄位標籤,順序照原版字串在表裡的排法。
 const (
 	inspectStatus = "狀態： "     // 179
-	inspectYes    = "是"          // 181
-	inspectNo     = "否"          // 182
+	inspectYes    = "是"        // 181
+	inspectNo     = "否"        // 182
 	inspectSpeed  = "速度： "     // 183
 	inspectSkill  = "技巧： "     // 184
 	inspectStr    = "力量： "     // 185
 	inspectMagic  = "魔法： "     // 186
-	inspectArmor  = "護甲等級："  // 187
-	inspectWeapon = "攻擊方式："  // 188
+	inspectArmor  = "護甲等級："    // 187
+	inspectWeapon = "攻擊方式："    // 188
 	inspectScroll = "(ESC,捲動)" // 191 + 192
 )
 
@@ -104,18 +105,28 @@ func (g *Game) inspectLines() []string {
 			inspectScroll,
 		}
 	}
-	// 防護 = 防具的欄4 + 護甲技能(傷害公式減的就是這兩項,docs/spec/01 §5)。
-	armor := f.ArmorRating(st.idx)
-	out := []string{
-		fmt.Sprintf("%s　%s%s", u.Name, inspectStatus, status),
-		fmt.Sprintf("%s%-4d%s%-4d", inspectSpeed, u.Speed, inspectSkill, u.ToHit),
-		fmt.Sprintf("%s%-4d%s%s", inspectStr, u.Str, inspectMagic, yesNo(u.SP > 0)),
-		fmt.Sprintf("%s%d", inspectArmor, armor),
-		inspectWeapon + f.WeaponName(st.idx),
-	}
-	// 鎖定對象只在隊上有人會「策略」時才看得到(手冊 p.35,docs/re/186 §2)。
-	if line := g.tacticsLine(u); line != "" {
-		out = append(out, line)
+	// 看怪物時**分三個詳細度**,由當下行動者自己的職業與技能決定
+	// (docs/re/229 §3):
+	//
+	//	1  只有名字與狀態
+	//	2  戰士 + 策略        → 多一行「目標>」
+	//	3  巫師 + 怪物知識    → 多一整組數值
+	//
+	// ⚠ 兩者**互斥**:原版的詳細度 2 那一段做完就跳過 3 那一整段,
+	// 而且戰士拿不到 3、巫師拿不到 2。所以不會有「又有目標又有數值」的畫面。
+	out := []string{fmt.Sprintf("%s　%s%s", u.Name, inspectStatus, status)}
+	switch g.inspectTier() {
+	case combat.InspectLore:
+		// 防護 = 防具的欄4 + 護甲技能(傷害公式減的就是這兩項,docs/spec/01 §5)。
+		out = append(out,
+			fmt.Sprintf("%s%-4d%s%-4d", inspectSpeed, u.Speed, inspectSkill, u.ToHit),
+			fmt.Sprintf("%s%-4d%s%s", inspectStr, u.Str, inspectMagic, yesNo(u.SP > 0)),
+			fmt.Sprintf("%s%d", inspectArmor, f.ArmorRating(st.idx)),
+			inspectWeapon+f.WeaponName(st.idx))
+	case combat.InspectTactics:
+		if line := g.tacticsLine(u); line != "" {
+			out = append(out, line)
+		}
 	}
 	return append(out, inspectScroll)
 }
@@ -141,4 +152,16 @@ func (g *Game) drawInspect(dst *ebiten.Image) {
 		p.Draw(dst, ln, x, y)
 		y += lh
 	}
+}
+
+// inspectTier 是**當下行動者**看得到的詳細度(docs/re/229 §2.2)。
+//
+// ⚠ 行動者不在場(還沒輪到人、或測試直接建面板)時退回最低的那一級 ——
+// **看不到不是錯誤**,原版的預設就是只印名字與狀態。
+func (g *Game) inspectTier() int {
+	f := g.field
+	if f == nil || g.actor < 0 || g.actor >= len(f.Units) {
+		return combat.InspectBase
+	}
+	return combat.InspectTier(f.Units[g.actor])
 }

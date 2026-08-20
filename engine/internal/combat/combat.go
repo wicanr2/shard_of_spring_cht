@@ -53,7 +53,16 @@ type Unit struct {
 	// Karate **不是原版的戰鬥屬性** —— 原版空手時去讀角色記錄的位移 45
 	// (技能旗標第 4 格),不是讀陣列(docs/re/153 §5)。
 	// 這裡先搬進來,免得傷害公式要回頭去查記錄。
-	Karate    int
+	Karate int
+	// Tactics / MonsterLore 同樣不是戰鬥屬性,是技能旗標(位移 47 / 50)。
+	// 原版的檢視面板在按下 `?` 的當下才去讀**行動者**的記錄
+	// (docs/re/229 §2.2),這裡一樣先搬進來。
+	//
+	// ⚠ 兩者都**只對自己的職業有意義**:位移 47 在戰士表是策略、
+	// 在巫師表是武器知識;位移 50 在巫師表是怪物知識、在戰士表是打獵。
+	// 所以判斷一定要**連職業一起看**,不能只看旗標。
+	Tactics     int
+	MonsterLore int
 	Name      string // 顯示用,不是原版屬性
 	IsMonster bool
 	// Bias 是屬性 18:**每個單位一份的軸向偏好**(docs/re/158、215)。
@@ -349,3 +358,30 @@ func Apply(def *Unit, dmg int) {
 // 對怪物而言屬性 14 是**法術系別 1–5**(docs/re/170),
 // 對隊員而言是職業(1 = 戰士、2 = 巫師)—— 同一個欄位、兩種語意。
 const MonsterActionFaces = 5
+
+// 檢視面板的詳細度。docs/re/229 §2:原版按 `?`(或 `/`)時,
+// 由**當下行動者自己的**職業與技能決定看得到多少。
+const (
+	InspectBase    = 1 // 名字與狀態
+	InspectTactics = 2 // 戰士 + 策略:多一行「目標>」
+	InspectLore    = 3 // 巫師 + 怪物知識:多一整組數值
+)
+
+// TacticsSkillOffsetName / MonsterLoreSkill 見 docs/re/229 §2.2 的對照表。
+// MonsterLoreSkill 是巫師技能表的第 9 項(記錄位移 50)。
+const MonsterLoreSkill = 9
+
+// InspectTier 回傳行動者看得到的詳細度。
+//
+// ⚠ **兩條分支互斥**,而且各自把職業釘死:戰士拿不到 3、巫師拿不到 2。
+// 這不是簡化 —— 原版就是兩個獨立的 `if`,而位移 47/50 在另一張表
+// 是完全不同的技能(打獵、武器知識),混用會讓「戰士帶打獵就看得到數值」。
+func InspectTier(actor Unit) int {
+	switch {
+	case actor.Action == ActionWizard && actor.MonsterLore > 0:
+		return InspectLore
+	case actor.Action == ActionFighter && actor.Tactics > 0:
+		return InspectTactics
+	}
+	return InspectBase
+}

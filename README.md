@@ -72,7 +72,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | **逆向工程** | ✅ 結束。[`CLAUDE.md`](CLAUDE.md) §2.2 看板的**十二個子系統全部 RE-DONE**,規格標 READY。`docs/re/` 225 篇筆記 |
 | **引擎** | ✅ 世界地圖、地城、戰鬥、戰場、法術、道具、城鎮、商店、營地、名冊、創角、訓練、治療、經驗、技能點、音樂都實作了。18,032 行 Go + 12,983 行測試。⚠ 兩條規則明確地**沒有**實作(見下面「與原版的差異」),而且標在遊戲畫面上 |
 | **繁體中文化** | ✅ 資料檔 439 段(怪物 74 / 法術 33 / 道具 57 / 地城 87)＋ 模組內字串 **381 / 381 全部譯完並接回引擎** |
-| **打包發行** | ✅ `v0.2.0`:Linux **AppImage** / Windows zip / macOS universal,見 [Releases](../../releases)。`tools/release.sh` 一鍵三平台 |
+| **打包發行** | ✅ `v0.3.0`(2026-08-20,三輪 QA 之後):Linux **AppImage** / Windows zip / macOS universal,見 [Releases](../../releases)。`tools/release.sh` 一鍵三平台。⚠ 這一版**資產要重轉**(多讀一個原版檔 `RNDMONST.BIN`)|
 | **對照原版三輪 QA** | ✅ 用 DOSBox 跑原版逐畫面比對,三輪共約 55 條。規則層只錯四條,而**四條都沒有症狀** —— 升級門檻、迷宮兩軸、地城遭遇、創角重擲上限([worklist](docs/spec/14-remake-worklist.md) §12)|
 | **還開著的** | 一項卡在 RE:**戰場地形**的格值 → 圖塊對映(只影響畫面);以及場景架構重構 C2(它的[重啟判準量過了、未達成](docs/spec/14-remake-worklist.md))|
 

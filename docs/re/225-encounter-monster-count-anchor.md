@@ -103,15 +103,21 @@
 ```
 011109  push 72 / push 6 / mov bx, 943Ch / INT 3F:45   ; DIM
 01111F  mov bx, 943Ch / INT 3F:C9                      ; VARPTR
-011126  mov bx, 9448h / mov ax, 37A0h / INT 3F:55      ; 兩數相加(docs/re/38 §1)
+011126  mov bx, 9448h / mov ax, 37A0h / INT 3F:55      ; ★ 路徑 + 檔名
+011131  mov dx, 1Ah   / INT 3E:1A                      ; ★ 載入
 ```
 
-整支 `CMBT.EXE` 對 `943C` **只有這三處參照**(位元組掃描,分母 44,695 bytes /
-6 個節區)—— 沒有 BASIC 的填表迴圈。位址被 `VARPTR` 交出去,由原生常式填。
+**`ds:9448` 就是 `rndmonst.bin` 的字串描述子**(`tools/dgroup_strings.py`),
+而 `INT 3F:55` 是字串串接([`38`](38-api-are-basic-primitives.md) §1)——
+所以這四行是「配置陣列 → 取位址 → 組出 `<路徑>rndmonst.bin` → 載入」。
+同一個形狀在 `0x10753` 用在 `fastcmbt.bin` 上,載入位址是 `ds:7B20`
+([`227`](227-fastcmbt-is-nine-get-arrays.md) §3)。
 
-填進去的是 **`RNDMONST.BIN`**:872 bytes = BSAVE 標頭 7 ＋ **432 word** ＋ EOF,
-而 432 = **72 × 6**。`CMBT.EXE` 檔案位移 `0x9386` 有字串 `rndmonst.bin`,
-全套執行檔裡只有它提到這個檔。
+整支 `CMBT.EXE` 對 `943C` **只有那三處參照**(位元組掃描,分母 44,695 bytes /
+6 個節區)—— 沒有 BASIC 的填表迴圈,資料是直接載進陣列的。
+
+檔案本身對得上:**`RNDMONST.BIN`** 872 bytes = BSAVE 標頭 7 ＋ **432 word** ＋ EOF,
+而 432 = **72 × 6**;全套執行檔裡只有 `CMBT` 提到這個檔名。
 
 | 欄 | 內容 | 值域 |
 |---:|---|---|

@@ -35,7 +35,14 @@ def index_by_number(d):
 
 def main(fix):
     ok = broken = fixed = 0
-    for p in sorted(ROOT.joinpath("docs").rglob("*.md")):
+    # ⚠ **根目錄那幾份也要掃。** 先前只掃 `docs/`,於是 README 裡打錯的
+    # 檔名一路過關,而輸出還是「壞 0」—— 檢查器的涵蓋範圍沒說出來時,
+    # 綠燈與「沒查」長得一模一樣。
+    targets = sorted(ROOT.joinpath("docs").rglob("*.md"))
+    targets += [f for f in (ROOT / n for n in
+                            ("README.md", "CONTEXT.md", "CLAUDE.md",
+                             "WORKLIST.md", "PLAYING.md")) if f.is_file()]
+    for p in targets:
         s = p.read_text(encoding="utf-8")
         orig = s
         for m in LINK.finditer(orig):
@@ -58,7 +65,7 @@ def main(fix):
                       f"—— 編號命中 {len(cands)} 個,不猜")
         if fix and s != orig:
             p.write_text(s, encoding="utf-8")
-    print(f"\n連結 {ok + broken} 條:正常 {ok}、壞 {broken}"
+    print(f"\n掃 {len(targets)} 份文件;連結 {ok + broken} 條:正常 {ok}、壞 {broken}"
           + (f"、已修 {fixed}" if fix else ""))
     return 0 if broken == 0 or fix else 1
 

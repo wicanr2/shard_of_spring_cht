@@ -12,6 +12,30 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 
 ---
 
+## 這個專案留下了什麼
+
+一款 1986 年的遊戲,原始碼早已不存在。留下來的是**規則本身** ——
+從機器碼一條一條讀出來、寫成規格、再用現代語言重寫回去。
+
+| 產出 | 量 | 量法 |
+|---|---:|---|
+| 逆向工程筆記 | **232 篇** | `ls docs/re/*.md` |
+| 收斂的子系統 | **12 / 12** | [`CLAUDE.md`](CLAUDE.md) §2.2 看板 A–L |
+| 規則資料 | **33 個法術 / 74 種怪物 / 57 件道具** | `assets/data/*.json`,欄位語意逐欄對過 |
+| 原版文字盤點 | **1,476 段 / 34,499 B** | [`re/62`](docs/re/62-l-localization-inventory.md)、[`re/63`](docs/re/63-userlib-strings-and-l-correction.md) §4 |
+| 引擎 | **19,590 行 Go** | `find engine -name '*.go' ! -name '*_test.go'` |
+| 測試 | **14,143 行 / 501 條** | 兩套字型後端各跑一次(預設 TTF 與 `-tags eten`)|
+| 發行 | **Windows / Linux / macOS** | [`tools/release.sh`](tools/release.sh) |
+
+解出來的不只是檔案格式。**命中、傷害、經驗值、升級、法術效力、遭遇組成、
+戰後金幣**這些規則,原版手冊全都沒寫 —— 它們現在有算式,而且每一條都指得出
+是哪一支執行檔的哪一個位址。
+
+⚠ **RE-DONE 不等於零疑問。** 十二篇收斂筆記各自附一張「明列剩餘的不確定」,
+還開著的三件事列在[下面](#還開著的三件事)。
+
+---
+
 ## 現在長什麼樣
 
 | | |
@@ -32,8 +56,8 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 ### 三十秒的樣子
 
 [`docs/promo/shard-of-spring-cht-promo.mp4`](docs/promo/shard-of-spring-cht-promo.mp4)
-—— 標題、主選單、世界地圖、城鎮、地城、最終戰,最後接一段**原版 vs 重製版**的並排比較,
-41 秒,配的是本專案自己寫的場景配樂。
+—— 標題、主選單、世界地圖、城鎮、地城、最終戰,接一段**原版 vs 重製版**的並排比較,
+最後兩張定格交代這個專案做了什麼。51 秒,配的是本專案自己寫的場景配樂。
 
 ⚠ 比較段左邊的原版畫面是 [`tools/dosbox_run.sh`](tools/dosbox_run.sh) **實跑抓的**
 (路線見 [`re/139`](docs/re/139-oracle-reaches-gameplay.md)),不是掃描或網路上的圖 ——

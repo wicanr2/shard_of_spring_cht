@@ -34,6 +34,28 @@ record() {
   echo "   $(find "$FRAMES" -name 'frame-*.png' | wc -l) 格" >&2
 }
 
+# 把某一段(以及它後面接的所有段)從影格序列裡拆掉,讓錄製步驟可以重跑。
+#
+# ⚠ **拆的是「該段起點之後的全部影格」,不是只拆那一段。** 後面接的段
+#    (比較段 → 貢獻卡)編號都在它之後,只刪自己那一段會在序列中間留下空號,
+#    而 `-i frame-%06d.png` 讀到空號就**安靜地停在那裡** ——
+#    症狀是片子莫名其妙短了一截,不會有任何錯誤訊息。
+drop_from() {
+  local name="$1"
+  [ -f "$FRAMES/beats.tsv" ] || return 0
+  grep -q "	$name\$" "$FRAMES/beats.tsv" || return 0
+
+  local start
+  start=$(awk -F'\t' -v n="$name" '$2==n{print $1; exit}' "$FRAMES/beats.tsv")
+  local f num
+  for f in "$FRAMES"/frame-*.png; do
+    num=${f##*frame-}; num=${num%.png}
+    if [ "$((10#$num))" -ge "$start" ]; then rm -f "$f"; fi
+  done
+  awk -F'\t' -v s="$start" '$1 < s' "$FRAMES/beats.tsv" > "$FRAMES/beats.tsv.tmp"
+  mv "$FRAMES/beats.tsv.tmp" "$FRAMES/beats.tsv"
+}
+
 # ── 原版 vs 重製版的比較畫面 ──────────────────────────────────────────
 #
 # 原版畫面是 `tools/dosbox_run.sh` 實跑抓的(路線見 docs/re/139),
@@ -89,20 +111,7 @@ compare() {
     i=$((i + 1))
   done
 
-  # ⚠ **先把上一次接上去的比較段拆掉**,否則重跑會疊加 ——
-  #    影格數與 beats.tsv 各多一份,而剪出來的片子只是「比較段放兩次」,
-  #    看起來像剪接沒剪好,不像腳本有 bug。
-  if grep -q '07-compare' "$FRAMES/beats.tsv" 2>/dev/null; then
-    local old_start
-    old_start=$(awk -F'\t' '$2=="07-compare"{print $1; exit}' "$FRAMES/beats.tsv")
-    local f
-    for f in "$FRAMES"/frame-*.png; do
-      local num=${f##*frame-}; num=${num%.png}
-      if [ "$((10#$num))" -ge "$old_start" ]; then rm -f "$f"; fi
-    done
-    grep -v '07-compare' "$FRAMES/beats.tsv" > "$FRAMES/beats.tsv.tmp"
-    mv "$FRAMES/beats.tsv.tmp" "$FRAMES/beats.tsv"
-  fi
+  drop_from 07-compare
 
   # 把比較畫面接到影格序列後面:一張定格 120 格(4 秒)。
   # ⚠ 直接續編號 + 在 beats.tsv 補一行,剪接那一段就不必特別處理 ——
@@ -119,6 +128,91 @@ compare() {
   done
   printf '%d\t07-compare\n' "$start" >> "$FRAMES/beats.tsv"
   echo "   比較段 $((total - start)) 格" >&2
+}
+
+# ── 收尾:貢獻卡 ──────────────────────────────────────────────────────
+#
+# 片子最後兩張定格,講這個專案到底做了什麼。
+#
+# ⚠ **卡上的每個數字都要當場量得出來**,不要憑印象寫。
+#    量法寫在各行後面的註解裡;改了之後重量一次再改字,
+#    因為推廣片是對外的,而寫錯的數字沒有人會回頭查。
+# ⚠ 卡片自己就是完整版面,所以 cut() 給它**空字卡** ——
+#    再壓一條底板上去只會把最後一行蓋掉。
+credits() {
+  local outdir="$FRAMES/credits"
+  mkdir -p "$outdir"
+  rm -f "$outdir"/line-*.txt "$outdir"/credits-*.png
+
+  # 一行一筆:「y|字級|顏色|對齊(c 置中 / l 靠左)|文字」
+  local card0=(
+    "120|46|0xf5f5f5|c|這個專案做了什麼"
+    "196|26|0x7f8c99|c|Shard of Spring(SSI, 1986)—— 逆向、重製、繁體中文化"
+    "286|30|0xdfe6ec|l|232 篇逆向工程筆記，十二個子系統全部收斂"          # ls docs/re/*.md | wc -l
+    "336|30|0xdfe6ec|l|命中、傷害、經驗、升級、法術、遭遇 —— 規則從機器碼讀出來"
+    "386|30|0xdfe6ec|l|33 個法術、74 種怪物、57 件道具，欄位語意逐欄對過"  # assets/data/*.json
+    "436|30|0xdfe6ec|l|1,476 段原版文字全數盤點，繁體中文化"              # CLAUDE.md 2.2 L
+    "486|30|0xdfe6ec|l|Go + Ebitengine 重寫，Windows / Linux / macOS 三平台"
+    "600|30|0xc7a86a|c|定位是文化資產保存，不是「能跑就好」"
+  )
+  local card1=(
+    "120|46|0xf5f5f5|c|規則不是猜的"
+    "212|30|0xdfe6ec|l|每一條結論都要：在 IDA 裡讀到原始指令、確認讀寫端、"
+    "262|30|0xdfe6ec|l|有一份獨立資料互相印證、筆記標明位址與信心等級"
+    "342|30|0xdfe6ec|l|解不出來的欄位就標「未解」，不填一個看起來合理的值"
+    "422|30|0xdfe6ec|l|被推翻的斷言集中記一處，正文永遠只寫現況"
+    "502|30|0xdfe6ec|l|19,590 行引擎、14,143 行測試碼、501 條測試"           # find engine -name *.go
+    "600|30|0xc7a86a|c|原版執行檔與資料不隨引擎散布，玩家自備合法原版"
+  )
+
+  local cards=(card0 card1)
+  local c i=0
+  for c in "${cards[@]}"; do
+    local -n lines="$c"
+    local draw="" l j=0
+    for l in "${lines[@]}"; do
+      local y="${l%%|*}"; local r1="${l#*|}"
+      local sz="${r1%%|*}"; local r2="${r1#*|}"
+      local col="${r2%%|*}"; local r3="${r2#*|}"
+      local al="${r3%%|*}"; local txt="${r3#*|}"
+      # 文字寫成檔案,不走 `text=` —— 逗號與冒號會把 filtergraph 切散
+      # (全形的也一樣),而 ffmpeg 報的是「Both text and text file provided」。
+      printf '%s' "$txt" > "$outdir/line-$i-$j.txt"
+      local x="(w-text_w)/2"
+      [ "$al" = l ] && x=150
+      draw="${draw}drawtext=fontfile=${FONT}:textfile=/out/line-$i-$j.txt:fontcolor=${col}:fontsize=${sz}:x=${x}:y=${y},"
+      j=$((j + 1))
+    done
+    draw="${draw%,}"
+
+    docker run --rm \
+      --log-opt max-size=10m --log-opt max-file=3 \
+      -u "$(id -u):$(id -g)" \
+      --memory 2g --pids-limit 256 --network none \
+      -v "$outdir":/out -v /usr/share/fonts:/usr/share/fonts:ro -e HOME=/tmp \
+      "$IMAGE" \
+      ffmpeg -hide_banner -loglevel error -y \
+        -f lavfi -i "color=c=0x0b0f14:s=1024x768:d=1" \
+        -filter_complex "[0:v]drawbox=x=150:y=176:w=724:h=3:color=0x2b3742:t=fill,${draw}[v]" \
+        -map '[v]' -frames:v 1 -update 1 "/out/credits-$i.png"
+    i=$((i + 1))
+  done
+
+  drop_from 08-credits
+
+  # 一張定格 150 格(5 秒)—— 比比較段慢,讓人讀得完。
+  local total start k
+  total=$(find "$FRAMES" -maxdepth 1 -name 'frame-*.png' | wc -l)
+  start=$total
+  local j
+  for ((j = 0; j < i; j++)); do
+    for ((k = 0; k < 150; k++)); do
+      cp "$outdir/credits-$j.png" "$(printf '%s/frame-%06d.png' "$FRAMES" "$total")"
+      total=$((total + 1))
+    done
+  done
+  printf '%d\t08-credits\n' "$start" >> "$FRAMES/beats.tsv"
+  echo "   貢獻卡 $((total - start)) 格" >&2
 }
 
 cut() {
@@ -143,6 +237,7 @@ cut() {
       05-maze)   seg_track+=(remake-maze);   seg_caption+=("六座地城 —— 光源決定你看得到多遠") ;;
       06-combat) seg_track+=(remake-combat); seg_caption+=("最終戰 —— 巨龍 ×2 與希瑞雅妮") ;;
       07-compare) seg_track+=(remake-title); seg_caption+=("左:原版(DOSBox 實跑)  右:重製版") ;;
+      08-credits) seg_track+=(remake-title); seg_caption+=("") ;;
       *)         seg_track+=(remake-world);  seg_caption+=("") ;;
     esac
   done < "$FRAMES/beats.tsv"
@@ -217,9 +312,10 @@ cut() {
 }
 
 case "$MODE" in
-  all)           record; compare; cut ;;
-  --frames-only) record; compare ;;
+  all)           record; compare; credits; cut ;;
+  --frames-only) record; compare; credits ;;
   --cut-only)    cut ;;
-  --compare-only) compare ;;
+  --compare-only) compare; credits ;;
+  --credits-only) credits ;;
   *) echo "未知選項:$MODE" >&2; exit 2 ;;
 esac

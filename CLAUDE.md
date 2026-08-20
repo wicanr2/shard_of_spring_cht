@@ -332,8 +332,10 @@ Dockerfile 保存在 `~/.claude/knowledge-base/retro/assets/ida-pro-9.4-idapytho
 
 - `PICT3/4/5.BIN` 與 `DG4MAZE.SQZ` 缺；`DG51MAZE.SQZ` 多出來。是原始封裝就少，
   還是命名規則不是我想的那樣？
-- `MTEST.EXE`（3,904 bytes）看起來像開發期的測試程式，不是遊戲流程的一部分 ——
-  但要驗過才能這樣寫。
+- ~~`MTEST.EXE` 是不是開發期的測試程式~~ —— **已驗**(2026-08-20 實跑):
+  從 DOS 提示字元執行它,畫面是**整格的怪物圖一覽**,底下寫
+  `hit any key for next screen` —— 它是**怪物圖檢視器**(M = Monster),
+  不是遊戲流程的一部分,也不是音樂測試。截圖 `workplace/dosbox/shots/mt1.png`。
 - `USERLIB.EXE`（30,813 bytes）標頭前綴是 `bm` 而非其他 EXE 的 `bz`，且含
   `[Choice ?]`、`[Press ENTER]`、`[Press a key]`、`1WRLD` 等字串 —— 疑似原生組語寫的
   I/O 與繪圖程式庫。**如果是，那 §2.2 的 K 項（輸入語意）主要落在這裡。**

@@ -88,7 +88,8 @@ func TestStatusMagnitudeShrinks(t *testing.T) {
 // ⚠ 類別 3 **已經不在這個清單裡**(docs/re/171 §3:它是命中能力)——
 // 這條測試從三個縮到兩個,是解出來的結果,不是放寬。
 func TestUnresolvedEffectsChangeNothing(t *testing.T) {
-	for _, eff := range []int{EffTransference, 99} {
+	// ⚠ 類別 13 也已經解出來了(docs/re/230),清單只剩「規格沒列的類別」。
+	for _, eff := range []int{99} {
 		u := combat.Unit{HP: 10, Str: 5, Speed: 7}
 		tgt := u
 		r := Apply(original.Spell{Name: "X", Effect: eff, Power: 5},
@@ -160,12 +161,13 @@ func TestAllShippedSpellsDispatch(t *testing.T) {
 			unresolved++
 		}
 	}
-	// 只剩類別 13(TRANSFERENCE)一個未解。
-	// ⚠ 類別 3 的三個已經解出來了(docs/re/171 §3),所以這裡從 4 變成 1 ——
-	// **數字變了要回去看規格**,這一次規格也跟著改了。
-	if unresolved != 1 {
-		t.Errorf("未解的法術 %d 個,docs/spec/09 §3 預期 1"+
-			"(只剩類別 13)—— 數字變了要回去看規格", unresolved)
+	// **出貨的 33 個法術全部有效果了。** 類別 3 的三個由 docs/re/171 解出來、
+	// 類別 13 的移轉術由 docs/re/230 解出來 —— 這個數字從 4 → 1 → 0。
+	// ⚠ **數字變了要回去看規格**;變成 0 不代表這條測試沒用了,
+	// 它擋的是「資料裡冒出一個規格沒列的類別」。
+	if unresolved != 0 {
+		t.Errorf("未解的法術 %d 個,預期 0 —— 數字變了要回去看 docs/spec/09 §3",
+			unresolved)
 	}
 }
 

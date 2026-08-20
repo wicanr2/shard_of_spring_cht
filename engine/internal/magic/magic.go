@@ -234,7 +234,7 @@ const (
 	EffUnbind       = 10
 	EffBind         = 11
 	EffUtility      = 12
-	EffTransference = 13 // ⚠ 僅一例,**未解**
+	EffTransference = 13 // 移轉術:把法力轉給目標(docs/re/230)
 )
 
 // 法術結果的字面,照 `translations/module-text/CMBT.tsv`(F3)。
@@ -406,9 +406,27 @@ func Apply(s original.Spell, invest int, caster *combat.Unit,
 		return Result{Message: name + "(非戰鬥效用)"}
 
 	case EffTransference:
-		// ⚠ 僅一例,群內無對照,結構上無法再分(docs/spec/02「未解」)。
-		return Result{Unresolved: true,
-			Message: name + " 發動,但效果未解(類別 13,全遊戲僅此一個)"}
+		// 移轉術。docs/re/230:類別 13 與類別 5(生命值)**共用同一支常式**,
+		// 唯一的差別是記錄位移 —— 5 動位移 28(生命值)、13 動位移 32(法力)。
+		//
+		// ⚠ 類別 13 多一道**上限**:轉移量不超過投入的點數
+		// (`CAMP 0x11F9F`:`if 投入 < 量 then 量 = 投入`)。
+		// 而這個法術的欄4 / 欄5 都是 3,所以效力本來就等於投入 ——
+		// **實際上是 1:1 轉移**,那道上限擋的是「欄4 > 欄5 時憑空生出法力」。
+		amount := p
+		if amount > invest {
+			amount = invest
+		}
+		for _, t := range targets {
+			t.SP += amount
+			if t.SP < 0 {
+				t.SP = 0
+			}
+		}
+		if amount == 0 {
+			return Result{Message: name + "：" + MsgNoDifference, NoEffect: true}
+		}
+		return Result{Message: fmt.Sprintf("%s：法力 %+d%s", name, amount, MsgPts)}
 	}
 
 	// 走到這裡表示資料裡有規格沒列的類別 —— 讓它看得見,不要靜默。
@@ -436,4 +454,39 @@ func ItemBreaks(itemIndex, breakChance int, r combat.Rand) bool {
 		return false // 不是魔法道具
 	}
 	return r.Roll(combat.ToHitFaces) <= breakChance
+}
+
+// ── 回復類的夾住規則(docs/re/230 §3)──────────────────────────────────
+//
+// 類別 5(生命值)與 13(法力)共用的那一支常式在寫回記錄之前夾三次:
+//
+//	新值 = 目前 + 量
+//	新值 < 3        → 新值 = 3            ★ **下限 3**,不是 0
+//	新值 > 最大值   → 新值 = 最大值       (位移 26 / 30,也就是「位移 − 2」)
+//	新值 > ds:6F10  → 新值 = ds:6F10      ★ **255**
+//
+// ⚠ 讀到的是 **`CAMP` 那一份**。`CMBT` 的治療走另一個模組,**沒有讀** ——
+// 所以這一組夾住只套在營地施法,不要順手套到戰鬥去。
+const (
+	// RestoreFloor 是回復之後的下限。⚠ **是 3 不是 0** ——
+	// 在營地被治療的人至少會回到 3 點。
+	RestoreFloor = 3
+	// RestoreCap 是硬上限 `ds:6F10`(docs/re/218 §1 量到 255)。
+	// ⚠ 那一篇把它叫「補給品上限」,而這裡是生命值與法力在用同一個變數 ——
+	// 它是**通用的 255 上限**,不專屬補給品。
+	RestoreCap = 255
+)
+
+// Restore 回傳回復之後該寫回記錄的值。max ≤ 0 表示沒有最大值可夾。
+func Restore(newValue, max int) int {
+	if newValue < RestoreFloor {
+		newValue = RestoreFloor
+	}
+	if max > 0 && newValue > max {
+		newValue = max
+	}
+	if newValue > RestoreCap {
+		newValue = RestoreCap
+	}
+	return newValue
 }

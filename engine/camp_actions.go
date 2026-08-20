@@ -384,7 +384,7 @@ const NotInMaze = world.NotInMaze
 // 從一開始就被擋在營地施放清單外,這裡不需要處理它。
 func campUnit(c original.Character) combat.Unit {
 	return combat.Unit{
-		Name: c.Name, HP: c.HP, Str: c.Str, ToHit: c.ToHit, Speed: c.Speed,
+		Name: c.Name, HP: c.HP, SP: c.SP, Str: c.Str, ToHit: c.ToHit, Speed: c.Speed,
 		Status: c.Status, StatMag: c.StatMag,
 	}
 }
@@ -395,12 +395,27 @@ func campUnit(c original.Character) combat.Unit {
 // `c.HP = c.MaxHP` 同一個上限來源,magic.Apply 本身只夾下限(Unit 沒有
 // MaxHP 可以夾上限)。
 func applyCampUnit(c *original.Character, u combat.Unit) {
-	c.HP = u.HP
-	if c.HP < 0 {
-		c.HP = 0
+	// 回復類(類別 5 生命值 / 13 法力)在寫回記錄之前夾三次:
+	// 下限 3、最大值、硬上限 255(docs/re/230 §3,magic.Restore)。
+	//
+	// ⚠ **只有「變多」才走那一組夾法。** 原版那支常式的下限 3 待在
+	// 「回復」的路徑上,而營地根本施不出會扣血的類別 5
+	// (`combatOnlySpell`:欄4 < 0 的算戰鬥法術)。一律套的話,
+	// 一個被扣到 0 的人會被「夾」回 3 點 —— 那不是回復,是憑空回血。
+	switch {
+	case u.HP > c.HP:
+		c.HP = magic.Restore(u.HP, c.MaxHP)
+	default:
+		c.HP = u.HP
+		if c.HP < 0 {
+			c.HP = 0
+		}
+		if c.MaxHP > 0 && c.HP > c.MaxHP {
+			c.HP = c.MaxHP
+		}
 	}
-	if c.MaxHP > 0 && c.HP > c.MaxHP {
-		c.HP = c.MaxHP
+	if u.SP > c.SP {
+		c.SP = magic.Restore(u.SP, c.MaxSP)
 	}
 	c.Str, c.ToHit, c.Speed = u.Str, u.ToHit, u.Speed
 	c.Status, c.StatMag = u.Status, u.StatMag

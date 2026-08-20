@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/audio/vorbis"
 
@@ -24,6 +25,14 @@ type sound struct {
 	ctx *audio.Context
 	// warned 讓警告只出現一次 —— 每一格都噴一行會把提示列洗掉。
 	warned bool
+	// fx 是等著播的音效代碼,fxWait 是還要等幾格才輪到下一個。
+	//
+	// ⚠ **要排隊,不能同一格全部播出去。** 一次怪物回合可以打三次、
+	// 死兩隻,五個音同時響會疊成一團噪音 —— 而它疊起來仍然像音效,
+	// 不像壞掉,所以沒有人會回報。原版是同步發聲(`SOUND` 會等),
+	// 這裡用「播一個、等它播完」把那個順序還原。
+	fx     []string
+	fxWait int
 	// off = 玩家自己關掉的(CMBT:52/53 的 `Sound is now on./off.`)。
 	// ⚠ 與 `g.sound == nil` **不是同一件事**:nil 是「這台機器放不出聲音」,
 	// off 是「玩家不想聽」。合成一個的話,關過聲音之後就分不出
@@ -141,4 +150,67 @@ func (g *Game) warnOnce(msg string) {
 	}
 	g.warnings = append(g.warnings, msg)
 	g.sound.warned = true
+}
+
+// fxQueueMax 是音效佇列的上限。滿了就丟掉最舊的 ——
+// ⚠ 積壓比漏掉更糟:玩家會聽到上一回合的聲音配這一回合的畫面。
+const fxQueueMax = 6
+
+// pumpEffects 把規則層排的音效(`combat.Field.Sounds`)搬進播放佇列,
+// 每一格最多放一個。
+//
+// ⚠ **不論播不播得出來都要清空 `Sounds`** —— 沒有音效卡、玩家關了聲音、
+// 佇列滿了,規則層都照樣在填。不清的話它會一路長到戰鬥結束。
+func (g *Game) pumpEffects() {
+	if g.field != nil && len(g.field.Sounds) > 0 {
+		if g.sound != nil {
+			g.sound.fx = append(g.sound.fx, g.field.Sounds...)
+			if n := len(g.sound.fx) - fxQueueMax; n > 0 {
+				g.sound.fx = g.sound.fx[n:]
+			}
+		}
+		g.field.Sounds = g.field.Sounds[:0]
+	}
+	s := g.sound
+	if s == nil || s.ctx == nil || s.off {
+		// ⚠ 關著聲音的時候把佇列也倒掉,否則開回來會一次全響。
+		if s != nil {
+			s.fx = nil
+		}
+		return
+	}
+	if s.fxWait > 0 {
+		s.fxWait--
+		return
+	}
+	if len(s.fx) == 0 {
+		return
+	}
+	code := s.fx[0]
+	s.fx = s.fx[1:]
+	notes := music.Effect(code)
+	if len(notes) == 0 {
+		return
+	}
+	pcm := music.RenderPCM16(notes, music.SampleRate)
+	p, err := s.ctx.NewPlayer(bytes.NewReader(pcm))
+	if err != nil {
+		g.warnOnce("音效播放失敗:" + err.Error())
+		return
+	}
+	p.Play()
+	s.fxWait = fxFrames(notes)
+}
+
+// fxFrames 是這一串音要佔幾格(60 fps)。
+func fxFrames(notes []music.Note) int {
+	var sec float64
+	for _, n := range notes {
+		sec += n.Dur
+	}
+	f := int(sec * float64(ebiten.TPS()))
+	if f < 1 {
+		f = 1
+	}
+	return f
 }

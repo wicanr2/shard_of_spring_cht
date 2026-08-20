@@ -9,6 +9,7 @@ import (
 	"shardofspring/internal/combat"
 	"shardofspring/internal/layout"
 	"shardofspring/internal/magic"
+	"shardofspring/internal/music"
 	"shardofspring/internal/original"
 	"shardofspring/internal/rules"
 	"shardofspring/internal/ui"
@@ -29,27 +30,27 @@ import (
 // 這些錯誤訊息;引擎用字母選單,但**清單列的是全部法術**而不是只列施得出來的,
 // 那些檢查才有機會發生 —— 少了它們,玩家永遠不知道自己為什麼施不出某個法術。
 const (
-	castMenuHead   = "要施放哪個法術?(ENTER離開)" // 88+89+90
-	castNoSuchSpell = "沒有這個 法術!"            // 91+92
-	castNotCombat  = "那不是戰鬥法術!"           // 93+94
-	castNoSkill    = "你不會那個法術!"            // 95+96
-	castNotWizard  = " 不是巫師,無法施放法術。"    // 84+85+86+87
-	castSPPrompt   = " 花費幾點法力? "            // 101
-	castNotThatMuch = "你沒有 那麼多!"            // 102+103
-	castNoTarget   = "沒有選定目標!"             // 108+109
+	castMenuHead    = "要施放哪個法術?(ENTER離開)" // 88+89+90
+	castNoSuchSpell = "沒有這個 法術!"          // 91+92
+	castNotCombat   = "那不是戰鬥法術!"          // 93+94
+	castNoSkill     = "你不會那個法術!"          // 95+96
+	castNotWizard   = " 不是巫師,無法施放法術。"     // 84+85+86+87
+	castSPPrompt    = " 花費幾點法力? "         // 101
+	castNotThatMuch = "你沒有 那麼多!"          // 102+103
+	castNoTarget    = "沒有選定目標!"           // 108+109
 	// 97+98+99+100:群體傷害法術在第 1 回合放不出來(docs/re/195 §1)。
 	castNotPrepared = "你將還沒準備好那個法術,要到下一回合才行。"
 	// 124+125:游標周圍 5×5 一個單位都沒有(docs/re/195 §2)。
 	castNoOneInArea = "目標區域內沒有人!"
 	// 113「Hit PgDn key」—— ⚠ 這一句是**游標階段的確認鍵**,
 	// 不是法術清單的翻頁提示。先前接在翻頁上,而那個位置原版沒有這句話。
-	castPageHint   = "按 PgDn 鍵施放"            // 113
-	castWhere      = "你想施放到哪裡?"           // 118+119
-	castEscExit    = "(ESC離開)"                 // 114
+	castPageHint = "按 PgDn 鍵施放" // 113
+	castWhere    = "你想施放到哪裡?"   // 118+119
+	castEscExit  = "(ESC離開)"    // 114
 	// 117/120(`to use.` / `to cast.`)是行動點數不足那兩句的句尾。
 	// ⚠ 前半段沒有單獨的字串可對,**這個對應是推的**,不是讀到的。
-	castNoPoints  = "：行動點數不足,無法施放。"
-	useNoPoints   = "：行動點數不足,無法使用。"
+	castNoPoints = "：行動點數不足,無法施放。"
+	useNoPoints  = "：行動點數不足,無法使用。"
 )
 
 // castRequires 是「那個法術至少需要 N 點法力。」(CMBT:104+105+106)。
@@ -380,6 +381,12 @@ func (g *Game) castAt(s original.Spell, invest, cx, cy int) bool {
 			}
 		}
 	}
+
+	// 施法的音效(docs/re/228:`PS`,六個呼叫端全在施法路徑上)。
+	// ⚠ 放在發動判定**之前** —— 響的是「施法」這個動作本身,
+	// 失敗與否是之後的事。原版六個 `PS` 的位置支持這個順序,
+	// 但「失敗時響不響」沒有逐條讀,這是具名的實作決定。
+	g.field.Sounds = append(g.field.Sounds, music.FxSpell)
 
 	// 發動判定:效力 = round(欄4 × 投入 ÷ 欄5),要 ≥ d100 才成功
 	// (docs/re/201)。⚠ **法力照樣扣掉** —— 原版扣點的位置沒讀到,

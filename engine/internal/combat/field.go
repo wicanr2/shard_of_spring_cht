@@ -3,6 +3,8 @@ package combat
 import (
 	"sort"
 	"strconv"
+
+	"shardofspring/internal/music"
 )
 
 // Field 是一場戰鬥。docs/spec/07-combat-scene.md。
@@ -20,6 +22,11 @@ type Field struct {
 	Items map[int]Item
 	// Log 是這一場的訊息,給訊息列顯示、也給測試檢查。
 	Log []string
+	// Sounds 是**該響的音效代碼**,與 Log 平行(docs/spec/13 §8.2)。
+	// ⚠ 這個套件是純規則,**不碰音訊** —— 只記「這裡原版會響什麼」,
+	// 由引擎層取走再播。音效開關在播放層,不在這裡:
+	// 規則層不因玩家關聲音而改變(§8.3 驗收 6)。
+	Sounds []string
 	// PartySlots 是每位隊員佔 `GROUPS.DAT` 的第幾個成員槽(1–9),
 	// 與 `Units[PartyBase…]` 同序。**站位看的是它**(docs/re/210)。
 	// 空的時候退回「隊伍裡的第幾個人」—— 只有搬到有間隔的槽時兩者才不同。
@@ -79,16 +86,16 @@ const (
 // (docs/re/153 §7),`for no damage.` 由 `傷害 < 1` 決定(docs/re/153 §8)。
 // 死亡那一句分「他」與「牠」兩種,原版用的就是兩段不同的字串。
 const (
-	msgAttacks  = " 攻擊 "         // 69 `attacks `
-	msgWith     = " 使用 "         // 70 `with`
-	msgMissed   = "但沒打中!"      // 71 `and missed!`
+	msgAttacks  = " 攻擊 "    // 69 `attacks `
+	msgWith     = " 使用 "    // 70 `with`
+	msgMissed   = "但沒打中!"   // 71 `and missed!`
 	msgNoDamage = "沒有造成傷害。" // 72 `for no damage.`
-	msgHacksFor = "劈砍造成 "      // 74 `and hacks for `
-	msgHitsFor  = "命中造成 "      // 76 `and hits for `
-	msgDamage   = " 點傷害。"      // 77 ` damage.`
-	msgHeDies   = " 他死了!"       // 81 ` He Dies!`(隊員)
-	msgItDies   = " 牠死了!"       // 82 ` It dies!`(怪物)
-	msgPoisoned = "並中毒了!"      // 79 `and is poisoned!`(docs/re/191)
+	msgHacksFor = "劈砍造成 "   // 74 `and hacks for `
+	msgHitsFor  = "命中造成 "   // 76 `and hits for `
+	msgDamage   = " 點傷害。"   // 77 ` damage.`
+	msgHeDies   = " 他死了!"   // 81 ` He Dies!`(隊員)
+	msgItDies   = " 牠死了!"   // 82 ` It dies!`(怪物)
+	msgPoisoned = "並中毒了!"   // 79 `and is poisoned!`(docs/re/191)
 	// 5/7 `Hands` —— 武器編號 60 的名字,兩列分別是「已鑑定」與「未鑑定」
 	// 兩張表的第 60 格,而**兩格的原文都是 `Hands`**(docs/re/192 §4),
 	// 所以引擎只用一個「拳頭」不會漏掉任何一種說法。
@@ -105,10 +112,10 @@ const (
 // ⚠ **只有 61 找不到來源**:怪物欄5 是 0–13 與 62、角色走 0–56 與兩個哨兵。
 // ⛔ 不要為了把它用上去編一條「爬蟲用咬擊」的規則。
 var naturalWeapons = map[int]string{
-	59: "無",         // 9  `None` —— 沒穿防具
+	59: "無",          // 9  `None` —— 沒穿防具
 	60: msgBareHands, // 5  `Hands` —— 沒拿武器
-	61: "咬擊",       // 10 `Bite` —— 沒有任何資料產得出這個編號
-	62: "獠牙",       // 6  `Fangs` —— 蛇與食屍鬼,就是中毒那五隻(docs/re/191)
+	61: "咬擊",         // 10 `Bite` —— 沒有任何資料產得出這個編號
+	62: "獠牙",         // 6  `Fangs` —— 蛇與食屍鬼,就是中毒那五隻(docs/re/191)
 }
 
 // Outcome 是戰鬥的結束狀態。
@@ -176,13 +183,16 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 	//
 	// ⚠ 擲骰**無條件進行**,即使傷害是 0。挪到 `dmg > 0` 底下會改變亂數的
 	// 消耗順序,同一顆種子就跑出不同的戰鬥(docs/spec/07 §8 驗收 6)。
-	verb := msgHitsFor
+	verb, fx := msgHitsFor, music.FxHit
 	// ⚠ round(RND×100+1),不是 Roll(100)——同一個成語,同一個修正
 	// (docs/re/185 §2 表列 #4)。
 	if second := rollRound(f.Rand, ToHitFaces); Berserk(a, second) {
 		dmg *= 2
-		verb = msgHacksFor
+		verb, fx = msgHacksFor, music.FxHack
 	}
+	// 音效與訊息**同一個分岔**:原版的 `HT`／`HK` 兩個呼叫端就緊鄰
+	// `and hits for`／`and hacks for` 這兩句(docs/re/228 §4)。
+	f.Sounds = append(f.Sounds, fx)
 	Apply(&f.Units[def], dmg)
 	msg := head
 	if dmg == 0 {
@@ -196,6 +206,8 @@ func (f *Field) Attack(atk, def int) (roll int, hit bool, dmg int) {
 		} else {
 			msg += msgHeDies
 		}
+		// `DD` 是「某一個單位死了」,一次死一個響一次(docs/re/228 §4)。
+		f.Sounds = append(f.Sounds, music.FxDie)
 	}
 	// 中毒判定排在死亡判定**之後** —— 原版打死了就直接走死亡分支,
 	// 不擲那顆骰(docs/re/191 §1)。poison() 自己擋活著這一項。

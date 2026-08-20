@@ -68,12 +68,12 @@ type Game struct {
 	// encounters 是 RNDMONST.BIN 的 72 列(docs/re/225 §5)——
 	// **遭遇挑的是這張表的列**,不是直接挑一隻怪。
 	encounters []original.Encounter
-	items    map[int]combat.Item
+	items      map[int]combat.Item
 	// rand 是遊戲全域的擲骰來源。⚠ 型別是**介面**不是 `*combat.SeededRand` ——
 	// 測試要能換成固定值的擲骰(發動判定會擋掉大多數低效力的法術,
 	// 而「測發動之後的行為」就得先把發動判定拿掉,docs/re/201 §3)。
-	rand     combat.FloatRand
-	field    *combat.Field // nil = 不在戰鬥中
+	rand  combat.FloatRand
+	field *combat.Field // nil = 不在戰鬥中
 	// M10:戰場(docs/spec/12)
 	points combat.Points
 	actor  int // 目前輪到的隊員索引;−1 = 沒有人能動
@@ -84,8 +84,8 @@ type Game struct {
 	settled bool
 
 	// M5:迷宮(docs/spec/08)
-	assets      string
-	mazeData    []original.MazeEntry
+	assets   string
+	mazeData []original.MazeEntry
 	// quitAsk:世界地圖按了 `Q`,正在問「你確定要離開嗎」(scene.go)。
 	quitAsk bool
 	// quitSaveAsk:上一句答了 `Y`,正在問「要儲存這場遊戲嗎」——
@@ -93,11 +93,11 @@ type Game struct {
 	quitSaveAsk bool
 	// dungeonNames:入口編號 → 地城名(docs/re/222)。
 	dungeonNames []string
-	mazeTiles   map[int]*ebiten.Image
-	level       *mazeLevel // nil = 不在迷宮中
-	mazeState   maze.State
-	overlay     string // 非空 = 敘述覆蓋層開著
-	overlayFont *render.Painter
+	mazeTiles    map[int]*ebiten.Image
+	level        *mazeLevel // nil = 不在迷宮中
+	mazeState    maze.State
+	overlay      string // 非空 = 敘述覆蓋層開著
+	overlayFont  *render.Painter
 	// 迷宮機關的互動狀態(docs/re/161 §3 的五個目標編號)。
 	prompt *mazePrompt
 	// tombs 記著踩過哪幾座墓(事件 701–704),餵 Eldron 謎題的進度旗標。
@@ -300,6 +300,11 @@ func (g *Game) Update() error {
 	// 配樂跟著場景走,每一格對一次(場景沒換就只是一個比較)。
 	// ⚠ 放在派工鏈**之前** —— 鏈裡任何一個場景吃掉這一格都會 `return`。
 	g.updateBGM()
+
+	// 音效跟著規則層的佇列走(sound.go)。⚠ 同樣放在派工鏈**之前**,
+	// 理由與 updateBGM 相同:鏈裡任何一個場景吃掉這一格都會 `return`,
+	// 放後面會讓「按著鍵不放」的時候整串音效不響。
+	g.pumpEffects()
 
 	// F5 切換配樂模式。**原版沒有這個鍵** —— 挑功能鍵是因為原版的指令鏈
 	// 全是字母(docs/re/71),功能鍵不會撞到任何畫面的按鍵語意,
@@ -716,8 +721,8 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	g.walk, g.walkMaze = loadWalk(dir, "walk"), loadWalk(dir, "walk-maze")
 	g.monst = loadMonst(dir)
 	g.cmbtTiles = loadCombatTiles(dir) // 戰場地形(docs/re/227)
-	g.initSound()  // docs/spec/13:失敗只記警告,不影響遊戲
-	g.loadConfig() // 配樂模式等偏好。讀不到就用預設(= 原版)
+	g.initSound()                      // docs/spec/13:失敗只記警告,不影響遊戲
+	g.loadConfig()                     // 配樂模式等偏好。讀不到就用預設(= 原版)
 	g.shell = &shellState{mode: shellTitle}
 	return g, nil
 }

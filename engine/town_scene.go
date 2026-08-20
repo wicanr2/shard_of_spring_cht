@@ -58,6 +58,11 @@ type townState struct {
 	// (docs/re/187:原版**會問**,而且問的是角色編號)。
 	pendingBuy *original.Item
 
+	// 賣出的子模式(docs/spec/14 §13.7,**重製版增補,原版沒有**)。
+	// selling = 賣出模式開著;sellWho = 選到第幾位成員(−1 = 還在選人)。
+	selling bool
+	sellWho int
+
 	// C)ast spell 的子階段(docs/spec/16 §1/§2)。campWho 借來當施法者;
 	// 選目標另外用 campWho2 —— 與 R)eorder / T)rade 共用同一個欄位,
 	// 但那兩個模式不會跟 'C' 同時開著,不會互相污染。
@@ -242,6 +247,20 @@ func (g *Game) townKey(k ebiten.Key) {
 			}
 			return
 		}
+		// 賣出模式(**重製版增補**,docs/spec/14 §13.7)。
+		//
+		// ⚠ 用**功能鍵**不是字母,理由與 F5 切配樂相同:商店的品項字母是
+		// A 起算的**位置**編號,一頁最多 20 項 —— 任何一個 A–T 的字母都
+		// 可能是某一頁的某一項。「現在的資料最多只到 Q」不是理由,
+		// 那是拿當前資料當規格。
+		if ts.selling {
+			g.sellKey(k)
+			return
+		}
+		if k == ebiten.KeyF2 {
+			ts.selling, ts.sellWho, ts.msg = true, -1, sellPickWho(len(g.members))
+			return
+		}
 		if i := int(k - ebiten.KeyA); i >= 0 && i < shopPageSize {
 			stock := ts.shopStock(g.itemList)
 			if n := ts.page*shopPageSize + i; n < len(stock) {
@@ -254,6 +273,7 @@ func (g *Game) townKey(k ebiten.Key) {
 		}
 		if k == ebiten.KeyEscape {
 			ts.mode, ts.msg, ts.pendingBuy = townBuildings, "", nil
+			ts.selling, ts.sellWho = false, -1
 		}
 	case townCamp:
 		if ts.campMode != 0 {
@@ -511,6 +531,28 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 		// 倍率已經算進每一項的售價裡了(town.Price),再印一次是除錯資訊。
 		p.Draw(dst, "正在進入……"+ts.shop.Name, x, y) // WRLDMOVE:42
 		y += lh * 1.5
+		// 賣出模式把主視野讓給背包清單 —— 兩張表同時擺在畫面上,
+		// 玩家分不出 `A)` 指的是店裡那件還是自己背包那件。
+		if ts.selling {
+			p.Draw(dst, sellBanner, x, y)
+			y += lh * 1.5
+			if ts.sellWho < 0 {
+				for i, m := range g.members {
+					p.Draw(dst, fmt.Sprintf("%d) %s", i+1, m.Name), x, y)
+					y += lh
+				}
+				break
+			}
+			p.Draw(dst, g.members[ts.sellWho].Name+sellPackHead, x, y)
+			y += lh
+			for slot := 0; slot < town.PackSlots; slot++ {
+				if ln, _ := g.sellLine(ts.sellWho, slot); ln != "" {
+					p.Draw(dst, ln, x, y)
+					y += lh
+				}
+			}
+			break
+		}
 		stock := ts.shopStock(g.itemList)
 		lo := ts.page * shopPageSize
 		for i := 0; i < shopPageSize && lo+i < len(stock); i++ {
@@ -531,6 +573,11 @@ func (g *Game) drawTown(dst *ebiten.Image) {
 			y += lh
 		}
 		y += lh * 2
+		// ⚠ 增補要標在它出現的地方 —— 與 ShopUnresolved 並排,
+		// 但**分開兩行**:一個是「原版有而我們沒解」,
+		// 另一個是「原版沒有而我們加了」。兩者混在一起讀起來都像藉口。
+		p.Draw(dst, "＋ "+sellHint+"（重製版增補，原版的商店只能買）", x, y)
+		y += lh
 		for _, u := range town.ShopUnresolved {
 			for _, w := range ui.Wrap("⚠ "+u, 58) {
 				p.Draw(dst, w, x, y)

@@ -456,6 +456,71 @@ func TestT1FullLoop(t *testing.T) {
 	bought := g.members[buyer].Pack
 	t.Logf("買下 %s:金幣 %.0f → %.0f", stock[buyIdx].Name, gold0, g.group.Gold)
 
+	// ── 6.1 賣回去(**重製版增補**,docs/spec/14 §13.7)────────────────
+	//
+	// 賣的是**剛剛在這間店買的那一件** —— 所以「這間店收不收」與
+	// 「裝備中不能賣」兩道閘門都不會誤擋,測到的是流程本身。
+	// ⚠ 走真的按鍵路徑(F2 → 選人 → 選格),不是直接呼叫 sellItem:
+	// 規則層的測試已經在 internal/town/sell_test.go,這裡要驗的是**接線**。
+	sellSlot := -1
+	for i := range bought {
+		if bought[i] != packBefore[i] {
+			sellSlot = i
+			break
+		}
+	}
+	if sellSlot < 0 {
+		t.Fatal("找不到剛買的東西進了哪一格")
+	}
+	goldAfterBuy := g.group.Gold
+	press(t, g, ebiten.KeyF2)
+	if !g.town.selling {
+		t.Fatalf("F2 應該打開賣出模式(msg=%q)", g.town.msg)
+	}
+	press(t, g, ebiten.Key1+ebiten.Key(buyer))
+	if g.town.sellWho != buyer {
+		t.Fatalf("選了角色 %d,sellWho = %d", buyer+1, g.town.sellWho)
+	}
+	press(t, g, ebiten.KeyA+ebiten.Key(sellSlot))
+	if g.members[buyer].Pack[sellSlot] != original.NotEquipped {
+		t.Fatalf("賣掉之後那一格應該是空的(msg=%q)", g.town.msg)
+	}
+	if g.group.Gold <= goldAfterBuy {
+		t.Fatalf("賣了東西金幣卻沒增加:%.0f → %.0f(msg=%q)",
+			goldAfterBuy, g.group.Gold, g.town.msg)
+	}
+	// 賣價要**低於**買價 —— 否則在同一間店進出就能刷錢。
+	paid := gold0 - goldAfterBuy
+	got := g.group.Gold - goldAfterBuy
+	if got >= paid {
+		t.Fatalf("買花 %.0f、賣得 %.0f —— 收購價不該 ≥ 售價", paid, got)
+	}
+	// 名冊要跟著改,否則存檔會把賣掉的東西變回來。
+	if g.chars[g.members[buyer].ID-1].Pack[sellSlot] != original.NotEquipped {
+		t.Error("賣出之後沒有寫回名冊 —— 存檔會蓋掉這次交易")
+	}
+	t.Logf("賣回:買 %.0f 賣 %.0f(%.0f%%)", paid, got, got/paid*100)
+	// ESC 是**兩層**:先退回選人(還可以賣別人的東西),再按才離開賣出模式。
+	// ⚠ 一次退到底的話,連賣同一個人的兩件東西就要重按兩次 F2。
+	press(t, g, ebiten.KeyEscape)
+	if !g.town.selling || g.town.sellWho >= 0 {
+		t.Fatalf("第一次 ESC 應退回選人:selling=%v sellWho=%d",
+			g.town.selling, g.town.sellWho)
+	}
+	press(t, g, ebiten.KeyEscape)
+	if g.town.selling {
+		t.Fatal("第二次 ESC 應該離開賣出模式")
+	}
+	// 再買一次,把背包還原 —— 後面的存讀檔要驗「買到的東西存得回來」,
+	// 而我們剛剛把它賣掉了。⚠ 這一步也順便驗**賣完還能繼續買**
+	// (賣出模式沒有把商店的按鍵狀態弄髒)。
+	press(t, g, ebiten.KeyA+ebiten.Key(buyIdx))
+	press(t, g, ebiten.Key1+ebiten.Key(buyer))
+	if g.members[buyer].Pack != bought {
+		t.Fatalf("賣掉再買回來,背包應該回到原樣:%v vs %v(msg=%q)",
+			g.members[buyer].Pack, bought, g.town.msg)
+	}
+
 	// 離開商店與城鎮 —— ESC 回建築清單,城鎮本身由世界地圖分支關掉。
 	press(t, g, ebiten.KeyEscape)
 	if g.town.mode != townBuildings {

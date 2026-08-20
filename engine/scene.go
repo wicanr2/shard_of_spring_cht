@@ -568,10 +568,18 @@ func (s townScene) Prompt() string {
 	case townBuildings:
 		return "選擇要進入的建築物,# 查看角色,(ESC離開)"
 	case townShop:
-		if g.town.pages(g.itemList) > 1 {
-			return "選購道具,ESC離開,任意鍵翻頁。"
+		// 賣出是**重製版增補**(docs/spec/14 §13.7)—— 提示列也要說清楚,
+		// 不然玩家只在畫面中間看到一次,回頭就以為原版本來就能賣。
+		if g.town.selling {
+			if g.town.sellWho < 0 {
+				return "增補：賣出　數字：選角色　ESC：取消"
+			}
+			return "增補：賣出　字母：選背包格　ESC：換人"
 		}
-		return "選購道具,ESC離開。"
+		if g.town.pages(g.itemList) > 1 {
+			return "選購道具,ESC離開,任意鍵翻頁,F2 賣出(增補)。"
+		}
+		return "選購道具,ESC離開,F2 賣出(增補)。"
 	case townCamp:
 		// ⚠ 營地開在三個地方(城鎮、野外、地城),而 ESC 只有在城鎮
 		// 才是「回建築清單」—— 另外兩處回的是地圖(town_scene.go 的

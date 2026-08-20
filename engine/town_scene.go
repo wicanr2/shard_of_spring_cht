@@ -868,7 +868,10 @@ func (g *Game) buyProvisions(n int) {
 	g.group.Gold -= float64(price)
 	g.group.Provisions += n
 	// TOWN:60「Done!」
-	g.town.msg = fmt.Sprintf("完成!買了 %d 份食糧,花 %d 金幣(⚠ 單價未解)", n, price)
+	// ⚠ 這裡曾經標「單價未解」,而 docs/re/142 早就把它讀成 **2 金幣/份**
+	// (原版自己的字串 `One day's food for the party costs 2 gold.`,已確認)。
+	// **畫面上一個假的「未解」比沒有標記更糟** —— 玩家會以為這個數字不能信。
+	g.town.msg = fmt.Sprintf("完成!買了 %d 份食糧,花 %d 金幣", n, price)
 }
 
 // healMember 在治療所替第 i 位成員做一項服務。

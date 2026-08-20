@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"path/filepath"
 	"strconv"
+	"strings"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/vector"
@@ -380,9 +381,19 @@ func (g *Game) drawOverlay(dst *ebiten.Image) {
 	const pad, cols = 32, 60
 	lh := g.overlayFont.LineHeight()
 	y := float64(rc.Y + pad)
-	for _, ln := range ui.Wrap(g.overlay, cols) {
-		g.overlayFont.Draw(dst, ln, float64(rc.X+pad), y)
-		y += lh
+	// **先照 "\n" 切段,再對每一段折行。**
+	// ⚠ `ui.Wrap` 不認得換行字元,會把它當成一個寬度 1 的普通字元夾在行中間 ——
+	// 所以要有人先切。切在這裡而不是要求呼叫端避開換行,是因為
+	// 按鍵表那張小鍵盤九宮格**必須逐列對齊**(docs/spec/15 §8)。
+	for _, para := range strings.Split(g.overlay, "\n") {
+		if para == "" {
+			y += lh // 空行就是空行,不要被 Wrap 吃掉
+			continue
+		}
+		for _, ln := range ui.Wrap(para, cols) {
+			g.overlayFont.Draw(dst, ln, float64(rc.X+pad), y)
+			y += lh
+		}
 	}
 	g.overlayFont.Draw(dst, "（按任意鍵繼續）",
 		float64(rc.X+pad), float64(rc.Y+rc.H-pad)-lh)

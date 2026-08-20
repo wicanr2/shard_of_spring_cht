@@ -34,6 +34,7 @@ const (
 	shellSaveList                      // B2 存檔選擇(docs/spec/18 §2/§4)
 	shellImportPrompt                  // B3 匯入原版存檔(docs/spec/18 §4)
 	shellPartySelect                   // A3 隊伍選擇 = 開局(§5)
+	shellKeys                          // A6 按鍵表(§8)—— **整頁**,不走覆蓋層
 	shellWipe                          // A4 全滅(§6)
 	shellEnding                        // A5 結局(§7)
 	shellPlaying                       // 遊戲中,外殼不接管 Update/Draw
@@ -285,7 +286,10 @@ func (g *Game) shellUpdate(in Input) Transition {
 			case ebiten.KeyC: // C)har Utilities —— 沿用既有名冊(docs/spec/11 §5)
 				g.openRoster()
 			case ebiten.KeyP: // P)rogram Notes —— 這裡改成按鍵表(docs/spec/15 §1.1)
-				g.overlay = shellKeyHelp
+				// ⚠ **整頁,不走敘述覆蓋層**:覆蓋層是 800×260(約 5 行),
+				// 而小鍵盤九宮格兩張就要 20 行 —— 塞進去只會被截掉,
+				// 而截掉的部分**不會有任何錯誤訊息**。
+				g.shell.mode = shellKeys
 			case ebiten.KeyQ: // Q)uit the Game
 				// WRLDMOVE:19 —— 原版離開時的道別。印到 stderr 而不是
 				// 開一個畫面:多一個「按任意鍵才真的關掉」的步驟,
@@ -336,7 +340,7 @@ func (g *Game) shellUpdate(in Input) Transition {
 			}
 		}
 
-	case shellWipe, shellEnding: // A4/A5:任意鍵回主選單(docs/spec/15 §6/§7)
+	case shellKeys, shellWipe, shellEnding: // A6/A4/A5:任意鍵回主選單
 		if len(in.Keys) > 0 {
 			g.returnToMainMenu()
 		}
@@ -399,15 +403,88 @@ func digitKey1to9(k ebiten.Key) (int, bool) {
 //
 // 手冊 p.51 的 OUTSIDE OPTIONS 與 DOS 版不符(docs/re/139 §4 實跑),
 // 這裡照引擎實際行為寫,不照手冊抄。
-const shellKeyHelp = "按鍵表：" +
-	// CMBT:31「KEYPAD TEMPLATE」—— 原版在戰場上印一張小鍵盤方向對照圖。
-	// ⚠ 引擎用方向鍵,所以這裡只列**同樣有效的數字鍵**,
-	// ⛔ 不重畫那張九宮格(那張圖的實際佈局沒有讀過,見 19-coverage §4)。
-	"數字鍵盤對照表　1 北、2 東、3 南、4 西(與方向鍵同效);" +
-	"主選單　L 載入、C 角色管理、P 本頁、Q 離開；" +
-	"世界地圖／迷宮　方向鍵先轉再走、N 名冊、S 存檔、A 另存；" +
-	"戰鬥　方向鍵移動、A 攻擊、C 施法、U 道具、/ 看單位、S 音效；" +
-	"施法選格　方向鍵移動游標、PgDn 施放、ESC 取消。" +
+// shellKeyHelp 是 A6 按鍵表(docs/spec/15 §8)的內容,經既有的敘述覆蓋層
+// 機制(g.overlay,見 maze_scene.go 的 drawOverlay)顯示。
+//
+// ⚠ 覆蓋層**先照 "\n" 切段再折行**(drawOverlay)—— 九宮格要逐列對齊,
+// 交給 `ui.Wrap` 自動折會把格線折斷。
+//
+// 手冊 p.51 的 OUTSIDE OPTIONS 與 DOS 版不符(docs/re/139 §4 實跑),
+// 這裡照引擎實際行為寫,不照手冊抄。
+// 原版的兩張小鍵盤對照圖(CMBT:31「KEYPAD TEMPLATE」與索引 32–40 的方塊字元)。
+//
+// 佈局是 2026-08-18 的 DOSBox 實跑拍到的(docs/spec/19-coverage §4)——
+// 第 1 級證據,不是從手冊抄的。⚠ 兩張圖各自解掉一個問題:
+// 戰鬥那張印證了檢視面板綁在 `?`(docs/re/229 §2.1 後來讀到**兩個鍵都是**);
+// **戰鬥那張沒有逃跑鍵**,印證 docs/re/103 的「逃跑不是指令」。
+//
+// ⚠ **格線用畫的,不是用方塊字元排的。** 引擎的文字層是向量字型、不等寬 ——
+// `┌─┬─┐` 那種 ASCII art 在畫面上**對不齊**,而且對不齊的樣子
+// 看起來像「字型壞了」不像「排版錯了」。原版能那樣排是因為它是 80×25 文字模式。
+//
+// ⚠ 這裡列的是**原版的鍵位**。引擎另外收方向鍵,兩者同時有效 ——
+// 所以圖下面要寫清楚,否則玩家會以為只能用這一組。
+type keypad struct {
+	title string
+	cells [3][3]string
+	notes []string
+}
+
+var keypadDungeon = keypad{
+	title: "地城",
+	cells: [3][3]string{{"S", "↑", "P"}, {"←", "·", "→"}, {"C", "↓", "Q"}},
+	notes: []string{"S 存檔　P 施法", "C 紮營　Q 離開"},
+}
+
+var keypadCombat = keypad{
+	title: "戰鬥（ESC 結束回合）",
+	cells: [3][3]string{{"D", "↑", "?"}, {"←", "·", "→"}, {"C", "↓", "U"}},
+	notes: []string{
+		"攻擊　D 驅散　? 看單位",
+		"C 施法　U 道具",
+		"⚠ 沒有逃跑鍵：原版的「逃跑」是走出戰場邊緣",
+	},
+}
+
+// 九宮格的幾何。⚠ 一格的邊長只寫在這裡一次 —— 格線與字各寫一個數字的話,
+// 兩者會慢慢分家,而那看起來像字型的問題。
+const (
+	keypadCell = 52 // 一格的邊長(px)
+	keypadGap  = 96 // 兩張圖之間的間距
+)
+
+// drawKeypad 畫一張 3×3 的小鍵盤圖,回傳畫完之後的 y。
+func (g *Game) drawKeypad(dst *ebiten.Image, k keypad, x, y float64) float64 {
+	lh := g.panel.LineHeight()
+	g.panel.Draw(dst, k.title, x, y)
+	y += lh * 1.2
+	for r := 0; r < 3; r++ {
+		for c := 0; c < 3; c++ {
+			cx, cy := x+float64(c*keypadCell), y+float64(r*keypadCell)
+			vector.StrokeRect(dst, float32(cx), float32(cy),
+				keypadCell, keypadCell, 1, cgaWhite, false)
+			// 字置中:向量字型不等寬,用 Cols 估寬度再置中就夠了 ——
+			// 一格裡只有一個字元,估歪一兩 px 看不出來。
+			w := float64(ui.Cols(k.cells[r][c])) * lh / 2
+			g.panel.Draw(dst, k.cells[r][c],
+				cx+(keypadCell-w)/2, cy+(keypadCell-lh)/2)
+		}
+	}
+	y += float64(3*keypadCell) + lh*0.4
+	for _, n := range k.notes {
+		g.panel.Draw(dst, n, x, y)
+		y += lh
+	}
+	return y
+}
+
+const shellKeyHelp = "上面兩張是原版的小鍵盤對照圖。\n" +
+	"本重製版方向鍵同樣有效,數字鍵 1 北、2 東、3 南、4 西也是。\n\n" +
+	"主選單　L 載入、C 角色管理、P 本頁、Q 離開\n" +
+	"世界地圖／迷宮　方向鍵先轉再走、N 名冊、S 存檔、A 另存\n" +
+	"戰鬥　方向鍵移動、A 攻擊、C 施法、U 道具、? 或 / 看單位、S 音效\n" +
+	"施法選格　方向鍵移動游標、PgDn 施放、ESC 取消\n" +
+	"F5 切換配樂(原版／重製／關閉)、商店裡 F2 賣出\n" +
 	"（按任意鍵關閉）"
 
 // endingText 是引擎暫用的結局文字。
@@ -445,6 +522,8 @@ func (g *Game) drawShell(dst *ebiten.Image) {
 		g.drawImportPrompt(dst)
 	case shellPartySelect:
 		g.drawPartySelect(dst)
+	case shellKeys:
+		g.drawKeyHelp(dst)
 	case shellWipe:
 		g.drawWipe(dst)
 	case shellEnding:
@@ -754,4 +833,40 @@ func (g *Game) drawTitleArtIn(dst *ebiten.Image, rc layout.Rect) {
 		float64(rc.Y)+(float64(rc.H)-h)/2)
 	op.Filter = ebiten.FilterNearest
 	dst.DrawImage(g.titleArt, &op)
+}
+
+// drawKeyHelp 畫 A6 按鍵表(docs/spec/15 §8)。
+//
+// ⚠ **整頁,不是覆蓋層。** 覆蓋層是 800×260(約 5 行),而兩張小鍵盤
+// 九宮格加起來 20 行 —— 塞進覆蓋層只會被畫布邊界截掉,
+// **而截掉不會有任何錯誤訊息**,畫面看起來只是「說明比較短」。
+//
+// ⚠ 逐行畫、**不折行**:九宮格要逐列對齊,`ui.Wrap` 會把格線折斷。
+// 太長的行寧可讓它超出去也不折 —— 折斷的格線比截掉的字更難看出是壞的。
+func (g *Game) drawKeyHelp(dst *ebiten.Image) {
+	if g.panel == nil {
+		return
+	}
+	lh := g.panel.LineHeight()
+	x, y := 48.0, 40.0
+	g.panel.Draw(dst, "按鍵表", x, y)
+	y += lh * 1.5
+
+	// 兩張圖並排。⚠ 並排不是為了好看:上下疊起來加上文字說明
+	// 會超過整頁的高度,而**超出去的部分不會有任何錯誤訊息**。
+	yl := g.drawKeypad(dst, keypadDungeon, x, y)
+	yr := g.drawKeypad(dst, keypadCombat, x+float64(3*keypadCell+keypadGap), y)
+	y = yl
+	if yr > y {
+		y = yr
+	}
+	y += lh
+
+	for _, ln := range strings.Split(shellKeyHelp, "\n") {
+		if y > float64(layout.ScreenH)-lh {
+			break
+		}
+		g.panel.Draw(dst, ln, x, y)
+		y += lh
+	}
 }

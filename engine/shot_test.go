@@ -93,6 +93,9 @@ func TestShots(t *testing.T) {
 	shots := []shot{
 		{"01-title", func(g *Game) {}},
 		{"02-menu", func(g *Game) { g.openMainMenu() }},
+		// A6 按鍵表:兩張原版的小鍵盤九宮格(docs/spec/15 §8)。
+		// ⚠ **整頁**不是覆蓋層 —— 這張截圖是唯一看得出格線有沒有折斷的地方。
+		{"09-keys", func(g *Game) { g.openMainMenu(); g.shell.mode = shellKeys }},
 		{"03-world", func(g *Game) {
 			if err := g.loadParty(5); err != nil {
 				t.Fatal("載入 PARTY #5 失敗:", err)

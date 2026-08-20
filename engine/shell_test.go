@@ -151,22 +151,24 @@ func TestMainMenuCOpensRoster(t *testing.T) {
 	}
 }
 
+// P 開的是**整頁**按鍵表(A6),不是敘述覆蓋層 ——
+// 小鍵盤九宮格塞不進 800×260 的覆蓋層(docs/spec/15 §8)。
 func TestMainMenuPShowsKeyHelp(t *testing.T) {
 	g := newShellTestGame(t)
 	g.openMainMenu()
 	g.testKeys = []ebiten.Key{ebiten.KeyP}
 	mustUpdate(t, g)
-	if g.overlay == "" {
-		t.Errorf("P 之後應該顯示按鍵表覆蓋層")
+	if g.shell.mode != shellKeys {
+		t.Errorf("P 之後應該進整頁按鍵表,得到 %v", g.shell.mode)
 	}
-	// 任意鍵關閉,回到主選單(docs/spec/04 §3 的覆蓋層機制)。
+	if g.overlay != "" {
+		t.Errorf("按鍵表不該走覆蓋層 —— 那裡只有 5 行,九宮格會被截掉")
+	}
+	// 任意鍵回主選單。
 	g.testKeys = []ebiten.Key{ebiten.KeyEnter}
 	mustUpdate(t, g)
-	if g.overlay != "" {
-		t.Errorf("按鍵後覆蓋層應該關閉")
-	}
 	if g.shell.mode != shellMainMenu {
-		t.Errorf("關閉按鍵表後應該還在主選單,得到 %v", g.shell.mode)
+		t.Errorf("關閉按鍵表後應該回主選單,得到 %v", g.shell.mode)
 	}
 }
 
@@ -179,12 +181,60 @@ func TestMainMenuQQuits(t *testing.T) {
 	}
 }
 
-// shellKeyHelp 折起來要放得進敘述覆蓋層(60 欄 × 5 行,docs/spec/04 §3)。
-func TestShellKeyHelpFitsOverlay(t *testing.T) {
-	lines := ui.Wrap(shellKeyHelp, 60)
-	if len(lines) > 5 {
-		t.Errorf("按鍵表折成 %d 行,覆蓋層只有 5 行容量:\n%s",
-			len(lines), strings.Join(lines, "\n"))
+// 按鍵表是**整頁**(A6),不是敘述覆蓋層 —— 兩張小鍵盤九宮格加起來 20 行,
+// 而覆蓋層只有 800×260(約 5 行)。這條驗的是**整頁放得下**。
+//
+// ⚠ 放不下的症狀是**畫面被截掉而沒有任何錯誤訊息** —— 看起來只是
+// 「說明比較短」,所以要有一條測試去數行數。
+func TestShellKeyHelpFitsOnePage(t *testing.T) {
+	lines := strings.Split(shellKeyHelp, "\n")
+	const maxLines = 28 // 768 高、行高 26 → 約 29 行,留一行邊界
+	if len(lines) > maxLines {
+		t.Errorf("按鍵表 %d 行,整頁只放得下 %d 行:\n%s",
+			len(lines), maxLines, strings.Join(lines, "\n"))
+	}
+	// 九宮格那幾列**不能折行**,所以每一行都要在畫面寬度內。
+	// 60 欄是覆蓋層的寬度基準,整頁比它寬,這裡用 68 欄當上界。
+	for i, ln := range lines {
+		if w := ui.Cols(ln); w > 68 {
+			t.Errorf("第 %d 行寬 %d 欄,超過整頁的 68 欄:%q", i+1, w, ln)
+		}
+	}
+}
+
+// 兩張小鍵盤圖的內容驗收(佈局來源:docs/spec/19-coverage §4 實跑)。
+//
+// ⚠ **格線是畫出來的,不是排出來的** —— 所以這裡驗的是格子的內容,
+// 不是 ASCII art 的形狀。
+func TestKeypadDiagramsAreWellFormed(t *testing.T) {
+	for name, k := range map[string]keypad{"地城": keypadDungeon, "戰鬥": keypadCombat} {
+		for r := range k.cells {
+			for c := range k.cells[r] {
+				if k.cells[r][c] == "" {
+					t.Errorf("%s 的第 %d 列第 %d 格是空的", name, r+1, c+1)
+				}
+			}
+		}
+		// 中心那一格是原版的「原地」標記。
+		if k.cells[1][1] != "·" {
+			t.Errorf("%s 的中心格是 %q,原版是 ·", name, k.cells[1][1])
+		}
+		// 四個方向鍵一定在十字上。
+		if k.cells[0][1] != "↑" || k.cells[2][1] != "↓" ||
+			k.cells[1][0] != "←" || k.cells[1][2] != "→" {
+			t.Errorf("%s 的四個方向不在十字上:%v", name, k.cells)
+		}
+	}
+	// 戰鬥那張**沒有逃跑鍵** —— 印證 docs/re/103「逃跑不是指令」。
+	// ⚠ 這條看起來像廢話,但它擋的是「有人覺得少一個鍵不方便就補上去」。
+	found := false
+	for _, n := range keypadCombat.notes {
+		if strings.Contains(n, "沒有逃跑鍵") {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("戰鬥的小鍵盤圖要註明沒有逃跑鍵(docs/re/103)")
 	}
 }
 

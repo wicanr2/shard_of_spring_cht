@@ -9,6 +9,14 @@
 #   type:STRING   打字(不含 Enter)
 #   shot:NAME     截圖存成 workplace/dosbox/shots/NAME.png
 #
+# 錄 PC 喇叭的聲音:
+#   SOUND=1 tools/dosbox_run.sh "wait:8;key:ctrl+F6;…;key:ctrl+F6"
+#   WAV 進 workplace/dosbox/shots/dosbox-captures/。
+#   ⚠ `Ctrl+F6` 是 **toggle,要成對** —— 只開不關的 WAV 標頭長度是 0,
+#     檔案存在但播不出來。
+#   ⚠ 預設(不給 SOUND)的 image 是 `pcspeaker=false`,**錄出來一定是靜音** ——
+#     那不是遊戲沒發聲,是模擬器沒有喇叭。
+#
 # 例:
 #   tools/dosbox_run.sh "wait:5;shot:01-boot"
 #   tools/dosbox_run.sh "wait:3;shot:01;key:Return;wait:2;shot:02"
@@ -42,8 +50,17 @@ printf 'START.EXE\r\n' > "$GAME/DEMON.BAT"
 mkdir -p "$SHOTS"
 
 echo "[dosbox] timeline=$TIMELINE  cycles=\"$CYCLES\""
+# SOUND=1 → 掛一份**只改一行**的 entrypoint 進去(pcspeaker=true),
+# 讓 PC 喇叭真的發得出聲,`Ctrl+F6` 才錄得到 WAV。
+# ⚠ **不改共用 image** —— 那顆 image 別的專案也在用(CLAUDE.md §8)。
+SOUND_MOUNT=()
+if [ "${SOUND:-}" = "1" ]; then
+  echo "[dosbox] SOUND=1 —— 掛 tools/dosbox-entrypoint-sound.sh(pcspeaker=true)"
+  SOUND_MOUNT=(-v "$ROOT/tools/dosbox-entrypoint-sound.sh:/usr/local/bin/dosbox-entrypoint.sh:ro")
+fi
+
 docker run --rm --log-opt max-size=10m --log-opt max-file=3 \
-  -v "$GAME:/game" -v "$SHOTS:/shots" \
+  -v "$GAME:/game" -v "$SHOTS:/shots" "${SOUND_MOUNT[@]}" \
   "$IMAGE" cga "$TIMELINE" "$CYCLES"
 echo "[dosbox] 截圖在 $SHOTS"
 ls -1 "$SHOTS" 2>/dev/null | tail -5

@@ -422,20 +422,29 @@ func (g *Game) joinCharacterToSlot(c *original.Character, slot int) {
 
 // NewParty* 是「這支隊伍第一次被組成」時要填的開局初值。
 //
-// ⚠ **具名假設,不是 RE 結論**(docs/spec/15 §5.1):原版一定有一段程式
-// 在建隊時寫入這些值,但沒有讀到那段程式。這裡照抄出貨磁片 PARTY #5 的值——
-// 那支隊伍是原廠組好的,它的初值**很可能**就是新隊伍的初值,而且它就在
-// 資料裡,不必推。時鐘/遭遇倒數/能見度三項與 docs/spec/06「新遊戲的初始值」
-// 是同一份範本,不是這裡另外編的。
+// **前五項是讀出來的**(docs/re/232):`CHARUTIL 0x12043`–`0x12132` 對隊伍記錄
+// 連寫八個欄位,全部是立即數。座標 (8,8)、朝向 3 因此從具名假設**升級成已確認**,
+// 而先前「照抄出貨 PARTY #5」的猜法猜對了 —— 但那是猜對,不是知道。
+//
+// ⚠ **能見度兩欄原版都填 2**,而出貨 PARTY #5 的「有光」是 3 ——
+// 那支隊伍是原廠玩過的,值被更新過。**新隊伍是 2/2。**
+//
+// ⚠ 金幣、補給品、時鐘、遭遇倒數**不在那一段裡**,而且 `CHARUTIL` 沒有
+// 別的常數位移寫入(docs/re/232 §3)。它們**仍然是具名假設** ——
+// 金幣是 MBF 單精度,寫法不同,所以那個掃法結構上抓不到它,
+// ⛔ 不要把「沒掃到」讀成「沒有人寫」。
 const (
-	NewPartyX, NewPartyY            = 8, 8 // 出貨 PARTY #5 的座標
-	NewPartyFacing                  = 3    // 南
-	NewPartyGold                    = 75
-	NewPartyProvisions              = 20
-	NewPartyMonth, NewPartyDay      = 1, 1
-	NewPartyHour, NewPartySub       = 4, 2
-	NewPartyEncounter               = 54   // 遭遇倒數,docs/spec/06 同一份範本
-	NewPartyVisLit, NewPartyVisDark = 3, 2 // 能見度,同上
+	NewPartyX, NewPartyY       = 8, 8 // ✅ re/232:位移 35 / 37
+	NewPartyFacing             = 3    // ✅ re/232:位移 41(南)
+	NewPartyGateOpen           = 0    // ✅ re/232:位移 65
+	NewPartyMazeNum            = 99   // ✅ re/232:位移 83(不在迷宮)
+	NewPartyGold               = 75   // ⚠ 具名假設(出貨 PARTY #5)
+	NewPartyProvisions         = 20   // ⚠ 具名假設(同上)
+	NewPartyMonth, NewPartyDay = 1, 1 // ⚠ 具名假設(同上)
+	NewPartyHour, NewPartySub  = 4, 2 // ⚠ 具名假設(同上)
+	NewPartyEncounter          = 54   // ⚠ 具名假設;⛔ 而且 54 不在 re/214 讀到的 25…34 裡
+	// ✅ re/232:位移 59 / 61 **兩欄都是 2**。
+	NewPartyVisLit, NewPartyVisDark = 2, 2
 )
 
 // applyNewPartyDefaults 把上面那組初值套進一支**原本是空白**的隊伍記錄。
@@ -453,6 +462,8 @@ func applyNewPartyDefaults(grp *original.Group) {
 	grp.Hour, grp.Sub = NewPartyHour, NewPartySub
 	grp.Encounter = NewPartyEncounter
 	grp.VisLit, grp.VisDark = NewPartyVisLit, NewPartyVisDark
+	grp.GateOpen = NewPartyGateOpen
+	grp.MazeNum = NewPartyMazeNum
 
 	// ⚠ **剩下的欄位一定要明寫成 0**,不能靠「沒填就是零值」——
 	// 這筆記錄是從一份**整份 0x20 的空白記錄**解出來的,每個沒被覆寫的

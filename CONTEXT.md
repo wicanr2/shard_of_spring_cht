@@ -232,6 +232,9 @@
 
 | **§13 五項全部處理完(2026-08-20)** | `docs/spec/14` §13.6 的順序跑完了:1a 標記 → 商店賣出(增補)→ 1b 夜視/怪物知識([`229`](docs/re/229-night-vision-and-monster-lore.md))→ 2 移轉術([`230`](docs/re/230-transference-transfers-spell-points.md))→ 3 音效(**查完,結論是不接**)→ 4 怪物 AI([`231`](docs/re/231-monster-spell-round-two-falls-back.md))→ 5 小鍵盤九宮格。⚠ 途中抓到**兩個沒有症狀的錯**:系別 2/5 的怪從第二回合起不施法、`?` 面板對怪物無條件印數值 |
 
+| **新隊伍初值大半解出來了** | [`232`](docs/re/232-new-party-initial-values.md):`CHARUTIL 0x12043`–`0x12132` 連寫八個欄位 —— 座標 **(8,8)**、朝向 **3**、能見度 **2/2**、迷宮編號 **99**、大門旗標 0。座標與朝向**從具名假設升級成已確認**。⚠ 金幣/補給品/時鐘**不在那一段**,仍是假設(金幣是 MBF,那個掃法結構上抓不到)。順帶第二次獨立印證 `re/229` 的「無光能見度預設 2」|
+| **oracle 可以錄聲音了** | `SOUND=1 tools/dosbox_run.sh` 掛一份改兩行的 entrypoint(`pcspeaker=true` + `nosound=false` + `SDL_AUDIODRIVER=dummy`)。⚠ **兩個設定要一起改** —— 只改 pcspeaker 錄出來的 WAV 峰值恆為 0(3.7 MB 的檔案裡整段是零)。管線驗過(峰值 5000),但 `BP` 那一題**還沒答**:錄到的是一段對不上任何代碼的 8 秒 400 Hz(`docs/re/228` §6.5),下一次的實驗設計寫在 §6.6 |
+
 ### 一句話現況
 
 **RE 閘門已通過:`CLAUDE.md` §2.2 看板 A–L 十二個子系統全部 RE-DONE**

@@ -35,7 +35,8 @@ var SpellFamilyFixed = map[int]int{3: 2}
 // 三招正好是 FIRESTRM / WINDSTRM / HAILSTRM.BIN 三張**從不載入**的圖
 // (docs/re/61)—— 那三張圖是為這三招畫的,DOS 版把呈現拿掉了。
 //
-// ⚠ 系別 2 與 5 **沒有**對應的分支,它們第二回合起做什麼未讀。
+// ⚠ 系別 2 與 5 **沒有**對應的分支 —— 它們第二回合起**落回隨機挑**
+// (docs/re/231:`0x155AA` 的 `jmp` 落在第一回合那個迴圈的入口)。
 var StormSpell = map[int]int{
 	1: 3,  // FIRE STORM
 	3: 8,  // TEMPEST
@@ -55,15 +56,22 @@ const GroupDamageClass = 1
 // MonsterSpell 回傳這一回合怪物要放的法術編號(**1-based**)。
 //
 // `reroll` 為真表示**這一擲要重來**(第一回合挑到群體傷害,docs/re/171 §2)。
-// `spell` 為 0 表示這個系別在這一回合**沒有東西可放** ——
-// ⚠ **兩者是不同的情況**,不要用同一個 0 表示:
-// 「重擲」是原版的迴圈,「沒東西可放」是原版沒有那一條分支(系別 2 / 5)。
 //
 // roll 是 1…SpellFamilyAttacks[family] 的擲骰結果,由呼叫端給 ——
 // 與 maze.PoolHeal 同一條原則:擲骰交給呼叫端,這裡只做規則。
+//
+// ⚠ **系別 2 / 5 在第二回合起走的是與第一回合相同的隨機挑選**
+// (docs/re/231):`CMBT 0x155AA` 那一條 `jmp` 落在 **`0x155B0`** ——
+// 正是第一回合的擲骰迴圈,不是「不施法」。
+// 先前這裡回 0,那些怪從第二回合起就再也不施法了,而**畫面上看不出來**:
+// 一隻不施法的怪就是走過來砍人,看起來完全正常。
 func MonsterSpell(family, round, roll int) (spell int, reroll bool) {
+	// 第二回合起,系別 1 / 3 / 4 固定放自己那一招暴風;
+	// 沒有那一招的系別**落回隨機挑**(不是不放)。
 	if round > 1 {
-		return StormSpell[family], false // 系別 2 / 5 沒有分支 → 0
+		if storm, ok := StormSpell[family]; ok {
+			return storm, false
+		}
 	}
 	base, ok := SpellFamilyBase[family]
 	if !ok {
@@ -81,9 +89,14 @@ func MonsterSpell(family, round, roll int) (spell int, reroll bool) {
 		}
 	}
 	got := base + off
-	// 第一回合挑到群體傷害(SPELLS.DAT 欄3 = 1)就重選。
+	// 挑到群體傷害(`SPELLS.DAT` 欄3 = 1)就重選。
 	// 每個系別最多只有一招是群體傷害,就是 StormSpell 那一張。
-	if got == StormSpell[family] {
+	//
+	// ⚠ **這道過濾只在第一回合成立** —— 原版的閘門是
+	// 「欄3 == 1 **且** 回合 == 1」(`CMBT 0x156DE`/`0x156ED`,docs/re/171 §2)。
+	// 對系別 2 / 5 而言差別是零(它們沒有群體傷害的招),
+	// 所以這一行擋的是**別的系別哪天落到這條路**時不要被無限重擲。
+	if round == 1 && got == StormSpell[family] {
 		return got, true
 	}
 	return got, false

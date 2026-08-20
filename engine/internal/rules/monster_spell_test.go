@@ -42,15 +42,29 @@ func TestFamilyThreeIsFixed(t *testing.T) {
 	}
 }
 
-// 第二回合起固定放暴風,而系別 2 / 5 沒有分支(回 0)。
+// 第二回合起:系別 1 / 3 / 4 固定放暴風;**系別 2 / 5 落回隨機挑**。
+//
+// ⚠ 「沒有暴風分支」不等於「不施法」。原版 `0x155AA` 的 `jmp` 落在
+// **`0x155B0`** —— 第一回合那個擲骰迴圈的入口(docs/re/231)。
+// 先前這裡期望 0,而那讓系別 2 / 5 的怪從第二回合起再也不施法,
+// **畫面上看不出來**:一隻不施法的怪就是走過來砍人。
 func TestStormFromRoundTwo(t *testing.T) {
-	for fam, want := range map[int]int{1: 3, 3: 8, 4: 12, 2: 0, 5: 0} {
+	for fam, want := range map[int]int{1: 3, 3: 8, 4: 12} {
 		if got, _ := MonsterSpell(fam, 2, 1); got != want {
-			t.Errorf("系別 %d 第二回合 → %d,應為 %d", fam, got, want)
+			t.Errorf("系別 %d 第二回合 → %d,應為暴風 %d", fam, got, want)
 		}
 	}
-	// ⚠ 系別 2 / 5 回 0 是**讀到的缺口**,不是預設值:
-	// 原版那兩個系別在第二回合起沒有分支(docs/re/170 §4)。
+	// 系別 2 / 5:第二回合擲什麼,就與第一回合擲同一個數字得到的一樣。
+	for _, fam := range []int{2, 5} {
+		for roll := 1; roll <= SpellFamilyAttacks[fam]; roll++ {
+			first, _ := MonsterSpell(fam, 1, roll)
+			later, _ := MonsterSpell(fam, 2, roll)
+			if later != first || later == 0 {
+				t.Errorf("系別 %d 擲 %d:第一回合 %d、第二回合 %d —— "+
+					"兩者應該相同且不為 0", fam, roll, first, later)
+			}
+		}
+	}
 }
 
 // 第一回合挑到群體傷害要重擲(docs/re/171 §2)。

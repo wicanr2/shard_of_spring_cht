@@ -46,19 +46,21 @@ go run . -slot 5      →  直接出現在世界地圖,隊伍是原版存檔的 
 |---|---|
 | `v0.1.0` | 三平台四架構(Linux tar.gz / Windows zip / macOS universal)|
 | `v0.2.0` | **+ 六首場景配樂(F5 切換)**、曲子改走內嵌 OGG、**Linux 改成 AppImage** |
+| `v0.3.0` | **三輪 QA 之後的第一版**:遭遇改成一群怪、怪物會施法、規則層四條訂正、畫面照原版重排。⚠ **資產要重轉**(多讀一個原版檔 `RNDMONST.BIN`)|
 
 **工程項全部結案。** 只剩 C2 重構,而它的重啟判準量過了、未達成(§4.1)。
 
 ## 0.1 ⭐ 下一步(新 session 從這裡開始)
 
 **QA 三輪跑完了**(§12):第一輪 14 條、第二輪 11 條、第三輪約 30 條,
-規則層的錯全部修掉。**剩下的工作分成三堆:**
+規則層的錯全部修掉;三輪之後的成果已經發成 `v0.3.0`。
+**剩下的工作分成三堆,而現在只有第一堆還開著:**
 
 | 堆 | 內容 | 判準 |
 |---|---|---|
 | **① 要新 RE** | 剩一項:戰場地形的**格值 → 圖塊**對映([`re/227`](../re/227-fastcmbt-is-nine-get-arrays.md) §3)| 只影響畫面,不改玩法。遭遇的隻數與組成([`re/225`](../re/225-encounter-monster-count-anchor.md))、怪物施法([`re/226`](../re/226-monster-cast-invest-and-target.md))都已經解掉並接線 |
 | **② 版面差異** | §12.4 十三項,**十二項結案**;只剩戰場地形(格式已解,缺格值 → 圖塊的對映表)| 不改玩法。剩下那一項卡在 RE,不是卡在實作 |
-| **③ 交付** | 重錄推廣片、發下一個 release | 推廣片的影格是第二輪之前錄的(§12 的待辦) |
+| ~~**③ 交付**~~ | ✅ 推廣片已於 2026-08-20 重錄(41 秒),`v0.3.0` 已發(三平台四架構)| 發之前確認過 repo 仍是 private,並用打包好的 AppImage 實跑一次 `--convert` |
 
 ⚠ **§12 三輪的核心結論沒有變:規則沒有偏。** 差異集中在呈現層。
 ⛔ 不要因為缺陷條數多就去動規則層 —— 三輪下來規則層只錯了四條,
@@ -235,7 +237,7 @@ CMBT 把它擺在 `90 90` 之後,不吃掉它整段就錯位 ——
 | [x] | G2 跨平台 build | ✅ `tools/release.sh <版本> [平台]`,三平台四架構。**分岔的唯一理由是 cgo**:linux 要 X11/OpenGL → 容器裡原生編;**windows 走純 Go 的 syscall → `CGO_ENABLED=0` 就能交叉編**;macOS 要 Cocoa/Metal → osxcross(現成 image `wolong-osxcross-go`,SDK 15.5 / `darwin24.5`),兩弧各編一次再 `lipo` 成 universal。macOS 收工前跑靜態驗收(arm64 的 `LC_CODE_SIGNATURE`、無系統外相依)。<br>**Linux 出 AppImage**:cgo 的動態相依在別的發行版會缺,而缺的那一刻只噴 loader 的錯誤,玩家看不出缺什麼。帶非 glibc 的直接相依(X11/ALSA 七個),**glibc 留給系統**。資產與存檔走 `~/.local/share/shard-of-spring/`(AppImage 掛起來是唯讀的)。⚠ 提示訊息裡的路徑要用 `$APPIMAGE` 不是 `$0` —— 後者是每次都不同的掛載點。⛔ 打包前有守門:AppDir 裡出現 `*.DAT`/`*.BIN`/`*.SQZ`/`*.EXE`/倚天字型就拒絕(錯了包還是跑得動,不會有人發現)。⛔ 不附帶 `assets/`、⛔ 不帶 `-tags eten` |
 | [x] | G3 玩家的轉檔流程 | ✅ [`docs/PLAYING.md`](../PLAYING.md),G2 之後已訂正:執行檔名 `shard` / `shard-convert`(Windows 加 `.exe`)、macOS 的 quarantine、**存檔在 `saves/party.json` 而不是 `assets/save/`**、AppImage 的 `--convert` 流程與 `~/.local/share/shard-of-spring/`。轉換器的 `-translations` 預設改成自動找(執行檔旁 → 工作目錄 → `/translations`),找不到會印警告 —— 否則玩家拿到一份看起來正常的英文版 |
 | [x] | G4 場景配樂(**增補,非原版**)| ✅ 六首自己寫的譜 + 原版兩首,全部以 OGG 內嵌([`13`](13-sound.md) §7)。F5 循環切換原版/重製/關閉,**預設原版**。⛔ 不是拿通關曲循環 —— 那是 §5 擋掉的做法 |
-| ~ | G5 發行 | ✅ `v0.1.0`(三平台)、`v0.2.0`(配樂 + AppImage)。⚠ **`v0.2.0` 之後 QA 三輪改了規則層四條**(升級門檻、迷宮兩軸、地城遭遇、創角重擲)—— 現在的 main 與最後一個 release 差很多,**該發一版**。⛔ 發之前跑 `gh repo view --json visibility`(§0.1)|
+| [x] | G5 發行 | ✅ `v0.1.0`(三平台)、`v0.2.0`(配樂 + AppImage)、**`v0.3.0`(2026-08-20,三輪 QA 之後)**。發之前確認過 `gh repo view --json visibility` = PRIVATE(§0.1),並用打包好的 AppImage 實跑一次 `--convert` 驗收 |
 | [x] | G7 標題畫面的原版美術 | ✅ `STARTUP.BIN` 轉出來了([`15`](15-game-shell.md) §3)。**RE 早就做完**([`re/20`](../re/20-cga-layout.md) 就是拿它當樣本解出 CGA 佈局的),缺的只是轉檔與接線。⚠ 它是**整頁顯示緩衝**不是 `GET` 陣列,用 `DecodeTile` 解不會報錯、只會得到雜訊 |
 | ~ | G6 對外素材 | ✅ [`docs/column-shard-of-spring.md`](../column-shard-of-spring.md)(遊戲介紹 + 精訊 1987 中文說明書的一手證據)、[`docs/promo/`](../promo/) 的 **41 秒**推廣片(`tools/promo.sh`),末段是**原版 vs 重製版**三組並排比較(標題、主選單、世界地圖)。<br>⚠ **影格走真的按鍵**(`engine/promo_test.go`),不接受擺好狀態的定格 —— 推廣片要證明的是「玩得動」。<br>⚠ 比較段的原版畫面是 `tools/dosbox_run.sh` **實跑**抓的([`re/139`](../re/139-oracle-reaches-gameplay.md) 的路線),不是掃描圖。<br>⚠ 影片含原版美術,與 `docs/images/` 同地位:**對外散布要另行決定**。<br>✅ **影格已於 2026-08-20 重錄**(875 格 + 比較段 360 格,41 秒):三輪 QA 之後的畫面 —— 主選單有封面圖、地城是修正過的兩軸、提示列有 `Q)uit`|
 

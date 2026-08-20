@@ -90,6 +90,7 @@ RE 來源:[`re/126`](../re/126-shop-price-multiplier.md)(價格倍率)、
 金幣不足時顯示 `'enough gold!'` 的中文對應。
 
 ⚠ **原版沒有賣出功能** —— 商店的指令列只有 `Item to buy, ESC to leave.`,
+(本重製版**另外加了**賣出,收購價 65%,標明是增補:[`14`](14-remake-worklist.md) §13.7)
 手冊 p.36 也只寫買([`re/142`](../re/142-town-service-prices.md) §4)。
 所以 M8 不做賣出,**理由是原版沒有這件事**,不是公式解不出來。
 

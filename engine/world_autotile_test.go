@@ -3,6 +3,8 @@ package main
 import (
 	"testing"
 
+	"github.com/hajimehoshi/ebiten/v2"
+
 	"shardofspring/internal/world"
 )
 
@@ -35,5 +37,17 @@ func TestModernNeighborMaskNESW(t *testing.T) {
 	set(x-1, y, 6)
 	if got := modernNeighborMask(m, x, y, modernTerrainOcean); got != 1|2|8 {
 		t.Fatalf("海洋鄰接遮罩 = %04b，want 1011", got)
+	}
+}
+
+func TestCoastWithoutCardinalOceanStillUsesAutoTile(t *testing.T) {
+	g := &Game{
+		world: &world.Map{Cells: make([]int, world.W*world.H)},
+		modernWorldAuto: modernWorldAuto{coast: map[int]*ebiten.Image{
+			0: ebiten.NewImage(272, 272),
+		}},
+	}
+	if got := g.modernWorldTile(15, 50, 50); got == nil {
+		t.Fatal("四向遮罩為 0 的海岸不得退回舊單格資產")
 	}
 }

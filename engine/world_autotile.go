@@ -66,9 +66,9 @@ func (g *Game) modernWorldTile(v, x, y int) *ebiten.Image {
 		return modernAtlasTile(g.modernWorldAuto.forest[modernNeighborMask(g.world, x, y, modernTerrainForest)], x, y)
 	case modernTerrainCoast:
 		mask := modernNeighborMask(g.world, x, y, modernTerrainOcean)
-		if mask != 0 {
-			return modernAtlasTile(g.modernWorldAuto.coast[mask], x, y)
-		}
+		// 對角海岸可能沒有四向海洋鄰格(mask 0)，仍須使用現代草地端材質；
+		// 退回舊 tNN 會在連續世界中露出一格完全不同的拼貼圖。
+		return modernAtlasTile(g.modernWorldAuto.coast[mask], x, y)
 	}
 	return g.modernTiles[v]
 }

@@ -116,7 +116,7 @@ func (g *Game) drawSaveAs(dst *ebiten.Image) {
 	if s == nil || p == nil {
 		return
 	}
-	strokeFrame(dst, layout.View)
+	g.drawPanelFrame(dst, layout.View)
 	lh := p.LineHeight()
 	x := float64(layout.View.X + ui.PanelPad)
 	y := float64(layout.View.Y + ui.PanelPad)

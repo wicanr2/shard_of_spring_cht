@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"image"
+	"image/color"
 	"os"
 	"path/filepath"
 	"strings"
@@ -484,7 +486,8 @@ const shellKeyHelp = "上面兩張是原版的小鍵盤對照圖。\n" +
 	"世界地圖／迷宮　方向鍵先轉再走、N 名冊、S 存檔、A 另存\n" +
 	"戰鬥　方向鍵移動、A 攻擊、C 施法、U 道具、? 或 / 看單位、S 音效\n" +
 	"施法選格　方向鍵移動游標、PgDn 施放、ESC 取消\n" +
-	"F5 切換配樂(原版／重製／關閉)、商店裡 F2 賣出\n" +
+	"F5 切換配樂(原版／重製／關閉)、F6 切換視覺(原版／手繪冒險書)\n" +
+	"商店裡 F2 賣出\n" +
 	"（按任意鍵關閉）"
 
 // endingText 是引擎暫用的結局文字。
@@ -550,6 +553,16 @@ const TitleArtScale = 3
 // 只有 Ending 與 Userlib 兩份譜(docs/spec/13),沒有 Title,所以這裡
 // 照規格的另一半處理:靜音,不要編一份假的標題曲。
 func (g *Game) drawTitle(dst *ebiten.Image) {
+	if g.visualMode == visualStorybook && g.modernTitle != nil {
+		g.drawModernImageIn(dst, g.modernTitle, layout.Rect{X: 0, Y: 0, W: layout.ScreenW, H: layout.ScreenH})
+		if g.panel != nil {
+			vector.DrawFilledRect(dst, 0, float32(layout.ScreenH-72), layout.ScreenW, 72,
+				color.RGBA{0xd8, 0xbd, 0x83, 0xe8}, false)
+			drawCenter(g.panel, dst, "── 按任意鍵，翻開冒險 ──",
+				float64(layout.ScreenW)/2, float64(layout.ScreenH-50))
+		}
+		return
+	}
 	cx := float64(layout.ScreenW) / 2
 	y := float64(layout.ScreenH)/2 - 100
 	wrap := 46
@@ -611,9 +624,12 @@ func (g *Game) drawMainMenu(dst *ebiten.Image) {
 	if p == nil {
 		return
 	}
-	strokeFrame(dst, layout.View)
-	strokeFrame(dst, layout.Message)
-	strokeFrame(dst, layout.Prompt)
+	g.drawPanelBase(dst, layout.View, true)
+	g.drawPanelBase(dst, layout.Message, false)
+	g.drawPanelBase(dst, layout.Prompt, false)
+	g.drawPanelFrame(dst, layout.View)
+	g.drawPanelFrame(dst, layout.Message)
+	g.drawPanelFrame(dst, layout.Prompt)
 
 	// ⚠ **原版從開機到關機,左邊一直掛著封面圖**(workplace/qa/o2-mainmenu.png):
 	// 美術在地圖框的位置,選單在右邊那個框裡。重製版先前按任意鍵之後整片全黑 ——
@@ -653,8 +669,10 @@ func (g *Game) drawSaveList(dst *ebiten.Image) {
 	if p == nil {
 		return
 	}
-	strokeFrame(dst, layout.View)
-	strokeFrame(dst, layout.Prompt)
+	g.drawPanelBase(dst, layout.View, false)
+	g.drawPanelBase(dst, layout.Prompt, false)
+	g.drawPanelFrame(dst, layout.View)
+	g.drawPanelFrame(dst, layout.Prompt)
 
 	lh := p.LineHeight()
 	x := float64(layout.View.X + ui.PanelPad)
@@ -683,8 +701,10 @@ func (g *Game) drawImportPrompt(dst *ebiten.Image) {
 	if p == nil {
 		return
 	}
-	strokeFrame(dst, layout.View)
-	strokeFrame(dst, layout.Prompt)
+	g.drawPanelBase(dst, layout.View, false)
+	g.drawPanelBase(dst, layout.Prompt, false)
+	g.drawPanelFrame(dst, layout.View)
+	g.drawPanelFrame(dst, layout.Prompt)
 
 	lh := p.LineHeight()
 	x := float64(layout.View.X + ui.PanelPad)
@@ -725,8 +745,10 @@ func (g *Game) drawPartySelect(dst *ebiten.Image) {
 	if p == nil {
 		return
 	}
-	strokeFrame(dst, layout.View)
-	strokeFrame(dst, layout.Prompt)
+	g.drawPanelBase(dst, layout.View, false)
+	g.drawPanelBase(dst, layout.Prompt, false)
+	g.drawPanelFrame(dst, layout.View)
+	g.drawPanelFrame(dst, layout.Prompt)
 
 	lh := p.LineHeight()
 	x := float64(layout.View.X + ui.PanelPad)
@@ -805,17 +827,15 @@ func drawCenter(p *render.Painter, dst *ebiten.Image, s string, cx, y float64) {
 	p.Draw(dst, s, cx-p.Advance(s)/2, y)
 }
 
-// strokeFrame 畫版面區塊的外框,與 main.go Draw() 裡的同名邏輯一致。
-func strokeFrame(dst *ebiten.Image, rc layout.Rect) {
-	vector.StrokeRect(dst, float32(rc.X), float32(rc.Y), float32(rc.W), float32(rc.H),
-		2, cgaWhite, false)
-}
-
 // drawTitleArtIn 把封面美術等比放進指定框(整數倍,置中)。
 //
 // ⚠ 倍率**取整**:非整數倍會讓 CGA 的像素邊緣糊掉(docs/spec/04 §1)。
 // ⚠ 沒有圖就什麼都不畫 —— ⛔ 不拿別的圖冒充(docs/spec/15 §3)。
 func (g *Game) drawTitleArtIn(dst *ebiten.Image, rc layout.Rect) {
+	if g.visualMode == visualStorybook && g.modernTitle != nil {
+		g.drawModernImageIn(dst, g.modernTitle, rc)
+		return
+	}
 	if g.titleArt == nil {
 		return
 	}
@@ -835,6 +855,31 @@ func (g *Game) drawTitleArtIn(dst *ebiten.Image, rc layout.Rect) {
 	dst.DrawImage(g.titleArt, &op)
 }
 
+// drawModernImageIn 以 cover 方式放入現代插畫。現代水彩不是像素資產，使用
+// 線性濾波與置中裁切；原版 titleArt 仍走整數倍最近鄰，兩條契約不混用。
+func (g *Game) drawModernImageIn(dst *ebiten.Image, src *ebiten.Image, rc layout.Rect) {
+	b := src.Bounds()
+	crop := b
+	if b.Dx()*rc.H > b.Dy()*rc.W {
+		w := b.Dy() * rc.W / rc.H
+		x := b.Min.X + (b.Dx()-w)/2
+		crop = image.Rect(x, b.Min.Y, x+w, b.Max.Y)
+	} else if b.Dx()*rc.H < b.Dy()*rc.W {
+		h := b.Dx() * rc.H / rc.W
+		y := b.Min.Y + (b.Dy()-h)/2
+		crop = image.Rect(b.Min.X, y, b.Max.X, y+h)
+	}
+	clipped, ok := src.SubImage(crop).(*ebiten.Image)
+	if !ok {
+		return
+	}
+	var op ebiten.DrawImageOptions
+	op.GeoM.Scale(float64(rc.W)/float64(crop.Dx()), float64(rc.H)/float64(crop.Dy()))
+	op.GeoM.Translate(float64(rc.X), float64(rc.Y))
+	op.Filter = ebiten.FilterLinear
+	dst.DrawImage(clipped, &op)
+}
+
 // drawKeyHelp 畫 A6 按鍵表(docs/spec/15 §8)。
 //
 // ⚠ **整頁,不是覆蓋層。** 覆蓋層是 800×260(約 5 行),而兩張小鍵盤
@@ -846,6 +891,11 @@ func (g *Game) drawTitleArtIn(dst *ebiten.Image, rc layout.Rect) {
 func (g *Game) drawKeyHelp(dst *ebiten.Image) {
 	if g.panel == nil {
 		return
+	}
+	if g.visualMode == visualStorybook {
+		vector.DrawFilledRect(dst, 24, 24, layout.ScreenW-48, layout.ScreenH-48,
+			storybook.panel, false)
+		g.drawPanelFrame(dst, layout.Rect{X: 24, Y: 24, W: layout.ScreenW - 48, H: layout.ScreenH - 48})
 	}
 	lh := g.panel.LineHeight()
 	x, y := 48.0, 40.0

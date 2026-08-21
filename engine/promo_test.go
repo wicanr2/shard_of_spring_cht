@@ -151,6 +151,17 @@ func TestPromoFrames(t *testing.T) {
 	beats := []beat{
 		{"01-title", 75, nil, hold},
 		{"02-menu", 60, func(g *Game) { g.openMainMenu() }, hold},
+		// 新版 UI 介紹：同一個主選單以真的 F6 輸入從原版切到手繪冒險書。
+		// 視覺與配樂分開，因此這裡不改 musicMode。
+		{"03-modern-ui", 180, func(g *Game) {
+			g.openMainMenu()
+			g.visualMode = visualOriginal
+		}, func(_ *Game, i int) []ebiten.Key {
+			if i == 45 {
+				return []ebiten.Key{ebiten.KeyF6}
+			}
+			return nil
+		}},
 		{"03-world", 200, func(g *Game) {
 			if err := g.loadParty(5); err != nil {
 				t.Fatal("載入 PARTY #5 失敗:", err)

@@ -23,8 +23,8 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | 收斂的子系統 | **12 / 12** | [`CLAUDE.md`](CLAUDE.md) §2.2 看板 A–L |
 | 規則資料 | **33 個法術 / 74 種怪物 / 57 件道具** | `assets/data/*.json`,欄位語意逐欄對過 |
 | 原版文字盤點 | **1,476 段 / 34,499 B** | [`re/62`](docs/re/62-l-localization-inventory.md)、[`re/63`](docs/re/63-userlib-strings-and-l-correction.md) §4 |
-| 引擎 | **19,590 行 Go** | `find engine -name '*.go' ! -name '*_test.go'` |
-| 測試 | **14,143 行 / 501 條** | 兩套字型後端各跑一次(預設 TTF 與 `-tags eten`)|
+| 引擎 | **19,927 行 Go** | `find engine -name '*.go' ! -name '*_test.go'` |
+| 測試 | **14,201 行 / 503 條** | 兩套字型後端各跑一次(預設 TTF 與 `-tags eten`)|
 | 發行 | **Windows / Linux / macOS** | [`tools/release.sh`](tools/release.sh) |
 
 解出來的不只是檔案格式。**命中、傷害、經驗值、升級、法術效力、遭遇組成、
@@ -37,6 +37,25 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 ---
 
 ## 現在長什麼樣
+
+### 手繪冒險書現代主題（F6 切換）
+
+視覺與配樂分開：`F6` 切換「原版／手繪冒險書」，`F5` 繼續切換
+「原版／重製／關閉」配樂，因此可以自由混搭。現代主題是明確標示的重製增補，
+不取代原版忠實畫面的驗收基準。
+
+| | |
+|---|---|
+| ![現代標題與 logo](docs/images/modern/title.png) | ![現代世界地圖](docs/images/modern/world.png) |
+| **現代標題／logo** —— 劍、寶箱、殘柱與紫色護符改繪成冒險書扉頁 | **現代世界地圖** —— 68×68 水彩圖塊與四方向、兩步態角色 sprite |
+| ![現代迷宮](docs/images/modern/maze.png) | ![現代戰鬥](docs/images/modern/combat.png) |
+| **現代迷宮** —— 暖灰石材、苔色與魔法紫／青色 | **現代戰鬥** —— 22 組手繪怪物 sprite，規則與格位完全不變 |
+
+美術規格、資產契約與權利紀錄見
+[`docs/spec/24-modern-storybook-theme.md`](docs/spec/24-modern-storybook-theme.md) 與
+[`art/modern/README.md`](art/modern/README.md)。
+
+### 原版忠實主題
 
 | | |
 |---|---|
@@ -53,11 +72,12 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 > ([`CLAUDE.md`](CLAUDE.md) §10)變成整個專案**最吃重的一條** ——
 > 一旦轉 public,洩漏的是原版的資料與美術本身。
 
-### 三十秒的樣子
+### 推廣影片
 
 [`docs/promo/shard-of-spring-cht-promo.mp4`](docs/promo/shard-of-spring-cht-promo.mp4)
-—— 標題、主選單、世界地圖、城鎮、地城、最終戰,接一段**原版 vs 重製版**的並排比較,
-最後兩張定格交代這個專案做了什麼。51 秒,配的是本專案自己寫的場景配樂。
+—— 標題、主選單、`F6` 原版／手繪冒險書切換、世界地圖、城鎮、地城、最終戰，
+接一段**原版 vs 重製版**的並排比較，最後兩張定格交代這個專案做了什麼。
+全片約 57 秒，配樂使用本專案為各場景創作的重製曲。
 
 ⚠ 比較段左邊的原版畫面是 [`tools/dosbox_run.sh`](tools/dosbox_run.sh) **實跑抓的**
 (路線見 [`re/139`](docs/re/139-oracle-reaches-gameplay.md)),不是掃描或網路上的圖 ——
@@ -94,11 +114,11 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | 階段 | 狀態 |
 |---|---|
 | **逆向工程** | ✅ 結束。[`CLAUDE.md`](CLAUDE.md) §2.2 看板的**十二個子系統全部 RE-DONE**,規格標 READY。`docs/re/` **232 篇**筆記 |
-| **引擎** | ✅ 世界地圖、地城、戰鬥、戰場、法術、道具、城鎮、商店、營地、名冊、創角、訓練、治療、經驗、技能點、音樂、音效都實作了。**18,902 行 Go + 13,613 行測試(483 條)**。⚠ 兩條規則明確地**沒有**實作(見下面「與原版的差異」),而且標在遊戲畫面上 |
+| **引擎** | ✅ 世界地圖、地城、戰鬥、戰場、法術、道具、城鎮、商店、營地、名冊、創角、訓練、治療、經驗、技能點、音樂、音效都實作了。原版忠實與手繪冒險書主題可用 `F6` 獨立切換；共 **19,927 行 Go + 14,201 行測試（503 條）**。⚠ 兩條規則明確地**沒有**實作(見下面「與原版的差異」),而且標在遊戲畫面上 |
 | **繁體中文化** | ✅ 資料檔 439 段(怪物 74 / 法術 33 / 道具 57 / 地城 87)＋ 模組內字串 **381 / 381 全部譯完並接回引擎** |
-| **打包發行** | ✅ `v0.4.0`(2026-08-20):Linux **AppImage** / Windows zip / macOS universal,見 [Releases](../../releases)。`tools/release.sh` 一鍵三平台。存檔相容,**不必重轉資產**。<br>要把三平台包、release notes、推廣片集中到一個目錄交出去:`tools/dist_all.sh` → `dist-all/`(gitignore)。⚠ 它從 GitHub release **原樣下載**、與本機建出來的逐檔比 SHA-256,並把三個包都翻開確認**沒有 `assets/`** |
+| **打包發行** | ✅ `v0.5.0`(2026-08-20):Linux **AppImage** / Windows zip / macOS universal 三平台完整包已在本機重建並驗證；建立 GitHub Release 是另一項外部發布操作。`tools/release.sh` 一鍵三平台。存檔相容,**不必重轉資產**。<br>要把已發布的三平台包、release notes、推廣片集中到一個目錄交出去:`tools/dist_all.sh` → `dist-all/`(gitignore)。⚠ 它從 GitHub release **原樣下載**、與本機建出來的逐檔比 SHA-256,並把三個包都翻開確認**沒有 `assets/`** |
 | **對照原版三輪 QA** | ✅ 用 DOSBox 跑原版逐畫面比對,三輪共約 55 條。規則層只錯四條,而**四條都沒有症狀** —— 升級門檻、迷宮兩軸、地城遭遇、創角重擲上限([worklist](docs/spec/14-remake-worklist.md) §12)|
-| **還開著的** | 只剩場景架構重構 C2,而它的[重啟判準量過了、未達成](docs/spec/14-remake-worklist.md) —— 照規則不動 |
+| **還開著的** | 場景架構重構 C2 的[重啟判準量過了、未達成](docs/spec/14-remake-worklist.md)，照規則不動；現代主題的發行產物與推廣片則以本次 `v0.5.0` 收尾 |
 
 進度的單一真相來源是 [`docs/spec/14-remake-worklist.md`](docs/spec/14-remake-worklist.md),
 ⛔ 不要從這裡複製狀態。
@@ -164,7 +184,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | **遊戲規則** | — | **一致** —— 命中、傷害、經驗曲線、升級成長、法術效力、遭遇、可通行性、事件都照反組譯結果實作,並用 DOSBox 跑原版逐畫面驗過三輪 |
 | **亂數序列** | 自己的 RNG | **不重現**([裁定](docs/spec/14-remake-worklist.md) §9)。同一個種子在本引擎內可重現,但與原版不同 |
 | 執行方式 | 九支 EXE 靠 `retf` 互相轉交,共用 `BRUN30` 執行期模組 | 單一執行檔,九個場景共用一份狀態 |
-| 畫面 | CGA 320×200,四色 | 1024×768。**美術 4× 整數放大**(不模糊、不重新上色),文字另外用向量字型畫 |
+| 畫面 | CGA 320×200,四色 | 1024×768。原版主題以 **4× 整數放大**保留四色；另有內嵌的**手繪冒險書現代主題**，`F6` 獨立切換，預設原版 |
 | 語言 | 英文 | 繁體中文。譯名以**精訊**版為主([glossary](translations/glossary.md)) |
 | 存檔 | 直接改 `CHARS.DAT` / `GROUPS.DAT` | **自己的 JSON 格式**,多存檔。⛔ 不寫回原版檔案。可匯入原版存檔 |
 | 音樂 | 兩首 PC 喇叭方波(通關、死亡),其餘場景**沒有背景音樂** | 同樣兩首 **+ 六首場景配樂**,**F5 切換原版/重製/關閉,預設原版**([spec/13](docs/spec/13-sound.md) §7) |

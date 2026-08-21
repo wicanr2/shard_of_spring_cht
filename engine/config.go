@@ -18,7 +18,8 @@ const configFile = "config.json"
 // config 是設定檔的內容。欄位用字串不用數字 ——
 // 玩家看得懂也改得動(與存檔選 JSON 同一個理由)。
 type config struct {
-	Music string `json:"music"`
+	Music  string `json:"music"`
+	Visual string `json:"visual"`
 }
 
 func (g *Game) configPath() string {
@@ -37,6 +38,7 @@ func (g *Game) loadConfig() {
 		return
 	}
 	g.musicMode = music.ParseMode(c.Music)
+	g.visualMode = parseVisualMode(c.Visual)
 	g.bgm.set = false
 }
 
@@ -47,7 +49,7 @@ func (g *Game) saveConfig() {
 		g.warnings = append(g.warnings, "設定存不下來:"+err.Error())
 		return
 	}
-	b, err := json.MarshalIndent(config{Music: g.musicMode.Key()}, "", "  ")
+	b, err := json.MarshalIndent(config{Music: g.musicMode.Key(), Visual: g.visualMode.key()}, "", "  ")
 	if err != nil {
 		return
 	}

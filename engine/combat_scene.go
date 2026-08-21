@@ -55,7 +55,7 @@ func (g *Game) startCombat() bool {
 		return false
 	}
 	g.field = combat.Build(g.members, group, g.items, g.rand)
-	g.field.SetTerrain(g.battlefieldTerrain()) // 地形層(docs/re/227 §2)
+	g.field.SetTerrain(g.battlefieldTerrain())       // 地形層(docs/re/227 §2)
 	g.field.PartySlots = g.group.MemberSlotNumbers() // 站位看槽號(docs/re/210)
 	g.field.Place()
 	g.field.ResetPoints(&g.points)
@@ -350,6 +350,10 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 		cx, cy = f.Units[g.actor].X, f.Units[g.actor].Y
 	}
 	ox, oy := combat.ViewOrigin(cx, cy)
+	monst := g.monst
+	if g.visualMode == visualStorybook {
+		monst = g.modernMonst
+	}
 	for vy := 0; vy < combat.ViewH; vy++ {
 		for vx := 0; vx < combat.ViewW; vx++ {
 			x, y := ox+vx, oy+vy
@@ -375,7 +379,7 @@ func (g *Game) drawBoard(dst *ebiten.Image, x0, y0 float64) float64 {
 			} else if i := f.Occupant(x, y); i >= 0 {
 				// 有圖就畫圖(docs/re/220 的對應)。⚠ 縮到格寬 —— 戰場的一格
 				// 是文字行高算出來的,不是 17×4,所以不能用整數倍放大。
-				if img := g.monst.unit(f.Units[i]); img != nil {
+				if img := monst.unit(f.Units[i]); img != nil {
 					op := &ebiten.DrawImageOptions{}
 					sc := cell / float64(img.Bounds().Dx())
 					op.GeoM.Scale(sc, sc)
@@ -581,7 +585,11 @@ func (g *Game) tacticsLine(u combat.Unit) string {
 
 // terrainTile 回傳戰場某一格的地形圖;nil = 不畫。
 func (g *Game) terrainTile(x, y int) *ebiten.Image {
-	if g.cmbtTiles == nil || g.field == nil {
+	tiles := g.cmbtTiles
+	if g.visualMode == visualStorybook {
+		tiles = g.modernCmbtTiles
+	}
+	if tiles == nil || g.field == nil {
 		return nil
 	}
 	if x < 0 || y < 0 || x >= combat.BoardW || y >= combat.BoardH {
@@ -591,7 +599,7 @@ func (g *Game) terrainTile(x, y int) *ebiten.Image {
 	if slot < 0 {
 		return nil
 	}
-	return g.cmbtTiles[slot]
+	return tiles[slot]
 }
 
 // battlefieldTerrain 回傳戰場地形層要用的 3×3 地形格值(docs/re/227 §2)。

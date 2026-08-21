@@ -88,10 +88,15 @@ func drawWalk(dst *ebiten.Image, img *ebiten.Image, px, py float64) bool {
 		return false
 	}
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(layout.ArtScale, layout.ArtScale)
+	scale := float64(layout.TileDst) / float64(img.Bounds().Dx())
+	op.GeoM.Scale(scale, scale)
 	op.GeoM.Translate(px, py)
 	// 整數倍放大不該有插值(docs/spec/04 §1)。
-	op.Filter = ebiten.FilterNearest
+	if img.Bounds().Dx() == layout.TileSrc {
+		op.Filter = ebiten.FilterNearest
+	} else {
+		op.Filter = ebiten.FilterLinear
+	}
 	dst.DrawImage(img, op)
 	return true
 }

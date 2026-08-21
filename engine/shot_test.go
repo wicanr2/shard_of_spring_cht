@@ -84,6 +84,9 @@ func TestShots(t *testing.T) {
 	if err != nil {
 		t.Fatal("載入資產失敗:", err)
 	}
+	if os.Getenv("SHOT_THEME") == "storybook" {
+		g.visualMode = visualStorybook
+	}
 	// ⚠ **一定要關掉聲音**。容器裡沒有音訊裝置,而 ebiten 的 audio context
 	// 會把 oto 的 ALSA 錯誤丟回遊戲迴圈 —— RunGame 直接以錯誤結束,
 	// 只拍得到第一張。docs/spec/13 說「沒有音訊裝置時只記警告」,

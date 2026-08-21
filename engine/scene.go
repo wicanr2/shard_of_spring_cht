@@ -595,6 +595,7 @@ func (s townScene) Prompt() string {
 
 // townGenericPrompt 給沒有原版對應句子的子畫面(旅店/治療所/酒館/訓練所/營地)。
 const townGenericPrompt = "字母：選項　　+／-：翻頁　　ESC：返回／離開城鎮"
+
 func (s townScene) Name() string         { return "town" }
 func (s townScene) Handles(Input) bool   { return s.g.town != nil && s.g.town.mode != townClosed }
 func (s townScene) Draw(d *ebiten.Image) { s.g.drawTown(d) }
@@ -770,9 +771,18 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 	inTown := g.town != nil && g.town.mode != townClosed && !inCombat && !inMaze &&
 		!g.campInPlace()
 	inRoster := (g.roster != nil && g.roster.open) || g.create != nil
+	// 冒險書主題先鋪紙張與深色主視野；內容畫完後才補雙線框。
+	g.drawPanelBase(dst, layout.View, true)
+	g.drawPanelBase(dst, layout.Party, false)
+	g.drawPanelBase(dst, layout.Message, false)
+	g.drawPanelBase(dst, layout.Prompt, false)
 
 	// 9×9 視野,隊伍固定在正中央(docs/spec/05 §3、§4)。
 	const half = layout.ViewTiles / 2
+	tiles := g.tiles
+	if g.visualMode == visualStorybook {
+		tiles = g.modernTiles
+	}
 	for vy := 0; !inCombat && !inMaze && !inTown && !inRoster && vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
 			// 天色會縮視野(docs/re/213):繪製半徑 = 生效能見度,
@@ -791,13 +801,15 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 			// 值 11(海洋,全圖 55.63%)原版**一個像素都不畫**
 			// (docs/re/132 §1),顯示的就是底色。這裡同樣什麼都不做 ——
 			// 畫一張「海的圖」會讓畫面比原版多東西。
-			if src, _ := original.WorldTileOrigin(v); src == original.SrcBackdrop {
+			if src, _ := original.WorldTileOrigin(v); src == original.SrcBackdrop &&
+				g.visualMode != visualStorybook {
 				continue
 			}
 
-			if img, ok := g.tiles[v]; ok {
+			if img, ok := tiles[v]; ok {
 				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Scale(layout.ArtScale, layout.ArtScale)
+				scale := float64(layout.TileDst) / float64(img.Bounds().Dx())
+				op.GeoM.Scale(scale, scale)
 				op.GeoM.Translate(float64(px), float64(py))
 				// 最近鄰 —— 整數倍放大不該有插值(docs/spec/04 §1)。
 				op.Filter = ebiten.FilterNearest
@@ -816,21 +828,22 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 		// 沒有它玩家按一次方向鍵不會動、卻不知道為什麼(docs/spec/14 §12-C)。
 		c := float64(layout.View.X + half*layout.TileDst)
 		r := float64(layout.View.Y + half*layout.TileDst)
-		if !drawWalk(dst, g.walkArt(g.walk), c, r) {
+		walk := g.walk
+		if g.visualMode == visualStorybook {
+			walk = g.modernWalk
+		}
+		if !drawWalk(dst, g.walkArt(walk), c, r) {
 			// 圖沒轉出來就退回白框 —— ⛔ 不拿別的圖冒充。
 			vector.StrokeRect(dst, float32(c), float32(r),
 				layout.TileDst, layout.TileDst, 3, cgaWhite, false)
 		}
 	}
 
-	frame := func(rc layout.Rect) {
-		vector.StrokeRect(dst, float32(rc.X), float32(rc.Y),
-			float32(rc.W), float32(rc.H), 2, cgaWhite, false)
-	}
-	frame(layout.View)
-	frame(layout.Party)
-	frame(layout.Message)
-	frame(layout.Prompt)
+	// 框架最後畫，確保地圖或清單不會蓋掉冒險書的雙線壓印。
+	g.drawPanelFrame(dst, layout.View)
+	g.drawPanelFrame(dst, layout.Party)
+	g.drawPanelFrame(dst, layout.Message)
+	g.drawPanelFrame(dst, layout.Prompt)
 
 	g.drawParty(dst)
 }

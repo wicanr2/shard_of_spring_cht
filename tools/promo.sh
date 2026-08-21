@@ -161,7 +161,7 @@ credits() {
     "262|30|0xdfe6ec|l|有一份獨立資料互相印證、筆記標明位址與信心等級"
     "342|30|0xdfe6ec|l|解不出來的欄位就標「未解」，不填一個看起來合理的值"
     "422|30|0xdfe6ec|l|被推翻的斷言集中記一處，正文永遠只寫現況"
-    "502|30|0xdfe6ec|l|19,590 行引擎、14,143 行測試碼、501 條測試"           # find engine -name *.go
+    "502|30|0xdfe6ec|l|19,927 行引擎、14,201 行測試碼、503 條測試"           # find engine -name *.go
     "600|30|0xc7a86a|c|原版執行檔與資料不隨引擎散布，玩家自備合法原版"
   )
 
@@ -232,6 +232,7 @@ cut() {
     case "$name" in
       01-title)  seg_track+=(remake-title);  seg_caption+=("SSI 1986 —— 繁體中文重製版") ;;
       02-menu)   seg_track+=(remake-title);  seg_caption+=("原版沒有「開新遊戲」:先造角色,再載入隊伍") ;;
+      03-modern-ui) seg_track+=(remake-title); seg_caption+=("F6 獨立切換 —— 原版／手繪冒險書現代 UI") ;;
       03-world)  seg_track+=(remake-world);  seg_caption+=("世界地圖 —— 121 × 103 格") ;;
       04-town)   seg_track+=(remake-town);   seg_caption+=("十三座城鎮 —— 商店、旅店、酒館、訓練所、治療所") ;;
       05-maze)   seg_track+=(remake-maze);   seg_caption+=("六座地城 —— 光源決定你看得到多遠") ;;

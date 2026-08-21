@@ -179,7 +179,7 @@ func (g *Game) stepMaze(dir maze.Facing) {
 		// 走出邊界 → 回世界地圖。原版在這一刻印 `Leaving maze ..`
 		// (docs/re/147:實跑從入口那一格往外走一步就出去了)。
 		g.level = nil
-		g.syncMazeNum() // 走出地城:火把熄掉、能見度換回天色(docs/re/204 §2)
+		g.syncMazeNum()      // 走出地城:火把熄掉、能見度換回天色(docs/re/204 §2)
 		g.overlay = "離開地城……" // MAZEMOVE:88
 		return
 	case maze.Moved:
@@ -310,6 +310,10 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	// docs/re/204 §2)。**畫之前抓一次**,不要在 mazeState 裡另存一份 ——
 	// 兩份會漂,而漂掉的症狀是「火把燒完了視野卻沒變」。
 	g.mazeState.Visibility = g.party.Visibility
+	tiles := g.mazeTiles
+	if g.visualMode == visualStorybook {
+		tiles = g.modernMazeTiles
+	}
 	const half = layout.ViewTiles / 2
 	for vy := 0; vy < layout.ViewTiles; vy++ {
 		for vx := 0; vx < layout.ViewTiles; vx++ {
@@ -327,9 +331,10 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 			if !drawn {
 				continue
 			}
-			if img, ok := g.mazeTiles[id]; ok {
+			if img, ok := tiles[id]; ok {
 				op := &ebiten.DrawImageOptions{}
-				op.GeoM.Scale(layout.ArtScale, layout.ArtScale)
+				scale := float64(layout.TileDst) / float64(img.Bounds().Dx())
+				op.GeoM.Scale(scale, scale)
 				op.GeoM.Translate(float64(px), float64(py))
 				op.Filter = ebiten.FilterNearest
 				dst.DrawImage(img, op)
@@ -345,7 +350,11 @@ func (g *Game) drawMaze(dst *ebiten.Image) {
 	// 只是顏色不對。
 	c := float64(layout.View.X + half*layout.TileDst)
 	r := float64(layout.View.Y + half*layout.TileDst)
-	if !drawWalk(dst, g.walkArtMaze(), c, r) {
+	walk := g.walkArtMaze()
+	if g.visualMode == visualStorybook {
+		walk = g.walkArt(g.modernWalk)
+	}
+	if !drawWalk(dst, walk, c, r) {
 		vector.StrokeRect(dst, float32(c), float32(r),
 			layout.TileDst, layout.TileDst, 3, cgaWhite, false)
 	}
@@ -372,10 +381,12 @@ func (g *Game) drawOverlay(dst *ebiten.Image) {
 		return
 	}
 	rc := layout.Overlay
-	vector.DrawFilledRect(dst, float32(rc.X), float32(rc.Y),
-		float32(rc.W), float32(rc.H), cgaBlack, false)
-	vector.StrokeRect(dst, float32(rc.X), float32(rc.Y),
-		float32(rc.W), float32(rc.H), 2, cgaWhite, false)
+	g.drawPanelBase(dst, rc, false)
+	if g.visualMode != visualStorybook {
+		vector.DrawFilledRect(dst, float32(rc.X), float32(rc.Y),
+			float32(rc.W), float32(rc.H), cgaBlack, false)
+	}
+	g.drawPanelFrame(dst, rc)
 
 	// 內距 32 → 文字區 736 px;24 px 字 → 每行 30 個全形字 = 60 欄
 	const pad, cols = 32, 60
@@ -406,10 +417,12 @@ func (g *Game) drawPrompt(dst *ebiten.Image) {
 		return
 	}
 	rc := layout.Overlay
-	vector.DrawFilledRect(dst, float32(rc.X), float32(rc.Y),
-		float32(rc.W), float32(rc.H), cgaBlack, false)
-	vector.StrokeRect(dst, float32(rc.X), float32(rc.Y),
-		float32(rc.W), float32(rc.H), 2, cgaWhite, false)
+	g.drawPanelBase(dst, rc, false)
+	if g.visualMode != visualStorybook {
+		vector.DrawFilledRect(dst, float32(rc.X), float32(rc.Y),
+			float32(rc.W), float32(rc.H), cgaBlack, false)
+	}
+	g.drawPanelFrame(dst, rc)
 
 	const pad, cols = 32, 60
 	lh := g.overlayFont.LineHeight()

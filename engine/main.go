@@ -46,6 +46,8 @@ type Game struct {
 	world *world.Map
 	party world.State
 	tiles map[int]*ebiten.Image // 地形值 → 圖;沒有來源的值不在裡面
+	// modernTiles 是內嵌、預先驗證的 68×68 手繪圖塊群。
+	modernTiles map[int]*ebiten.Image
 	// noSrc 記下畫面上出現過的未解地形值,顯示在提示列。
 	// 讓未解項目在**執行時**也看得見,不是只在文件裡。
 	noSrc map[int]bool
@@ -64,7 +66,8 @@ type Game struct {
 	// M4:戰鬥(docs/spec/07)
 	monsters []original.Monster
 	// cmbtTiles 是戰場地形圖(FASTCMBT 的九個槽)。nil = 資產裡沒有,不畫地形。
-	cmbtTiles combatArt
+	cmbtTiles       combatArt
+	modernCmbtTiles combatArt
 	// encounters 是 RNDMONST.BIN 的 72 列(docs/re/225 §5)——
 	// **遭遇挑的是這張表的列**,不是直接挑一隻怪。
 	encounters []original.Encounter
@@ -92,12 +95,13 @@ type Game struct {
 	// 原版問兩句(2026-08-18 實跑),只問第一句會靜靜地丟掉進度。
 	quitSaveAsk bool
 	// dungeonNames:入口編號 → 地城名(docs/re/222)。
-	dungeonNames []string
-	mazeTiles    map[int]*ebiten.Image
-	level        *mazeLevel // nil = 不在迷宮中
-	mazeState    maze.State
-	overlay      string // 非空 = 敘述覆蓋層開著
-	overlayFont  *render.Painter
+	dungeonNames    []string
+	mazeTiles       map[int]*ebiten.Image
+	modernMazeTiles map[int]*ebiten.Image
+	level           *mazeLevel // nil = 不在迷宮中
+	mazeState       maze.State
+	overlay         string // 非空 = 敘述覆蓋層開著
+	overlayFont     *render.Painter
 	// 迷宮機關的互動狀態(docs/re/161 §3 的五個目標編號)。
 	prompt *mazePrompt
 	// tombs 記著踩過哪幾座墓(事件 701–704),餵 Eldron 謎題的進度旗標。
@@ -128,6 +132,8 @@ type Game struct {
 	// musicMode 的零值是 ModeOriginal,也就是只有原版那兩首。
 	musicMode music.Mode
 	bgm       bgmState
+	// visualMode 是獨立於配樂的視覺偏好。F6 切換，零值保留原版呈現。
+	visualMode visualMode
 
 	// M6:法術(docs/spec/09)
 	spells   []original.Spell
@@ -184,8 +190,10 @@ type Game struct {
 	// walk / walkMaze 是隊伍的人形圖示(WALKDRAW.PIC,見 walk.go)。
 	// nil = 沒轉出來,退回白框。
 	walk, walkMaze walkArt
+	modernWalk     walkArt
 	// monst 是戰場單位的圖(board_sprite.go)。nil = 沒轉出來,退回文字。
-	monst monstArt
+	monst       monstArt
+	modernMonst monstArt
 	// walkGait 是走路動畫的步態,每走成功一步翻面。
 	// ⚠ **只在真的位移時翻**,轉身不翻 —— 原版轉身不換腳。
 	walkGait int
@@ -193,6 +201,8 @@ type Game struct {
 	// titleArt 是 STARTUP.BIN 左側那塊美術面板(docs/spec/15 §3)。
 	// **nil = 沒轉出來**,標題畫面退回純文字 —— ⛔ 不拿別的圖冒充。
 	titleArt *ebiten.Image
+	// modernTitle 是重製版自有的手繪冒險書扉頁，內嵌於執行檔。
+	modernTitle *ebiten.Image
 
 	// bossFight:目前這場戰鬥是不是迷宮事件目標 533(maze.TargetFinalBoss,
 	// 最終首領 Siriadne)引發的劇情戰鬥。
@@ -311,6 +321,15 @@ func (g *Game) Update() error {
 	// 也不會被自由輸入(存檔命名、Daza Reveli)當成文字吃掉。
 	if in.Pressed(ebiten.KeyF5) {
 		msg := g.cycleMusicMode()
+		g.saveMsg = msg
+		if g.field != nil {
+			g.field.Log = append(g.field.Log, msg)
+		}
+		return nil
+	}
+	// F6 切換視覺主題；與 F5 配樂分開，玩家可以任意混搭。
+	if in.Pressed(ebiten.KeyF6) {
+		msg := g.cycleVisualMode()
 		g.saveMsg = msg
 		if g.field != nil {
 			g.field.Log = append(g.field.Log, msg)
@@ -534,7 +553,8 @@ func (g *Game) applySave(s *save.Save) error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(cgaBlack)
+	screen.Fill(g.screenBackground())
+	g.applyThemeText()
 
 	// 外殼接管畫面時,把整個畫布讓給它(docs/spec/15)。
 	// drawOverlay 仍要呼叫 —— A6 按鍵表(P 鍵)借用的是敘述覆蓋層的機制,
@@ -676,10 +696,11 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	tiles := loadTiles(filepath.Join(dir, "gfx", "world"), 38)
 
 	g := &Game{
-		world:  &world.Map{Cells: wm.Cells},
-		tiles:  tiles,
-		assets: dir,
-		noSrc:  map[int]bool{},
+		world:       &world.Map{Cells: wm.Cells},
+		tiles:       tiles,
+		modernTiles: loadModernWorld(),
+		assets:      dir,
+		noSrc:       map[int]bool{},
 		// docs/spec/18 §2:saves/ 預設在資產目錄旁邊,-save 可覆寫(main() 裡)。
 		saveDir: filepath.Join(filepath.Dir(dir), "saves"),
 	}
@@ -691,6 +712,7 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	}
 	// 迷宮圖塊:MAZEITEM.PIC 第 k 行 = 格值 k(偏移 0)。
 	g.mazeTiles = loadTiles(filepath.Join(dir, "gfx", "maze"), 32)
+	g.modernMazeTiles = loadModernMaze()
 
 	// 名冊獨立於隊伍槽:C)har Utilities 從主選單就能進去,不必先 L)oad
 	// 一支隊伍(docs/spec/15 §4)。GROUPS.DAT 的路徑也在這裡定案,
@@ -718,11 +740,15 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	fmt.Fprintln(os.Stderr, "字型:", fontName)
 	g.panel, g.overlayFont, g.titleFont = panel, overlay, title
 	g.titleArt = loadTitleArt(dir)
+	g.modernTitle = loadModernTitle()
 	g.walk, g.walkMaze = loadWalk(dir, "walk"), loadWalk(dir, "walk-maze")
+	g.modernWalk = loadModernWalk()
 	g.monst = loadMonst(dir)
+	g.modernMonst = loadModernMonst()
 	g.cmbtTiles = loadCombatTiles(dir) // 戰場地形(docs/re/227)
-	g.initSound()                      // docs/spec/13:失敗只記警告,不影響遊戲
-	g.loadConfig()                     // 配樂模式等偏好。讀不到就用預設(= 原版)
+	g.modernCmbtTiles = loadModernCombat()
+	g.initSound()  // docs/spec/13:失敗只記警告,不影響遊戲
+	g.loadConfig() // 配樂模式等偏好。讀不到就用預設(= 原版)
 	g.shell = &shellState{mode: shellTitle}
 	return g, nil
 }

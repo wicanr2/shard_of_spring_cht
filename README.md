@@ -116,7 +116,7 @@ SSI《Shard of Spring》(1986 / 1987,MS-DOS 版由 Digital Illusions 移植)的
 | **逆向工程** | ✅ 結束。[`CLAUDE.md`](CLAUDE.md) §2.2 看板的**十二個子系統全部 RE-DONE**,規格標 READY。`docs/re/` **232 篇**筆記 |
 | **引擎** | ✅ 世界地圖、地城、戰鬥、戰場、法術、道具、城鎮、商店、營地、名冊、創角、訓練、治療、經驗、技能點、音樂、音效都實作了。原版忠實與手繪冒險書主題可用 `F6` 獨立切換；共 **20,039 行 Go + 14,348 行測試（509 條）**。⚠ 兩條規則明確地**沒有**實作(見下面「與原版的差異」),而且標在遊戲畫面上 |
 | **繁體中文化** | ✅ 資料檔 439 段(怪物 74 / 法術 33 / 道具 57 / 地城 87)＋ 模組內字串 **381 / 381 全部譯完並接回引擎** |
-| **打包發行** | ✅ `v0.5.2`(2026-08-21):Linux **AppImage** / Windows zip / macOS universal 三平台完整包已在本機重建並驗證；本版將現代迷宮暗部改為深褐黑，並為海洋、海岸、草原與森林加入四向自動拼接。建立 GitHub Release 是另一項外部發布操作。`tools/release.sh` 一鍵三平台。存檔相容,**不必重轉資產**。<br>要把已發布的三平台包、release notes、推廣片集中到一個目錄交出去:`tools/dist_all.sh` → `dist-all/`(gitignore)。⚠ 它從 GitHub release **原樣下載**、與本機建出來的逐檔比 SHA-256,並把三個包都翻開確認**沒有 `assets/`** |
+| **打包發行** | ✅ [`v0.5.2`](https://github.com/wicanr2/shard_of_spring_cht/releases/tag/v0.5.2)(2026-08-21):Linux **AppImage** / Windows zip / macOS universal 三平台完整包與推廣片已正式發布；本版將現代迷宮暗部改為深褐黑，並為海洋、海岸、草原與森林加入四向自動拼接。`tools/release.sh` 一鍵三平台。存檔相容,**不必重轉資產**。<br>要把已發布的三平台包、release notes、推廣片集中到一個目錄交出去:`tools/dist_all.sh` → `dist-all/`(gitignore)。⚠ 它從 GitHub release **原樣下載**、與本機建出來的逐檔比 SHA-256,並把三個包都翻開確認**沒有 `assets/`** |
 | **對照原版三輪 QA** | ✅ 用 DOSBox 跑原版逐畫面比對,三輪共約 55 條。規則層只錯四條,而**四條都沒有症狀** —— 升級門檻、迷宮兩軸、地城遭遇、創角重擲上限([worklist](docs/spec/14-remake-worklist.md) §12)|
 | **還開著的** | 場景架構重構 C2 的[重啟判準量過了、未達成](docs/spec/14-remake-worklist.md)，照規則不動；現代主題的發行產物與推廣片則以本次 `v0.5.2` 收尾 |
 

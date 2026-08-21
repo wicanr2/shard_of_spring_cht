@@ -47,7 +47,8 @@ type Game struct {
 	party world.State
 	tiles map[int]*ebiten.Image // 地形值 → 圖;沒有來源的值不在裡面
 	// modernTiles 是內嵌、預先驗證的 68×68 手繪圖塊群。
-	modernTiles map[int]*ebiten.Image
+	modernTiles     map[int]*ebiten.Image
+	modernWorldAuto modernWorldAuto
 	// noSrc 記下畫面上出現過的未解地形值,顯示在提示列。
 	// 讓未解項目在**執行時**也看得見,不是只在文件裡。
 	noSrc map[int]bool
@@ -696,11 +697,12 @@ func loadStatic(dir, fontPath string, seed uint64) (*Game, error) {
 	tiles := loadTiles(filepath.Join(dir, "gfx", "world"), 38)
 
 	g := &Game{
-		world:       &world.Map{Cells: wm.Cells},
-		tiles:       tiles,
-		modernTiles: loadModernWorld(),
-		assets:      dir,
-		noSrc:       map[int]bool{},
+		world:           &world.Map{Cells: wm.Cells},
+		tiles:           tiles,
+		modernTiles:     loadModernWorld(),
+		modernWorldAuto: loadModernWorldAuto(),
+		assets:          dir,
+		noSrc:           map[int]bool{},
 		// docs/spec/18 §2:saves/ 預設在資產目錄旁邊,-save 可覆寫(main() 裡)。
 		saveDir: filepath.Join(filepath.Dir(dir), "saves"),
 	}

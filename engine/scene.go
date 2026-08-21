@@ -806,7 +806,12 @@ func (s worldScene) Draw(dst *ebiten.Image) {
 				continue
 			}
 
-			if img, ok := tiles[v]; ok {
+			img, ok := tiles[v]
+			if g.visualMode == visualStorybook {
+				img = g.modernWorldTile(v, mx, my)
+				ok = img != nil
+			}
+			if ok {
 				op := &ebiten.DrawImageOptions{}
 				scale := float64(layout.TileDst) / float64(img.Bounds().Dx())
 				op.GeoM.Scale(scale, scale)

@@ -18,8 +18,13 @@ import (
 //go:embed assets/modern/title.png
 var modernTitlePNG []byte
 
-//go:embed assets/modern/world/*.png assets/modern/walk/*.png assets/modern/maze/*.png assets/modern/monst/*.png assets/modern/combat/*.png
+//go:embed assets/modern/world/*.png assets/modern/world_auto/*.png assets/modern/world_auto/*/*.png assets/modern/walk/*.png assets/modern/maze/*.png assets/modern/monst/*.png assets/modern/combat/*.png
 var modernFS embed.FS
+
+type modernWorldAuto struct {
+	grass, ocean  [2]*ebiten.Image
+	forest, coast map[int]*ebiten.Image
+}
 
 func loadModernTitle() *ebiten.Image {
 	im, _, err := image.Decode(bytes.NewReader(modernTitlePNG))
@@ -56,6 +61,30 @@ func loadModernWorld() map[int]*ebiten.Image {
 		if err == nil {
 			out[n] = ebiten.NewImageFromImage(im)
 		}
+	}
+	return out
+}
+
+func loadModernWorldAuto() modernWorldAuto {
+	load := func(name string) *ebiten.Image {
+		b, err := fs.ReadFile(modernFS, "assets/modern/world_auto/"+name)
+		if err != nil {
+			return nil
+		}
+		im, _, err := image.Decode(bytes.NewReader(b))
+		if err != nil {
+			return nil
+		}
+		return ebiten.NewImageFromImage(im)
+	}
+	out := modernWorldAuto{forest: map[int]*ebiten.Image{}, coast: map[int]*ebiten.Image{}}
+	for i := 0; i < 2; i++ {
+		out.grass[i] = load(fmt.Sprintf("grass%d.png", i))
+		out.ocean[i] = load(fmt.Sprintf("ocean%d.png", i))
+	}
+	for mask := 0; mask < 16; mask++ {
+		out.forest[mask] = load(fmt.Sprintf("forest/m%02d.png", mask))
+		out.coast[mask] = load(fmt.Sprintf("coast/m%02d.png", mask))
 	}
 	return out
 }

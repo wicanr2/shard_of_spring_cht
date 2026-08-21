@@ -7,9 +7,114 @@
 
 from pathlib import Path
 import argparse
-from PIL import Image, ImageOps
+import math
+from PIL import Image, ImageChops, ImageOps
 
 TILE = 68
+ATLAS = TILE * 4
+
+
+def seamless(im: Image.Image, band: int = 18) -> Image.Image:
+    """建立無鏡射對稱的 4×4 可平鋪材質頁。"""
+    out = ImageOps.fit(im.convert("RGBA"), (ATLAS, ATLAS),
+                       method=Image.Resampling.LANCZOS, centering=(0.5, 0.5))
+    # 把原本的外緣移到中央，再只混合中央接縫；新外緣來自原圖中央，
+    # 因此週期銜接，且不會產生鏡像萬花筒。
+    out = ImageChops.offset(out, ATLAS // 2, ATLAS // 2)
+    mid = ATLAS // 2
+    src = out.copy()
+    px, sp = out.load(), src.load()
+    for y in range(ATLAS):
+        for i, x in enumerate(range(mid - band, mid + band)):
+            # 交叉淡化兩側的完整像素帶，不能把兩個端點拉成 36 px 色帶。
+            px[x, y] = blend(sp[x + band, y], sp[x - band, y], i / (2 * band - 1))
+    src = out.copy()
+    sp = src.load()
+    for x in range(ATLAS):
+        for i, y in enumerate(range(mid - band, mid + band)):
+            px[x, y] = blend(sp[x, y + band], sp[x, y - band], i / (2 * band - 1))
+    return out
+
+
+def texture_panel(sheet: Image.Image, col: int) -> Image.Image:
+    """三欄母板各取中央正方形，避開欄界與上下可能的生成邊緣。"""
+    w = sheet.width // 3
+    x0, x1 = col * w, (col + 1) * w
+    side = min(w, sheet.height)
+    y0 = (sheet.height - side) // 2
+    return sheet.crop((x0, y0, x1, y0 + side))
+
+
+def blend(a: tuple[int, ...], b: tuple[int, ...], t: float) -> tuple[int, ...]:
+    return tuple(round(a[i] * (1 - t) + b[i] * t) for i in range(4))
+
+
+def edge_distance(x: int, y: int, mask: int) -> int:
+    """回傳到未連接邊的距離；bit N/E/S/W = 1/2/4/8。"""
+    ds = []
+    if not mask & 1:
+        ds.append(y)
+    if not mask & 2:
+        ds.append(TILE - 1 - x)
+    if not mask & 4:
+        ds.append(TILE - 1 - y)
+    if not mask & 8:
+        ds.append(x)
+    return min(ds, default=TILE)
+
+
+def build_world_autotiles(sheet: Image.Image, out: Path) -> None:
+    """建立現代主題專用的 4 向 16-mask 接邊資產。"""
+    grass = seamless(texture_panel(sheet, 0))
+    grass_alt = ImageChops.offset(grass, TILE, TILE * 2)
+    forest = seamless(texture_panel(sheet, 1))
+    ocean = seamless(texture_panel(sheet, 2))
+    ocean_alt = ocean.copy()
+    auto = out / "world_auto"
+    save(grass, auto / "grass0.png")
+    save(grass_alt, auto / "grass1.png")
+    save(ocean, auto / "ocean0.png")
+    save(ocean_alt, auto / "ocean1.png")
+
+    gp, fp, op = grass.load(), forest.load(), ocean.load()
+    sand = (190, 154, 91, 255)
+    for mask in range(16):
+        ft = Image.new("RGBA", (ATLAS, ATLAS))
+        ct = Image.new("RGBA", (ATLAS, ATLAS))
+        ftp, ctp = ft.load(), ct.load()
+        for y in range(ATLAS):
+            for x in range(ATLAS):
+                lx, ly = x % TILE, y % TILE
+                # 森林中心保留樹冠；沒有森林鄰格的邊緣在 14 px 內融入草地。
+                d = edge_distance(lx, ly, mask)
+                forest_a = min(1.0, max(0.0, d / 14.0))
+                ftp[x, y] = blend(gp[x, y], fp[x, y], forest_a)
+
+                # 海岸 mask 的 bit 表示該方向是海洋。水由邊緣進入 12 px，
+                # 只留 4 px 清楚沙岸；共用邊保持純海水以無縫銜接。
+                depths = []
+                if mask & 1:
+                    depths.append(ly)
+                if mask & 2:
+                    depths.append(TILE - 1 - lx)
+                if mask & 4:
+                    depths.append(TILE - 1 - ly)
+                if mask & 8:
+                    depths.append(lx)
+                # 固定相位的細微起伏只改岸線內緣；格邊前 7 px 仍是純海水，
+                # 因此相鄰海洋格保持無縫，卻不會形成僵硬的直角方框。
+                wobble = 2.2 * math.sin((x + y * 0.37) * math.pi / 17.0)
+                shore_d = min(depths, default=TILE) - wobble
+                if shore_d < 10:
+                    ctp[x, y] = op[x, y]
+                elif shore_d < 13:
+                    ctp[x, y] = blend(op[x, y], sand, (shore_d - 10) / 3.0)
+                elif shore_d < 17:
+                    ctp[x, y] = blend(sand, gp[x, y], (shore_d - 13) / 4.0)
+                else:
+                    ctp[x, y] = gp[x, y]
+        save(ft, auto / "forest" / f"m{mask:02d}.png")
+        save(ct, auto / "coast" / f"m{mask:02d}.png")
 
 
 def cell(im: Image.Image, col: int, row: int, cols=6, rows=4) -> Image.Image:
@@ -68,6 +173,8 @@ def build_world(root: Path, sheet: Image.Image, out: Path) -> None:
         # 已知與未知都疊回原版輪廓；已知圖的 alpha 較低但仍可回查。
         im = original_ink(im, root / "assets" / "gfx" / "world" / f"t{n:02d}.png")
         save(im, out / "world" / f"t{n:02d}.png")
+    natural = Image.open(root / "art" / "modern" / "candidates" / "world-natural-textures-v2.png")
+    build_world_autotiles(natural, out)
 
 
 def build_walk(sheet: Image.Image, out: Path) -> None:

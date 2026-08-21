@@ -12,6 +12,7 @@
 |---|---|---|
 | `candidates/title-book-v1.png` | title／logo 方向 | 1672×941 RGB；可進排版與裁切，尚非遊戲資產 |
 | `candidates/world-tiles-book-v1.png` | 6×4 世界 tileset 方向 | 1626×967 RGB；城鎮圖跨格，禁止直接切片 |
+| `candidates/world-natural-textures-v2.png` | 世界自動拼接自然材質母板 | 1536×1024；草原／森林／海洋三欄，供 4×4 連續材質頁與 16-mask 接邊重生 |
 | `candidates/party-walk-book-v1.png` | 八方向、兩步態角色方向 | 2043×770 RGBA；仍須驗 alpha、統一格寬與腳底錨點 |
 | `candidates/monsters-book-v1.png` | 22 隻怪物索引母板 | 1774×887 RGB；依 11×2 切片並去除淺色棋盤背景 |
 | `candidates/maze-tiles-book-v1.png` | 迷宮圖塊索引母板 | 1374×1145 RGB；依 6×5 切片，最後空格不輸出 |
@@ -40,6 +41,10 @@
 ### `world-tiles-book-v1.png` 提示摘要
 
 要求嚴格 6×4 正交 tileset、68×68 目標格、墨線水彩與無縫道路／地形，共 24 種草地、森林、道路、水岸、橋、山地、沼澤、熔岩、城鎮與地城入口；排除文字、角色、跨格陰影與 UI。
+
+### `world-natural-textures-v2.png` 提示摘要
+
+要求俯視手繪冒險書風格的三欄自然材質母板：草原、無規律重複的溫帶森林與深藍海洋；三欄光線、尺度與飽和度一致，排除格線、道路、建築、角色、海岸與跨欄陰影。由可重生腳本裁成 4×4 連續材質頁，再產生海岸與森林的 16 種四向鄰接遮罩。
 
 ### `party-walk-book-v1.png` 提示摘要
 

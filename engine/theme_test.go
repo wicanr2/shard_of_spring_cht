@@ -2,10 +2,18 @@ package main
 
 import (
 	"encoding/json"
+	"image/color"
 	"os"
 	"path/filepath"
 	"testing"
 )
+
+func TestStorybookViewBackgroundIsDarkUmber(t *testing.T) {
+	want := color.RGBA{0x1d, 0x16, 0x10, 0xff}
+	if storybook.view != want {
+		t.Fatalf("手繪冒險書主視野底色 = %#v，want %#v", storybook.view, want)
+	}
+}
 
 func TestVisualModeRoundTrip(t *testing.T) {
 	for _, m := range []visualMode{visualOriginal, visualStorybook} {

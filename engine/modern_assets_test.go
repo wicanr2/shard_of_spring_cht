@@ -64,3 +64,21 @@ func TestModernSpritesUseTheirTileHeight(t *testing.T) {
 		}
 	}
 }
+
+func TestModernWorldAutoAtlasesAreComplete(t *testing.T) {
+	a := loadModernWorldAuto()
+	for i, im := range append(a.grass[:], a.ocean[:]...) {
+		if im == nil || im.Bounds().Dx() != 272 || im.Bounds().Dy() != 272 {
+			t.Fatalf("自然地形材質頁 %d 尺寸 = %v，want 272×272", i, im)
+		}
+	}
+	for mask := 0; mask < 16; mask++ {
+		for kind, im := range map[string]image.Image{
+			"forest": a.forest[mask], "coast": a.coast[mask],
+		} {
+			if im == nil || im.Bounds().Dx() != 272 || im.Bounds().Dy() != 272 {
+				t.Fatalf("%s mask %02d 材質頁不完整", kind, mask)
+			}
+		}
+	}
+}

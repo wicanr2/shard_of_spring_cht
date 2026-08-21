@@ -136,6 +136,7 @@ func TestPromoFrames(t *testing.T) {
 	if err != nil {
 		t.Fatal("載入資產失敗:", err)
 	}
+	g.saveDir = t.TempDir() // F6 會保存偏好；錄影不能把唯讀路徑警告拍進成片。
 	// ⚠ **`g.sound = nil` 不夠**,要連 audio context 都不要建(`SHARD_NOSOUND`)。
 	// `loadStatic` 已經呼叫過 `initSound`,把 `g.sound` 設成 nil 只是不再播,
 	// **context 還在**,而 oto 的 ALSA 錯誤是由**遊戲迴圈**丟回來的 ——
@@ -166,6 +167,7 @@ func TestPromoFrames(t *testing.T) {
 			if err := g.loadParty(5); err != nil {
 				t.Fatal("載入 PARTY #5 失敗:", err)
 			}
+			g.visualMode = visualStorybook // 後續場景展示剛才以 F6 開啟的新版 UI。
 			g.shell.mode = shellPlaying
 		}, every(12, ebiten.KeyDown, ebiten.KeyDown, ebiten.KeyRight,
 			ebiten.KeyRight, ebiten.KeyDown, ebiten.KeyLeft)},

@@ -7,7 +7,7 @@
 
 from pathlib import Path
 import argparse
-from PIL import Image, ImageChops, ImageEnhance, ImageOps
+from PIL import Image, ImageOps
 
 TILE = 68
 
@@ -20,6 +20,13 @@ def cell(im: Image.Image, col: int, row: int, cols=6, rows=4) -> Image.Image:
     return im.crop((x0 + pad, y0 + pad, x1 - pad, y1 - pad)).resize(
         (TILE, TILE), Image.Resampling.LANCZOS
     ).convert("RGBA")
+
+
+def raw_cell(im: Image.Image, col: int, row: int, cols: int, rows: int) -> Image.Image:
+    """切出母稿格但不先壓成正方形，避免人物被縱向壓扁。"""
+    x0, x1 = round(im.width * col / cols), round(im.width * (col + 1) / cols)
+    y0, y1 = round(im.height * row / rows), round(im.height * (row + 1) / rows)
+    return im.crop((x0, y0, x1, y1)).convert("RGBA")
 
 
 def original_ink(base: Image.Image, original: Path) -> Image.Image:
@@ -68,12 +75,9 @@ def build_walk(sheet: Image.Image, out: Path) -> None:
     cols = [0, 2, 4, 6]
     for facing, col in enumerate(cols):
         for gait in range(2):
-            im = cell(sheet, col, gait, cols=8, rows=2)
-            # 生成器有時回 RGBA 黑底而非透明底：以角落色估算背景並移除。
-            bg = Image.new("RGBA", im.size, im.getpixel((0, 0)))
-            diff = ImageChops.difference(im, bg).convert("L")
-            alpha = ImageEnhance.Contrast(diff).enhance(2.4).point(lambda p: 0 if p < 18 else p)
-            im.putalpha(alpha)
+            # 母稿每格是高矩形；先壓成 68×68 會把人物變矮、邊緣發糊。
+            # 保留原比例切背景，再縮進正方形 sprite。
+            im = fit_sprite(remove_dark_background(raw_cell(sheet, col, gait, 8, 2)), 64)
             seg = facing * 2 + 1 + gait
             save(im, out / "walk" / f"w{seg}.png")
 
@@ -103,13 +107,37 @@ def build_references(root: Path) -> None:
 def remove_light_background(im: Image.Image) -> Image.Image:
     rgba = im.convert("RGBA")
     px = rgba.load()
-    for y in range(rgba.height):
-        for x in range(rgba.width):
-            r, g, b, _ = px[x, y]
-            # 生成器把透明棋盤烘成近白／淺灰；中性色且夠亮才移除，
-            # 骨骼與刀刃的深灰輪廓會保留。
-            a = 0 if min(r, g, b) > 215 and max(r, g, b) - min(r, g, b) < 14 else 255
-            px[x, y] = (r, g, b, a)
+    width, height = rgba.size
+
+    # 母稿把透明棋盤烘進圖片。單純依顏色全圖刪除會把骷髏、刀刃與風元素的
+    # 淺色細節一起挖空；改由四邊開始，只刪除與外圍相連的淺灰背景。
+    def is_background(x: int, y: int) -> bool:
+        r, g, b, _ = px[x, y]
+        return min(r, g, b) > 185 and max(r, g, b) - min(r, g, b) < 28
+
+    pending = []
+    seen = set()
+    for x in range(width):
+        pending.extend(((x, 0), (x, height - 1)))
+    for y in range(height):
+        pending.extend(((0, y), (width - 1, y)))
+    while pending:
+        x, y = pending.pop()
+        if (x, y) in seen or not is_background(x, y):
+            continue
+        seen.add((x, y))
+        if x:
+            pending.append((x - 1, y))
+        if x + 1 < width:
+            pending.append((x + 1, y))
+        if y:
+            pending.append((x, y - 1))
+        if y + 1 < height:
+            pending.append((x, y + 1))
+
+    for x, y in seen:
+        r, g, b, _ = px[x, y]
+        px[x, y] = (r, g, b, 0)
     return rgba
 
 
@@ -125,22 +153,58 @@ def remove_dark_background(im: Image.Image) -> Image.Image:
     return rgba
 
 
-def fit_sprite(im: Image.Image) -> Image.Image:
+def fit_sprite(im: Image.Image, extent: int = 64) -> Image.Image:
     alpha = im.getchannel("A")
     box = alpha.getbbox()
     if not box:
         return Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
     im = im.crop(box)
-    im.thumbnail((60, 60), Image.Resampling.LANCZOS)
+    im.thumbnail((extent, extent), Image.Resampling.LANCZOS)
     dst = Image.new("RGBA", (TILE, TILE), (0, 0, 0, 0))
     dst.alpha_composite(im, ((TILE - im.width) // 2, TILE - im.height - 3))
     return dst
 
 
+def split_foreground_row(sheet: Image.Image, row: int, cols: int, rows: int) -> list[Image.Image]:
+    """以角色之間的透明谷線切 atlas，不假設生成母稿真的等寬對齊。"""
+    band = remove_light_background(raw_cell(sheet, 0, row, 1, rows))
+    alpha = band.getchannel("A")
+    occupied = [any(alpha.getpixel((x, y)) for y in range(alpha.height))
+                for x in range(alpha.width)]
+    runs = []
+    start = None
+    for x, used in enumerate(occupied + [True]):
+        if not used and start is None:
+            start = x
+        elif used and start is not None:
+            if x - start >= 4:
+                runs.append((start, x - 1))
+            start = None
+
+    bounds = [0]
+    radius = band.width / cols * 0.48
+    for k in range(1, cols):
+        expected = band.width * k / cols
+        candidates = [r for r in runs
+                      if abs(((r[0] + r[1]) / 2) - expected) <= radius]
+        if not candidates:
+            raise ValueError(f"第 {row + 1} 列找不到第 {k} 條怪物分隔谷線")
+        gap = min(candidates,
+                  key=lambda r: abs(((r[0] + r[1]) / 2) - expected))
+        bounds.append((gap[0] + gap[1]) // 2)
+    bounds.append(band.width)
+    if bounds != sorted(bounds) or len(set(bounds)) != len(bounds):
+        raise ValueError(f"第 {row + 1} 列怪物分隔谷線順序錯誤:{bounds}")
+    return [band.crop((bounds[i], 0, bounds[i + 1], band.height))
+            for i in range(cols)]
+
+
 def build_monsters(sheet: Image.Image, out: Path) -> None:
-    for i in range(22):
-        im = cell(sheet, i % 11, i // 11, cols=11, rows=2)
-        save(fit_sprite(remove_light_background(im)), out / "monst" / f"monst{i+1:02d}.png")
+    sprites = split_foreground_row(sheet, 0, 11, 2) + split_foreground_row(sheet, 1, 11, 2)
+    for i, im in enumerate(sprites):
+        # 生成母稿的角色中心沒有精準落在等寬 11 欄；先以透明谷線逐隻切開，
+        # 再依 alpha 邊界等比例放進 68×68，避免切入鄰居或截掉武器／尾巴。
+        save(fit_sprite(im, 66), out / "monst" / f"monst{i+1:02d}.png")
 
 
 def build_maze(root: Path, sheet: Image.Image, out: Path) -> None:
